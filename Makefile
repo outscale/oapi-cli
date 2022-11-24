@@ -9,3 +9,9 @@ COGNAC/config.mk: COGNAC/
 
 COGNAC/cognac: COGNAC/config.mk
 	make -j -C COGNAC/
+
+clean: COGNAC/
+	make -C COGNAC/ clean
+	rm -rvf oapi-cli
+
+.PHONY: clean
