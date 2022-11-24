@@ -31,3 +31,8 @@ echo "[$MSG_BASE ReadImages --DryRun false  OK]"
 trap "echo [$MSG_BASE ReadImages --Filters.AccountAliases[] Outscale FAIL]" ERR
 ./oapi-cli ReadImages --Filters.AccountAliases[] Outscale | grep ImageId > /dev/null
 echo "[$MSG_BASE ReadImages --Filters.AccountAliases[] Outscale OK]"
+
+trap "echo [$MSG_BASE DeleteTags --Tags.0.Key k0 ..Value v0 --Tags.1.Key k1 ..Value v1 FAIL]" ERR
+# this doesn't check that the call work, as for that we would require to set ResourceIds
+./oapi-cli DeleteTags --Tags.0.Key k0 ..Value v0 --Tags.1.Key k1 ..Value v1 | grep RequestId > /dev/null
+echo "[$MSG_BASE --Tags.0.Key k0 ..Value v0 --Tags.1.Key k1 ..Value v1 OK]"
