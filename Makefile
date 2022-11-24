@@ -5,7 +5,7 @@ COGNAC/:
 	git submodule update --init
 
 COGNAC/config.mk: COGNAC/
-	cd COGNAC && ./configure
+	cd COGNAC && ./configure --compile-json-c
 
 COGNAC/oapi-cli: COGNAC/config.mk
 	make -j -C COGNAC/
