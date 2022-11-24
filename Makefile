@@ -14,4 +14,7 @@ clean: COGNAC/
 	make -C COGNAC/ clean
 	rm -rvf oapi-cli
 
-.PHONY: clean
+test:
+	./tests.sh
+
+.PHONY: clean test
