@@ -1,5 +1,34 @@
-oapi-cli: COGNAC/oapi-cli
-	cp COGNAC/oapi-cli oapi-cli
+LD_LIB_PATH=:./json-c-build
+JSON_C_LDFLAGS=./json-c-build/libjson-c.a
+JSON_C_CFLAGS=-I./json-c -I./json-c-build
+JSON_C_RULE=./json-c-build/libjson-c.a
+CURL_LD=-lcurl
+
+include COGNAC/oapi-cli.mk
+
+json-c/.git:
+	git clone https://github.com/cosmo-ray/json-c.git -b color
+
+json-c-build/libjson-c.a: json-c/.git
+	rm -rvf ./json-c-build
+	mkdir json-c-build
+	cd json-c-build && cmake ../json-c/  # might need to be replace by cmake3
+	make -C json-c-build json-c-static
+
+main-helper.h:
+	cp  COGNAC/main-helper.h .
+
+main.c: COGNAC/main.c
+	cp COGNAC/main.c .
+
+osc_sdk.h: COGNAC/main.c
+	cp COGNAC/osc_sdk.h .
+
+osc_sdk.c: COGNAC/main.c
+	cp COGNAC/osc_sdk.c .
+
+oapi-cli-completion.bash: COGNAC/main.c
+	cp COGNAC/oapi-cli-completion.bash .
 
 COGNAC/:
 	git submodule update --init
@@ -7,18 +36,20 @@ COGNAC/:
 COGNAC/config.mk: COGNAC/
 	cd COGNAC && ./configure --compile-json-c
 
-COGNAC/oapi-cli: COGNAC/config.mk
+COGNAC/main.c: COGNAC/config.mk
 	make -j -C COGNAC/
 
-oapi-cli-x86_64.AppImage:
-	make -j -C COGNAC/ oapi-cli-x86_64.AppImage
-	cp COGNAC/oapi-cli-x86_64.AppImage oapi-cli-x86_64.AppImage
-
-clean: COGNAC/
+clean_all: fclean
 	make -C COGNAC/ clean
+	rm -rvf main-helper.h main.c osc_sdk.h osc_sdk.c
+
+fclean: clean
 	rm -rvf oapi-cli oapi-cli-x86_64.AppImage
+
+clean:
+	rm -rvf *.o
 
 test:
 	./tests.sh
 
-.PHONY: clean test
+.PHONY: clean test clean_all
