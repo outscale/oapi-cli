@@ -74,6 +74,7 @@ static inline int ptr_array_free_all(struct ptr_array *pa)
 		pa->size = 0;
 		pa->l = 0;
 	}
+	return 0;
 }
 
 
