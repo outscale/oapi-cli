@@ -2378,6 +2378,15 @@ const char *osc_find_args_description(const char *call_name)
 
 #endif  /* WITH_DESCRIPTION */
 
+static void *osc_realloc(void *buf, size_t l)
+{
+	void *ret = realloc(buf, l);
+
+	if (!ret)
+		free(buf);
+	return ret;
+}
+
 /* We don't use _Bool as we try to be C89 compatible */
 int osc_str_append_bool(struct osc_str *osc_str, int bool)
 {
@@ -2385,7 +2394,7 @@ int osc_str_append_bool(struct osc_str *osc_str, int bool)
 	assert(osc_str);
 
 	osc_str->len = len + (bool ? 4 : 5);
-	osc_str->buf = realloc(osc_str->buf, osc_str->len + 1);
+	osc_str->buf = osc_realloc(osc_str->buf, osc_str->len + 1);
 	if (!osc_str->buf)
 		return -1;
 	strcpy(osc_str->buf + len, (bool ? "true" : "false"));
@@ -2397,7 +2406,7 @@ int osc_str_append_int(struct osc_str *osc_str, int i)
 	int len = osc_str->len;
 	assert(osc_str);
 
-	osc_str->buf = realloc(osc_str->buf, len + 64);
+	osc_str->buf = osc_realloc(osc_str->buf, len + 64);
 	if (!osc_str->buf)
 		return -1;
 	osc_str->len = len + snprintf(osc_str->buf + len, 64, "%d", i);
@@ -2410,7 +2419,7 @@ int osc_str_append_double(struct osc_str *osc_str, double i)
 	int len = osc_str->len;
 	assert(osc_str);
 
-	osc_str->buf = realloc(osc_str->buf, len + 64);
+	osc_str->buf = osc_realloc(osc_str->buf, len + 64);
 	if (!osc_str->buf)
 		return -1;
 	osc_str->len = len + snprintf(osc_str->buf + len, 64, "%f", i);
@@ -2428,7 +2437,7 @@ int osc_str_append_string(struct osc_str *osc_str, const char *str)
 	int dlen = strlen(str);
 
 	osc_str->len = osc_str->len + dlen;
-	osc_str->buf = realloc(osc_str->buf, osc_str->len + 1);
+	osc_str->buf = osc_realloc(osc_str->buf, osc_str->len + 1);
 	if (!osc_str->buf)
 		return -1;
 	memcpy(osc_str->buf + len, str, dlen + 1);
@@ -2494,7 +2503,7 @@ static size_t write_data(void *data, size_t size, size_t nmemb, void *userp)
 	int olen = response->len;
 
 	response->len = response->len + bufsize;
-	response->buf = realloc(response->buf, response->len + 1);
+	response->buf = osc_realloc(response->buf, response->len + 1);
 	memcpy(response->buf + olen, data, bufsize);
 	response->buf[response->len] = 0;
 	return bufsize;
@@ -20880,7 +20889,7 @@ static  int update_vpn_connection_data(struct osc_update_vpn_connection_arg *arg
 
 int osc_update_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc_update_vpn_connection_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -20889,7 +20898,7 @@ int osc_update_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc
 	osc_init_str(&end_call);
 	r = update_vpn_connection_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UpdateVpnConnection");
@@ -20900,6 +20909,7 @@ int osc_update_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -20972,7 +20982,7 @@ static  int update_volume_data(struct osc_update_volume_arg *args, struct osc_st
 
 int osc_update_volume(struct osc_env *e, struct osc_str *out, struct osc_update_volume_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -20981,7 +20991,7 @@ int osc_update_volume(struct osc_env *e, struct osc_str *out, struct osc_update_
 	osc_init_str(&end_call);
 	r = update_volume_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UpdateVolume");
@@ -20992,6 +21002,7 @@ int osc_update_volume(struct osc_env *e, struct osc_str *out, struct osc_update_
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -21196,7 +21207,7 @@ static  int update_vm_data(struct osc_update_vm_arg *args, struct osc_str *data)
 
 int osc_update_vm(struct osc_env *e, struct osc_str *out, struct osc_update_vm_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -21205,7 +21216,7 @@ int osc_update_vm(struct osc_env *e, struct osc_str *out, struct osc_update_vm_a
 	osc_init_str(&end_call);
 	r = update_vm_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UpdateVm");
@@ -21216,6 +21227,7 @@ int osc_update_vm(struct osc_env *e, struct osc_str *out, struct osc_update_vm_a
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -21266,7 +21278,7 @@ static  int update_subnet_data(struct osc_update_subnet_arg *args, struct osc_st
 
 int osc_update_subnet(struct osc_env *e, struct osc_str *out, struct osc_update_subnet_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -21275,7 +21287,7 @@ int osc_update_subnet(struct osc_env *e, struct osc_str *out, struct osc_update_
 	osc_init_str(&end_call);
 	r = update_subnet_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UpdateSubnet");
@@ -21286,6 +21298,7 @@ int osc_update_subnet(struct osc_env *e, struct osc_str *out, struct osc_update_
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -21347,7 +21360,7 @@ static  int update_snapshot_data(struct osc_update_snapshot_arg *args, struct os
 
 int osc_update_snapshot(struct osc_env *e, struct osc_str *out, struct osc_update_snapshot_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -21356,7 +21369,7 @@ int osc_update_snapshot(struct osc_env *e, struct osc_str *out, struct osc_updat
 	osc_init_str(&end_call);
 	r = update_snapshot_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UpdateSnapshot");
@@ -21367,6 +21380,7 @@ int osc_update_snapshot(struct osc_env *e, struct osc_str *out, struct osc_updat
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -21431,7 +21445,7 @@ static  int update_server_certificate_data(struct osc_update_server_certificate_
 
 int osc_update_server_certificate(struct osc_env *e, struct osc_str *out, struct osc_update_server_certificate_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -21440,7 +21454,7 @@ int osc_update_server_certificate(struct osc_env *e, struct osc_str *out, struct
 	osc_init_str(&end_call);
 	r = update_server_certificate_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UpdateServerCertificate");
@@ -21451,6 +21465,7 @@ int osc_update_server_certificate(struct osc_env *e, struct osc_str *out, struct
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -21513,7 +21528,7 @@ static  int update_route_propagation_data(struct osc_update_route_propagation_ar
 
 int osc_update_route_propagation(struct osc_env *e, struct osc_str *out, struct osc_update_route_propagation_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -21522,7 +21537,7 @@ int osc_update_route_propagation(struct osc_env *e, struct osc_str *out, struct 
 	osc_init_str(&end_call);
 	r = update_route_propagation_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UpdateRoutePropagation");
@@ -21533,6 +21548,7 @@ int osc_update_route_propagation(struct osc_env *e, struct osc_str *out, struct 
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -21645,7 +21661,7 @@ static  int update_route_data(struct osc_update_route_arg *args, struct osc_str 
 
 int osc_update_route(struct osc_env *e, struct osc_str *out, struct osc_update_route_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -21654,7 +21670,7 @@ int osc_update_route(struct osc_env *e, struct osc_str *out, struct osc_update_r
 	osc_init_str(&end_call);
 	r = update_route_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UpdateRoute");
@@ -21665,6 +21681,7 @@ int osc_update_route(struct osc_env *e, struct osc_str *out, struct osc_update_r
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -21770,7 +21787,7 @@ static  int update_nic_data(struct osc_update_nic_arg *args, struct osc_str *dat
 
 int osc_update_nic(struct osc_env *e, struct osc_str *out, struct osc_update_nic_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -21779,7 +21796,7 @@ int osc_update_nic(struct osc_env *e, struct osc_str *out, struct osc_update_nic
 	osc_init_str(&end_call);
 	r = update_nic_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UpdateNic");
@@ -21790,6 +21807,7 @@ int osc_update_nic(struct osc_env *e, struct osc_str *out, struct osc_update_nic
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -21894,7 +21912,7 @@ static  int update_net_access_point_data(struct osc_update_net_access_point_arg 
 
 int osc_update_net_access_point(struct osc_env *e, struct osc_str *out, struct osc_update_net_access_point_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -21903,7 +21921,7 @@ int osc_update_net_access_point(struct osc_env *e, struct osc_str *out, struct o
 	osc_init_str(&end_call);
 	r = update_net_access_point_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UpdateNetAccessPoint");
@@ -21914,6 +21932,7 @@ int osc_update_net_access_point(struct osc_env *e, struct osc_str *out, struct o
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -21966,7 +21985,7 @@ static  int update_net_data(struct osc_update_net_arg *args, struct osc_str *dat
 
 int osc_update_net(struct osc_env *e, struct osc_str *out, struct osc_update_net_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -21975,7 +21994,7 @@ int osc_update_net(struct osc_env *e, struct osc_str *out, struct osc_update_net
 	osc_init_str(&end_call);
 	r = update_net_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UpdateNet");
@@ -21986,6 +22005,7 @@ int osc_update_net(struct osc_env *e, struct osc_str *out, struct osc_update_net
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -22176,7 +22196,7 @@ static  int update_load_balancer_data(struct osc_update_load_balancer_arg *args,
 
 int osc_update_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_update_load_balancer_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -22185,7 +22205,7 @@ int osc_update_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_
 	osc_init_str(&end_call);
 	r = update_load_balancer_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UpdateLoadBalancer");
@@ -22196,6 +22216,7 @@ int osc_update_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -22260,7 +22281,7 @@ static  int update_listener_rule_data(struct osc_update_listener_rule_arg *args,
 
 int osc_update_listener_rule(struct osc_env *e, struct osc_str *out, struct osc_update_listener_rule_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -22269,7 +22290,7 @@ int osc_update_listener_rule(struct osc_env *e, struct osc_str *out, struct osc_
 	osc_init_str(&end_call);
 	r = update_listener_rule_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UpdateListenerRule");
@@ -22280,6 +22301,7 @@ int osc_update_listener_rule(struct osc_env *e, struct osc_str *out, struct osc_
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -22341,7 +22363,7 @@ static  int update_image_data(struct osc_update_image_arg *args, struct osc_str 
 
 int osc_update_image(struct osc_env *e, struct osc_str *out, struct osc_update_image_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -22350,7 +22372,7 @@ int osc_update_image(struct osc_env *e, struct osc_str *out, struct osc_update_i
 	osc_init_str(&end_call);
 	r = update_image_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UpdateImage");
@@ -22361,6 +22383,7 @@ int osc_update_image(struct osc_env *e, struct osc_str *out, struct osc_update_i
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -22411,7 +22434,7 @@ static  int update_flexible_gpu_data(struct osc_update_flexible_gpu_arg *args, s
 
 int osc_update_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_update_flexible_gpu_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -22420,7 +22443,7 @@ int osc_update_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_u
 	osc_init_str(&end_call);
 	r = update_flexible_gpu_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UpdateFlexibleGpu");
@@ -22431,6 +22454,7 @@ int osc_update_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_u
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -22481,7 +22505,7 @@ static  int update_direct_link_interface_data(struct osc_update_direct_link_inte
 
 int osc_update_direct_link_interface(struct osc_env *e, struct osc_str *out, struct osc_update_direct_link_interface_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -22490,7 +22514,7 @@ int osc_update_direct_link_interface(struct osc_env *e, struct osc_str *out, str
 	osc_init_str(&end_call);
 	r = update_direct_link_interface_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UpdateDirectLinkInterface");
@@ -22501,6 +22525,7 @@ int osc_update_direct_link_interface(struct osc_env *e, struct osc_str *out, str
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -22553,7 +22578,7 @@ static  int update_ca_data(struct osc_update_ca_arg *args, struct osc_str *data)
 
 int osc_update_ca(struct osc_env *e, struct osc_str *out, struct osc_update_ca_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -22562,7 +22587,7 @@ int osc_update_ca(struct osc_env *e, struct osc_str *out, struct osc_update_ca_a
 	osc_init_str(&end_call);
 	r = update_ca_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UpdateCa");
@@ -22573,6 +22598,7 @@ int osc_update_ca(struct osc_env *e, struct osc_str *out, struct osc_update_ca_a
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -22721,7 +22747,7 @@ static  int update_api_access_rule_data(struct osc_update_api_access_rule_arg *a
 
 int osc_update_api_access_rule(struct osc_env *e, struct osc_str *out, struct osc_update_api_access_rule_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -22730,7 +22756,7 @@ int osc_update_api_access_rule(struct osc_env *e, struct osc_str *out, struct os
 	osc_init_str(&end_call);
 	r = update_api_access_rule_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UpdateApiAccessRule");
@@ -22741,6 +22767,7 @@ int osc_update_api_access_rule(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -22789,7 +22816,7 @@ static  int update_api_access_policy_data(struct osc_update_api_access_policy_ar
 
 int osc_update_api_access_policy(struct osc_env *e, struct osc_str *out, struct osc_update_api_access_policy_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -22798,7 +22825,7 @@ int osc_update_api_access_policy(struct osc_env *e, struct osc_str *out, struct 
 	osc_init_str(&end_call);
 	r = update_api_access_policy_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UpdateApiAccessPolicy");
@@ -22809,6 +22836,7 @@ int osc_update_api_access_policy(struct osc_env *e, struct osc_str *out, struct 
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -23013,7 +23041,7 @@ static  int update_account_data(struct osc_update_account_arg *args, struct osc_
 
 int osc_update_account(struct osc_env *e, struct osc_str *out, struct osc_update_account_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -23022,7 +23050,7 @@ int osc_update_account(struct osc_env *e, struct osc_str *out, struct osc_update
 	osc_init_str(&end_call);
 	r = update_account_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UpdateAccount");
@@ -23033,6 +23061,7 @@ int osc_update_account(struct osc_env *e, struct osc_str *out, struct osc_update
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -23097,7 +23126,7 @@ static  int update_access_key_data(struct osc_update_access_key_arg *args, struc
 
 int osc_update_access_key(struct osc_env *e, struct osc_str *out, struct osc_update_access_key_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -23106,7 +23135,7 @@ int osc_update_access_key(struct osc_env *e, struct osc_str *out, struct osc_upd
 	osc_init_str(&end_call);
 	r = update_access_key_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UpdateAccessKey");
@@ -23117,6 +23146,7 @@ int osc_update_access_key(struct osc_env *e, struct osc_str *out, struct osc_upd
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -23167,7 +23197,7 @@ static  int unlink_volume_data(struct osc_unlink_volume_arg *args, struct osc_st
 
 int osc_unlink_volume(struct osc_env *e, struct osc_str *out, struct osc_unlink_volume_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -23176,7 +23206,7 @@ int osc_unlink_volume(struct osc_env *e, struct osc_str *out, struct osc_unlink_
 	osc_init_str(&end_call);
 	r = unlink_volume_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UnlinkVolume");
@@ -23187,6 +23217,7 @@ int osc_unlink_volume(struct osc_env *e, struct osc_str *out, struct osc_unlink_
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -23239,7 +23270,7 @@ static  int unlink_virtual_gateway_data(struct osc_unlink_virtual_gateway_arg *a
 
 int osc_unlink_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_unlink_virtual_gateway_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -23248,7 +23279,7 @@ int osc_unlink_virtual_gateway(struct osc_env *e, struct osc_str *out, struct os
 	osc_init_str(&end_call);
 	r = unlink_virtual_gateway_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UnlinkVirtualGateway");
@@ -23259,6 +23290,7 @@ int osc_unlink_virtual_gateway(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -23299,7 +23331,7 @@ static  int unlink_route_table_data(struct osc_unlink_route_table_arg *args, str
 
 int osc_unlink_route_table(struct osc_env *e, struct osc_str *out, struct osc_unlink_route_table_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -23308,7 +23340,7 @@ int osc_unlink_route_table(struct osc_env *e, struct osc_str *out, struct osc_un
 	osc_init_str(&end_call);
 	r = unlink_route_table_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UnlinkRouteTable");
@@ -23319,6 +23351,7 @@ int osc_unlink_route_table(struct osc_env *e, struct osc_str *out, struct osc_un
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -23371,7 +23404,7 @@ static  int unlink_public_ip_data(struct osc_unlink_public_ip_arg *args, struct 
 
 int osc_unlink_public_ip(struct osc_env *e, struct osc_str *out, struct osc_unlink_public_ip_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -23380,7 +23413,7 @@ int osc_unlink_public_ip(struct osc_env *e, struct osc_str *out, struct osc_unli
 	osc_init_str(&end_call);
 	r = unlink_public_ip_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UnlinkPublicIp");
@@ -23391,6 +23424,7 @@ int osc_unlink_public_ip(struct osc_env *e, struct osc_str *out, struct osc_unli
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -23463,7 +23497,7 @@ static  int unlink_private_ips_data(struct osc_unlink_private_ips_arg *args, str
 
 int osc_unlink_private_ips(struct osc_env *e, struct osc_str *out, struct osc_unlink_private_ips_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -23472,7 +23506,7 @@ int osc_unlink_private_ips(struct osc_env *e, struct osc_str *out, struct osc_un
 	osc_init_str(&end_call);
 	r = unlink_private_ips_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UnlinkPrivateIps");
@@ -23483,6 +23517,7 @@ int osc_unlink_private_ips(struct osc_env *e, struct osc_str *out, struct osc_un
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -23523,7 +23558,7 @@ static  int unlink_nic_data(struct osc_unlink_nic_arg *args, struct osc_str *dat
 
 int osc_unlink_nic(struct osc_env *e, struct osc_str *out, struct osc_unlink_nic_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -23532,7 +23567,7 @@ int osc_unlink_nic(struct osc_env *e, struct osc_str *out, struct osc_unlink_nic
 	osc_init_str(&end_call);
 	r = unlink_nic_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UnlinkNic");
@@ -23543,6 +23578,7 @@ int osc_unlink_nic(struct osc_env *e, struct osc_str *out, struct osc_unlink_nic
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -23647,7 +23683,7 @@ static  int unlink_load_balancer_backend_machines_data(struct osc_unlink_load_ba
 
 int osc_unlink_load_balancer_backend_machines(struct osc_env *e, struct osc_str *out, struct osc_unlink_load_balancer_backend_machines_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -23656,7 +23692,7 @@ int osc_unlink_load_balancer_backend_machines(struct osc_env *e, struct osc_str 
 	osc_init_str(&end_call);
 	r = unlink_load_balancer_backend_machines_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UnlinkLoadBalancerBackendMachines");
@@ -23667,6 +23703,7 @@ int osc_unlink_load_balancer_backend_machines(struct osc_env *e, struct osc_str 
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -23719,7 +23756,7 @@ static  int unlink_internet_service_data(struct osc_unlink_internet_service_arg 
 
 int osc_unlink_internet_service(struct osc_env *e, struct osc_str *out, struct osc_unlink_internet_service_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -23728,7 +23765,7 @@ int osc_unlink_internet_service(struct osc_env *e, struct osc_str *out, struct o
 	osc_init_str(&end_call);
 	r = unlink_internet_service_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UnlinkInternetService");
@@ -23739,6 +23776,7 @@ int osc_unlink_internet_service(struct osc_env *e, struct osc_str *out, struct o
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -23779,7 +23817,7 @@ static  int unlink_flexible_gpu_data(struct osc_unlink_flexible_gpu_arg *args, s
 
 int osc_unlink_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_unlink_flexible_gpu_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -23788,7 +23826,7 @@ int osc_unlink_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_u
 	osc_init_str(&end_call);
 	r = unlink_flexible_gpu_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UnlinkFlexibleGpu");
@@ -23799,6 +23837,7 @@ int osc_unlink_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_u
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -23869,7 +23908,7 @@ static  int stop_vms_data(struct osc_stop_vms_arg *args, struct osc_str *data)
 
 int osc_stop_vms(struct osc_env *e, struct osc_str *out, struct osc_stop_vms_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -23878,7 +23917,7 @@ int osc_stop_vms(struct osc_env *e, struct osc_str *out, struct osc_stop_vms_arg
 	osc_init_str(&end_call);
 	r = stop_vms_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/StopVms");
@@ -23889,6 +23928,7 @@ int osc_stop_vms(struct osc_env *e, struct osc_str *out, struct osc_stop_vms_arg
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -23949,7 +23989,7 @@ static  int start_vms_data(struct osc_start_vms_arg *args, struct osc_str *data)
 
 int osc_start_vms(struct osc_env *e, struct osc_str *out, struct osc_start_vms_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -23958,7 +23998,7 @@ int osc_start_vms(struct osc_env *e, struct osc_str *out, struct osc_start_vms_a
 	osc_init_str(&end_call);
 	r = start_vms_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/StartVms");
@@ -23969,6 +24009,7 @@ int osc_start_vms(struct osc_env *e, struct osc_str *out, struct osc_start_vms_a
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -24009,7 +24050,7 @@ static  int send_reset_password_email_data(struct osc_send_reset_password_email_
 
 int osc_send_reset_password_email(struct osc_env *e, struct osc_str *out, struct osc_send_reset_password_email_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -24018,7 +24059,7 @@ int osc_send_reset_password_email(struct osc_env *e, struct osc_str *out, struct
 	osc_init_str(&end_call);
 	r = send_reset_password_email_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/SendResetPasswordEmail");
@@ -24029,6 +24070,7 @@ int osc_send_reset_password_email(struct osc_env *e, struct osc_str *out, struct
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -24081,7 +24123,7 @@ static  int reset_account_password_data(struct osc_reset_account_password_arg *a
 
 int osc_reset_account_password(struct osc_env *e, struct osc_str *out, struct osc_reset_account_password_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -24090,7 +24132,7 @@ int osc_reset_account_password(struct osc_env *e, struct osc_str *out, struct os
 	osc_init_str(&end_call);
 	r = reset_account_password_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ResetAccountPassword");
@@ -24101,6 +24143,7 @@ int osc_reset_account_password(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -24141,7 +24184,7 @@ static  int reject_net_peering_data(struct osc_reject_net_peering_arg *args, str
 
 int osc_reject_net_peering(struct osc_env *e, struct osc_str *out, struct osc_reject_net_peering_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -24150,7 +24193,7 @@ int osc_reject_net_peering(struct osc_env *e, struct osc_str *out, struct osc_re
 	osc_init_str(&end_call);
 	r = reject_net_peering_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/RejectNetPeering");
@@ -24161,6 +24204,7 @@ int osc_reject_net_peering(struct osc_env *e, struct osc_str *out, struct osc_re
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -24233,7 +24277,7 @@ static  int register_vms_in_load_balancer_data(struct osc_register_vms_in_load_b
 
 int osc_register_vms_in_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_register_vms_in_load_balancer_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -24242,7 +24286,7 @@ int osc_register_vms_in_load_balancer(struct osc_env *e, struct osc_str *out, st
 	osc_init_str(&end_call);
 	r = register_vms_in_load_balancer_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/RegisterVmsInLoadBalancer");
@@ -24253,6 +24297,7 @@ int osc_register_vms_in_load_balancer(struct osc_env *e, struct osc_str *out, st
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -24313,7 +24358,7 @@ static  int reboot_vms_data(struct osc_reboot_vms_arg *args, struct osc_str *dat
 
 int osc_reboot_vms(struct osc_env *e, struct osc_str *out, struct osc_reboot_vms_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -24322,7 +24367,7 @@ int osc_reboot_vms(struct osc_env *e, struct osc_str *out, struct osc_reboot_vms
 	osc_init_str(&end_call);
 	r = reboot_vms_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/RebootVms");
@@ -24333,6 +24378,7 @@ int osc_reboot_vms(struct osc_env *e, struct osc_str *out, struct osc_reboot_vms
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -24382,7 +24428,7 @@ static  int read_vpn_connections_data(struct osc_read_vpn_connections_arg *args,
 
 int osc_read_vpn_connections(struct osc_env *e, struct osc_str *out, struct osc_read_vpn_connections_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -24391,7 +24437,7 @@ int osc_read_vpn_connections(struct osc_env *e, struct osc_str *out, struct osc_
 	osc_init_str(&end_call);
 	r = read_vpn_connections_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadVpnConnections");
@@ -24402,6 +24448,7 @@ int osc_read_vpn_connections(struct osc_env *e, struct osc_str *out, struct osc_
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -24451,7 +24498,7 @@ static  int read_volumes_data(struct osc_read_volumes_arg *args, struct osc_str 
 
 int osc_read_volumes(struct osc_env *e, struct osc_str *out, struct osc_read_volumes_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -24460,7 +24507,7 @@ int osc_read_volumes(struct osc_env *e, struct osc_str *out, struct osc_read_vol
 	osc_init_str(&end_call);
 	r = read_volumes_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadVolumes");
@@ -24471,6 +24518,7 @@ int osc_read_volumes(struct osc_env *e, struct osc_str *out, struct osc_read_vol
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -24530,7 +24578,7 @@ static  int read_vms_state_data(struct osc_read_vms_state_arg *args, struct osc_
 
 int osc_read_vms_state(struct osc_env *e, struct osc_str *out, struct osc_read_vms_state_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -24539,7 +24587,7 @@ int osc_read_vms_state(struct osc_env *e, struct osc_str *out, struct osc_read_v
 	osc_init_str(&end_call);
 	r = read_vms_state_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadVmsState");
@@ -24550,6 +24598,7 @@ int osc_read_vms_state(struct osc_env *e, struct osc_str *out, struct osc_read_v
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -24622,7 +24671,7 @@ static  int read_vms_health_data(struct osc_read_vms_health_arg *args, struct os
 
 int osc_read_vms_health(struct osc_env *e, struct osc_str *out, struct osc_read_vms_health_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -24631,7 +24680,7 @@ int osc_read_vms_health(struct osc_env *e, struct osc_str *out, struct osc_read_
 	osc_init_str(&end_call);
 	r = read_vms_health_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadVmsHealth");
@@ -24642,6 +24691,7 @@ int osc_read_vms_health(struct osc_env *e, struct osc_str *out, struct osc_read_
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -24691,7 +24741,7 @@ static  int read_vms_data(struct osc_read_vms_arg *args, struct osc_str *data)
 
 int osc_read_vms(struct osc_env *e, struct osc_str *out, struct osc_read_vms_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -24700,7 +24750,7 @@ int osc_read_vms(struct osc_env *e, struct osc_str *out, struct osc_read_vms_arg
 	osc_init_str(&end_call);
 	r = read_vms_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadVms");
@@ -24711,6 +24761,7 @@ int osc_read_vms(struct osc_env *e, struct osc_str *out, struct osc_read_vms_arg
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -24760,7 +24811,7 @@ static  int read_vm_types_data(struct osc_read_vm_types_arg *args, struct osc_st
 
 int osc_read_vm_types(struct osc_env *e, struct osc_str *out, struct osc_read_vm_types_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -24769,7 +24820,7 @@ int osc_read_vm_types(struct osc_env *e, struct osc_str *out, struct osc_read_vm
 	osc_init_str(&end_call);
 	r = read_vm_types_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadVmTypes");
@@ -24780,6 +24831,7 @@ int osc_read_vm_types(struct osc_env *e, struct osc_str *out, struct osc_read_vm
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -24829,7 +24881,7 @@ static  int read_virtual_gateways_data(struct osc_read_virtual_gateways_arg *arg
 
 int osc_read_virtual_gateways(struct osc_env *e, struct osc_str *out, struct osc_read_virtual_gateways_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -24838,7 +24890,7 @@ int osc_read_virtual_gateways(struct osc_env *e, struct osc_str *out, struct osc
 	osc_init_str(&end_call);
 	r = read_virtual_gateways_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadVirtualGateways");
@@ -24849,6 +24901,7 @@ int osc_read_virtual_gateways(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -24898,7 +24951,7 @@ static  int read_tags_data(struct osc_read_tags_arg *args, struct osc_str *data)
 
 int osc_read_tags(struct osc_env *e, struct osc_str *out, struct osc_read_tags_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -24907,7 +24960,7 @@ int osc_read_tags(struct osc_env *e, struct osc_str *out, struct osc_read_tags_a
 	osc_init_str(&end_call);
 	r = read_tags_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadTags");
@@ -24918,6 +24971,7 @@ int osc_read_tags(struct osc_env *e, struct osc_str *out, struct osc_read_tags_a
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -24967,7 +25021,7 @@ static  int read_subregions_data(struct osc_read_subregions_arg *args, struct os
 
 int osc_read_subregions(struct osc_env *e, struct osc_str *out, struct osc_read_subregions_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -24976,7 +25030,7 @@ int osc_read_subregions(struct osc_env *e, struct osc_str *out, struct osc_read_
 	osc_init_str(&end_call);
 	r = read_subregions_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadSubregions");
@@ -24987,6 +25041,7 @@ int osc_read_subregions(struct osc_env *e, struct osc_str *out, struct osc_read_
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -25036,7 +25091,7 @@ static  int read_subnets_data(struct osc_read_subnets_arg *args, struct osc_str 
 
 int osc_read_subnets(struct osc_env *e, struct osc_str *out, struct osc_read_subnets_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -25045,7 +25100,7 @@ int osc_read_subnets(struct osc_env *e, struct osc_str *out, struct osc_read_sub
 	osc_init_str(&end_call);
 	r = read_subnets_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadSubnets");
@@ -25056,6 +25111,7 @@ int osc_read_subnets(struct osc_env *e, struct osc_str *out, struct osc_read_sub
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -25105,7 +25161,7 @@ static  int read_snapshots_data(struct osc_read_snapshots_arg *args, struct osc_
 
 int osc_read_snapshots(struct osc_env *e, struct osc_str *out, struct osc_read_snapshots_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -25114,7 +25170,7 @@ int osc_read_snapshots(struct osc_env *e, struct osc_str *out, struct osc_read_s
 	osc_init_str(&end_call);
 	r = read_snapshots_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadSnapshots");
@@ -25125,6 +25181,7 @@ int osc_read_snapshots(struct osc_env *e, struct osc_str *out, struct osc_read_s
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -25174,7 +25231,7 @@ static  int read_snapshot_export_tasks_data(struct osc_read_snapshot_export_task
 
 int osc_read_snapshot_export_tasks(struct osc_env *e, struct osc_str *out, struct osc_read_snapshot_export_tasks_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -25183,7 +25240,7 @@ int osc_read_snapshot_export_tasks(struct osc_env *e, struct osc_str *out, struc
 	osc_init_str(&end_call);
 	r = read_snapshot_export_tasks_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadSnapshotExportTasks");
@@ -25194,6 +25251,7 @@ int osc_read_snapshot_export_tasks(struct osc_env *e, struct osc_str *out, struc
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -25243,7 +25301,7 @@ static  int read_server_certificates_data(struct osc_read_server_certificates_ar
 
 int osc_read_server_certificates(struct osc_env *e, struct osc_str *out, struct osc_read_server_certificates_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -25252,7 +25310,7 @@ int osc_read_server_certificates(struct osc_env *e, struct osc_str *out, struct 
 	osc_init_str(&end_call);
 	r = read_server_certificates_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadServerCertificates");
@@ -25263,6 +25321,7 @@ int osc_read_server_certificates(struct osc_env *e, struct osc_str *out, struct 
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -25312,7 +25371,7 @@ static  int read_security_groups_data(struct osc_read_security_groups_arg *args,
 
 int osc_read_security_groups(struct osc_env *e, struct osc_str *out, struct osc_read_security_groups_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -25321,7 +25380,7 @@ int osc_read_security_groups(struct osc_env *e, struct osc_str *out, struct osc_
 	osc_init_str(&end_call);
 	r = read_security_groups_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadSecurityGroups");
@@ -25332,6 +25391,7 @@ int osc_read_security_groups(struct osc_env *e, struct osc_str *out, struct osc_
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -25372,7 +25432,7 @@ static  int read_secret_access_key_data(struct osc_read_secret_access_key_arg *a
 
 int osc_read_secret_access_key(struct osc_env *e, struct osc_str *out, struct osc_read_secret_access_key_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -25381,7 +25441,7 @@ int osc_read_secret_access_key(struct osc_env *e, struct osc_str *out, struct os
 	osc_init_str(&end_call);
 	r = read_secret_access_key_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadSecretAccessKey");
@@ -25392,6 +25452,7 @@ int osc_read_secret_access_key(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -25441,7 +25502,7 @@ static  int read_route_tables_data(struct osc_read_route_tables_arg *args, struc
 
 int osc_read_route_tables(struct osc_env *e, struct osc_str *out, struct osc_read_route_tables_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -25450,7 +25511,7 @@ int osc_read_route_tables(struct osc_env *e, struct osc_str *out, struct osc_rea
 	osc_init_str(&end_call);
 	r = read_route_tables_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadRouteTables");
@@ -25461,6 +25522,7 @@ int osc_read_route_tables(struct osc_env *e, struct osc_str *out, struct osc_rea
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -25489,7 +25551,7 @@ static  int read_regions_data(struct osc_read_regions_arg *args, struct osc_str 
 
 int osc_read_regions(struct osc_env *e, struct osc_str *out, struct osc_read_regions_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -25498,7 +25560,7 @@ int osc_read_regions(struct osc_env *e, struct osc_str *out, struct osc_read_reg
 	osc_init_str(&end_call);
 	r = read_regions_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadRegions");
@@ -25509,6 +25571,7 @@ int osc_read_regions(struct osc_env *e, struct osc_str *out, struct osc_read_reg
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -25558,7 +25621,7 @@ static  int read_quotas_data(struct osc_read_quotas_arg *args, struct osc_str *d
 
 int osc_read_quotas(struct osc_env *e, struct osc_str *out, struct osc_read_quotas_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -25567,7 +25630,7 @@ int osc_read_quotas(struct osc_env *e, struct osc_str *out, struct osc_read_quot
 	osc_init_str(&end_call);
 	r = read_quotas_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadQuotas");
@@ -25578,6 +25641,7 @@ int osc_read_quotas(struct osc_env *e, struct osc_str *out, struct osc_read_quot
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -25627,7 +25691,7 @@ static  int read_public_ips_data(struct osc_read_public_ips_arg *args, struct os
 
 int osc_read_public_ips(struct osc_env *e, struct osc_str *out, struct osc_read_public_ips_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -25636,7 +25700,7 @@ int osc_read_public_ips(struct osc_env *e, struct osc_str *out, struct osc_read_
 	osc_init_str(&end_call);
 	r = read_public_ips_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadPublicIps");
@@ -25647,6 +25711,7 @@ int osc_read_public_ips(struct osc_env *e, struct osc_str *out, struct osc_read_
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -25675,7 +25740,7 @@ static  int read_public_ip_ranges_data(struct osc_read_public_ip_ranges_arg *arg
 
 int osc_read_public_ip_ranges(struct osc_env *e, struct osc_str *out, struct osc_read_public_ip_ranges_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -25684,7 +25749,7 @@ int osc_read_public_ip_ranges(struct osc_env *e, struct osc_str *out, struct osc
 	osc_init_str(&end_call);
 	r = read_public_ip_ranges_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadPublicIpRanges");
@@ -25695,6 +25760,7 @@ int osc_read_public_ip_ranges(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -25723,7 +25789,7 @@ static  int read_public_catalog_data(struct osc_read_public_catalog_arg *args, s
 
 int osc_read_public_catalog(struct osc_env *e, struct osc_str *out, struct osc_read_public_catalog_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -25732,7 +25798,7 @@ int osc_read_public_catalog(struct osc_env *e, struct osc_str *out, struct osc_r
 	osc_init_str(&end_call);
 	r = read_public_catalog_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadPublicCatalog");
@@ -25743,6 +25809,7 @@ int osc_read_public_catalog(struct osc_env *e, struct osc_str *out, struct osc_r
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -25792,7 +25859,7 @@ static  int read_product_types_data(struct osc_read_product_types_arg *args, str
 
 int osc_read_product_types(struct osc_env *e, struct osc_str *out, struct osc_read_product_types_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -25801,7 +25868,7 @@ int osc_read_product_types(struct osc_env *e, struct osc_str *out, struct osc_re
 	osc_init_str(&end_call);
 	r = read_product_types_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadProductTypes");
@@ -25812,6 +25879,7 @@ int osc_read_product_types(struct osc_env *e, struct osc_str *out, struct osc_re
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -25861,7 +25929,7 @@ static  int read_nics_data(struct osc_read_nics_arg *args, struct osc_str *data)
 
 int osc_read_nics(struct osc_env *e, struct osc_str *out, struct osc_read_nics_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -25870,7 +25938,7 @@ int osc_read_nics(struct osc_env *e, struct osc_str *out, struct osc_read_nics_a
 	osc_init_str(&end_call);
 	r = read_nics_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadNics");
@@ -25881,6 +25949,7 @@ int osc_read_nics(struct osc_env *e, struct osc_str *out, struct osc_read_nics_a
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -25930,7 +25999,7 @@ static  int read_nets_data(struct osc_read_nets_arg *args, struct osc_str *data)
 
 int osc_read_nets(struct osc_env *e, struct osc_str *out, struct osc_read_nets_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -25939,7 +26008,7 @@ int osc_read_nets(struct osc_env *e, struct osc_str *out, struct osc_read_nets_a
 	osc_init_str(&end_call);
 	r = read_nets_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadNets");
@@ -25950,6 +26019,7 @@ int osc_read_nets(struct osc_env *e, struct osc_str *out, struct osc_read_nets_a
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -25999,7 +26069,7 @@ static  int read_net_peerings_data(struct osc_read_net_peerings_arg *args, struc
 
 int osc_read_net_peerings(struct osc_env *e, struct osc_str *out, struct osc_read_net_peerings_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -26008,7 +26078,7 @@ int osc_read_net_peerings(struct osc_env *e, struct osc_str *out, struct osc_rea
 	osc_init_str(&end_call);
 	r = read_net_peerings_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadNetPeerings");
@@ -26019,6 +26089,7 @@ int osc_read_net_peerings(struct osc_env *e, struct osc_str *out, struct osc_rea
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -26068,7 +26139,7 @@ static  int read_net_access_points_data(struct osc_read_net_access_points_arg *a
 
 int osc_read_net_access_points(struct osc_env *e, struct osc_str *out, struct osc_read_net_access_points_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -26077,7 +26148,7 @@ int osc_read_net_access_points(struct osc_env *e, struct osc_str *out, struct os
 	osc_init_str(&end_call);
 	r = read_net_access_points_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadNetAccessPoints");
@@ -26088,6 +26159,7 @@ int osc_read_net_access_points(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -26137,7 +26209,7 @@ static  int read_net_access_point_services_data(struct osc_read_net_access_point
 
 int osc_read_net_access_point_services(struct osc_env *e, struct osc_str *out, struct osc_read_net_access_point_services_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -26146,7 +26218,7 @@ int osc_read_net_access_point_services(struct osc_env *e, struct osc_str *out, s
 	osc_init_str(&end_call);
 	r = read_net_access_point_services_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadNetAccessPointServices");
@@ -26157,6 +26229,7 @@ int osc_read_net_access_point_services(struct osc_env *e, struct osc_str *out, s
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -26206,7 +26279,7 @@ static  int read_nat_services_data(struct osc_read_nat_services_arg *args, struc
 
 int osc_read_nat_services(struct osc_env *e, struct osc_str *out, struct osc_read_nat_services_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -26215,7 +26288,7 @@ int osc_read_nat_services(struct osc_env *e, struct osc_str *out, struct osc_rea
 	osc_init_str(&end_call);
 	r = read_nat_services_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadNatServices");
@@ -26226,6 +26299,7 @@ int osc_read_nat_services(struct osc_env *e, struct osc_str *out, struct osc_rea
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -26254,7 +26328,7 @@ static  int read_locations_data(struct osc_read_locations_arg *args, struct osc_
 
 int osc_read_locations(struct osc_env *e, struct osc_str *out, struct osc_read_locations_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -26263,7 +26337,7 @@ int osc_read_locations(struct osc_env *e, struct osc_str *out, struct osc_read_l
 	osc_init_str(&end_call);
 	r = read_locations_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadLocations");
@@ -26274,6 +26348,7 @@ int osc_read_locations(struct osc_env *e, struct osc_str *out, struct osc_read_l
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -26323,7 +26398,7 @@ static  int read_load_balancers_data(struct osc_read_load_balancers_arg *args, s
 
 int osc_read_load_balancers(struct osc_env *e, struct osc_str *out, struct osc_read_load_balancers_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -26332,7 +26407,7 @@ int osc_read_load_balancers(struct osc_env *e, struct osc_str *out, struct osc_r
 	osc_init_str(&end_call);
 	r = read_load_balancers_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadLoadBalancers");
@@ -26343,6 +26418,7 @@ int osc_read_load_balancers(struct osc_env *e, struct osc_str *out, struct osc_r
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -26403,7 +26479,7 @@ static  int read_load_balancer_tags_data(struct osc_read_load_balancer_tags_arg 
 
 int osc_read_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct osc_read_load_balancer_tags_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -26412,7 +26488,7 @@ int osc_read_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct o
 	osc_init_str(&end_call);
 	r = read_load_balancer_tags_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadLoadBalancerTags");
@@ -26423,6 +26499,7 @@ int osc_read_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct o
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -26472,7 +26549,7 @@ static  int read_listener_rules_data(struct osc_read_listener_rules_arg *args, s
 
 int osc_read_listener_rules(struct osc_env *e, struct osc_str *out, struct osc_read_listener_rules_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -26481,7 +26558,7 @@ int osc_read_listener_rules(struct osc_env *e, struct osc_str *out, struct osc_r
 	osc_init_str(&end_call);
 	r = read_listener_rules_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadListenerRules");
@@ -26492,6 +26569,7 @@ int osc_read_listener_rules(struct osc_env *e, struct osc_str *out, struct osc_r
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -26541,7 +26619,7 @@ static  int read_keypairs_data(struct osc_read_keypairs_arg *args, struct osc_st
 
 int osc_read_keypairs(struct osc_env *e, struct osc_str *out, struct osc_read_keypairs_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -26550,7 +26628,7 @@ int osc_read_keypairs(struct osc_env *e, struct osc_str *out, struct osc_read_ke
 	osc_init_str(&end_call);
 	r = read_keypairs_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadKeypairs");
@@ -26561,6 +26639,7 @@ int osc_read_keypairs(struct osc_env *e, struct osc_str *out, struct osc_read_ke
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -26610,7 +26689,7 @@ static  int read_internet_services_data(struct osc_read_internet_services_arg *a
 
 int osc_read_internet_services(struct osc_env *e, struct osc_str *out, struct osc_read_internet_services_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -26619,7 +26698,7 @@ int osc_read_internet_services(struct osc_env *e, struct osc_str *out, struct os
 	osc_init_str(&end_call);
 	r = read_internet_services_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadInternetServices");
@@ -26630,6 +26709,7 @@ int osc_read_internet_services(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -26679,7 +26759,7 @@ static  int read_images_data(struct osc_read_images_arg *args, struct osc_str *d
 
 int osc_read_images(struct osc_env *e, struct osc_str *out, struct osc_read_images_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -26688,7 +26768,7 @@ int osc_read_images(struct osc_env *e, struct osc_str *out, struct osc_read_imag
 	osc_init_str(&end_call);
 	r = read_images_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadImages");
@@ -26699,6 +26779,7 @@ int osc_read_images(struct osc_env *e, struct osc_str *out, struct osc_read_imag
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -26748,7 +26829,7 @@ static  int read_image_export_tasks_data(struct osc_read_image_export_tasks_arg 
 
 int osc_read_image_export_tasks(struct osc_env *e, struct osc_str *out, struct osc_read_image_export_tasks_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -26757,7 +26838,7 @@ int osc_read_image_export_tasks(struct osc_env *e, struct osc_str *out, struct o
 	osc_init_str(&end_call);
 	r = read_image_export_tasks_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadImageExportTasks");
@@ -26768,6 +26849,7 @@ int osc_read_image_export_tasks(struct osc_env *e, struct osc_str *out, struct o
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -26817,7 +26899,7 @@ static  int read_flexible_gpus_data(struct osc_read_flexible_gpus_arg *args, str
 
 int osc_read_flexible_gpus(struct osc_env *e, struct osc_str *out, struct osc_read_flexible_gpus_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -26826,7 +26908,7 @@ int osc_read_flexible_gpus(struct osc_env *e, struct osc_str *out, struct osc_re
 	osc_init_str(&end_call);
 	r = read_flexible_gpus_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadFlexibleGpus");
@@ -26837,6 +26919,7 @@ int osc_read_flexible_gpus(struct osc_env *e, struct osc_str *out, struct osc_re
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -26865,7 +26948,7 @@ static  int read_flexible_gpu_catalog_data(struct osc_read_flexible_gpu_catalog_
 
 int osc_read_flexible_gpu_catalog(struct osc_env *e, struct osc_str *out, struct osc_read_flexible_gpu_catalog_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -26874,7 +26957,7 @@ int osc_read_flexible_gpu_catalog(struct osc_env *e, struct osc_str *out, struct
 	osc_init_str(&end_call);
 	r = read_flexible_gpu_catalog_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadFlexibleGpuCatalog");
@@ -26885,6 +26968,7 @@ int osc_read_flexible_gpu_catalog(struct osc_env *e, struct osc_str *out, struct
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -26934,7 +27018,7 @@ static  int read_direct_links_data(struct osc_read_direct_links_arg *args, struc
 
 int osc_read_direct_links(struct osc_env *e, struct osc_str *out, struct osc_read_direct_links_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -26943,7 +27027,7 @@ int osc_read_direct_links(struct osc_env *e, struct osc_str *out, struct osc_rea
 	osc_init_str(&end_call);
 	r = read_direct_links_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadDirectLinks");
@@ -26954,6 +27038,7 @@ int osc_read_direct_links(struct osc_env *e, struct osc_str *out, struct osc_rea
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -27003,7 +27088,7 @@ static  int read_direct_link_interfaces_data(struct osc_read_direct_link_interfa
 
 int osc_read_direct_link_interfaces(struct osc_env *e, struct osc_str *out, struct osc_read_direct_link_interfaces_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -27012,7 +27097,7 @@ int osc_read_direct_link_interfaces(struct osc_env *e, struct osc_str *out, stru
 	osc_init_str(&end_call);
 	r = read_direct_link_interfaces_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadDirectLinkInterfaces");
@@ -27023,6 +27108,7 @@ int osc_read_direct_link_interfaces(struct osc_env *e, struct osc_str *out, stru
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -27072,7 +27158,7 @@ static  int read_dhcp_options_data(struct osc_read_dhcp_options_arg *args, struc
 
 int osc_read_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_read_dhcp_options_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -27081,7 +27167,7 @@ int osc_read_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_rea
 	osc_init_str(&end_call);
 	r = read_dhcp_options_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadDhcpOptions");
@@ -27092,6 +27178,7 @@ int osc_read_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_rea
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -27154,7 +27241,7 @@ static  int read_consumption_account_data(struct osc_read_consumption_account_ar
 
 int osc_read_consumption_account(struct osc_env *e, struct osc_str *out, struct osc_read_consumption_account_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -27163,7 +27250,7 @@ int osc_read_consumption_account(struct osc_env *e, struct osc_str *out, struct 
 	osc_init_str(&end_call);
 	r = read_consumption_account_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadConsumptionAccount");
@@ -27174,6 +27261,7 @@ int osc_read_consumption_account(struct osc_env *e, struct osc_str *out, struct 
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -27214,7 +27302,7 @@ static  int read_console_output_data(struct osc_read_console_output_arg *args, s
 
 int osc_read_console_output(struct osc_env *e, struct osc_str *out, struct osc_read_console_output_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -27223,7 +27311,7 @@ int osc_read_console_output(struct osc_env *e, struct osc_str *out, struct osc_r
 	osc_init_str(&end_call);
 	r = read_console_output_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadConsoleOutput");
@@ -27234,6 +27322,7 @@ int osc_read_console_output(struct osc_env *e, struct osc_str *out, struct osc_r
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -27283,7 +27372,7 @@ static  int read_client_gateways_data(struct osc_read_client_gateways_arg *args,
 
 int osc_read_client_gateways(struct osc_env *e, struct osc_str *out, struct osc_read_client_gateways_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -27292,7 +27381,7 @@ int osc_read_client_gateways(struct osc_env *e, struct osc_str *out, struct osc_
 	osc_init_str(&end_call);
 	r = read_client_gateways_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadClientGateways");
@@ -27303,6 +27392,7 @@ int osc_read_client_gateways(struct osc_env *e, struct osc_str *out, struct osc_
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -27331,7 +27421,7 @@ static  int read_catalog_data(struct osc_read_catalog_arg *args, struct osc_str 
 
 int osc_read_catalog(struct osc_env *e, struct osc_str *out, struct osc_read_catalog_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -27340,7 +27430,7 @@ int osc_read_catalog(struct osc_env *e, struct osc_str *out, struct osc_read_cat
 	osc_init_str(&end_call);
 	r = read_catalog_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadCatalog");
@@ -27351,6 +27441,7 @@ int osc_read_catalog(struct osc_env *e, struct osc_str *out, struct osc_read_cat
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -27400,7 +27491,7 @@ static  int read_cas_data(struct osc_read_cas_arg *args, struct osc_str *data)
 
 int osc_read_cas(struct osc_env *e, struct osc_str *out, struct osc_read_cas_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -27409,7 +27500,7 @@ int osc_read_cas(struct osc_env *e, struct osc_str *out, struct osc_read_cas_arg
 	osc_init_str(&end_call);
 	r = read_cas_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadCas");
@@ -27420,6 +27511,7 @@ int osc_read_cas(struct osc_env *e, struct osc_str *out, struct osc_read_cas_arg
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -27512,7 +27604,7 @@ static  int read_api_logs_data(struct osc_read_api_logs_arg *args, struct osc_st
 
 int osc_read_api_logs(struct osc_env *e, struct osc_str *out, struct osc_read_api_logs_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -27521,7 +27613,7 @@ int osc_read_api_logs(struct osc_env *e, struct osc_str *out, struct osc_read_ap
 	osc_init_str(&end_call);
 	r = read_api_logs_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadApiLogs");
@@ -27532,6 +27624,7 @@ int osc_read_api_logs(struct osc_env *e, struct osc_str *out, struct osc_read_ap
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -27581,7 +27674,7 @@ static  int read_api_access_rules_data(struct osc_read_api_access_rules_arg *arg
 
 int osc_read_api_access_rules(struct osc_env *e, struct osc_str *out, struct osc_read_api_access_rules_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -27590,7 +27683,7 @@ int osc_read_api_access_rules(struct osc_env *e, struct osc_str *out, struct osc
 	osc_init_str(&end_call);
 	r = read_api_access_rules_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadApiAccessRules");
@@ -27601,6 +27694,7 @@ int osc_read_api_access_rules(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -27629,7 +27723,7 @@ static  int read_api_access_policy_data(struct osc_read_api_access_policy_arg *a
 
 int osc_read_api_access_policy(struct osc_env *e, struct osc_str *out, struct osc_read_api_access_policy_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -27638,7 +27732,7 @@ int osc_read_api_access_policy(struct osc_env *e, struct osc_str *out, struct os
 	osc_init_str(&end_call);
 	r = read_api_access_policy_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadApiAccessPolicy");
@@ -27649,6 +27743,7 @@ int osc_read_api_access_policy(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -27689,7 +27784,7 @@ static  int read_admin_password_data(struct osc_read_admin_password_arg *args, s
 
 int osc_read_admin_password(struct osc_env *e, struct osc_str *out, struct osc_read_admin_password_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -27698,7 +27793,7 @@ int osc_read_admin_password(struct osc_env *e, struct osc_str *out, struct osc_r
 	osc_init_str(&end_call);
 	r = read_admin_password_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadAdminPassword");
@@ -27709,6 +27804,7 @@ int osc_read_admin_password(struct osc_env *e, struct osc_str *out, struct osc_r
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -27737,7 +27833,7 @@ static  int read_accounts_data(struct osc_read_accounts_arg *args, struct osc_st
 
 int osc_read_accounts(struct osc_env *e, struct osc_str *out, struct osc_read_accounts_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -27746,7 +27842,7 @@ int osc_read_accounts(struct osc_env *e, struct osc_str *out, struct osc_read_ac
 	osc_init_str(&end_call);
 	r = read_accounts_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadAccounts");
@@ -27757,6 +27853,7 @@ int osc_read_accounts(struct osc_env *e, struct osc_str *out, struct osc_read_ac
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -27806,7 +27903,7 @@ static  int read_access_keys_data(struct osc_read_access_keys_arg *args, struct 
 
 int osc_read_access_keys(struct osc_env *e, struct osc_str *out, struct osc_read_access_keys_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -27815,7 +27912,7 @@ int osc_read_access_keys(struct osc_env *e, struct osc_str *out, struct osc_read
 	osc_init_str(&end_call);
 	r = read_access_keys_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadAccessKeys");
@@ -27826,6 +27923,7 @@ int osc_read_access_keys(struct osc_env *e, struct osc_str *out, struct osc_read
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -27890,7 +27988,7 @@ static  int link_volume_data(struct osc_link_volume_arg *args, struct osc_str *d
 
 int osc_link_volume(struct osc_env *e, struct osc_str *out, struct osc_link_volume_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -27899,7 +27997,7 @@ int osc_link_volume(struct osc_env *e, struct osc_str *out, struct osc_link_volu
 	osc_init_str(&end_call);
 	r = link_volume_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/LinkVolume");
@@ -27910,6 +28008,7 @@ int osc_link_volume(struct osc_env *e, struct osc_str *out, struct osc_link_volu
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -27962,7 +28061,7 @@ static  int link_virtual_gateway_data(struct osc_link_virtual_gateway_arg *args,
 
 int osc_link_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_link_virtual_gateway_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -27971,7 +28070,7 @@ int osc_link_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_
 	osc_init_str(&end_call);
 	r = link_virtual_gateway_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/LinkVirtualGateway");
@@ -27982,6 +28081,7 @@ int osc_link_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -28034,7 +28134,7 @@ static  int link_route_table_data(struct osc_link_route_table_arg *args, struct 
 
 int osc_link_route_table(struct osc_env *e, struct osc_str *out, struct osc_link_route_table_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -28043,7 +28143,7 @@ int osc_link_route_table(struct osc_env *e, struct osc_str *out, struct osc_link
 	osc_init_str(&end_call);
 	r = link_route_table_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/LinkRouteTable");
@@ -28054,6 +28154,7 @@ int osc_link_route_table(struct osc_env *e, struct osc_str *out, struct osc_link
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -28152,7 +28253,7 @@ static  int link_public_ip_data(struct osc_link_public_ip_arg *args, struct osc_
 
 int osc_link_public_ip(struct osc_env *e, struct osc_str *out, struct osc_link_public_ip_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -28161,7 +28262,7 @@ int osc_link_public_ip(struct osc_env *e, struct osc_str *out, struct osc_link_p
 	osc_init_str(&end_call);
 	r = link_public_ip_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/LinkPublicIp");
@@ -28172,6 +28273,7 @@ int osc_link_public_ip(struct osc_env *e, struct osc_str *out, struct osc_link_p
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -28264,7 +28366,7 @@ static  int link_private_ips_data(struct osc_link_private_ips_arg *args, struct 
 
 int osc_link_private_ips(struct osc_env *e, struct osc_str *out, struct osc_link_private_ips_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -28273,7 +28375,7 @@ int osc_link_private_ips(struct osc_env *e, struct osc_str *out, struct osc_link
 	osc_init_str(&end_call);
 	r = link_private_ips_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/LinkPrivateIps");
@@ -28284,6 +28386,7 @@ int osc_link_private_ips(struct osc_env *e, struct osc_str *out, struct osc_link
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -28346,7 +28449,7 @@ static  int link_nic_data(struct osc_link_nic_arg *args, struct osc_str *data)
 
 int osc_link_nic(struct osc_env *e, struct osc_str *out, struct osc_link_nic_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -28355,7 +28458,7 @@ int osc_link_nic(struct osc_env *e, struct osc_str *out, struct osc_link_nic_arg
 	osc_init_str(&end_call);
 	r = link_nic_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/LinkNic");
@@ -28366,6 +28469,7 @@ int osc_link_nic(struct osc_env *e, struct osc_str *out, struct osc_link_nic_arg
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -28470,7 +28574,7 @@ static  int link_load_balancer_backend_machines_data(struct osc_link_load_balanc
 
 int osc_link_load_balancer_backend_machines(struct osc_env *e, struct osc_str *out, struct osc_link_load_balancer_backend_machines_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -28479,7 +28583,7 @@ int osc_link_load_balancer_backend_machines(struct osc_env *e, struct osc_str *o
 	osc_init_str(&end_call);
 	r = link_load_balancer_backend_machines_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/LinkLoadBalancerBackendMachines");
@@ -28490,6 +28594,7 @@ int osc_link_load_balancer_backend_machines(struct osc_env *e, struct osc_str *o
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -28542,7 +28647,7 @@ static  int link_internet_service_data(struct osc_link_internet_service_arg *arg
 
 int osc_link_internet_service(struct osc_env *e, struct osc_str *out, struct osc_link_internet_service_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -28551,7 +28656,7 @@ int osc_link_internet_service(struct osc_env *e, struct osc_str *out, struct osc
 	osc_init_str(&end_call);
 	r = link_internet_service_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/LinkInternetService");
@@ -28562,6 +28667,7 @@ int osc_link_internet_service(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -28614,7 +28720,7 @@ static  int link_flexible_gpu_data(struct osc_link_flexible_gpu_arg *args, struc
 
 int osc_link_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_link_flexible_gpu_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -28623,7 +28729,7 @@ int osc_link_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_lin
 	osc_init_str(&end_call);
 	r = link_flexible_gpu_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/LinkFlexibleGpu");
@@ -28634,6 +28740,7 @@ int osc_link_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_lin
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -28706,7 +28813,7 @@ static  int deregister_vms_in_load_balancer_data(struct osc_deregister_vms_in_lo
 
 int osc_deregister_vms_in_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_deregister_vms_in_load_balancer_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -28715,7 +28822,7 @@ int osc_deregister_vms_in_load_balancer(struct osc_env *e, struct osc_str *out, 
 	osc_init_str(&end_call);
 	r = deregister_vms_in_load_balancer_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeregisterVmsInLoadBalancer");
@@ -28726,6 +28833,7 @@ int osc_deregister_vms_in_load_balancer(struct osc_env *e, struct osc_str *out, 
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -28778,7 +28886,7 @@ static  int delete_vpn_connection_route_data(struct osc_delete_vpn_connection_ro
 
 int osc_delete_vpn_connection_route(struct osc_env *e, struct osc_str *out, struct osc_delete_vpn_connection_route_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -28787,7 +28895,7 @@ int osc_delete_vpn_connection_route(struct osc_env *e, struct osc_str *out, stru
 	osc_init_str(&end_call);
 	r = delete_vpn_connection_route_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteVpnConnectionRoute");
@@ -28798,6 +28906,7 @@ int osc_delete_vpn_connection_route(struct osc_env *e, struct osc_str *out, stru
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -28838,7 +28947,7 @@ static  int delete_vpn_connection_data(struct osc_delete_vpn_connection_arg *arg
 
 int osc_delete_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc_delete_vpn_connection_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -28847,7 +28956,7 @@ int osc_delete_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc
 	osc_init_str(&end_call);
 	r = delete_vpn_connection_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteVpnConnection");
@@ -28858,6 +28967,7 @@ int osc_delete_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -28898,7 +29008,7 @@ static  int delete_volume_data(struct osc_delete_volume_arg *args, struct osc_st
 
 int osc_delete_volume(struct osc_env *e, struct osc_str *out, struct osc_delete_volume_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -28907,7 +29017,7 @@ int osc_delete_volume(struct osc_env *e, struct osc_str *out, struct osc_delete_
 	osc_init_str(&end_call);
 	r = delete_volume_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteVolume");
@@ -28918,6 +29028,7 @@ int osc_delete_volume(struct osc_env *e, struct osc_str *out, struct osc_delete_
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -28978,7 +29089,7 @@ static  int delete_vms_data(struct osc_delete_vms_arg *args, struct osc_str *dat
 
 int osc_delete_vms(struct osc_env *e, struct osc_str *out, struct osc_delete_vms_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -28987,7 +29098,7 @@ int osc_delete_vms(struct osc_env *e, struct osc_str *out, struct osc_delete_vms
 	osc_init_str(&end_call);
 	r = delete_vms_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteVms");
@@ -28998,6 +29109,7 @@ int osc_delete_vms(struct osc_env *e, struct osc_str *out, struct osc_delete_vms
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -29038,7 +29150,7 @@ static  int delete_virtual_gateway_data(struct osc_delete_virtual_gateway_arg *a
 
 int osc_delete_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_delete_virtual_gateway_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -29047,7 +29159,7 @@ int osc_delete_virtual_gateway(struct osc_env *e, struct osc_str *out, struct os
 	osc_init_str(&end_call);
 	r = delete_virtual_gateway_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteVirtualGateway");
@@ -29058,6 +29170,7 @@ int osc_delete_virtual_gateway(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -29150,7 +29263,7 @@ static  int delete_tags_data(struct osc_delete_tags_arg *args, struct osc_str *d
 
 int osc_delete_tags(struct osc_env *e, struct osc_str *out, struct osc_delete_tags_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -29159,7 +29272,7 @@ int osc_delete_tags(struct osc_env *e, struct osc_str *out, struct osc_delete_ta
 	osc_init_str(&end_call);
 	r = delete_tags_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteTags");
@@ -29170,6 +29283,7 @@ int osc_delete_tags(struct osc_env *e, struct osc_str *out, struct osc_delete_ta
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -29210,7 +29324,7 @@ static  int delete_subnet_data(struct osc_delete_subnet_arg *args, struct osc_st
 
 int osc_delete_subnet(struct osc_env *e, struct osc_str *out, struct osc_delete_subnet_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -29219,7 +29333,7 @@ int osc_delete_subnet(struct osc_env *e, struct osc_str *out, struct osc_delete_
 	osc_init_str(&end_call);
 	r = delete_subnet_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteSubnet");
@@ -29230,6 +29344,7 @@ int osc_delete_subnet(struct osc_env *e, struct osc_str *out, struct osc_delete_
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -29270,7 +29385,7 @@ static  int delete_snapshot_data(struct osc_delete_snapshot_arg *args, struct os
 
 int osc_delete_snapshot(struct osc_env *e, struct osc_str *out, struct osc_delete_snapshot_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -29279,7 +29394,7 @@ int osc_delete_snapshot(struct osc_env *e, struct osc_str *out, struct osc_delet
 	osc_init_str(&end_call);
 	r = delete_snapshot_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteSnapshot");
@@ -29290,6 +29405,7 @@ int osc_delete_snapshot(struct osc_env *e, struct osc_str *out, struct osc_delet
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -29330,7 +29446,7 @@ static  int delete_server_certificate_data(struct osc_delete_server_certificate_
 
 int osc_delete_server_certificate(struct osc_env *e, struct osc_str *out, struct osc_delete_server_certificate_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -29339,7 +29455,7 @@ int osc_delete_server_certificate(struct osc_env *e, struct osc_str *out, struct
 	osc_init_str(&end_call);
 	r = delete_server_certificate_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteServerCertificate");
@@ -29350,6 +29466,7 @@ int osc_delete_server_certificate(struct osc_env *e, struct osc_str *out, struct
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -29502,7 +29619,7 @@ static  int delete_security_group_rule_data(struct osc_delete_security_group_rul
 
 int osc_delete_security_group_rule(struct osc_env *e, struct osc_str *out, struct osc_delete_security_group_rule_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -29511,7 +29628,7 @@ int osc_delete_security_group_rule(struct osc_env *e, struct osc_str *out, struc
 	osc_init_str(&end_call);
 	r = delete_security_group_rule_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteSecurityGroupRule");
@@ -29522,6 +29639,7 @@ int osc_delete_security_group_rule(struct osc_env *e, struct osc_str *out, struc
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -29574,7 +29692,7 @@ static  int delete_security_group_data(struct osc_delete_security_group_arg *arg
 
 int osc_delete_security_group(struct osc_env *e, struct osc_str *out, struct osc_delete_security_group_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -29583,7 +29701,7 @@ int osc_delete_security_group(struct osc_env *e, struct osc_str *out, struct osc
 	osc_init_str(&end_call);
 	r = delete_security_group_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteSecurityGroup");
@@ -29594,6 +29712,7 @@ int osc_delete_security_group(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -29634,7 +29753,7 @@ static  int delete_route_table_data(struct osc_delete_route_table_arg *args, str
 
 int osc_delete_route_table(struct osc_env *e, struct osc_str *out, struct osc_delete_route_table_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -29643,7 +29762,7 @@ int osc_delete_route_table(struct osc_env *e, struct osc_str *out, struct osc_de
 	osc_init_str(&end_call);
 	r = delete_route_table_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteRouteTable");
@@ -29654,6 +29773,7 @@ int osc_delete_route_table(struct osc_env *e, struct osc_str *out, struct osc_de
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -29706,7 +29826,7 @@ static  int delete_route_data(struct osc_delete_route_arg *args, struct osc_str 
 
 int osc_delete_route(struct osc_env *e, struct osc_str *out, struct osc_delete_route_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -29715,7 +29835,7 @@ int osc_delete_route(struct osc_env *e, struct osc_str *out, struct osc_delete_r
 	osc_init_str(&end_call);
 	r = delete_route_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteRoute");
@@ -29726,6 +29846,7 @@ int osc_delete_route(struct osc_env *e, struct osc_str *out, struct osc_delete_r
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -29778,7 +29899,7 @@ static  int delete_public_ip_data(struct osc_delete_public_ip_arg *args, struct 
 
 int osc_delete_public_ip(struct osc_env *e, struct osc_str *out, struct osc_delete_public_ip_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -29787,7 +29908,7 @@ int osc_delete_public_ip(struct osc_env *e, struct osc_str *out, struct osc_dele
 	osc_init_str(&end_call);
 	r = delete_public_ip_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeletePublicIp");
@@ -29798,6 +29919,7 @@ int osc_delete_public_ip(struct osc_env *e, struct osc_str *out, struct osc_dele
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -29838,7 +29960,7 @@ static  int delete_nic_data(struct osc_delete_nic_arg *args, struct osc_str *dat
 
 int osc_delete_nic(struct osc_env *e, struct osc_str *out, struct osc_delete_nic_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -29847,7 +29969,7 @@ int osc_delete_nic(struct osc_env *e, struct osc_str *out, struct osc_delete_nic
 	osc_init_str(&end_call);
 	r = delete_nic_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteNic");
@@ -29858,6 +29980,7 @@ int osc_delete_nic(struct osc_env *e, struct osc_str *out, struct osc_delete_nic
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -29898,7 +30021,7 @@ static  int delete_net_peering_data(struct osc_delete_net_peering_arg *args, str
 
 int osc_delete_net_peering(struct osc_env *e, struct osc_str *out, struct osc_delete_net_peering_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -29907,7 +30030,7 @@ int osc_delete_net_peering(struct osc_env *e, struct osc_str *out, struct osc_de
 	osc_init_str(&end_call);
 	r = delete_net_peering_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteNetPeering");
@@ -29918,6 +30041,7 @@ int osc_delete_net_peering(struct osc_env *e, struct osc_str *out, struct osc_de
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -29958,7 +30082,7 @@ static  int delete_net_access_point_data(struct osc_delete_net_access_point_arg 
 
 int osc_delete_net_access_point(struct osc_env *e, struct osc_str *out, struct osc_delete_net_access_point_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -29967,7 +30091,7 @@ int osc_delete_net_access_point(struct osc_env *e, struct osc_str *out, struct o
 	osc_init_str(&end_call);
 	r = delete_net_access_point_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteNetAccessPoint");
@@ -29978,6 +30102,7 @@ int osc_delete_net_access_point(struct osc_env *e, struct osc_str *out, struct o
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -30018,7 +30143,7 @@ static  int delete_net_data(struct osc_delete_net_arg *args, struct osc_str *dat
 
 int osc_delete_net(struct osc_env *e, struct osc_str *out, struct osc_delete_net_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -30027,7 +30152,7 @@ int osc_delete_net(struct osc_env *e, struct osc_str *out, struct osc_delete_net
 	osc_init_str(&end_call);
 	r = delete_net_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteNet");
@@ -30038,6 +30163,7 @@ int osc_delete_net(struct osc_env *e, struct osc_str *out, struct osc_delete_net
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -30078,7 +30204,7 @@ static  int delete_nat_service_data(struct osc_delete_nat_service_arg *args, str
 
 int osc_delete_nat_service(struct osc_env *e, struct osc_str *out, struct osc_delete_nat_service_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -30087,7 +30213,7 @@ int osc_delete_nat_service(struct osc_env *e, struct osc_str *out, struct osc_de
 	osc_init_str(&end_call);
 	r = delete_nat_service_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteNatService");
@@ -30098,6 +30224,7 @@ int osc_delete_nat_service(struct osc_env *e, struct osc_str *out, struct osc_de
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -30190,7 +30317,7 @@ static  int delete_load_balancer_tags_data(struct osc_delete_load_balancer_tags_
 
 int osc_delete_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct osc_delete_load_balancer_tags_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -30199,7 +30326,7 @@ int osc_delete_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct
 	osc_init_str(&end_call);
 	r = delete_load_balancer_tags_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteLoadBalancerTags");
@@ -30210,6 +30337,7 @@ int osc_delete_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -30262,7 +30390,7 @@ static  int delete_load_balancer_policy_data(struct osc_delete_load_balancer_pol
 
 int osc_delete_load_balancer_policy(struct osc_env *e, struct osc_str *out, struct osc_delete_load_balancer_policy_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -30271,7 +30399,7 @@ int osc_delete_load_balancer_policy(struct osc_env *e, struct osc_str *out, stru
 	osc_init_str(&end_call);
 	r = delete_load_balancer_policy_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteLoadBalancerPolicy");
@@ -30282,6 +30410,7 @@ int osc_delete_load_balancer_policy(struct osc_env *e, struct osc_str *out, stru
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -30350,7 +30479,7 @@ static  int delete_load_balancer_listeners_data(struct osc_delete_load_balancer_
 
 int osc_delete_load_balancer_listeners(struct osc_env *e, struct osc_str *out, struct osc_delete_load_balancer_listeners_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -30359,7 +30488,7 @@ int osc_delete_load_balancer_listeners(struct osc_env *e, struct osc_str *out, s
 	osc_init_str(&end_call);
 	r = delete_load_balancer_listeners_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteLoadBalancerListeners");
@@ -30370,6 +30499,7 @@ int osc_delete_load_balancer_listeners(struct osc_env *e, struct osc_str *out, s
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -30410,7 +30540,7 @@ static  int delete_load_balancer_data(struct osc_delete_load_balancer_arg *args,
 
 int osc_delete_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_delete_load_balancer_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -30419,7 +30549,7 @@ int osc_delete_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_
 	osc_init_str(&end_call);
 	r = delete_load_balancer_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteLoadBalancer");
@@ -30430,6 +30560,7 @@ int osc_delete_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -30470,7 +30601,7 @@ static  int delete_listener_rule_data(struct osc_delete_listener_rule_arg *args,
 
 int osc_delete_listener_rule(struct osc_env *e, struct osc_str *out, struct osc_delete_listener_rule_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -30479,7 +30610,7 @@ int osc_delete_listener_rule(struct osc_env *e, struct osc_str *out, struct osc_
 	osc_init_str(&end_call);
 	r = delete_listener_rule_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteListenerRule");
@@ -30490,6 +30621,7 @@ int osc_delete_listener_rule(struct osc_env *e, struct osc_str *out, struct osc_
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -30530,7 +30662,7 @@ static  int delete_keypair_data(struct osc_delete_keypair_arg *args, struct osc_
 
 int osc_delete_keypair(struct osc_env *e, struct osc_str *out, struct osc_delete_keypair_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -30539,7 +30671,7 @@ int osc_delete_keypair(struct osc_env *e, struct osc_str *out, struct osc_delete
 	osc_init_str(&end_call);
 	r = delete_keypair_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteKeypair");
@@ -30550,6 +30682,7 @@ int osc_delete_keypair(struct osc_env *e, struct osc_str *out, struct osc_delete
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -30590,7 +30723,7 @@ static  int delete_internet_service_data(struct osc_delete_internet_service_arg 
 
 int osc_delete_internet_service(struct osc_env *e, struct osc_str *out, struct osc_delete_internet_service_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -30599,7 +30732,7 @@ int osc_delete_internet_service(struct osc_env *e, struct osc_str *out, struct o
 	osc_init_str(&end_call);
 	r = delete_internet_service_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteInternetService");
@@ -30610,6 +30743,7 @@ int osc_delete_internet_service(struct osc_env *e, struct osc_str *out, struct o
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -30650,7 +30784,7 @@ static  int delete_image_data(struct osc_delete_image_arg *args, struct osc_str 
 
 int osc_delete_image(struct osc_env *e, struct osc_str *out, struct osc_delete_image_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -30659,7 +30793,7 @@ int osc_delete_image(struct osc_env *e, struct osc_str *out, struct osc_delete_i
 	osc_init_str(&end_call);
 	r = delete_image_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteImage");
@@ -30670,6 +30804,7 @@ int osc_delete_image(struct osc_env *e, struct osc_str *out, struct osc_delete_i
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -30710,7 +30845,7 @@ static  int delete_flexible_gpu_data(struct osc_delete_flexible_gpu_arg *args, s
 
 int osc_delete_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_delete_flexible_gpu_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -30719,7 +30854,7 @@ int osc_delete_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_d
 	osc_init_str(&end_call);
 	r = delete_flexible_gpu_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteFlexibleGpu");
@@ -30730,6 +30865,7 @@ int osc_delete_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_d
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -30770,7 +30906,7 @@ static  int delete_export_task_data(struct osc_delete_export_task_arg *args, str
 
 int osc_delete_export_task(struct osc_env *e, struct osc_str *out, struct osc_delete_export_task_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -30779,7 +30915,7 @@ int osc_delete_export_task(struct osc_env *e, struct osc_str *out, struct osc_de
 	osc_init_str(&end_call);
 	r = delete_export_task_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteExportTask");
@@ -30790,6 +30926,7 @@ int osc_delete_export_task(struct osc_env *e, struct osc_str *out, struct osc_de
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -30830,7 +30967,7 @@ static  int delete_direct_link_interface_data(struct osc_delete_direct_link_inte
 
 int osc_delete_direct_link_interface(struct osc_env *e, struct osc_str *out, struct osc_delete_direct_link_interface_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -30839,7 +30976,7 @@ int osc_delete_direct_link_interface(struct osc_env *e, struct osc_str *out, str
 	osc_init_str(&end_call);
 	r = delete_direct_link_interface_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteDirectLinkInterface");
@@ -30850,6 +30987,7 @@ int osc_delete_direct_link_interface(struct osc_env *e, struct osc_str *out, str
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -30890,7 +31028,7 @@ static  int delete_direct_link_data(struct osc_delete_direct_link_arg *args, str
 
 int osc_delete_direct_link(struct osc_env *e, struct osc_str *out, struct osc_delete_direct_link_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -30899,7 +31037,7 @@ int osc_delete_direct_link(struct osc_env *e, struct osc_str *out, struct osc_de
 	osc_init_str(&end_call);
 	r = delete_direct_link_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteDirectLink");
@@ -30910,6 +31048,7 @@ int osc_delete_direct_link(struct osc_env *e, struct osc_str *out, struct osc_de
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -30950,7 +31089,7 @@ static  int delete_dhcp_options_data(struct osc_delete_dhcp_options_arg *args, s
 
 int osc_delete_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_delete_dhcp_options_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -30959,7 +31098,7 @@ int osc_delete_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_d
 	osc_init_str(&end_call);
 	r = delete_dhcp_options_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteDhcpOptions");
@@ -30970,6 +31109,7 @@ int osc_delete_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_d
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -31010,7 +31150,7 @@ static  int delete_client_gateway_data(struct osc_delete_client_gateway_arg *arg
 
 int osc_delete_client_gateway(struct osc_env *e, struct osc_str *out, struct osc_delete_client_gateway_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -31019,7 +31159,7 @@ int osc_delete_client_gateway(struct osc_env *e, struct osc_str *out, struct osc
 	osc_init_str(&end_call);
 	r = delete_client_gateway_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteClientGateway");
@@ -31030,6 +31170,7 @@ int osc_delete_client_gateway(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -31070,7 +31211,7 @@ static  int delete_ca_data(struct osc_delete_ca_arg *args, struct osc_str *data)
 
 int osc_delete_ca(struct osc_env *e, struct osc_str *out, struct osc_delete_ca_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -31079,7 +31220,7 @@ int osc_delete_ca(struct osc_env *e, struct osc_str *out, struct osc_delete_ca_a
 	osc_init_str(&end_call);
 	r = delete_ca_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteCa");
@@ -31090,6 +31231,7 @@ int osc_delete_ca(struct osc_env *e, struct osc_str *out, struct osc_delete_ca_a
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -31130,7 +31272,7 @@ static  int delete_api_access_rule_data(struct osc_delete_api_access_rule_arg *a
 
 int osc_delete_api_access_rule(struct osc_env *e, struct osc_str *out, struct osc_delete_api_access_rule_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -31139,7 +31281,7 @@ int osc_delete_api_access_rule(struct osc_env *e, struct osc_str *out, struct os
 	osc_init_str(&end_call);
 	r = delete_api_access_rule_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteApiAccessRule");
@@ -31150,6 +31292,7 @@ int osc_delete_api_access_rule(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -31190,7 +31333,7 @@ static  int delete_access_key_data(struct osc_delete_access_key_arg *args, struc
 
 int osc_delete_access_key(struct osc_env *e, struct osc_str *out, struct osc_delete_access_key_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -31199,7 +31342,7 @@ int osc_delete_access_key(struct osc_env *e, struct osc_str *out, struct osc_del
 	osc_init_str(&end_call);
 	r = delete_access_key_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteAccessKey");
@@ -31210,6 +31353,7 @@ int osc_delete_access_key(struct osc_env *e, struct osc_str *out, struct osc_del
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -31262,7 +31406,7 @@ static  int create_vpn_connection_route_data(struct osc_create_vpn_connection_ro
 
 int osc_create_vpn_connection_route(struct osc_env *e, struct osc_str *out, struct osc_create_vpn_connection_route_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -31271,7 +31415,7 @@ int osc_create_vpn_connection_route(struct osc_env *e, struct osc_str *out, stru
 	osc_init_str(&end_call);
 	r = create_vpn_connection_route_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateVpnConnectionRoute");
@@ -31282,6 +31426,7 @@ int osc_create_vpn_connection_route(struct osc_env *e, struct osc_str *out, stru
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -31356,7 +31501,7 @@ static  int create_vpn_connection_data(struct osc_create_vpn_connection_arg *arg
 
 int osc_create_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc_create_vpn_connection_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -31365,7 +31510,7 @@ int osc_create_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc
 	osc_init_str(&end_call);
 	r = create_vpn_connection_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateVpnConnection");
@@ -31376,6 +31521,7 @@ int osc_create_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -31460,7 +31606,7 @@ static  int create_volume_data(struct osc_create_volume_arg *args, struct osc_st
 
 int osc_create_volume(struct osc_env *e, struct osc_str *out, struct osc_create_volume_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -31469,7 +31615,7 @@ int osc_create_volume(struct osc_env *e, struct osc_str *out, struct osc_create_
 	osc_init_str(&end_call);
 	r = create_volume_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateVolume");
@@ -31480,6 +31626,7 @@ int osc_create_volume(struct osc_env *e, struct osc_str *out, struct osc_create_
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -31845,7 +31992,7 @@ static  int create_vms_data(struct osc_create_vms_arg *args, struct osc_str *dat
 
 int osc_create_vms(struct osc_env *e, struct osc_str *out, struct osc_create_vms_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -31854,7 +32001,7 @@ int osc_create_vms(struct osc_env *e, struct osc_str *out, struct osc_create_vms
 	osc_init_str(&end_call);
 	r = create_vms_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateVms");
@@ -31865,6 +32012,7 @@ int osc_create_vms(struct osc_env *e, struct osc_str *out, struct osc_create_vms
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -31905,7 +32053,7 @@ static  int create_virtual_gateway_data(struct osc_create_virtual_gateway_arg *a
 
 int osc_create_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_create_virtual_gateway_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -31914,7 +32062,7 @@ int osc_create_virtual_gateway(struct osc_env *e, struct osc_str *out, struct os
 	osc_init_str(&end_call);
 	r = create_virtual_gateway_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateVirtualGateway");
@@ -31925,6 +32073,7 @@ int osc_create_virtual_gateway(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -32017,7 +32166,7 @@ static  int create_tags_data(struct osc_create_tags_arg *args, struct osc_str *d
 
 int osc_create_tags(struct osc_env *e, struct osc_str *out, struct osc_create_tags_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -32026,7 +32175,7 @@ int osc_create_tags(struct osc_env *e, struct osc_str *out, struct osc_create_ta
 	osc_init_str(&end_call);
 	r = create_tags_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateTags");
@@ -32037,6 +32186,7 @@ int osc_create_tags(struct osc_env *e, struct osc_str *out, struct osc_create_ta
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -32101,7 +32251,7 @@ static  int create_subnet_data(struct osc_create_subnet_arg *args, struct osc_st
 
 int osc_create_subnet(struct osc_env *e, struct osc_str *out, struct osc_create_subnet_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -32110,7 +32260,7 @@ int osc_create_subnet(struct osc_env *e, struct osc_str *out, struct osc_create_
 	osc_init_str(&end_call);
 	r = create_subnet_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateSubnet");
@@ -32121,6 +32271,7 @@ int osc_create_subnet(struct osc_env *e, struct osc_str *out, struct osc_create_
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -32182,7 +32333,7 @@ static  int create_snapshot_export_task_data(struct osc_create_snapshot_export_t
 
 int osc_create_snapshot_export_task(struct osc_env *e, struct osc_str *out, struct osc_create_snapshot_export_task_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -32191,7 +32342,7 @@ int osc_create_snapshot_export_task(struct osc_env *e, struct osc_str *out, stru
 	osc_init_str(&end_call);
 	r = create_snapshot_export_task_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateSnapshotExportTask");
@@ -32202,6 +32353,7 @@ int osc_create_snapshot_export_task(struct osc_env *e, struct osc_str *out, stru
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -32300,7 +32452,7 @@ static  int create_snapshot_data(struct osc_create_snapshot_arg *args, struct os
 
 int osc_create_snapshot(struct osc_env *e, struct osc_str *out, struct osc_create_snapshot_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -32309,7 +32461,7 @@ int osc_create_snapshot(struct osc_env *e, struct osc_str *out, struct osc_creat
 	osc_init_str(&end_call);
 	r = create_snapshot_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateSnapshot");
@@ -32320,6 +32472,7 @@ int osc_create_snapshot(struct osc_env *e, struct osc_str *out, struct osc_creat
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -32408,7 +32561,7 @@ static  int create_server_certificate_data(struct osc_create_server_certificate_
 
 int osc_create_server_certificate(struct osc_env *e, struct osc_str *out, struct osc_create_server_certificate_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -32417,7 +32570,7 @@ int osc_create_server_certificate(struct osc_env *e, struct osc_str *out, struct
 	osc_init_str(&end_call);
 	r = create_server_certificate_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateServerCertificate");
@@ -32428,6 +32581,7 @@ int osc_create_server_certificate(struct osc_env *e, struct osc_str *out, struct
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -32580,7 +32734,7 @@ static  int create_security_group_rule_data(struct osc_create_security_group_rul
 
 int osc_create_security_group_rule(struct osc_env *e, struct osc_str *out, struct osc_create_security_group_rule_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -32589,7 +32743,7 @@ int osc_create_security_group_rule(struct osc_env *e, struct osc_str *out, struc
 	osc_init_str(&end_call);
 	r = create_security_group_rule_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateSecurityGroupRule");
@@ -32600,6 +32754,7 @@ int osc_create_security_group_rule(struct osc_env *e, struct osc_str *out, struc
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -32664,7 +32819,7 @@ static  int create_security_group_data(struct osc_create_security_group_arg *arg
 
 int osc_create_security_group(struct osc_env *e, struct osc_str *out, struct osc_create_security_group_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -32673,7 +32828,7 @@ int osc_create_security_group(struct osc_env *e, struct osc_str *out, struct osc
 	osc_init_str(&end_call);
 	r = create_security_group_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateSecurityGroup");
@@ -32684,6 +32839,7 @@ int osc_create_security_group(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -32724,7 +32880,7 @@ static  int create_route_table_data(struct osc_create_route_table_arg *args, str
 
 int osc_create_route_table(struct osc_env *e, struct osc_str *out, struct osc_create_route_table_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -32733,7 +32889,7 @@ int osc_create_route_table(struct osc_env *e, struct osc_str *out, struct osc_cr
 	osc_init_str(&end_call);
 	r = create_route_table_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateRouteTable");
@@ -32744,6 +32900,7 @@ int osc_create_route_table(struct osc_env *e, struct osc_str *out, struct osc_cr
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -32856,7 +33013,7 @@ static  int create_route_data(struct osc_create_route_arg *args, struct osc_str 
 
 int osc_create_route(struct osc_env *e, struct osc_str *out, struct osc_create_route_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -32865,7 +33022,7 @@ int osc_create_route(struct osc_env *e, struct osc_str *out, struct osc_create_r
 	osc_init_str(&end_call);
 	r = create_route_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateRoute");
@@ -32876,6 +33033,7 @@ int osc_create_route(struct osc_env *e, struct osc_str *out, struct osc_create_r
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -32904,7 +33062,7 @@ static  int create_public_ip_data(struct osc_create_public_ip_arg *args, struct 
 
 int osc_create_public_ip(struct osc_env *e, struct osc_str *out, struct osc_create_public_ip_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -32913,7 +33071,7 @@ int osc_create_public_ip(struct osc_env *e, struct osc_str *out, struct osc_crea
 	osc_init_str(&end_call);
 	r = create_public_ip_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreatePublicIp");
@@ -32924,6 +33082,7 @@ int osc_create_public_ip(struct osc_env *e, struct osc_str *out, struct osc_crea
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -33040,7 +33199,7 @@ static  int create_nic_data(struct osc_create_nic_arg *args, struct osc_str *dat
 
 int osc_create_nic(struct osc_env *e, struct osc_str *out, struct osc_create_nic_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -33049,7 +33208,7 @@ int osc_create_nic(struct osc_env *e, struct osc_str *out, struct osc_create_nic
 	osc_init_str(&end_call);
 	r = create_nic_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateNic");
@@ -33060,6 +33219,7 @@ int osc_create_nic(struct osc_env *e, struct osc_str *out, struct osc_create_nic
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -33112,7 +33272,7 @@ static  int create_net_peering_data(struct osc_create_net_peering_arg *args, str
 
 int osc_create_net_peering(struct osc_env *e, struct osc_str *out, struct osc_create_net_peering_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -33121,7 +33281,7 @@ int osc_create_net_peering(struct osc_env *e, struct osc_str *out, struct osc_cr
 	osc_init_str(&end_call);
 	r = create_net_peering_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateNetPeering");
@@ -33132,6 +33292,7 @@ int osc_create_net_peering(struct osc_env *e, struct osc_str *out, struct osc_cr
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -33216,7 +33377,7 @@ static  int create_net_access_point_data(struct osc_create_net_access_point_arg 
 
 int osc_create_net_access_point(struct osc_env *e, struct osc_str *out, struct osc_create_net_access_point_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -33225,7 +33386,7 @@ int osc_create_net_access_point(struct osc_env *e, struct osc_str *out, struct o
 	osc_init_str(&end_call);
 	r = create_net_access_point_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateNetAccessPoint");
@@ -33236,6 +33397,7 @@ int osc_create_net_access_point(struct osc_env *e, struct osc_str *out, struct o
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -33288,7 +33450,7 @@ static  int create_net_data(struct osc_create_net_arg *args, struct osc_str *dat
 
 int osc_create_net(struct osc_env *e, struct osc_str *out, struct osc_create_net_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -33297,7 +33459,7 @@ int osc_create_net(struct osc_env *e, struct osc_str *out, struct osc_create_net
 	osc_init_str(&end_call);
 	r = create_net_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateNet");
@@ -33308,6 +33470,7 @@ int osc_create_net(struct osc_env *e, struct osc_str *out, struct osc_create_net
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -33360,7 +33523,7 @@ static  int create_nat_service_data(struct osc_create_nat_service_arg *args, str
 
 int osc_create_nat_service(struct osc_env *e, struct osc_str *out, struct osc_create_nat_service_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -33369,7 +33532,7 @@ int osc_create_nat_service(struct osc_env *e, struct osc_str *out, struct osc_cr
 	osc_init_str(&end_call);
 	r = create_nat_service_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateNatService");
@@ -33380,6 +33543,7 @@ int osc_create_nat_service(struct osc_env *e, struct osc_str *out, struct osc_cr
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -33472,7 +33636,7 @@ static  int create_load_balancer_tags_data(struct osc_create_load_balancer_tags_
 
 int osc_create_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct osc_create_load_balancer_tags_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -33481,7 +33645,7 @@ int osc_create_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct
 	osc_init_str(&end_call);
 	r = create_load_balancer_tags_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateLoadBalancerTags");
@@ -33492,6 +33656,7 @@ int osc_create_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -33578,7 +33743,7 @@ static  int create_load_balancer_policy_data(struct osc_create_load_balancer_pol
 
 int osc_create_load_balancer_policy(struct osc_env *e, struct osc_str *out, struct osc_create_load_balancer_policy_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -33587,7 +33752,7 @@ int osc_create_load_balancer_policy(struct osc_env *e, struct osc_str *out, stru
 	osc_init_str(&end_call);
 	r = create_load_balancer_policy_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateLoadBalancerPolicy");
@@ -33598,6 +33763,7 @@ int osc_create_load_balancer_policy(struct osc_env *e, struct osc_str *out, stru
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -33670,7 +33836,7 @@ static  int create_load_balancer_listeners_data(struct osc_create_load_balancer_
 
 int osc_create_load_balancer_listeners(struct osc_env *e, struct osc_str *out, struct osc_create_load_balancer_listeners_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -33679,7 +33845,7 @@ int osc_create_load_balancer_listeners(struct osc_env *e, struct osc_str *out, s
 	osc_init_str(&end_call);
 	r = create_load_balancer_listeners_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateLoadBalancerListeners");
@@ -33690,6 +33856,7 @@ int osc_create_load_balancer_listeners(struct osc_env *e, struct osc_str *out, s
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -33914,7 +34081,7 @@ static  int create_load_balancer_data(struct osc_create_load_balancer_arg *args,
 
 int osc_create_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_create_load_balancer_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -33923,7 +34090,7 @@ int osc_create_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_
 	osc_init_str(&end_call);
 	r = create_load_balancer_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateLoadBalancer");
@@ -33934,6 +34101,7 @@ int osc_create_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -34036,7 +34204,7 @@ static  int create_listener_rule_data(struct osc_create_listener_rule_arg *args,
 
 int osc_create_listener_rule(struct osc_env *e, struct osc_str *out, struct osc_create_listener_rule_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -34045,7 +34213,7 @@ int osc_create_listener_rule(struct osc_env *e, struct osc_str *out, struct osc_
 	osc_init_str(&end_call);
 	r = create_listener_rule_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateListenerRule");
@@ -34056,6 +34224,7 @@ int osc_create_listener_rule(struct osc_env *e, struct osc_str *out, struct osc_
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -34108,7 +34277,7 @@ static  int create_keypair_data(struct osc_create_keypair_arg *args, struct osc_
 
 int osc_create_keypair(struct osc_env *e, struct osc_str *out, struct osc_create_keypair_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -34117,7 +34286,7 @@ int osc_create_keypair(struct osc_env *e, struct osc_str *out, struct osc_create
 	osc_init_str(&end_call);
 	r = create_keypair_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateKeypair");
@@ -34128,6 +34297,7 @@ int osc_create_keypair(struct osc_env *e, struct osc_str *out, struct osc_create
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -34156,7 +34326,7 @@ static  int create_internet_service_data(struct osc_create_internet_service_arg 
 
 int osc_create_internet_service(struct osc_env *e, struct osc_str *out, struct osc_create_internet_service_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -34165,7 +34335,7 @@ int osc_create_internet_service(struct osc_env *e, struct osc_str *out, struct o
 	osc_init_str(&end_call);
 	r = create_internet_service_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateInternetService");
@@ -34176,6 +34346,7 @@ int osc_create_internet_service(struct osc_env *e, struct osc_str *out, struct o
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -34237,7 +34408,7 @@ static  int create_image_export_task_data(struct osc_create_image_export_task_ar
 
 int osc_create_image_export_task(struct osc_env *e, struct osc_str *out, struct osc_create_image_export_task_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -34246,7 +34417,7 @@ int osc_create_image_export_task(struct osc_env *e, struct osc_str *out, struct 
 	osc_init_str(&end_call);
 	r = create_image_export_task_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateImageExportTask");
@@ -34257,6 +34428,7 @@ int osc_create_image_export_task(struct osc_env *e, struct osc_str *out, struct 
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -34423,7 +34595,7 @@ static  int create_image_data(struct osc_create_image_arg *args, struct osc_str 
 
 int osc_create_image(struct osc_env *e, struct osc_str *out, struct osc_create_image_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -34432,7 +34604,7 @@ int osc_create_image(struct osc_env *e, struct osc_str *out, struct osc_create_i
 	osc_init_str(&end_call);
 	r = create_image_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateImage");
@@ -34443,6 +34615,7 @@ int osc_create_image(struct osc_env *e, struct osc_str *out, struct osc_create_i
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -34517,7 +34690,7 @@ static  int create_flexible_gpu_data(struct osc_create_flexible_gpu_arg *args, s
 
 int osc_create_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_create_flexible_gpu_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -34526,7 +34699,7 @@ int osc_create_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_c
 	osc_init_str(&end_call);
 	r = create_flexible_gpu_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateFlexibleGpu");
@@ -34537,6 +34710,7 @@ int osc_create_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_c
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -34598,7 +34772,7 @@ static  int create_direct_link_interface_data(struct osc_create_direct_link_inte
 
 int osc_create_direct_link_interface(struct osc_env *e, struct osc_str *out, struct osc_create_direct_link_interface_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -34607,7 +34781,7 @@ int osc_create_direct_link_interface(struct osc_env *e, struct osc_str *out, str
 	osc_init_str(&end_call);
 	r = create_direct_link_interface_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateDirectLinkInterface");
@@ -34618,6 +34792,7 @@ int osc_create_direct_link_interface(struct osc_env *e, struct osc_str *out, str
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -34682,7 +34857,7 @@ static  int create_direct_link_data(struct osc_create_direct_link_arg *args, str
 
 int osc_create_direct_link(struct osc_env *e, struct osc_str *out, struct osc_create_direct_link_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -34691,7 +34866,7 @@ int osc_create_direct_link(struct osc_env *e, struct osc_str *out, struct osc_cr
 	osc_init_str(&end_call);
 	r = create_direct_link_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateDirectLink");
@@ -34702,6 +34877,7 @@ int osc_create_direct_link(struct osc_env *e, struct osc_str *out, struct osc_cr
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -34838,7 +35014,7 @@ static  int create_dhcp_options_data(struct osc_create_dhcp_options_arg *args, s
 
 int osc_create_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_create_dhcp_options_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -34847,7 +35023,7 @@ int osc_create_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_c
 	osc_init_str(&end_call);
 	r = create_dhcp_options_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateDhcpOptions");
@@ -34858,6 +35034,7 @@ int osc_create_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_c
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -34920,7 +35097,7 @@ static  int create_client_gateway_data(struct osc_create_client_gateway_arg *arg
 
 int osc_create_client_gateway(struct osc_env *e, struct osc_str *out, struct osc_create_client_gateway_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -34929,7 +35106,7 @@ int osc_create_client_gateway(struct osc_env *e, struct osc_str *out, struct osc
 	osc_init_str(&end_call);
 	r = create_client_gateway_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateClientGateway");
@@ -34940,6 +35117,7 @@ int osc_create_client_gateway(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -34992,7 +35170,7 @@ static  int create_ca_data(struct osc_create_ca_arg *args, struct osc_str *data)
 
 int osc_create_ca(struct osc_env *e, struct osc_str *out, struct osc_create_ca_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -35001,7 +35179,7 @@ int osc_create_ca(struct osc_env *e, struct osc_str *out, struct osc_create_ca_a
 	osc_init_str(&end_call);
 	r = create_ca_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateCa");
@@ -35012,6 +35190,7 @@ int osc_create_ca(struct osc_env *e, struct osc_str *out, struct osc_create_ca_a
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -35148,7 +35327,7 @@ static  int create_api_access_rule_data(struct osc_create_api_access_rule_arg *a
 
 int osc_create_api_access_rule(struct osc_env *e, struct osc_str *out, struct osc_create_api_access_rule_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -35157,7 +35336,7 @@ int osc_create_api_access_rule(struct osc_env *e, struct osc_str *out, struct os
 	osc_init_str(&end_call);
 	r = create_api_access_rule_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateApiAccessRule");
@@ -35168,6 +35347,7 @@ int osc_create_api_access_rule(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -35384,7 +35564,7 @@ static  int create_account_data(struct osc_create_account_arg *args, struct osc_
 
 int osc_create_account(struct osc_env *e, struct osc_str *out, struct osc_create_account_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -35393,7 +35573,7 @@ int osc_create_account(struct osc_env *e, struct osc_str *out, struct osc_create
 	osc_init_str(&end_call);
 	r = create_account_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateAccount");
@@ -35404,6 +35584,7 @@ int osc_create_account(struct osc_env *e, struct osc_str *out, struct osc_create
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -35444,7 +35625,7 @@ static  int create_access_key_data(struct osc_create_access_key_arg *args, struc
 
 int osc_create_access_key(struct osc_env *e, struct osc_str *out, struct osc_create_access_key_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -35453,7 +35634,7 @@ int osc_create_access_key(struct osc_env *e, struct osc_str *out, struct osc_cre
 	osc_init_str(&end_call);
 	r = create_access_key_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateAccessKey");
@@ -35464,6 +35645,7 @@ int osc_create_access_key(struct osc_env *e, struct osc_str *out, struct osc_cre
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -35516,7 +35698,7 @@ static  int check_authentication_data(struct osc_check_authentication_arg *args,
 
 int osc_check_authentication(struct osc_env *e, struct osc_str *out, struct osc_check_authentication_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -35525,7 +35707,7 @@ int osc_check_authentication(struct osc_env *e, struct osc_str *out, struct osc_
 	osc_init_str(&end_call);
 	r = check_authentication_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CheckAuthentication");
@@ -35536,6 +35718,7 @@ int osc_check_authentication(struct osc_env *e, struct osc_str *out, struct osc_
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;
@@ -35576,7 +35759,7 @@ static  int accept_net_peering_data(struct osc_accept_net_peering_arg *args, str
 
 int osc_accept_net_peering(struct osc_env *e, struct osc_str *out, struct osc_accept_net_peering_arg *args)
 {
-	CURLcode res;
+	CURLcode res = CURLE_OUT_OF_MEMORY;
 	struct osc_str data;
 	struct osc_str end_call;
 	int r;
@@ -35585,7 +35768,7 @@ int osc_accept_net_peering(struct osc_env *e, struct osc_str *out, struct osc_ac
 	osc_init_str(&end_call);
 	r = accept_net_peering_data(args, &data);
 	if (r < 0)
-		return -1;
+		goto out;
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/AcceptNetPeering");
@@ -35596,6 +35779,7 @@ int osc_accept_net_peering(struct osc_env *e, struct osc_str *out, struct osc_ac
 	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+out:
 	osc_deinit_str(&end_call);
 	osc_deinit_str(&data);
 	return res;

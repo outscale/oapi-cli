@@ -3,8 +3,12 @@ JSON_C_LDFLAGS=./json-c-build/libjson-c.a
 JSON_C_CFLAGS=-I./json-c -I./json-c-build
 JSON_C_RULE=./json-c-build/libjson-c.a
 CURL_LD=-lcurl
+OAPI_RULE_DEPEDENCIES=
 
 include COGNAC/oapi-cli.mk
+
+COGNAC/oapi-cli.mk:
+	git submodule update --init
 
 json-c/.git:
 	git clone https://github.com/cosmo-ray/json-c.git -b color
@@ -30,6 +34,8 @@ osc_sdk.c: COGNAC/main.c
 oapi-cli-completion.bash: COGNAC/main.c
 	cp COGNAC/oapi-cli-completion.bash .
 
+gen: main.c osc_sdk.h osc_sdk.c oapi-cli-completion.bash main-helper.h
+
 COGNAC/:
 	git submodule update --init
 
@@ -52,4 +58,4 @@ clean:
 test:
 	./tests.sh
 
-.PHONY: clean test clean_all
+.PHONY: clean test clean_all gen
