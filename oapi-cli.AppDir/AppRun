@@ -1,0 +1,18 @@
+#!/bin/bash
+
+for opt in "$@"; do
+    if [ "${opt}" == "--bash-completion" ]; then
+	cat "${APPDIR}/usr/bin/oapi-cli-completion.bash"
+        exit 0
+    fi
+done
+
+curl-config --ca > /dev/null
+RET=$?
+if [ $RET -eq 0 ]; then
+    export CURL_CA_BUNDLE=$(curl-config --ca)
+fi
+
+export COGNAC_HELP_APPEND="$(echo -en '\t--bash-completion\tprint bash completion(appimage only)\n\t--appimage-help\t\tappimage helps')"
+
+LD_LIBRARY_PATH=${APPDIR}/usr/lib/ "${APPDIR}/usr/bin/oapi-cli" "$@"

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=oapi-cli
+Exec=oapi-cli
+Comment=CLI-of Outscale Granting Net Accessible Calls
+Categories=Development;Network;
+Terminal=true
+Icon=appimage-logo
