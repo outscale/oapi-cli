@@ -30,13 +30,16 @@ struct ptr_array {
 #define SET_NEXT(a,v,pa) do {						\
 		int cnt;						\
 		if (!a) {						\
-			ptr_array_append(pa, a);			\
 			a = calloc(64, sizeof(v));			\
+			if (!a) break;					\
+			if (ptr_array_append(pa, a) < 0)		\
+				break;					\
 		}							\
 		for (cnt = 0; a[cnt]; ++cnt);				\
 		if (cnt && (cnt % 63) == 0) {				\
 			int idx = ptr_array_get_idx(pa, a);		\
 			pa->ptrs[idx] = realloc(a, (cnt + 1 + 64) * sizeof(v));	\
+			if (!pa->ptrs[idx]) { free(a); break; }		\
 			a = pa->ptrs[idx];				\
 			memset(a + cnt + 1, 0, 64 * sizeof(v));		\
 		}							\
@@ -46,10 +49,14 @@ struct ptr_array {
 static inline int ptr_array_append(struct ptr_array *pa, void *ptr)
 {
 	if (!(pa->l & 63)) { /* need grow up */
+		void *old = pa->ptrs;
+
 		pa->size += 64;
-		pa->ptrs = realloc(pa->ptrs, pa->size);
-		if (!pa->ptrs)
+		pa->ptrs = realloc(old, pa->size);
+		if (!pa->ptrs) {
+			free(old);
 			return -1;
+		}
 	}
 	pa->ptrs[pa->l++] = ptr;
 	return 0;

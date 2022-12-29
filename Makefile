@@ -55,7 +55,7 @@ fclean: clean
 clean:
 	rm -rvf *.o
 
-test:
+tests:
 	./tests.sh
 
 .PHONY: clean test clean_all gen

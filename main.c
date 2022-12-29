@@ -8169,15 +8169,15 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int main(int ac, char **av)
 {
-	struct osc_env e;
-	struct osc_str r;
+	auto_osc_env struct osc_env e;
+	auto_osc_str struct osc_str r;
 	int color_flag = 0;
 	int i;
 	char *help_appent = getenv("COGNAC_HELP_APPEND");
 	unsigned int flag = 0;
 	unsigned int program_flag = 0;
 	char *program_name = rindex(av[0], '/');
-	int ret = 0;
+	int ret = 1;
 
 	if (!program_name)
 		program_name = av[0];
@@ -8218,10 +8218,10 @@ int main(int ac, char **av)
 					puts(cd);
 					puts("Arguments Description:");
 					puts(cad);
-					return 0;
+					goto good;
 				} else {
 					printf("Unknow Call %s\n", av[i+1]);
-					return 1;
+					goto out;
 				}
 			}
 			goto show_help;
@@ -8332,6 +8332,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateVolume", av[i])) {
 		     json_object *jobj;
@@ -8423,6 +8424,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateVm", av[i])) {
 		     json_object *jobj;
@@ -8603,6 +8605,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateSubnet", av[i])) {
 		     json_object *jobj;
@@ -8690,6 +8693,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateSnapshot", av[i])) {
 		     json_object *jobj;
@@ -8783,6 +8787,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateServerCertificate", av[i])) {
 		     json_object *jobj;
@@ -8869,6 +8874,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateRoutePropagation", av[i])) {
 		     json_object *jobj;
@@ -8961,6 +8967,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateRoute", av[i])) {
 		     json_object *jobj;
@@ -9067,6 +9074,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateNic", av[i])) {
 		     json_object *jobj;
@@ -9172,6 +9180,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateNetAccessPoint", av[i])) {
 		     json_object *jobj;
@@ -9262,6 +9271,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateNet", av[i])) {
 		     json_object *jobj;
@@ -9343,6 +9353,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateLoadBalancer", av[i])) {
 		     json_object *jobj;
@@ -9493,6 +9504,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateListenerRule", av[i])) {
 		     json_object *jobj;
@@ -9579,6 +9591,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateImage", av[i])) {
 		     json_object *jobj;
@@ -9672,6 +9685,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateFlexibleGpu", av[i])) {
 		     json_object *jobj;
@@ -9759,6 +9773,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateDirectLinkInterface", av[i])) {
 		     json_object *jobj;
@@ -9840,6 +9855,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateCa", av[i])) {
 		     json_object *jobj;
@@ -9921,6 +9937,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateApiAccessRule", av[i])) {
 		     json_object *jobj;
@@ -10023,6 +10040,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateApiAccessPolicy", av[i])) {
 		     json_object *jobj;
@@ -10110,6 +10128,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateAccount", av[i])) {
 		     json_object *jobj;
@@ -10248,6 +10267,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateAccessKey", av[i])) {
 		     json_object *jobj;
@@ -10334,6 +10354,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UnlinkVolume", av[i])) {
 		     json_object *jobj;
@@ -10421,6 +10442,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UnlinkVirtualGateway", av[i])) {
 		     json_object *jobj;
@@ -10502,6 +10524,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UnlinkRouteTable", av[i])) {
 		     json_object *jobj;
@@ -10578,6 +10601,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UnlinkPublicIp", av[i])) {
 		     json_object *jobj;
@@ -10659,6 +10683,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UnlinkPrivateIps", av[i])) {
 		     json_object *jobj;
@@ -10742,6 +10767,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UnlinkNic", av[i])) {
 		     json_object *jobj;
@@ -10818,6 +10844,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UnlinkLoadBalancerBackendMachines", av[i])) {
 		     json_object *jobj;
@@ -10908,6 +10935,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UnlinkInternetService", av[i])) {
 		     json_object *jobj;
@@ -10989,6 +11017,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UnlinkFlexibleGpu", av[i])) {
 		     json_object *jobj;
@@ -11065,6 +11094,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("StopVms", av[i])) {
 		     json_object *jobj;
@@ -11154,6 +11184,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("StartVms", av[i])) {
 		     json_object *jobj;
@@ -11232,6 +11263,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("SendResetPasswordEmail", av[i])) {
 		     json_object *jobj;
@@ -11308,6 +11340,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ResetAccountPassword", av[i])) {
 		     json_object *jobj;
@@ -11389,6 +11422,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("RejectNetPeering", av[i])) {
 		     json_object *jobj;
@@ -11465,6 +11499,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("RegisterVmsInLoadBalancer", av[i])) {
 		     json_object *jobj;
@@ -11548,6 +11583,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("RebootVms", av[i])) {
 		     json_object *jobj;
@@ -11626,6 +11662,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadVpnConnections", av[i])) {
 		     json_object *jobj;
@@ -11714,6 +11751,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadVolumes", av[i])) {
 		     json_object *jobj;
@@ -11802,6 +11840,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadVmsState", av[i])) {
 		     json_object *jobj;
@@ -11901,6 +11940,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadVmsHealth", av[i])) {
 		     json_object *jobj;
@@ -11984,6 +12024,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadVms", av[i])) {
 		     json_object *jobj;
@@ -12072,6 +12113,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadVmTypes", av[i])) {
 		     json_object *jobj;
@@ -12160,6 +12202,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadVirtualGateways", av[i])) {
 		     json_object *jobj;
@@ -12248,6 +12291,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadTags", av[i])) {
 		     json_object *jobj;
@@ -12336,6 +12380,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadSubregions", av[i])) {
 		     json_object *jobj;
@@ -12424,6 +12469,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadSubnets", av[i])) {
 		     json_object *jobj;
@@ -12512,6 +12558,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadSnapshots", av[i])) {
 		     json_object *jobj;
@@ -12600,6 +12647,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadSnapshotExportTasks", av[i])) {
 		     json_object *jobj;
@@ -12688,6 +12736,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadServerCertificates", av[i])) {
 		     json_object *jobj;
@@ -12776,6 +12825,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadSecurityGroups", av[i])) {
 		     json_object *jobj;
@@ -12864,6 +12914,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadSecretAccessKey", av[i])) {
 		     json_object *jobj;
@@ -12940,6 +12991,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadRouteTables", av[i])) {
 		     json_object *jobj;
@@ -13028,6 +13080,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadRegions", av[i])) {
 		     json_object *jobj;
@@ -13099,6 +13152,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadQuotas", av[i])) {
 		     json_object *jobj;
@@ -13187,6 +13241,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadPublicIps", av[i])) {
 		     json_object *jobj;
@@ -13275,6 +13330,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadPublicIpRanges", av[i])) {
 		     json_object *jobj;
@@ -13346,6 +13402,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadPublicCatalog", av[i])) {
 		     json_object *jobj;
@@ -13417,6 +13474,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadProductTypes", av[i])) {
 		     json_object *jobj;
@@ -13505,6 +13563,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadNics", av[i])) {
 		     json_object *jobj;
@@ -13593,6 +13652,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadNets", av[i])) {
 		     json_object *jobj;
@@ -13681,6 +13741,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadNetPeerings", av[i])) {
 		     json_object *jobj;
@@ -13769,6 +13830,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadNetAccessPoints", av[i])) {
 		     json_object *jobj;
@@ -13857,6 +13919,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadNetAccessPointServices", av[i])) {
 		     json_object *jobj;
@@ -13945,6 +14008,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadNatServices", av[i])) {
 		     json_object *jobj;
@@ -14033,6 +14097,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadLocations", av[i])) {
 		     json_object *jobj;
@@ -14104,6 +14169,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadLoadBalancers", av[i])) {
 		     json_object *jobj;
@@ -14192,6 +14258,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadLoadBalancerTags", av[i])) {
 		     json_object *jobj;
@@ -14270,6 +14337,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadListenerRules", av[i])) {
 		     json_object *jobj;
@@ -14358,6 +14426,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadKeypairs", av[i])) {
 		     json_object *jobj;
@@ -14446,6 +14515,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadInternetServices", av[i])) {
 		     json_object *jobj;
@@ -14534,6 +14604,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadImages", av[i])) {
 		     json_object *jobj;
@@ -14622,6 +14693,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadImageExportTasks", av[i])) {
 		     json_object *jobj;
@@ -14710,6 +14782,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadFlexibleGpus", av[i])) {
 		     json_object *jobj;
@@ -14798,6 +14871,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadFlexibleGpuCatalog", av[i])) {
 		     json_object *jobj;
@@ -14869,6 +14943,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadDirectLinks", av[i])) {
 		     json_object *jobj;
@@ -14957,6 +15032,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadDirectLinkInterfaces", av[i])) {
 		     json_object *jobj;
@@ -15045,6 +15121,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadDhcpOptions", av[i])) {
 		     json_object *jobj;
@@ -15133,6 +15210,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadConsumptionAccount", av[i])) {
 		     json_object *jobj;
@@ -15225,6 +15303,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadConsoleOutput", av[i])) {
 		     json_object *jobj;
@@ -15301,6 +15380,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadClientGateways", av[i])) {
 		     json_object *jobj;
@@ -15389,6 +15469,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadCatalog", av[i])) {
 		     json_object *jobj;
@@ -15460,6 +15541,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadCas", av[i])) {
 		     json_object *jobj;
@@ -15548,6 +15630,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadApiLogs", av[i])) {
 		     json_object *jobj;
@@ -15663,6 +15746,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadApiAccessRules", av[i])) {
 		     json_object *jobj;
@@ -15751,6 +15835,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadApiAccessPolicy", av[i])) {
 		     json_object *jobj;
@@ -15822,6 +15907,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadAdminPassword", av[i])) {
 		     json_object *jobj;
@@ -15898,6 +15984,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadAccounts", av[i])) {
 		     json_object *jobj;
@@ -15969,6 +16056,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadAccessKeys", av[i])) {
 		     json_object *jobj;
@@ -16057,6 +16145,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("LinkVolume", av[i])) {
 		     json_object *jobj;
@@ -16143,6 +16232,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("LinkVirtualGateway", av[i])) {
 		     json_object *jobj;
@@ -16224,6 +16314,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("LinkRouteTable", av[i])) {
 		     json_object *jobj;
@@ -16305,6 +16396,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("LinkPublicIp", av[i])) {
 		     json_object *jobj;
@@ -16412,6 +16504,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("LinkPrivateIps", av[i])) {
 		     json_object *jobj;
@@ -16511,6 +16604,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("LinkNic", av[i])) {
 		     json_object *jobj;
@@ -16597,6 +16691,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("LinkLoadBalancerBackendMachines", av[i])) {
 		     json_object *jobj;
@@ -16687,6 +16782,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("LinkInternetService", av[i])) {
 		     json_object *jobj;
@@ -16768,6 +16864,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("LinkFlexibleGpu", av[i])) {
 		     json_object *jobj;
@@ -16849,6 +16946,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeregisterVmsInLoadBalancer", av[i])) {
 		     json_object *jobj;
@@ -16932,6 +17030,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteVpnConnectionRoute", av[i])) {
 		     json_object *jobj;
@@ -17013,6 +17112,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteVpnConnection", av[i])) {
 		     json_object *jobj;
@@ -17089,6 +17189,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteVolume", av[i])) {
 		     json_object *jobj;
@@ -17165,6 +17266,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteVms", av[i])) {
 		     json_object *jobj;
@@ -17243,6 +17345,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteVirtualGateway", av[i])) {
 		     json_object *jobj;
@@ -17319,6 +17422,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteTags", av[i])) {
 		     json_object *jobj;
@@ -17425,6 +17529,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteSubnet", av[i])) {
 		     json_object *jobj;
@@ -17501,6 +17606,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteSnapshot", av[i])) {
 		     json_object *jobj;
@@ -17577,6 +17683,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteServerCertificate", av[i])) {
 		     json_object *jobj;
@@ -17653,6 +17760,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteSecurityGroupRule", av[i])) {
 		     json_object *jobj;
@@ -17792,6 +17900,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteSecurityGroup", av[i])) {
 		     json_object *jobj;
@@ -17873,6 +17982,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteRouteTable", av[i])) {
 		     json_object *jobj;
@@ -17949,6 +18059,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteRoute", av[i])) {
 		     json_object *jobj;
@@ -18030,6 +18141,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeletePublicIp", av[i])) {
 		     json_object *jobj;
@@ -18111,6 +18223,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteNic", av[i])) {
 		     json_object *jobj;
@@ -18187,6 +18300,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteNetPeering", av[i])) {
 		     json_object *jobj;
@@ -18263,6 +18377,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteNetAccessPoint", av[i])) {
 		     json_object *jobj;
@@ -18339,6 +18454,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteNet", av[i])) {
 		     json_object *jobj;
@@ -18415,6 +18531,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteNatService", av[i])) {
 		     json_object *jobj;
@@ -18491,6 +18608,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteLoadBalancerTags", av[i])) {
 		     json_object *jobj;
@@ -18597,6 +18715,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteLoadBalancerPolicy", av[i])) {
 		     json_object *jobj;
@@ -18678,6 +18797,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteLoadBalancerListeners", av[i])) {
 		     json_object *jobj;
@@ -18761,6 +18881,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteLoadBalancer", av[i])) {
 		     json_object *jobj;
@@ -18837,6 +18958,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteListenerRule", av[i])) {
 		     json_object *jobj;
@@ -18913,6 +19035,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteKeypair", av[i])) {
 		     json_object *jobj;
@@ -18989,6 +19112,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteInternetService", av[i])) {
 		     json_object *jobj;
@@ -19065,6 +19189,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteImage", av[i])) {
 		     json_object *jobj;
@@ -19141,6 +19266,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteFlexibleGpu", av[i])) {
 		     json_object *jobj;
@@ -19217,6 +19343,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteExportTask", av[i])) {
 		     json_object *jobj;
@@ -19293,6 +19420,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteDirectLinkInterface", av[i])) {
 		     json_object *jobj;
@@ -19369,6 +19497,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteDirectLink", av[i])) {
 		     json_object *jobj;
@@ -19445,6 +19574,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteDhcpOptions", av[i])) {
 		     json_object *jobj;
@@ -19521,6 +19651,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteClientGateway", av[i])) {
 		     json_object *jobj;
@@ -19597,6 +19728,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteCa", av[i])) {
 		     json_object *jobj;
@@ -19673,6 +19805,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteApiAccessRule", av[i])) {
 		     json_object *jobj;
@@ -19749,6 +19882,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteAccessKey", av[i])) {
 		     json_object *jobj;
@@ -19825,6 +19959,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateVpnConnectionRoute", av[i])) {
 		     json_object *jobj;
@@ -19906,6 +20041,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateVpnConnection", av[i])) {
 		     json_object *jobj;
@@ -20003,6 +20139,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateVolume", av[i])) {
 		     json_object *jobj;
@@ -20099,6 +20236,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateVms", av[i])) {
 		     json_object *jobj;
@@ -20358,6 +20496,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateVirtualGateway", av[i])) {
 		     json_object *jobj;
@@ -20434,6 +20573,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateTags", av[i])) {
 		     json_object *jobj;
@@ -20540,6 +20680,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateSubnet", av[i])) {
 		     json_object *jobj;
@@ -20626,6 +20767,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateSnapshotExportTask", av[i])) {
 		     json_object *jobj;
@@ -20719,6 +20861,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateSnapshot", av[i])) {
 		     json_object *jobj;
@@ -20820,6 +20963,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateServerCertificate", av[i])) {
 		     json_object *jobj;
@@ -20916,6 +21060,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateSecurityGroupRule", av[i])) {
 		     json_object *jobj;
@@ -21055,6 +21200,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateSecurityGroup", av[i])) {
 		     json_object *jobj;
@@ -21141,6 +21287,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateRouteTable", av[i])) {
 		     json_object *jobj;
@@ -21217,6 +21364,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateRoute", av[i])) {
 		     json_object *jobj;
@@ -21323,6 +21471,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreatePublicIp", av[i])) {
 		     json_object *jobj;
@@ -21394,6 +21543,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateNic", av[i])) {
 		     json_object *jobj;
@@ -21510,6 +21660,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateNetPeering", av[i])) {
 		     json_object *jobj;
@@ -21591,6 +21742,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateNetAccessPoint", av[i])) {
 		     json_object *jobj;
@@ -21679,6 +21831,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateNet", av[i])) {
 		     json_object *jobj;
@@ -21760,6 +21913,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateNatService", av[i])) {
 		     json_object *jobj;
@@ -21841,6 +21995,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateLoadBalancerTags", av[i])) {
 		     json_object *jobj;
@@ -21947,6 +22102,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateLoadBalancerPolicy", av[i])) {
 		     json_object *jobj;
@@ -22043,6 +22199,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateLoadBalancerListeners", av[i])) {
 		     json_object *jobj;
@@ -22147,6 +22304,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateLoadBalancer", av[i])) {
 		     json_object *jobj;
@@ -22310,6 +22468,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateListenerRule", av[i])) {
 		     json_object *jobj;
@@ -22422,6 +22581,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateKeypair", av[i])) {
 		     json_object *jobj;
@@ -22503,6 +22663,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateInternetService", av[i])) {
 		     json_object *jobj;
@@ -22574,6 +22735,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateImageExportTask", av[i])) {
 		     json_object *jobj;
@@ -22667,6 +22829,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateImage", av[i])) {
 		     json_object *jobj;
@@ -22817,6 +22980,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateFlexibleGpu", av[i])) {
 		     json_object *jobj;
@@ -22914,6 +23078,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateDirectLinkInterface", av[i])) {
 		     json_object *jobj;
@@ -23007,6 +23172,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateDirectLink", av[i])) {
 		     json_object *jobj;
@@ -23093,6 +23259,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateDhcpOptions", av[i])) {
 		     json_object *jobj;
@@ -23190,6 +23357,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateClientGateway", av[i])) {
 		     json_object *jobj;
@@ -23276,6 +23444,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateCa", av[i])) {
 		     json_object *jobj;
@@ -23357,6 +23526,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateApiAccessRule", av[i])) {
 		     json_object *jobj;
@@ -23454,6 +23624,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateAccount", av[i])) {
 		     json_object *jobj;
@@ -23597,6 +23768,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateAccessKey", av[i])) {
 		     json_object *jobj;
@@ -23673,6 +23845,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CheckAuthentication", av[i])) {
 		     json_object *jobj;
@@ -23754,6 +23927,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("AcceptNetPeering", av[i])) {
 		     json_object *jobj;
@@ -23830,6 +24004,7 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
+		     ptr_array_free_all(pa);
 	      } else
 		{
 			printf("Unknow Call %s\n", av[i]);
@@ -23837,9 +24012,8 @@ int main(int ac, char **av)
 			goto out;
 		}
 	}
-
+good:
+	ret = 0;
 out:
-	osc_deinit_str(&r);
-	osc_deinit_sdk(&e);
 	return ret;
 }
