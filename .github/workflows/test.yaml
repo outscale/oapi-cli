@@ -16,7 +16,9 @@ jobs:
         sudo apt-get install -y -f -o Acquire::Retries=3 jq libjson-c-dev libcurl4-openssl-dev pkg-config
     - name: Build and test
       run: |
-        CFLAGS="-fsanitize=address -O0 -g" make tests
+        CFLAGS="-fsanitize=address -O0 -g" make
+        make oapi-cli-x86_64.AppImage
+        make tests
       env:
         OSC_ACCESS_KEY: ${{secrets.OSC_ACCESS_KEY}}
         OSC_SECRET_KEY: ${{secrets.OSC_SECRET_KEY}}
