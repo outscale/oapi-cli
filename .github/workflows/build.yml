@@ -1,0 +1,39 @@
+name: oapi-cli release build
+on:
+  workflow_dispatch:
+    inputs:
+      api_version:
+        description: 'Outscale API version'
+        required: true
+
+jobs:
+  auto-build:
+    environment: auto-build
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: apt is for w__p
+      run: |
+        wget https://github.com/cosmo-ray/json-search/releases/download/0.2/json-search-x86_64.AppImage
+        chmod +x json-search-x86_64.AppImage
+        sudo cp json-search-x86_64.AppImage /bin/json-search
+        sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
+        sudo chmod +x /usr/bin/yq
+        sudo apt-get update --fix-missing
+        sudo apt-get install -y -f -o Acquire::Retries=3 jq libjson-c-dev
+    - name: Build release
+      run: |
+        echo $(cat sdk_version | cut -d '.' -f 1).$(( $( cat sdk_version | cut -d '.' -f 2  ) + 1 )).$(cat sdk_version | cut -d '.' -f 3) > sdk_version
+        .github/scripts/release-make.sh
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+    - name: push release branch
+      run: .github/scripts/release-push.sh
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+    - name: create pull request
+      run: .github/scripts/release-pr.sh ${{ github.event.inputs.api_version }}
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}

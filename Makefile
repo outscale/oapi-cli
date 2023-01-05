@@ -40,7 +40,7 @@ COGNAC/:
 	git submodule update --init
 
 COGNAC/config.mk: COGNAC/
-	cd COGNAC && ./configure --compile-json-c
+	cd COGNAC && ./configure --compile-json-c $$COGNAC_CONFIG
 
 COGNAC/main.c: COGNAC/config.mk
 	make -j -C COGNAC/
