@@ -18,6 +18,7 @@ jobs:
       run: |
         CFLAGS="-fsanitize=address -O0 -g" make
         make oapi-cli-x86_64.AppImage
+        echo $OSC_ACCESS_KEY | wc -c
         make tests
       env:
         OSC_ACCESS_KEY: ${{secrets.OSC_ACCESS_KEY}}
