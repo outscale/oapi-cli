@@ -19,6 +19,7 @@ jobs:
         CFLAGS="-fsanitize=address -O0 -g" make
         make oapi-cli-x86_64.AppImage
         make tests
+        ./oapi-cli-x86_64.AppImage --help
       env:
         OSC_ACCESS_KEY: ${{secrets.OSC_ACCESS_KEY}}
         OSC_SECRET_KEY: ${{secrets.OSC_SECRET_KEY}}
