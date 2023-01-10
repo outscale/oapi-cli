@@ -8322,6 +8322,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_vpn_connection(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateVpnConnection: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -8414,6 +8418,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_volume(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateVolume: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -8595,6 +8603,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_vm(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateVm: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -8683,6 +8695,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_subnet(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateSubnet: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -8777,6 +8793,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_snapshot(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateSnapshot: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -8864,6 +8884,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_server_certificate(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateServerCertificate: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -8957,6 +8981,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_route_propagation(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateRoutePropagation: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -9064,6 +9092,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_route(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateRoute: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -9170,6 +9202,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_nic(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateNic: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -9261,6 +9297,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_net_access_point(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateNetAccessPoint: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -9343,6 +9383,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_net(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateNet: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -9494,6 +9538,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_load_balancer(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateLoadBalancer: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -9581,6 +9629,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_listener_rule(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateListenerRule: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -9675,6 +9727,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_image(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateImage: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -9763,6 +9819,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_flexible_gpu(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateFlexibleGpu: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -9845,6 +9905,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_direct_link_interface(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateDirectLinkInterface: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -9927,6 +9991,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_ca(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateCa: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10030,6 +10098,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_api_access_rule(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateApiAccessRule: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10118,6 +10190,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_api_access_policy(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateApiAccessPolicy: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10257,6 +10333,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_account(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateAccount: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10344,6 +10424,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_access_key(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateAccessKey: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10432,6 +10516,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_unlink_volume(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkVolume: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10514,6 +10602,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_unlink_virtual_gateway(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkVirtualGateway: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10591,6 +10683,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_unlink_route_table(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkRouteTable: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10673,6 +10769,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_unlink_public_ip(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkPublicIp: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10757,6 +10857,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_unlink_private_ips(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkPrivateIps: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10834,6 +10938,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_unlink_nic(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkNic: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10925,6 +11033,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_unlink_load_balancer_backend_machines(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkLoadBalancerBackendMachines: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11007,6 +11119,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_unlink_internet_service(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkInternetService: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11084,6 +11200,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_unlink_flexible_gpu(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkFlexibleGpu: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11174,6 +11294,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_stop_vms(&e, &r, &a);
             	     TRY(cret, "fail to call StopVms: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11253,6 +11377,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_start_vms(&e, &r, &a);
             	     TRY(cret, "fail to call StartVms: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11330,6 +11458,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_send_reset_password_email(&e, &r, &a);
             	     TRY(cret, "fail to call SendResetPasswordEmail: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11412,6 +11544,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_reset_account_password(&e, &r, &a);
             	     TRY(cret, "fail to call ResetAccountPassword: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11489,6 +11625,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_reject_net_peering(&e, &r, &a);
             	     TRY(cret, "fail to call RejectNetPeering: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11573,6 +11713,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_register_vms_in_load_balancer(&e, &r, &a);
             	     TRY(cret, "fail to call RegisterVmsInLoadBalancer: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11652,6 +11796,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_reboot_vms(&e, &r, &a);
             	     TRY(cret, "fail to call RebootVms: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11741,6 +11889,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_vpn_connections(&e, &r, &a);
             	     TRY(cret, "fail to call ReadVpnConnections: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11830,6 +11982,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_volumes(&e, &r, &a);
             	     TRY(cret, "fail to call ReadVolumes: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11930,6 +12086,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_vms_state(&e, &r, &a);
             	     TRY(cret, "fail to call ReadVmsState: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12014,6 +12174,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_vms_health(&e, &r, &a);
             	     TRY(cret, "fail to call ReadVmsHealth: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12103,6 +12267,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_vms(&e, &r, &a);
             	     TRY(cret, "fail to call ReadVms: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12192,6 +12360,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_vm_types(&e, &r, &a);
             	     TRY(cret, "fail to call ReadVmTypes: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12281,6 +12453,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_virtual_gateways(&e, &r, &a);
             	     TRY(cret, "fail to call ReadVirtualGateways: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12370,6 +12546,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_tags(&e, &r, &a);
             	     TRY(cret, "fail to call ReadTags: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12459,6 +12639,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_subregions(&e, &r, &a);
             	     TRY(cret, "fail to call ReadSubregions: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12548,6 +12732,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_subnets(&e, &r, &a);
             	     TRY(cret, "fail to call ReadSubnets: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12637,6 +12825,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_snapshots(&e, &r, &a);
             	     TRY(cret, "fail to call ReadSnapshots: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12726,6 +12918,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_snapshot_export_tasks(&e, &r, &a);
             	     TRY(cret, "fail to call ReadSnapshotExportTasks: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12815,6 +13011,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_server_certificates(&e, &r, &a);
             	     TRY(cret, "fail to call ReadServerCertificates: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12904,6 +13104,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_security_groups(&e, &r, &a);
             	     TRY(cret, "fail to call ReadSecurityGroups: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12981,6 +13185,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_secret_access_key(&e, &r, &a);
             	     TRY(cret, "fail to call ReadSecretAccessKey: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13070,6 +13278,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_route_tables(&e, &r, &a);
             	     TRY(cret, "fail to call ReadRouteTables: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13142,6 +13354,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_regions(&e, &r, &a);
             	     TRY(cret, "fail to call ReadRegions: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13231,6 +13447,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_quotas(&e, &r, &a);
             	     TRY(cret, "fail to call ReadQuotas: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13320,6 +13540,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_public_ips(&e, &r, &a);
             	     TRY(cret, "fail to call ReadPublicIps: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13392,6 +13616,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_public_ip_ranges(&e, &r, &a);
             	     TRY(cret, "fail to call ReadPublicIpRanges: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13464,6 +13692,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_public_catalog(&e, &r, &a);
             	     TRY(cret, "fail to call ReadPublicCatalog: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13553,6 +13785,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_product_types(&e, &r, &a);
             	     TRY(cret, "fail to call ReadProductTypes: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13642,6 +13878,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_nics(&e, &r, &a);
             	     TRY(cret, "fail to call ReadNics: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13731,6 +13971,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_nets(&e, &r, &a);
             	     TRY(cret, "fail to call ReadNets: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13820,6 +14064,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_net_peerings(&e, &r, &a);
             	     TRY(cret, "fail to call ReadNetPeerings: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13909,6 +14157,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_net_access_points(&e, &r, &a);
             	     TRY(cret, "fail to call ReadNetAccessPoints: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13998,6 +14250,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_net_access_point_services(&e, &r, &a);
             	     TRY(cret, "fail to call ReadNetAccessPointServices: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14087,6 +14343,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_nat_services(&e, &r, &a);
             	     TRY(cret, "fail to call ReadNatServices: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14159,6 +14419,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_locations(&e, &r, &a);
             	     TRY(cret, "fail to call ReadLocations: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14248,6 +14512,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_load_balancers(&e, &r, &a);
             	     TRY(cret, "fail to call ReadLoadBalancers: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14327,6 +14595,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_load_balancer_tags(&e, &r, &a);
             	     TRY(cret, "fail to call ReadLoadBalancerTags: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14416,6 +14688,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_listener_rules(&e, &r, &a);
             	     TRY(cret, "fail to call ReadListenerRules: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14505,6 +14781,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_keypairs(&e, &r, &a);
             	     TRY(cret, "fail to call ReadKeypairs: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14594,6 +14874,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_internet_services(&e, &r, &a);
             	     TRY(cret, "fail to call ReadInternetServices: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14683,6 +14967,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_images(&e, &r, &a);
             	     TRY(cret, "fail to call ReadImages: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14772,6 +15060,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_image_export_tasks(&e, &r, &a);
             	     TRY(cret, "fail to call ReadImageExportTasks: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14861,6 +15153,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_flexible_gpus(&e, &r, &a);
             	     TRY(cret, "fail to call ReadFlexibleGpus: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14933,6 +15229,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_flexible_gpu_catalog(&e, &r, &a);
             	     TRY(cret, "fail to call ReadFlexibleGpuCatalog: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15022,6 +15322,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_direct_links(&e, &r, &a);
             	     TRY(cret, "fail to call ReadDirectLinks: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15111,6 +15415,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_direct_link_interfaces(&e, &r, &a);
             	     TRY(cret, "fail to call ReadDirectLinkInterfaces: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15200,6 +15508,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_dhcp_options(&e, &r, &a);
             	     TRY(cret, "fail to call ReadDhcpOptions: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15293,6 +15605,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_consumption_account(&e, &r, &a);
             	     TRY(cret, "fail to call ReadConsumptionAccount: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15370,6 +15686,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_console_output(&e, &r, &a);
             	     TRY(cret, "fail to call ReadConsoleOutput: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15459,6 +15779,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_client_gateways(&e, &r, &a);
             	     TRY(cret, "fail to call ReadClientGateways: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15531,6 +15855,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_catalog(&e, &r, &a);
             	     TRY(cret, "fail to call ReadCatalog: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15620,6 +15948,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_cas(&e, &r, &a);
             	     TRY(cret, "fail to call ReadCas: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15736,6 +16068,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_api_logs(&e, &r, &a);
             	     TRY(cret, "fail to call ReadApiLogs: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15825,6 +16161,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_api_access_rules(&e, &r, &a);
             	     TRY(cret, "fail to call ReadApiAccessRules: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15897,6 +16237,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_api_access_policy(&e, &r, &a);
             	     TRY(cret, "fail to call ReadApiAccessPolicy: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15974,6 +16318,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_admin_password(&e, &r, &a);
             	     TRY(cret, "fail to call ReadAdminPassword: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16046,6 +16394,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_accounts(&e, &r, &a);
             	     TRY(cret, "fail to call ReadAccounts: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16135,6 +16487,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_access_keys(&e, &r, &a);
             	     TRY(cret, "fail to call ReadAccessKeys: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16222,6 +16578,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_link_volume(&e, &r, &a);
             	     TRY(cret, "fail to call LinkVolume: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16304,6 +16664,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_link_virtual_gateway(&e, &r, &a);
             	     TRY(cret, "fail to call LinkVirtualGateway: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16386,6 +16750,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_link_route_table(&e, &r, &a);
             	     TRY(cret, "fail to call LinkRouteTable: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16494,6 +16862,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_link_public_ip(&e, &r, &a);
             	     TRY(cret, "fail to call LinkPublicIp: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16594,6 +16966,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_link_private_ips(&e, &r, &a);
             	     TRY(cret, "fail to call LinkPrivateIps: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16681,6 +17057,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_link_nic(&e, &r, &a);
             	     TRY(cret, "fail to call LinkNic: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16772,6 +17152,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_link_load_balancer_backend_machines(&e, &r, &a);
             	     TRY(cret, "fail to call LinkLoadBalancerBackendMachines: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16854,6 +17238,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_link_internet_service(&e, &r, &a);
             	     TRY(cret, "fail to call LinkInternetService: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16936,6 +17324,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_link_flexible_gpu(&e, &r, &a);
             	     TRY(cret, "fail to call LinkFlexibleGpu: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17020,6 +17412,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_deregister_vms_in_load_balancer(&e, &r, &a);
             	     TRY(cret, "fail to call DeregisterVmsInLoadBalancer: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17102,6 +17498,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_vpn_connection_route(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteVpnConnectionRoute: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17179,6 +17579,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_vpn_connection(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteVpnConnection: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17256,6 +17660,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_volume(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteVolume: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17335,6 +17743,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_vms(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteVms: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17412,6 +17824,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_virtual_gateway(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteVirtualGateway: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17519,6 +17935,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_tags(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteTags: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17596,6 +18016,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_subnet(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteSubnet: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17673,6 +18097,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_snapshot(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteSnapshot: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17750,6 +18178,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_server_certificate(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteServerCertificate: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17890,6 +18322,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_security_group_rule(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteSecurityGroupRule: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17972,6 +18408,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_security_group(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteSecurityGroup: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18049,6 +18489,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_route_table(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteRouteTable: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18131,6 +18575,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_route(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteRoute: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18213,6 +18661,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_public_ip(&e, &r, &a);
             	     TRY(cret, "fail to call DeletePublicIp: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18290,6 +18742,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_nic(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteNic: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18367,6 +18823,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_net_peering(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteNetPeering: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18444,6 +18904,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_net_access_point(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteNetAccessPoint: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18521,6 +18985,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_net(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteNet: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18598,6 +19066,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_nat_service(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteNatService: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18705,6 +19177,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_load_balancer_tags(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteLoadBalancerTags: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18787,6 +19263,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_load_balancer_policy(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteLoadBalancerPolicy: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18871,6 +19351,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_load_balancer_listeners(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteLoadBalancerListeners: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18948,6 +19432,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_load_balancer(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteLoadBalancer: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19025,6 +19513,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_listener_rule(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteListenerRule: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19102,6 +19594,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_keypair(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteKeypair: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19179,6 +19675,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_internet_service(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteInternetService: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19256,6 +19756,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_image(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteImage: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19333,6 +19837,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_flexible_gpu(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteFlexibleGpu: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19410,6 +19918,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_export_task(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteExportTask: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19487,6 +19999,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_direct_link_interface(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteDirectLinkInterface: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19564,6 +20080,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_direct_link(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteDirectLink: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19641,6 +20161,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_dhcp_options(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteDhcpOptions: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19718,6 +20242,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_client_gateway(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteClientGateway: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19795,6 +20323,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_ca(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteCa: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19872,6 +20404,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_api_access_rule(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteApiAccessRule: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19949,6 +20485,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_access_key(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteAccessKey: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20031,6 +20571,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_vpn_connection_route(&e, &r, &a);
             	     TRY(cret, "fail to call CreateVpnConnectionRoute: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20129,6 +20673,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_vpn_connection(&e, &r, &a);
             	     TRY(cret, "fail to call CreateVpnConnection: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20226,6 +20774,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_volume(&e, &r, &a);
             	     TRY(cret, "fail to call CreateVolume: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20486,6 +21038,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_vms(&e, &r, &a);
             	     TRY(cret, "fail to call CreateVms: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20563,6 +21119,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_virtual_gateway(&e, &r, &a);
             	     TRY(cret, "fail to call CreateVirtualGateway: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20670,6 +21230,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_tags(&e, &r, &a);
             	     TRY(cret, "fail to call CreateTags: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20757,6 +21321,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_subnet(&e, &r, &a);
             	     TRY(cret, "fail to call CreateSubnet: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20851,6 +21419,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_snapshot_export_task(&e, &r, &a);
             	     TRY(cret, "fail to call CreateSnapshotExportTask: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20953,6 +21525,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_snapshot(&e, &r, &a);
             	     TRY(cret, "fail to call CreateSnapshot: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21050,6 +21626,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_server_certificate(&e, &r, &a);
             	     TRY(cret, "fail to call CreateServerCertificate: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21190,6 +21770,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_security_group_rule(&e, &r, &a);
             	     TRY(cret, "fail to call CreateSecurityGroupRule: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21277,6 +21861,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_security_group(&e, &r, &a);
             	     TRY(cret, "fail to call CreateSecurityGroup: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21354,6 +21942,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_route_table(&e, &r, &a);
             	     TRY(cret, "fail to call CreateRouteTable: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21461,6 +22053,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_route(&e, &r, &a);
             	     TRY(cret, "fail to call CreateRoute: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21533,6 +22129,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_public_ip(&e, &r, &a);
             	     TRY(cret, "fail to call CreatePublicIp: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21650,6 +22250,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_nic(&e, &r, &a);
             	     TRY(cret, "fail to call CreateNic: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21732,6 +22336,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_net_peering(&e, &r, &a);
             	     TRY(cret, "fail to call CreateNetPeering: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21821,6 +22429,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_net_access_point(&e, &r, &a);
             	     TRY(cret, "fail to call CreateNetAccessPoint: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21903,6 +22515,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_net(&e, &r, &a);
             	     TRY(cret, "fail to call CreateNet: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21985,6 +22601,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_nat_service(&e, &r, &a);
             	     TRY(cret, "fail to call CreateNatService: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22092,6 +22712,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_load_balancer_tags(&e, &r, &a);
             	     TRY(cret, "fail to call CreateLoadBalancerTags: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22189,6 +22813,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_load_balancer_policy(&e, &r, &a);
             	     TRY(cret, "fail to call CreateLoadBalancerPolicy: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22294,6 +22922,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_load_balancer_listeners(&e, &r, &a);
             	     TRY(cret, "fail to call CreateLoadBalancerListeners: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22458,6 +23090,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_load_balancer(&e, &r, &a);
             	     TRY(cret, "fail to call CreateLoadBalancer: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22571,6 +23207,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_listener_rule(&e, &r, &a);
             	     TRY(cret, "fail to call CreateListenerRule: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22653,6 +23293,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_keypair(&e, &r, &a);
             	     TRY(cret, "fail to call CreateKeypair: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22725,6 +23369,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_internet_service(&e, &r, &a);
             	     TRY(cret, "fail to call CreateInternetService: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22819,6 +23467,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_image_export_task(&e, &r, &a);
             	     TRY(cret, "fail to call CreateImageExportTask: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22970,6 +23622,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_image(&e, &r, &a);
             	     TRY(cret, "fail to call CreateImage: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23068,6 +23724,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_flexible_gpu(&e, &r, &a);
             	     TRY(cret, "fail to call CreateFlexibleGpu: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23162,6 +23822,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_direct_link_interface(&e, &r, &a);
             	     TRY(cret, "fail to call CreateDirectLinkInterface: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23249,6 +23913,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_direct_link(&e, &r, &a);
             	     TRY(cret, "fail to call CreateDirectLink: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23347,6 +24015,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_dhcp_options(&e, &r, &a);
             	     TRY(cret, "fail to call CreateDhcpOptions: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23434,6 +24106,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_client_gateway(&e, &r, &a);
             	     TRY(cret, "fail to call CreateClientGateway: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23516,6 +24192,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_ca(&e, &r, &a);
             	     TRY(cret, "fail to call CreateCa: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23614,6 +24294,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_api_access_rule(&e, &r, &a);
             	     TRY(cret, "fail to call CreateApiAccessRule: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23758,6 +24442,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_account(&e, &r, &a);
             	     TRY(cret, "fail to call CreateAccount: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23835,6 +24523,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_access_key(&e, &r, &a);
             	     TRY(cret, "fail to call CreateAccessKey: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23917,6 +24609,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_check_authentication(&e, &r, &a);
             	     TRY(cret, "fail to call CheckAuthentication: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23994,6 +24690,10 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_accept_net_peering(&e, &r, &a);
             	     TRY(cret, "fail to call AcceptNetPeering: %s\n", curl_easy_strerror(cret));
+		     if (!r.buf) {
+			    fprintf(stderr, "connection sucessful, but empty responce\n");
+			    return 1;
+		     }
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
