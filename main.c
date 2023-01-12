@@ -52,16 +52,21 @@
 		if (f) {fprintf(stderr, args);  return 1;}	\
 	} while(0)
 
-static int argcmp(const char *s1, const char *s2)
+static int argcmp2(const char *s1, const char *s2, char dst)
 {
 	while (*s1 == *s2 && *s1 && *s2) {
 		s1++;
 		s2++;
 	}
-	if ((*s2 == '.' && *s1 == '\0') ||
-	    (*s1 == '.' && *s2 == '\0'))
+	if ((*s2 == dst && *s1 == '\0') ||
+	    (*s1 == dst && *s2 == '\0'))
 		return 0;
 	return *s1 != *s2;
+}
+
+static int argcmp(const char *s1, const char *s2)
+{
+	return argcmp2(s1, s2, '.');
 }
 
 static void *cascade_struct;
@@ -8177,6 +8182,7 @@ int main(int ac, char **av)
 	unsigned int flag = 0;
 	unsigned int program_flag = 0;
 	char *program_name = rindex(av[0], '/');
+	char *profile =  NULL;
 	int ret = 1;
 
 	if (!program_name)
@@ -8188,9 +8194,25 @@ int main(int ac, char **av)
 		  flag |= OSC_VERBOSE_MODE;
 		} else if (!strcmp("--insecure", av[i])) {
 		  flag |= OSC_INSECURE_MODE;
+		} else if (!strcmp("--insecure", av[i])) {
+		  flag |= OSC_INSECURE_MODE;
+		} else if (!argcmp2("--profile", av[i], '=')) {
+			if (av[i][sizeof("--profile") - 1] == '=') {
+				profile = &av[i][sizeof("--profile")];
+			} else if (!av[i][sizeof("--profile") - 1]) {
+				if (!av[i+1]) {
+					fprintf(stderr, "--profile need a profile");
+					return 1;
+				}
+				profile = av[i+1];
+				++i;
+			} else {
+				fprintf(stderr, "--profile seems weirds");
+				return 1;
+			}
 		}
 	}
-	TRY(osc_init_sdk(&e, NULL, flag), "fail to init C sdk\n");
+	TRY(osc_init_sdk(&e, profile, flag), "fail to init C sdk\n");
 	osc_init_str(&r);
 
 	if (ac < 2) {
@@ -8200,6 +8222,7 @@ int main(int ac, char **av)
 		       "\t--insecure	\tdoesn't verify SSL certificats\n"
 		       "\t--raw-print	\tdoesn't format the output\n"
 		       "\t--verbose	\tcurl backend is now verbose\n"
+		       "\t--profile=PROFILE	\tselect profile"
 		       "\t--help [CallName]\tthis, can be used with call name, example:\n\t\t\t\t%s --help ReadVms\n"
 		       "\t--color	\t\ttry to colorize json if json-c support it\n%s%s",
 		       program_name, program_name, help_appent ? help_appent : "",
@@ -8210,6 +8233,10 @@ int main(int ac, char **av)
 	for (i = 1; i < ac; ++i) {
 		if (!strcmp("--verbose", av[i]) || !strcmp("--insecure", av[i])) {
 			/* Avoid Unknow Calls */
+		} else if (!argcmp2("--profile", av[i], '=')) {
+			if (!av[i][sizeof("--profile") - 1]) {
+				++i;
+			}
 		} else if (!strcmp("--help", av[i])) {
 			if (av[i+1]) {
 				const char *cd = osc_find_description(av[i+1]);
