@@ -9,6 +9,11 @@ Get help:
 oapi-cli --help # give help
 ```
 
+Get DeleteTags help
+```
+oapi-cli --help DeleteTags
+```
+
 Examples of complex argument, with DeleteTags
 Cascade arguments:
 ```
