@@ -17,13 +17,13 @@ oapi-cli --help DeleteTags
 Examples of complex argument, with DeleteTags
 Cascade arguments:
 ```
-oapi-cli DeleteTags --Tags.0.Key k0 ..Value v0 --Tags.1.Key k1 ..Value v1
+oapi-cli DeleteTags --ResourceIds '["ID0", "ID1"]' --Tags.0.Key k0 ..Value v0 --Tags.1.Key k1 ..Value v1
 ```
-is the same as
+is the same as but using [] syntaxe for `ResourceIds`, and without cascade argument.
 ```
-oapi-cli DeleteTags --Tags.0.Key k0 --Tags.0.Value v0 --Tags.1.Key k1 --Tags.1.Value v1
+oapi-cli DeleteTags --ResourceIds[] "ID0" --ResourceIds[] "ID1"  --Tags.0.Key k0 --Tags.0.Value v0 --Tags.1.Key k1 --Tags.1.Value v1
 ```
 and the same as
 ```
-oapi-cli DeleteTags --Tags '[{"Key": "k0", "Value": "v0"}, {"Key": "k0", "Value": "v0"}]'
+oapi-cli DeleteTags --ResourceIds '["ID0", "ID1"]'  --Tags '[{"Key": "k0", "Value": "v0"}, {"Key": "k0", "Value": "v0"}]'
 ```
