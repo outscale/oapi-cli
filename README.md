@@ -37,6 +37,16 @@ source <(oapi-cli-x86_64.AppImage --bash-completion)
 With the appimage
 or sourcing `oapi-cli-completion.bash` file
 
+For zsh, you might need to create a file like:
+```zsh
+user@machine-on-zsh ~ % cat  ~/osc-cli-completion.zsh
+```
+```
+autoload bashcompinit
+bashcompinit
+source $HOME/osc-cli-completion.bash
+```
+
 # Config
 
 ## using `.osc/config.json`
