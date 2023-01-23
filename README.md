@@ -87,8 +87,3 @@ Endpoint:
 ```bash
 export OSC_ENDPOINT_API=XXX
 ```
-
-Nota that for IP, you need to do something like `IP:PORT`, example:
-```bash
-export OSC_ENDPOINT_API=127.0.0.1:3000 # OSC_ENDPOINT_API=https://127.0.0.1:3000 doesn't work
-```
