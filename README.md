@@ -25,10 +25,35 @@ oapi-cli DeleteTags --ResourceIds[] "ID0" --ResourceIds[] "ID1"  --Tags.0.Key k0
 ```
 and the same as, using osc-cli-like notation
 ```bash
-oapi-cli DeleteTags --ResourceIds '["ID0", "ID1"]'  --Tags '[{"Key": "k0", "Value": "v0"}, {"Key": "k0", "Value": "v0"}]'
+oapi-cli DeleteTags --ResourceIds '["ID0", "ID1"]'  --Tags '[{"Key": "k0", "Value": "v0"}, {"Key": "k1", "Value": "v1"}]'
 ```
 
-#Config
+# Autocompletion
+
+Bash autocompletion is avaible using either
+```bash
+source <(oapi-cli-x86_64.AppImage --bash-completion)
+```
+With the appimage
+or sourcing `oapi-cli-completion.bash` file
+
+# Config
+
+## using `.osc/config.json`
+
+```
+{"default":
+    {"access_key": "MYACCESSKEY",
+     "secret_key": "MYSECRETKEY",
+     "region": "eu-west-2"
+    },
+  "us":
+    {"access_key": "MYACCESSKEY",
+     "secret_key": "MYSECRETKEY",
+     "region": "us-east-2"
+    }
+}
+```
 
 ## Environement Variables
 
