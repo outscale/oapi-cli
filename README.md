@@ -27,3 +27,33 @@ and the same as, using osc-cli-like notation
 ```
 oapi-cli DeleteTags --ResourceIds '["ID0", "ID1"]'  --Tags '[{"Key": "k0", "Value": "v0"}, {"Key": "k0", "Value": "v0"}]'
 ```
+
+#Config
+
+## Environement Variables
+
+AK/SK:
+```bash
+export OSC_ACCESS_KEY=ACCESS_KEY
+export OSC_SECRET_KEY=SECRET_KEY
+```
+
+Region:
+```bash
+OSC_REGION=REGION # default is eu-west-2
+```
+
+Profile:
+```bash
+export OSC_PROFILE=my_profile #default is 'default'
+```
+
+Endpoint:
+```bash
+OSC_ENDPOINT_API=XXX
+```
+
+Nota that for IP, you need to do something like `127.0.0.1:3000`, example:
+```bash
+OSC_ENDPOINT_API=127.0.0.1:3000 # OSC_ENDPOINT_API=https://127.0.0.1:3000 doesn't work
+```
