@@ -27,6 +27,7 @@ and the same as, using osc-cli-like notation
 ```bash
 oapi-cli DeleteTags --ResourceIds '["ID0", "ID1"]'  --Tags '[{"Key": "k0", "Value": "v0"}, {"Key": "k1", "Value": "v1"}]'
 ```
+*Note that with osc-cli, you need to add `api`, here, as we only support outscale api, this is remove*
 
 # Autocompletion
 
