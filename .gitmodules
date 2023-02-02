@@ -1,3 +1,3 @@
 [submodule "COGNAC"]
 	path = COGNAC
-	url = https://github.com/outscale-mgo/COGNAC.git
+	url = https://github.com/outscale/COGNAC.git
