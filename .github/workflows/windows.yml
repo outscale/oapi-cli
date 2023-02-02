@@ -1,0 +1,58 @@
+name: Package Application on Mingw64
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        install: >-
+          git
+          base-devel
+          zip
+        pacboy:
+          gcc
+          cmake
+          openssl
+          json-c
+          curl
+
+    - shell: msys2 {0}
+      run: |
+        git submodule update --init
+        .github/script/build-win.sh
+        mkdir oapi-pkg
+        LD_LIBRARY_PATH="$PWD" ./cp-lib.sh oapi-cli oapi-pkg/
+        cp oapi-cli.exe oapi-pkg/
+        zip -r oapi-cli-x86_64.zip oapi-pkg/
+        ./oapi-pkg/oapi-cli.exe --insecure ReadRegions | grep api.eu-west-2.outscale.com
+      env:
+        OSC_ACCESS_KEY: ${{secrets.OSC_ACCESS_KEY}}
+        OSC_SECRET_KEY: ${{secrets.OSC_SECRET_KEY}}
+        OSC_REGION: ${{secrets.OSC_REGION}}
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      if: ${{ github.event_name != 'push' }}
+      with:
+        name: oapi-cli-win
+        path: |
+          oapi-cli-x86_64.zip
+    - name: upload nightly
+      uses: "marvinpinto/action-automatic-releases@latest"
+      if: ${{ github.event_name == 'push' }}
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        prerelease: true
+        automatic_release_tag: "nightly-windows"
+        title: "Windows Development Build"
+        files: |
+          oapi-cli-x86_64.zip

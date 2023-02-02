@@ -8181,7 +8181,7 @@ int main(int ac, char **av)
 	char *help_appent = getenv("COGNAC_HELP_APPEND");
 	unsigned int flag = 0;
 	unsigned int program_flag = 0;
-	char *program_name = rindex(av[0], '/');
+	char *program_name = strrchr(av[0], '/');
 	char *profile =  NULL;
 	int ret = 1;
 
