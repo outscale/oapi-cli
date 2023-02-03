@@ -44,6 +44,20 @@
 #define AK_SIZE 20
 #define SK_SIZE 40
 
+#ifdef _WIN32
+
+
+static inline char* stpcpy(char *dest, const char *src)
+{
+	for (; *src; ++src) {
+		*dest++ = *src;
+	}
+	*dest = 0;
+	return dest;
+}
+
+#endif
+
 #ifdef WITH_DESCRIPTION
 
 static const char *calls_name[] = {
@@ -260,7 +274,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli UpdateCa [options]\n" "Modifies the specified attribute of a Client Certificate Authority (CA).\n" "\nRequired Argument: CaId \n"
 ,
-	"Usage: oapi-cli UpdateApiAccessRule [options]\n" "Modifies a specified API access rule.\n\n**[NOTE]** \nThe new rule you specify \n" "fully replaces the old rule. Therefore, for a parameter that is not specified, \n" "any previously set value is deleted.\n" "\nRequired Argument: ApiAccessRuleId \n"
+	"Usage: oapi-cli UpdateApiAccessRule [options]\n" "Modifies a specified API access rule.\n\n**[NOTE]** \n- The new rule you \n" "specify fully replaces the old rule. Therefore, for a parameter that is not \n" "specified, any previously set value is deleted.\n- If, as result of your \n" "modification, you no longer have access to the APIs, you will need to contact \n" "the Support team to regain access. For more information, see [Technical \n" "Support](https://docs.outscale.com/en/userguide/Technical-Support.html).\n" "\nRequired Argument: ApiAccessRuleId \n"
 ,
 	"Usage: oapi-cli UpdateApiAccessPolicy [options]\n" "Updates the API access policy of your account.\n\n**[NOTE]**\nOnly one API \n" "access policy can be associated with your account.\n" "\nRequired Argument: MaxAccessKeyExpirationSeconds, RequireTrustedEnv \n"
 ,
@@ -430,7 +444,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli DeleteVolume [options]\n" "Deletes a specified Block Storage Unit (BSU) volume.\nYou can delete available \n" "volumes only, that is, volumes that are not attached to a virtual machine (VM).\n" "\nRequired Argument: VolumeId \n"
 ,
-	"Usage: oapi-cli DeleteVms [options]\n" "Performs a shut down for at least one virtual machine (VM).\nThis operation is \n" "idempotent, that means that all calls succeed if you terminate a VM more than \n" "once.\n" "\nRequired Argument: VmIds \n"
+	"Usage: oapi-cli DeleteVms [options]\n" "Terminates one or more virtual machines (VMs).\nThis operation is idempotent, \n" "that means that all calls succeed if you terminate a VM more than once.\n" "\nRequired Argument: VmIds \n"
 ,
 	"Usage: oapi-cli DeleteVirtualGateway [options]\n" "Deletes a specified virtual gateway.\nBefore deleting a virtual gateway, we \n" "recommend to detach it from the Net and delete the VPN connection.\n" "\nRequired Argument: VirtualGatewayId \n"
 ,
@@ -456,7 +470,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli DeleteNetPeering [options]\n" "Deletes a Net peering.\nIf the Net peering is in the `active` state, it can be \n" "deleted either by the owner of the requester Net or the owner of the peer \n" "Net.\nIf it is in the `pending-acceptance` state, it can be deleted only by the \n" "owner of the requester Net.\nIf it is in the `rejected`, `failed`, or `expired` \n" "states, it cannot be deleted.\n" "\nRequired Argument: NetPeeringId \n"
 ,
-	"Usage: oapi-cli DeleteNetAccessPoint [options]\n" "Deletes one or more Net access point.\nThis action also deletes the \n" "corresponding routes added to the route tables you specified for the Net access \n" "point.\n" "\nRequired Argument: NetAccessPointId \n"
+	"Usage: oapi-cli DeleteNetAccessPoint [options]\n" "Deletes a specified Net access point.\nThis action also deletes the \n" "corresponding routes added to the route tables you specified for the Net access \n" "point.\n" "\nRequired Argument: NetAccessPointId \n"
 ,
 	"Usage: oapi-cli DeleteNet [options]\n" "Deletes a specified Net.\nBefore deleting the Net, you need to delete or detach \n" "all the resources associated with the Net:\n\n* Virtual machines (VMs)\n* Net \n" "peerings\n* Custom route tables\n* Public IPs allocated to resources in the \n" "Net\n* Network Interface Cards (NICs) created in the Subnets\n* Virtual \n" "gateways, Internet services and NAT services\n* Load balancers\n* Security \n" "groups\n* Subnets\n" "\nRequired Argument: NetId \n"
 ,
@@ -492,7 +506,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli DeleteCa [options]\n" "Deletes a specified Client Certificate Authority (CA).\n" "\nRequired Argument: CaId \n"
 ,
-	"Usage: oapi-cli DeleteApiAccessRule [options]\n" "Deletes a specified API access rule.\n\n**[NOTE]** \nYou cannot delete the last \n" "remaining API access rule. However, if you delete all the API access rules that \n" "allow you to access the API, you need to contact the Support team to regain \n" "access. For more information, see [Technical \n" "Support](https://docs.outscale.com/en/userguide/Technical-Support.html).\n" "\nRequired Argument: ApiAccessRuleId \n"
+	"Usage: oapi-cli DeleteApiAccessRule [options]\n" "Deletes a specified API access rule.\n\n**[NOTE]** \nYou cannot delete the last \n" "remaining API access rule. However, if you delete all the API access rules that \n" "allow you to access the APIs, you need to contact the Support team to regain \n" "access. For more information, see [Technical \n" "Support](https://docs.outscale.com/en/userguide/Technical-Support.html).\n" "\nRequired Argument: ApiAccessRuleId \n"
 ,
 	"Usage: oapi-cli DeleteAccessKey [options]\n" "Deletes the specified access key of your account.\n\n**[NOTE]**\nTo protect \n" "against brute force attacks, the number of requests allowed for this method in \n" "a given time period is limited.\n" "\nRequired Argument: AccessKeyId \n"
 ,
@@ -564,7 +578,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli CreateClientGateway [options]\n" "Provides information about your client gateway.\nThis action registers \n" "information to identify the client gateway that you deployed in your \n" "network.\nTo open a tunnel to the client gateway, you must provide the \n" "communication protocol type, the fixed public IP of the gateway, and an \n" "Autonomous System Number (ASN).\n" "\nRequired Argument: BgpAsn, PublicIp, ConnectionType \n"
 ,
-	"Usage: oapi-cli CreateCa [options]\n" "Creates a Client Certificate Authority (CA).\n\n**[NOTE]**\nIf you use OSC CLI, \n" "the content of your certificate file must be enclosed in quotes before you pass \n" "it into this command. For example:\n`$ cat ca-string.pem`\n`'-----BEGIN \n" "CERTIFICATE-----\\nXXXX\\nXXXX\\nXXXX\\n-----END CERTIFICATE-----\\n'`\n`$ \n" "osc-cli api CreateCa --CaPem &quot;$(cat ca-string.pem)&quot;`\n" "\nRequired Argument: CaPem \n"
+	"Usage: oapi-cli CreateCa [options]\n" "Creates a Client Certificate Authority (CA).\n" "\nRequired Argument: CaPem \n"
 ,
 	"Usage: oapi-cli CreateApiAccessRule [options]\n" "Creates a rule to allow access to the API from your account.\nYou need to \n" "specify at least the `CaIds` or the `IpRanges` parameter.\n\n**[NOTE]**\nBy \n" "default, your account has a set of rules allowing global access that you can \n" "delete. For more information, see [About API Access \n" "Rules](https://docs.outscale.com/en/userguide/About-API-Access-Rules.html).\n" "\nRequired Argument: none \n"
 ,
@@ -1309,7 +1323,8 @@ static const char *calls_args_descriptions[] = {
 "Filters: ref FiltersApiLog\n"
 	"	null\n"
 "NextPageToken: string\n"
-	"	The token to request the next page of results.\n"
+	"	The token to request the next page of results. Each token refers to a \n"
+	"	specific page.\n"
 "ResultsPerPage: int\n"
 	"	The maximum number of logs returned in a single response (between \n"
 	"	`1`and `1000`, both included). By default, `100`.\n"
@@ -1903,9 +1918,13 @@ static const char *calls_args_descriptions[] = {
 	"	(When creating) The ID of the volume you want to create a snapshot of.\n"
 ,
 	"Body: string\n"
-	"	The PEM-encoded X509 certificate.\n"
+	"	The PEM-encoded X509 certificate.With OSC CLI, use the following \n"
+	"	syntax to make sure your CA file is correctly parsed: \n"
+	"	`--CaPem=&quot;$(cat FILENAME)&quot;`.\n"
 "Chain: string\n"
-	"	The PEM-encoded intermediate certification authorities.\n"
+	"	The PEM-encoded intermediate certification authorities.With OSC CLI, \n"
+	"	use the following syntax to make sure your CA file is correctly \n"
+	"	parsed: `--CaPem=&quot;$(cat FILENAME)&quot;`.\n"
 "DryRun: bool\n"
 	"	If true, checks whether you have the required permissions to perform \n"
 	"	the action.\n"
@@ -1917,7 +1936,9 @@ static const char *calls_args_descriptions[] = {
 	"	The path to the server certificate, set to a slash (/) if not \n"
 	"	specified.\n"
 "PrivateKey: string\n"
-	"	The PEM-encoded private key matching the certificate.\n"
+	"	The PEM-encoded private key matching the certificate.With OSC CLI, \n"
+	"	use the following syntax to make sure your CA file is correctly \n"
+	"	parsed: `--CaPem=&quot;$(cat FILENAME)&quot;`.\n"
 ,
 	"DryRun: bool\n"
 	"	If true, checks whether you have the required permissions to perform \n"
@@ -2267,8 +2288,9 @@ static const char *calls_args_descriptions[] = {
 	"	The public fixed IPv4 address of your client gateway.\n"
 ,
 	"CaPem: string\n"
-	"	The CA in PEM format. It must be a single-line string, containing \n"
-	"	literal line breaks (`\\n`).\n"
+	"	The CA in PEM format.With OSC CLI, use the following syntax to make \n"
+	"	sure your CA file is correctly parsed: `--CaPem=&quot;$(cat \n"
+	"	FILENAME)&quot;`.\n"
 "Description: string\n"
 	"	The description of the CA.\n"
 "DryRun: bool\n"
@@ -2492,6 +2514,41 @@ int osc_load_region_from_conf(const char *profile, char **region)
 		return -1;
 	}
 	*region = strdup(json_object_get_string(region_obj));
+	return 0;
+}
+
+int osc_load_cert_from_conf(const char *profile, char **cert, char **key)
+{
+	const char *dest = "/.osc/config.json";
+	char *home = getenv("HOME");
+	struct json_object *cert_obj, *key_obj, *js;
+	char buf[1024];
+	int ret = 0;
+
+	strcpy(stpcpy(buf, home), dest);
+	js = json_object_from_file(buf);
+	if (!js) {
+		fprintf(stderr, "can't open %s\n", buf);
+		return -1;
+	}
+	js = json_object_object_get(js, profile);
+	if (!js)
+		return 0;
+
+	cert_obj = json_object_object_get(js, "x509_client_cert");
+	if (!cert_obj)
+		cert_obj = json_object_object_get(js, "client_certificate");
+	if (cert_obj) {
+		*cert = strdup(json_object_get_string(cert_obj));
+		ret |= OSC_ENV_FREE_CERT;
+	}
+
+	key_obj = json_object_object_get(js, "x509_client_sslkey");
+	if (key_obj) {
+		*key = strdup(json_object_get_string(key_obj));
+		ret |= OSC_ENV_FREE_SSLKEY;
+	}
+
 	return 0;
 }
 
@@ -35785,6 +35842,12 @@ out:
 	return res;
 }
 
+
+int osc_sdk_set_useragent(struct osc_env *e, const char *str)
+{
+	return curl_easy_setopt(e->c, CURLOPT_USERAGENT, str);
+}
+
 int osc_init_sdk(struct osc_env *e, const char *profile, unsigned int flag)
 {
 	char ak_sk[AK_SIZE + SK_SIZE + 2];
@@ -35792,7 +35855,11 @@ int osc_init_sdk(struct osc_env *e, const char *profile, unsigned int flag)
 	char *endpoint;
 	char *env_ak = getenv("OSC_ACCESS_KEY");
 	char *env_sk = getenv("OSC_SECRET_KEY");
+	char user_agent[sizeof "osc-sdk-c/" + OSC_SDK_VERSON_L];
+	char *cert = getenv("OSC_X509_CLIENT_CERT");
+	char *sslkey = getenv("OSC_X509_CLIENT_KEY");
 
+	strcpy(stpcpy(user_agent, "osc-sdk-c/"), osc_sdk_version_str());
 	e->region = getenv("OSC_REGION");
 	e->flag = flag;
 	endpoint = getenv("OSC_ENDPOINT_API");
@@ -35806,11 +35873,17 @@ int osc_init_sdk(struct osc_env *e, const char *profile, unsigned int flag)
 	}
 
 	if (profile) {
+		int f;
+
 		if (osc_load_ak_sk_from_conf(profile, &e->ak, &e->sk))
 			return -1;
+		e->flag |= OSC_ENV_FREE_AK_SK;
 		if (!osc_load_region_from_conf(profile, &e->region))
 			e->flag |= OSC_ENV_FREE_REGION;
-		e->flag |= OSC_ENV_FREE_AK_SK;
+		f = osc_load_cert_from_conf(profile, &e->cert, &e->sslkey);
+		if (f < 0)
+			return -1;
+		e->flag |= f;
 	}
 
 	if (!e->region)
@@ -35844,8 +35917,13 @@ int osc_init_sdk(struct osc_env *e, const char *profile, unsigned int flag)
 		curl_easy_setopt(e->c, CURLOPT_VERBOSE, 1);
 	if (flag & OSC_INSECURE_MODE)
 		curl_easy_setopt(e->c, CURLOPT_SSL_VERIFYPEER, 0);
+	if (cert)
+		curl_easy_setopt(e->c, CURLOPT_SSLCERT, cert);
+	if (sslkey)
+		curl_easy_setopt(e->c, CURLOPT_SSLKEY, sslkey);
 	curl_easy_setopt(e->c, CURLOPT_HTTPHEADER, e->headers);
 	curl_easy_setopt(e->c, CURLOPT_WRITEFUNCTION, write_data);
+	curl_easy_setopt(e->c, CURLOPT_USERAGENT, user_agent);
 
 	/* setting CA is CURL_CA_BUNDLE is set */
 	if (ca)
@@ -35873,6 +35951,14 @@ void osc_deinit_sdk(struct osc_env *e)
 		free(e->region);
 		e->region = NULL;
 	}
+
+	if (e->flag & OSC_ENV_FREE_CERT) {
+		free(e->cert);
+	}
+	if (e->flag & OSC_ENV_FREE_SSLKEY) {
+		free(e->sslkey);
+	}
+
 	e->c = NULL;
 	e->flag = 0;
 }
