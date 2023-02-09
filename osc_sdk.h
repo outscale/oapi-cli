@@ -59,15 +59,24 @@ struct osc_str {
 	char *buf;
 };
 
-#define OSC_ENV_FREE_AK_SK 1
-#define OSC_ENV_FREE_REGION 2
-#define OSC_VERBOSE_MODE 4
-#define OSC_INSECURE_MODE 8
-#define OSC_ENV_FREE_CERT 16
-#define OSC_ENV_FREE_SSLKEY 32
+#define OSC_ENV_FREE_AK 1 << 0
+#define OSC_ENV_FREE_REGION 1 << 1
+#define OSC_VERBOSE_MODE  1 << 2 /* curl verbose mode + print request content */
+#define OSC_INSECURE_MODE 1 << 3 /* see --insecure option of curl */
+#define OSC_ENV_FREE_CERT 1 << 4
+#define OSC_ENV_FREE_SSLKEY 1 << 5
+#define OSC_ENV_FREE_SK 1 << 6
+#define OSC_ENV_PASSWORD_AUTH 1 << 7 /* force password/login usage */
+
+#define OSC_ENV_FREE_AK_SK (OSC_ENV_FREE_AK | OSC_ENV_FREE_SK)
 
 #define OSC_API_VERSION "1.24"
 #define OSC_SDK_VERSION 0xC061AC
+
+enum osc_auth_method {
+	OSC_AKSK_METHOD,
+	OSC_PASSWORD_METHOD
+};
 
 struct osc_env {
 	char *ak;
@@ -76,6 +85,7 @@ struct osc_env {
 	char *cert;
 	char *sslkey;
 	int flag;
+	enum osc_auth_method auth_method;
 	struct curl_slist *headers;
 	struct osc_str endpoint;
 	CURL *c;
@@ -8834,6 +8844,8 @@ struct osc_accept_net_peering_arg  {
 
 int osc_load_ak_sk_from_conf(const char *profile, char **ak, char **sk);
 int osc_load_region_from_conf(const char *profile, char **region);
+int osc_load_loging_password_from_conf(const char *profile,
+				       char **email, char **password);
 
 /**
  * @brief parse osc config file, and store cred_path/key_path. key is optional.
@@ -8888,6 +8900,8 @@ static void osc_destroy_str(struct osc_str *e)
 }
 
 int osc_sdk_set_useragent(struct osc_env *e, const char *str);
+
+void *osc_realloc(void *buf, size_t l);
 
 #ifdef WITH_DESCRIPTION
 

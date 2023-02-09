@@ -8,6 +8,11 @@ struct ptr_array {
 	int size;
 };
 
+#define CHK_BAD_RET(check, ...)			\
+	if (check) BAD_RET(__VA_ARGS__);
+
+#define BAD_RET(...)				\
+	do { fprintf(stderr, __VA_ARGS__); return -1; } while(0)
 
 #define TRY_ALLOC_AT(s, a,pa,i,size)					\
 	do {								\
@@ -15,7 +20,8 @@ struct ptr_array {
 		if (s->nb_##a <= i) {					\
 			int sz = i + 1;					\
 			int oidx = ptr_array_get_idx(pa, s->a);		\
-			s->a = realloc(s->a, sz * size);		\
+			s->a = osc_realloc(s->a, sz * size);		\
+			CHK_BAD_RET(s->a, "allocation fail\n");		\
 			if (oidx < 0)					\
 				ptr_array_append(pa, s->a);		\
 			else {						\

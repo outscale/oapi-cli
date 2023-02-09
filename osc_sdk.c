@@ -38,11 +38,17 @@
 #include <string.h>
 #include <assert.h>
 #include "curl/curl.h"
+#include <time.h>
 #include "osc_sdk.h"
 #include "json.h"
 
 #define AK_SIZE 20
 #define SK_SIZE 40
+#define TIMESTAMP_SIZE 17
+#define TIME_HDR_KEY "X-Osc-Date: "
+#define TIME_HDR_KEY_L (sizeof TIME_HDR_KEY)
+
+#define CFG_FILE "/.osc/config.json"
 
 #ifdef _WIN32
 
@@ -2400,7 +2406,7 @@ const char *osc_find_args_description(const char *call_name)
 
 #endif  /* WITH_DESCRIPTION */
 
-static void *osc_realloc(void *buf, size_t l)
+void *osc_realloc(void *buf, size_t l)
 {
 	void *ret = realloc(buf, l);
 
@@ -2466,45 +2472,76 @@ int osc_str_append_string(struct osc_str *osc_str, const char *str)
 	return 0;
 }
 
+#define LOAD_CFG_TRY(test,  ...)				\
+	if (test) fprintf(stderr, __VA_ARGS__); return -1;
+
+#define LOAD_CFG_GET_HOME(buf)						\
+	{								\
+		const char *dest = CFG_FILE;				\
+		char *home = getenv("HOME");				\
+									\
+		LOAD_CFG_TRY(strlen(home) + sizeof CFG_FILE > sizeof buf, \
+			     "home path too big");			\
+		strcpy(stpcpy(buf, home), dest);			\
+	}
+
+
 int osc_load_ak_sk_from_conf(const char *profile, char **ak, char **sk)
 {
-	const char *dest = "/.osc/config.json";
-	char *home = getenv("HOME");
 	char buf[1024];
-	struct json_object *js;
+	struct json_object *js, *ak_js, *sk_js;
 
+	LOAD_CFG_GET_HOME(buf);
 	*sk = NULL;
 	*ak = NULL;
-	strcpy(stpcpy(buf, home), dest);
 	js = json_object_from_file(buf);
-	if (!js) {
-		fprintf(stderr, "can't open %s\n", buf);
-		return -1;
-	}
+	LOAD_CFG_TRY(!js, "can't open %s\n", buf);
 	js = json_object_object_get(js, profile);
-	if (!js) {
-		fprintf(stderr, "can't find profile '%s'\n", profile);
-		return -1;
-	}
+	LOAD_CFG_TRY(!js, "can't find profile %s\n", profile);
+	ak_js = json_object_object_get(js, "access_key");
+	LOAD_CFG_TRY(!ak_js, "can't find 'access_key' in profile '%s'\n", profile);
+	sk_js = json_object_object_get(js, "secret_key");
+	LOAD_CFG_TRY(!sk_js, "can't find 'secret_key' in profile '%s'\n", profile);
+
 	*ak = strdup(json_object_get_string(json_object_object_get(js, "access_key")));
 	*sk = strdup(json_object_get_string(json_object_object_get(js, "secret_key")));
 	return 0;
 }
 
+int osc_load_loging_password_from_conf(const char *profile,
+				       char **email, char **password)
+{
+	char buf[1024];
+	struct json_object *js, *login_js, *pass_js;
+
+	LOAD_CFG_GET_HOME(buf)
+	*password = NULL;
+	*email = NULL;
+	js = json_object_from_file(buf);
+	LOAD_CFG_TRY(!js, "can't open %s\n", buf);
+	js = json_object_object_get(js, profile);
+	LOAD_CFG_TRY(!js, "can't find profile '%s'\n", profile);
+	login_js = json_object_object_get(js, "login");
+	LOAD_CFG_TRY(!login_js, "can't find 'login' in profile '%s'\n", profile);
+	*email = strdup(json_object_get_string(login_js));
+
+	pass_js = json_object_object_get(js, "password");
+	if (!pass_js) {
+		return 0; /* is optional */
+	}
+	*password = strdup(json_object_get_string(pass_js));
+	return 0;
+}
+
 int osc_load_region_from_conf(const char *profile, char **region)
 {
-	const char *dest = "/.osc/config.json";
-	char *home = getenv("HOME");
 	struct json_object *region_obj;
 	char buf[1024];
 	struct json_object *js;
 
-	strcpy(stpcpy(buf, home), dest);
+	LOAD_CFG_GET_HOME(buf)
 	js = json_object_from_file(buf);
-	if (!js) {
-		fprintf(stderr, "can't open %s\n", buf);
-		return -1;
-	}
+	LOAD_CFG_TRY(!js, "can't open %s\n", buf);
 	js = json_object_object_get(js, profile);
 	if (!js)
 		return -1;
@@ -2519,18 +2556,13 @@ int osc_load_region_from_conf(const char *profile, char **region)
 
 int osc_load_cert_from_conf(const char *profile, char **cert, char **key)
 {
-	const char *dest = "/.osc/config.json";
-	char *home = getenv("HOME");
 	struct json_object *cert_obj, *key_obj, *js;
 	char buf[1024];
 	int ret = 0;
 
-	strcpy(stpcpy(buf, home), dest);
+	LOAD_CFG_GET_HOME(buf)
 	js = json_object_from_file(buf);
-	if (!js) {
-		fprintf(stderr, "can't open %s\n", buf);
-		return -1;
-	}
+	LOAD_CFG_TRY(!js, "can't open %s\n", buf);
 	js = json_object_object_get(js, profile);
 	if (!js)
 		return 0;
@@ -35850,34 +35882,60 @@ int osc_sdk_set_useragent(struct osc_env *e, const char *str)
 
 int osc_init_sdk(struct osc_env *e, const char *profile, unsigned int flag)
 {
-	char ak_sk[AK_SIZE + SK_SIZE + 2];
 	char *ca = getenv("CURL_CA_BUNDLE");
 	char *endpoint;
-	char *env_ak = getenv("OSC_ACCESS_KEY");
-	char *env_sk = getenv("OSC_SECRET_KEY");
 	char user_agent[sizeof "osc-sdk-c/" + OSC_SDK_VERSON_L];
 	char *cert = getenv("OSC_X509_CLIENT_CERT");
 	char *sslkey = getenv("OSC_X509_CLIENT_KEY");
+	char *auth = getenv("OSC_AUTH_METHOD");
 
 	strcpy(stpcpy(user_agent, "osc-sdk-c/"), osc_sdk_version_str());
 	e->region = getenv("OSC_REGION");
 	e->flag = flag;
+	e->auth_method = flag & OSC_ENV_PASSWORD_AUTH ? OSC_PASSWORD_METHOD :
+		OSC_AKSK_METHOD;
 	endpoint = getenv("OSC_ENDPOINT_API");
 	osc_init_str(&e->endpoint);
+
+	if (auth && (!strcmp(auth, "password") || !strcmp(auth, "basic")))
+		e->auth_method = OSC_PASSWORD_METHOD;
+	else if (auth && strcmp(auth, "accesskey")) {
+		fprintf(stderr, "'%s' invalid authentication method\n", auth);
+		return -1;
+	}
+
 	if (!profile) {
 		profile = getenv("OSC_PROFILE");
-		e->ak = env_ak;
-		e->sk = env_sk;
+		if (e->auth_method == OSC_PASSWORD_METHOD) {
+			e->ak = getenv("OSC_LOGIN");
+			e->sk = getenv("OSC_PASSWORD");
+		} else {
+			e->ak = getenv("OSC_ACCESS_KEY");
+			e->sk = getenv("OSC_SECRET_KEY");
+		}
 		if (!profile && (!e->ak || !e->sk))
 			profile = "default";
+
 	}
 
 	if (profile) {
 		int f;
 
-		if (osc_load_ak_sk_from_conf(profile, &e->ak, &e->sk))
-			return -1;
-		e->flag |= OSC_ENV_FREE_AK_SK;
+		if (e->auth_method == OSC_PASSWORD_METHOD) {
+			if (osc_load_loging_password_from_conf(profile, &e->ak,
+							       &e->sk) < 0)
+				return -1;
+			e->flag |= OSC_ENV_FREE_AK;
+			if (!e->sk)
+				e->sk = getenv("OSC_PASSWORD");
+			else
+				e->flag |= OSC_ENV_FREE_SK;
+		} else {
+			if (osc_load_ak_sk_from_conf(profile, &e->ak,
+						     &e->sk) < 0)
+				return -1;
+			e->flag |= OSC_ENV_FREE_AK_SK;
+		}
 		if (!osc_load_region_from_conf(profile, &e->region))
 			e->flag |= OSC_ENV_FREE_REGION;
 		f = osc_load_cert_from_conf(profile, &e->cert, &e->sslkey);
@@ -35897,20 +35955,25 @@ int osc_init_sdk(struct osc_env *e, const char *profile, unsigned int flag)
 		osc_str_append_string(&e->endpoint, endpoint);
 	}
 
-	if (!e->ak || !e->sk) {
-		fprintf(stderr, "access key and secret key needed\n");
-		return -1;
-	}
+	if (e->auth_method == OSC_AKSK_METHOD) {
+		if (!e->ak || !e->sk) {
+			fprintf(stderr, "access key and secret key needed\n");
+			return -1;
+		}
 
-	if (strlen(e->ak) != AK_SIZE || strlen(e->sk) != SK_SIZE) {
-		fprintf(stderr, "Wrong access key or secret key size\n");
-		return -1;
+		if (strlen(e->ak) != AK_SIZE || strlen(e->sk) != SK_SIZE) {
+			fprintf(stderr, "Wrong access key or secret key size\n");
+			return -1;
+		}
+	} else if (e->auth_method == OSC_PASSWORD_METHOD) {
+		if (!e->ak || !e->sk) {
+			fprintf(stderr, "login and password needed\n");
+			return -1;
+		}
 	}
 
 	e->headers = NULL;
-	stpcpy(stpcpy(stpcpy(ak_sk, e->ak), ":"), e->sk);
 	e->c = curl_easy_init();
-	e->headers = curl_slist_append(e->headers, "Content-Type: application/json");
 
 	/* Setting HEADERS */
 	if (flag & OSC_VERBOSE_MODE)
@@ -35921,7 +35984,6 @@ int osc_init_sdk(struct osc_env *e, const char *profile, unsigned int flag)
 		curl_easy_setopt(e->c, CURLOPT_SSLCERT, cert);
 	if (sslkey)
 		curl_easy_setopt(e->c, CURLOPT_SSLKEY, sslkey);
-	curl_easy_setopt(e->c, CURLOPT_HTTPHEADER, e->headers);
 	curl_easy_setopt(e->c, CURLOPT_WRITEFUNCTION, write_data);
 	curl_easy_setopt(e->c, CURLOPT_USERAGENT, user_agent);
 
@@ -35929,9 +35991,28 @@ int osc_init_sdk(struct osc_env *e, const char *profile, unsigned int flag)
 	if (ca)
 	  curl_easy_setopt(e->c, CURLOPT_CAINFO, ca);
 
+	e->headers = curl_slist_append(e->headers, "Content-Type: application/json");
+
 	/* For authentification we specify the method and our acces key / secret key */
-	curl_easy_setopt(e->c, CURLOPT_AWS_SIGV4, "osc");
-	curl_easy_setopt(e->c, CURLOPT_USERPWD, ak_sk);
+	if (e->auth_method == OSC_AKSK_METHOD) {
+		curl_easy_setopt(e->c, CURLOPT_AWS_SIGV4, "osc");
+	} else if (e->auth_method == OSC_PASSWORD_METHOD) {
+		time_t clock;
+		struct tm tm;
+		char time_hdr[TIME_HDR_KEY_L + TIMESTAMP_SIZE] = TIME_HDR_KEY;
+
+		time(&clock);
+		if (!gmtime_r(&clock, &tm)) {
+			fprintf(stderr, "gmtime_r fail\n");
+			return -1;
+		}
+		strftime(time_hdr + TIME_HDR_KEY_L - 1,
+			 TIMESTAMP_SIZE, "%Y%m%dT%H%M%SZ", &tm);
+		e->headers = curl_slist_append(e->headers, time_hdr);
+	}
+	curl_easy_setopt(e->c, CURLOPT_HTTPHEADER, e->headers);
+	curl_easy_setopt(e->c, CURLOPT_USERNAME, e->ak);
+	curl_easy_setopt(e->c, CURLOPT_PASSWORD, e->sk);
 
 	return 0;
 }
@@ -35941,9 +36022,11 @@ void osc_deinit_sdk(struct osc_env *e)
 	curl_slist_free_all(e->headers);
 	curl_easy_cleanup(e->c);
 	osc_deinit_str(&e->endpoint);
-	if (e->flag & OSC_ENV_FREE_AK_SK) {
+	if (e->flag & OSC_ENV_FREE_AK) {
 		free(e->ak);
 		e->ak = NULL;
+	}
+	if (e->flag & OSC_ENV_FREE_SK) {
 		free(e->sk);
 		e->sk = NULL;
 	}

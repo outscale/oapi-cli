@@ -322,8 +322,7 @@ int access_log_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->is_enabled = 0;
              } else {
-            		fprintf(stderr, "IsEnabled require true/false\n");
-            		return 1;
+            		BAD_RET("IsEnabled require true/false\n");
              }
         } else
 	if (!argcmp(str, "OsuBucketName")) {
@@ -446,8 +445,7 @@ int api_access_policy_parser(void *v_s, char *str, char *aa, struct ptr_array *p
              } else if (!strcasecmp(aa, "false")) {
             		s->require_trusted_env = 0;
              } else {
-            		fprintf(stderr, "RequireTrustedEnv require true/false\n");
-            		return 1;
+            		BAD_RET("RequireTrustedEnv require true/false\n");
              }
         } else
 	{
@@ -695,8 +693,7 @@ int bsu_created_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->delete_on_vm_deletion = 0;
              } else {
-            		fprintf(stderr, "DeleteOnVmDeletion require true/false\n");
-            		return 1;
+            		BAD_RET("DeleteOnVmDeletion require true/false\n");
              }
         } else
 	if (!argcmp(str, "LinkDate")) {
@@ -729,8 +726,7 @@ int bsu_to_create_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->delete_on_vm_deletion = 0;
              } else {
-            		fprintf(stderr, "DeleteOnVmDeletion require true/false\n");
-            		return 1;
+            		BAD_RET("DeleteOnVmDeletion require true/false\n");
              }
         } else
 	if (!argcmp(str, "Iops")) {
@@ -768,8 +764,7 @@ int bsu_to_update_vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
              } else if (!strcasecmp(aa, "false")) {
             		s->delete_on_vm_deletion = 0;
              } else {
-            		fprintf(stderr, "DeleteOnVmDeletion require true/false\n");
-            		return 1;
+            		BAD_RET("DeleteOnVmDeletion require true/false\n");
              }
         } else
 	if (!argcmp(str, "VolumeId")) {
@@ -817,13 +812,10 @@ int catalog_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Entries' require an index (example array ref CatalogEntry.Entries.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Entries' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Entries' require an index (example array ref CatalogEntry.Entries.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Entries' require a .\n");
             	      TRY_ALLOC_AT(s,entries, pa, pos, sizeof(*s->entries));
             	      cascade_struct = &s->entries[pos];
             	      cascade_parser = catalog_entry_parser;
@@ -926,13 +918,10 @@ int client_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Tags' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -1023,8 +1012,7 @@ int dhcp_options_set_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
              } else if (!strcasecmp(aa, "false")) {
             		s->default_arg = 0;
              } else {
-            		fprintf(stderr, "Default require true/false\n");
-            		return 1;
+            		BAD_RET("Default require true/false\n");
              }
         } else
 	if (!argcmp(str, "DhcpOptionsSetId")) {
@@ -1067,13 +1055,10 @@ int dhcp_options_set_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Tags' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -1513,8 +1498,7 @@ int filters_dhcp_options_parser(void *v_s, char *str, char *aa, struct ptr_array
              } else if (!strcasecmp(aa, "false")) {
             		s->default_arg = 0;
              } else {
-            		fprintf(stderr, "Default require true/false\n");
-            		return 1;
+            		BAD_RET("Default require true/false\n");
              }
         } else
 	if (!argcmp(str, "DhcpOptionsSetIds")) {
@@ -1640,8 +1624,7 @@ int filters_flexible_gpu_parser(void *v_s, char *str, char *aa, struct ptr_array
              } else if (!strcasecmp(aa, "false")) {
             		s->delete_on_vm_deletion = 0;
              } else {
-            		fprintf(stderr, "DeleteOnVmDeletion require true/false\n");
-            		return 1;
+            		BAD_RET("DeleteOnVmDeletion require true/false\n");
              }
         } else
 	if (!argcmp(str, "FlexibleGpuIds")) {
@@ -1722,8 +1705,7 @@ int filters_image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->block_device_mapping_delete_on_vm_deletion = 0;
              } else {
-            		fprintf(stderr, "BlockDeviceMappingDeleteOnVmDeletion require true/false\n");
-            		return 1;
+            		BAD_RET("BlockDeviceMappingDeleteOnVmDeletion require true/false\n");
              }
         } else
 	if (!argcmp(str, "BlockDeviceMappingDeviceNames")) {
@@ -1803,8 +1785,7 @@ int filters_image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->permissions_to_launch_global_permission = 0;
              } else {
-            		fprintf(stderr, "PermissionsToLaunchGlobalPermission require true/false\n");
-            		return 1;
+            		BAD_RET("PermissionsToLaunchGlobalPermission require true/false\n");
              }
         } else
 	if (!argcmp(str, "ProductCodes")) {
@@ -2051,8 +2032,7 @@ int filters_net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->is_default_arg = 0;
              } else {
-            		fprintf(stderr, "IsDefault require true/false\n");
-            		return 1;
+            		BAD_RET("IsDefault require true/false\n");
              }
         } else
 	if (!argcmp(str, "NetIds")) {
@@ -2261,8 +2241,7 @@ int filters_nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->is_source_dest_check = 0;
              } else {
-            		fprintf(stderr, "IsSourceDestCheck require true/false\n");
-            		return 1;
+            		BAD_RET("IsSourceDestCheck require true/false\n");
              }
         } else
 	if (!argcmp(str, "LinkNicDeleteOnVmDeletion")) {
@@ -2272,8 +2251,7 @@ int filters_nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->link_nic_delete_on_vm_deletion = 0;
              } else {
-            		fprintf(stderr, "LinkNicDeleteOnVmDeletion require true/false\n");
-            		return 1;
+            		BAD_RET("LinkNicDeleteOnVmDeletion require true/false\n");
              }
         } else
 	if (!argcmp(str, "LinkNicDeviceNumbers")) {
@@ -2388,8 +2366,7 @@ int filters_nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->private_ips_primary_ip = 0;
              } else {
-            		fprintf(stderr, "PrivateIpsPrimaryIp require true/false\n");
-            		return 1;
+            		BAD_RET("PrivateIpsPrimaryIp require true/false\n");
              }
         } else
 	if (!argcmp(str, "PrivateIpsPrivateIps")) {
@@ -2620,8 +2597,7 @@ int filters_route_table_parser(void *v_s, char *str, char *aa, struct ptr_array 
              } else if (!strcasecmp(aa, "false")) {
             		s->link_route_table_main = 0;
              } else {
-            		fprintf(stderr, "LinkRouteTableMain require true/false\n");
-            		return 1;
+            		BAD_RET("LinkRouteTableMain require true/false\n");
              }
         } else
 	if (!argcmp(str, "LinkSubnetIds")) {
@@ -2964,8 +2940,7 @@ int filters_snapshot_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
              } else if (!strcasecmp(aa, "false")) {
             		s->permissions_to_create_volume_global_permission = 0;
              } else {
-            		fprintf(stderr, "PermissionsToCreateVolumeGlobalPermission require true/false\n");
-            		return 1;
+            		BAD_RET("PermissionsToCreateVolumeGlobalPermission require true/false\n");
              }
         } else
 	if (!argcmp(str, "Progresses")) {
@@ -3261,8 +3236,7 @@ int filters_vm_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
              } else if (!strcasecmp(aa, "false")) {
             		s->bsu_optimized = 0;
              } else {
-            		fprintf(stderr, "BsuOptimized require true/false\n");
-            		return 1;
+            		BAD_RET("BsuOptimized require true/false\n");
              }
         } else
 	if (!argcmp(str, "MemorySizes")) {
@@ -3379,8 +3353,7 @@ int filters_volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
              } else if (!strcasecmp(aa, "false")) {
             		s->link_volume_delete_on_vm_deletion = 0;
              } else {
-            		fprintf(stderr, "LinkVolumeDeleteOnVmDeletion require true/false\n");
-            		return 1;
+            		BAD_RET("LinkVolumeDeleteOnVmDeletion require true/false\n");
              }
         } else
 	if (!argcmp(str, "LinkVolumeDeviceNames")) {
@@ -3524,8 +3497,7 @@ int filters_vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_arr
              } else if (!strcasecmp(aa, "false")) {
             		s->static_routes_only = 0;
              } else {
-            		fprintf(stderr, "StaticRoutesOnly require true/false\n");
-            		return 1;
+            		BAD_RET("StaticRoutesOnly require true/false\n");
              }
         } else
 	if (!argcmp(str, "TagKeys")) {
@@ -3578,8 +3550,7 @@ int flexible_gpu_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->delete_on_vm_deletion = 0;
              } else {
-            		fprintf(stderr, "DeleteOnVmDeletion require true/false\n");
-            		return 1;
+            		BAD_RET("DeleteOnVmDeletion require true/false\n");
              }
         } else
 	if (!argcmp(str, "FlexibleGpuId")) {
@@ -3722,13 +3693,10 @@ int image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'BlockDeviceMappings' require an index (example array ref BlockDeviceMappingImage.BlockDeviceMappings.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'BlockDeviceMappings' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'BlockDeviceMappings' require an index (example array ref BlockDeviceMappingImage.BlockDeviceMappings.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'BlockDeviceMappings' require a .\n");
             	      TRY_ALLOC_AT(s,block_device_mappings, pa, pos, sizeof(*s->block_device_mappings));
             	      cascade_struct = &s->block_device_mappings[pos];
             	      cascade_parser = block_device_mapping_image_parser;
@@ -3836,13 +3804,10 @@ int image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Tags' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -3909,13 +3874,10 @@ int image_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array *p
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Tags' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -3965,13 +3927,10 @@ int internet_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Tags' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -4040,8 +3999,7 @@ int link_nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->delete_on_vm_deletion = 0;
              } else {
-            		fprintf(stderr, "DeleteOnVmDeletion require true/false\n");
-            		return 1;
+            		BAD_RET("DeleteOnVmDeletion require true/false\n");
              }
         } else
 	if (!argcmp(str, "DeviceNumber")) {
@@ -4084,8 +4042,7 @@ int link_nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
              } else if (!strcasecmp(aa, "false")) {
             		s->delete_on_vm_deletion = 0;
              } else {
-            		fprintf(stderr, "DeleteOnVmDeletion require true/false\n");
-            		return 1;
+            		BAD_RET("DeleteOnVmDeletion require true/false\n");
              }
         } else
 	if (!argcmp(str, "DeviceNumber")) {
@@ -4118,8 +4075,7 @@ int link_nic_to_update_parser(void *v_s, char *str, char *aa, struct ptr_array *
              } else if (!strcasecmp(aa, "false")) {
             		s->delete_on_vm_deletion = 0;
              } else {
-            		fprintf(stderr, "DeleteOnVmDeletion require true/false\n");
-            		return 1;
+            		BAD_RET("DeleteOnVmDeletion require true/false\n");
              }
         } else
 	if (!argcmp(str, "LinkNicId")) {
@@ -4203,8 +4159,7 @@ int link_route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
              } else if (!strcasecmp(aa, "false")) {
             		s->main = 0;
              } else {
-            		fprintf(stderr, "Main require true/false\n");
-            		return 1;
+            		BAD_RET("Main require true/false\n");
              }
         } else
 	if (!argcmp(str, "RouteTableId")) {
@@ -4232,8 +4187,7 @@ int linked_volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->delete_on_vm_deletion = 0;
              } else {
-            		fprintf(stderr, "DeleteOnVmDeletion require true/false\n");
-            		return 1;
+            		BAD_RET("DeleteOnVmDeletion require true/false\n");
              }
         } else
 	if (!argcmp(str, "DeviceName")) {
@@ -4446,13 +4400,10 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'ApplicationStickyCookiePolicies' require an index (example array ref ApplicationStickyCookiePolicy.ApplicationStickyCookiePolicies.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'ApplicationStickyCookiePolicies' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'ApplicationStickyCookiePolicies' require an index (example array ref ApplicationStickyCookiePolicy.ApplicationStickyCookiePolicies.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'ApplicationStickyCookiePolicies' require a .\n");
             	      TRY_ALLOC_AT(s,application_sticky_cookie_policies, pa, pos, sizeof(*s->application_sticky_cookie_policies));
             	      cascade_struct = &s->application_sticky_cookie_policies[pos];
             	      cascade_parser = application_sticky_cookie_policy_parser;
@@ -4510,13 +4461,10 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Listeners' require an index (example array ref Listener.Listeners.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Listeners' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Listeners' require an index (example array ref Listener.Listeners.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Listeners' require a .\n");
             	      TRY_ALLOC_AT(s,listeners, pa, pos, sizeof(*s->listeners));
             	      cascade_struct = &s->listeners[pos];
             	      cascade_parser = listener_parser;
@@ -4543,13 +4491,10 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'LoadBalancerStickyCookiePolicies' require an index (example array ref LoadBalancerStickyCookiePolicy.LoadBalancerStickyCookiePolicies.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'LoadBalancerStickyCookiePolicies' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'LoadBalancerStickyCookiePolicies' require an index (example array ref LoadBalancerStickyCookiePolicy.LoadBalancerStickyCookiePolicies.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'LoadBalancerStickyCookiePolicies' require a .\n");
             	      TRY_ALLOC_AT(s,load_balancer_sticky_cookie_policies, pa, pos, sizeof(*s->load_balancer_sticky_cookie_policies));
             	      cascade_struct = &s->load_balancer_sticky_cookie_policies[pos];
             	      cascade_parser = load_balancer_sticky_cookie_policy_parser;
@@ -4584,8 +4529,7 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->secured_cookies = 0;
              } else {
-            		fprintf(stderr, "SecuredCookies require true/false\n");
-            		return 1;
+            		BAD_RET("SecuredCookies require true/false\n");
              }
         } else
 	if (!argcmp(str, "SecurityGroups")) {
@@ -4635,13 +4579,10 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Tags' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -4874,13 +4815,10 @@ int nat_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'PublicIps' require an index (example array ref PublicIpLight.PublicIps.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'PublicIps' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'PublicIps' require an index (example array ref PublicIpLight.PublicIps.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'PublicIps' require a .\n");
             	      TRY_ALLOC_AT(s,public_ips, pa, pos, sizeof(*s->public_ips));
             	      cascade_struct = &s->public_ips[pos];
             	      cascade_parser = public_ip_light_parser;
@@ -4912,13 +4850,10 @@ int nat_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Tags' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -4968,13 +4903,10 @@ int net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Tags' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -5036,13 +4968,10 @@ int net_access_point_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Tags' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -5128,13 +5057,10 @@ int net_peering_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Tags' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -5208,8 +5134,7 @@ int nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->is_source_dest_checked = 0;
              } else {
-            		fprintf(stderr, "IsSourceDestChecked require true/false\n");
-            		return 1;
+            		BAD_RET("IsSourceDestChecked require true/false\n");
              }
         } else
 	if (!argcmp(str, "LinkNic")) {
@@ -5275,13 +5200,10 @@ int nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'PrivateIps' require an index (example array ref PrivateIp.PrivateIps.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'PrivateIps' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'PrivateIps' require an index (example array ref PrivateIp.PrivateIps.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'PrivateIps' require a .\n");
             	      TRY_ALLOC_AT(s,private_ips, pa, pos, sizeof(*s->private_ips));
             	      cascade_struct = &s->private_ips[pos];
             	      cascade_parser = private_ip_parser;
@@ -5303,13 +5225,10 @@ int nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'SecurityGroups' require an index (example array ref SecurityGroupLight.SecurityGroups.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'SecurityGroups' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'SecurityGroups' require an index (example array ref SecurityGroupLight.SecurityGroups.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'SecurityGroups' require a .\n");
             	      TRY_ALLOC_AT(s,security_groups, pa, pos, sizeof(*s->security_groups));
             	      cascade_struct = &s->security_groups[pos];
             	      cascade_parser = security_group_light_parser;
@@ -5346,13 +5265,10 @@ int nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Tags' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -5380,8 +5296,7 @@ int nic_for_vm_creation_parser(void *v_s, char *str, char *aa, struct ptr_array 
              } else if (!strcasecmp(aa, "false")) {
             		s->delete_on_vm_deletion = 0;
              } else {
-            		fprintf(stderr, "DeleteOnVmDeletion require true/false\n");
-            		return 1;
+            		BAD_RET("DeleteOnVmDeletion require true/false\n");
              }
         } else
 	if (!argcmp(str, "Description")) {
@@ -5408,13 +5323,10 @@ int nic_for_vm_creation_parser(void *v_s, char *str, char *aa, struct ptr_array 
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'PrivateIps' require an index (example array ref PrivateIpLight.PrivateIps.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'PrivateIps' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'PrivateIps' require an index (example array ref PrivateIpLight.PrivateIps.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'PrivateIps' require a .\n");
             	      TRY_ALLOC_AT(s,private_ips, pa, pos, sizeof(*s->private_ips));
             	      cascade_struct = &s->private_ips[pos];
             	      cascade_parser = private_ip_light_parser;
@@ -5469,8 +5381,7 @@ int nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->is_source_dest_checked = 0;
              } else {
-            		fprintf(stderr, "IsSourceDestChecked require true/false\n");
-            		return 1;
+            		BAD_RET("IsSourceDestChecked require true/false\n");
              }
         } else
 	if (!argcmp(str, "LinkNic")) {
@@ -5536,13 +5447,10 @@ int nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'PrivateIps' require an index (example array ref PrivateIpLightForVm.PrivateIps.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'PrivateIps' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'PrivateIps' require an index (example array ref PrivateIpLightForVm.PrivateIps.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'PrivateIps' require a .\n");
             	      TRY_ALLOC_AT(s,private_ips, pa, pos, sizeof(*s->private_ips));
             	      cascade_struct = &s->private_ips[pos];
             	      cascade_parser = private_ip_light_for_vm_parser;
@@ -5564,13 +5472,10 @@ int nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'SecurityGroups' require an index (example array ref SecurityGroupLight.SecurityGroups.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'SecurityGroups' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'SecurityGroups' require an index (example array ref SecurityGroupLight.SecurityGroups.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'SecurityGroups' require a .\n");
             	      TRY_ALLOC_AT(s,security_groups, pa, pos, sizeof(*s->security_groups));
             	      cascade_struct = &s->security_groups[pos];
             	      cascade_parser = security_group_light_parser;
@@ -5729,8 +5634,7 @@ int permissions_on_resource_parser(void *v_s, char *str, char *aa, struct ptr_ar
              } else if (!strcasecmp(aa, "false")) {
             		s->global_permission = 0;
              } else {
-            		fprintf(stderr, "GlobalPermission require true/false\n");
-            		return 1;
+            		BAD_RET("GlobalPermission require true/false\n");
              }
         } else
 	{
@@ -5908,8 +5812,7 @@ int private_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->is_primary = 0;
              } else {
-            		fprintf(stderr, "IsPrimary require true/false\n");
-            		return 1;
+            		BAD_RET("IsPrimary require true/false\n");
              }
         } else
 	if (!argcmp(str, "LinkPublicIp")) {
@@ -5954,8 +5857,7 @@ int private_ip_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
              } else if (!strcasecmp(aa, "false")) {
             		s->is_primary = 0;
              } else {
-            		fprintf(stderr, "IsPrimary require true/false\n");
-            		return 1;
+            		BAD_RET("IsPrimary require true/false\n");
              }
         } else
 	if (!argcmp(str, "PrivateIp")) {
@@ -5978,8 +5880,7 @@ int private_ip_light_for_vm_parser(void *v_s, char *str, char *aa, struct ptr_ar
              } else if (!strcasecmp(aa, "false")) {
             		s->is_primary = 0;
              } else {
-            		fprintf(stderr, "IsPrimary require true/false\n");
-            		return 1;
+            		BAD_RET("IsPrimary require true/false\n");
              }
         } else
 	if (!argcmp(str, "LinkPublicIp")) {
@@ -6079,13 +5980,10 @@ int public_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Tags' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -6186,13 +6084,10 @@ int quota_types_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Quotas' require an index (example array ref Quota.Quotas.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Quotas' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Quotas' require an index (example array ref Quota.Quotas.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Quotas' require a .\n");
             	      TRY_ALLOC_AT(s,quotas, pa, pos, sizeof(*s->quotas));
             	      cascade_struct = &s->quotas[pos];
             	      cascade_parser = quota_parser;
@@ -6370,13 +6265,10 @@ int route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'LinkRouteTables' require an index (example array ref LinkRouteTable.LinkRouteTables.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'LinkRouteTables' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'LinkRouteTables' require an index (example array ref LinkRouteTable.LinkRouteTables.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'LinkRouteTables' require a .\n");
             	      TRY_ALLOC_AT(s,link_route_tables, pa, pos, sizeof(*s->link_route_tables));
             	      cascade_struct = &s->link_route_tables[pos];
             	      cascade_parser = link_route_table_parser;
@@ -6403,13 +6295,10 @@ int route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'RoutePropagatingVirtualGateways' require an index (example array ref RoutePropagatingVirtualGateway.RoutePropagatingVirtualGateways.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'RoutePropagatingVirtualGateways' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'RoutePropagatingVirtualGateways' require an index (example array ref RoutePropagatingVirtualGateway.RoutePropagatingVirtualGateways.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'RoutePropagatingVirtualGateways' require a .\n");
             	      TRY_ALLOC_AT(s,route_propagating_virtual_gateways, pa, pos, sizeof(*s->route_propagating_virtual_gateways));
             	      cascade_struct = &s->route_propagating_virtual_gateways[pos];
             	      cascade_parser = route_propagating_virtual_gateway_parser;
@@ -6436,13 +6325,10 @@ int route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Routes' require an index (example array ref Route.Routes.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Routes' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Routes' require an index (example array ref Route.Routes.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Routes' require a .\n");
             	      TRY_ALLOC_AT(s,routes, pa, pos, sizeof(*s->routes));
             	      cascade_struct = &s->routes[pos];
             	      cascade_parser = route_parser;
@@ -6464,13 +6350,10 @@ int route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Tags' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -6510,13 +6393,10 @@ int security_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'InboundRules' require an index (example array ref SecurityGroupRule.InboundRules.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'InboundRules' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'InboundRules' require an index (example array ref SecurityGroupRule.InboundRules.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'InboundRules' require a .\n");
             	      TRY_ALLOC_AT(s,inbound_rules, pa, pos, sizeof(*s->inbound_rules));
             	      cascade_struct = &s->inbound_rules[pos];
             	      cascade_parser = security_group_rule_parser;
@@ -6543,13 +6423,10 @@ int security_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'OutboundRules' require an index (example array ref SecurityGroupRule.OutboundRules.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'OutboundRules' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'OutboundRules' require an index (example array ref SecurityGroupRule.OutboundRules.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'OutboundRules' require a .\n");
             	      TRY_ALLOC_AT(s,outbound_rules, pa, pos, sizeof(*s->outbound_rules));
             	      cascade_struct = &s->outbound_rules[pos];
             	      cascade_parser = security_group_rule_parser;
@@ -6581,13 +6458,10 @@ int security_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Tags' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -6652,13 +6526,10 @@ int security_group_rule_parser(void *v_s, char *str, char *aa, struct ptr_array 
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'SecurityGroupsMembers' require an index (example array ref SecurityGroupsMember.SecurityGroupsMembers.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'SecurityGroupsMembers' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'SecurityGroupsMembers' require an index (example array ref SecurityGroupsMember.SecurityGroupsMembers.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'SecurityGroupsMembers' require a .\n");
             	      TRY_ALLOC_AT(s,security_groups_members, pa, pos, sizeof(*s->security_groups_members));
             	      cascade_struct = &s->security_groups_members[pos];
             	      cascade_parser = security_groups_member_parser;
@@ -6838,13 +6709,10 @@ int snapshot_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Tags' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -6921,13 +6789,10 @@ int snapshot_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Tags' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -7029,8 +6894,7 @@ int subnet_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->map_public_ip_on_launch = 0;
              } else {
-            		fprintf(stderr, "MapPublicIpOnLaunch require true/false\n");
-            		return 1;
+            		BAD_RET("MapPublicIpOnLaunch require true/false\n");
              }
         } else
 	if (!argcmp(str, "NetId")) {
@@ -7062,13 +6926,10 @@ int subnet_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Tags' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -7192,13 +7053,10 @@ int virtual_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'NetToVirtualGatewayLinks' require an index (example array ref NetToVirtualGatewayLink.NetToVirtualGatewayLinks.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'NetToVirtualGatewayLinks' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'NetToVirtualGatewayLinks' require an index (example array ref NetToVirtualGatewayLink.NetToVirtualGatewayLinks.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'NetToVirtualGatewayLinks' require a .\n");
             	      TRY_ALLOC_AT(s,net_to_virtual_gateway_links, pa, pos, sizeof(*s->net_to_virtual_gateway_links));
             	      cascade_struct = &s->net_to_virtual_gateway_links[pos];
             	      cascade_parser = net_to_virtual_gateway_link_parser;
@@ -7225,13 +7083,10 @@ int virtual_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Tags' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -7271,13 +7126,10 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'BlockDeviceMappings' require an index (example array ref BlockDeviceMappingCreated.BlockDeviceMappings.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'BlockDeviceMappings' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'BlockDeviceMappings' require an index (example array ref BlockDeviceMappingCreated.BlockDeviceMappings.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'BlockDeviceMappings' require a .\n");
             	      TRY_ALLOC_AT(s,block_device_mappings, pa, pos, sizeof(*s->block_device_mappings));
             	      cascade_struct = &s->block_device_mappings[pos];
             	      cascade_parser = block_device_mapping_created_parser;
@@ -7297,8 +7149,7 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->bsu_optimized = 0;
              } else {
-            		fprintf(stderr, "BsuOptimized require true/false\n");
-            		return 1;
+            		BAD_RET("BsuOptimized require true/false\n");
              }
         } else
 	if (!argcmp(str, "ClientToken")) {
@@ -7318,8 +7169,7 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->deletion_protection = 0;
              } else {
-            		fprintf(stderr, "DeletionProtection require true/false\n");
-            		return 1;
+            		BAD_RET("DeletionProtection require true/false\n");
              }
         } else
 	if (!argcmp(str, "Hypervisor")) {
@@ -7339,8 +7189,7 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->is_source_dest_checked = 0;
              } else {
-            		fprintf(stderr, "IsSourceDestChecked require true/false\n");
-            		return 1;
+            		BAD_RET("IsSourceDestChecked require true/false\n");
              }
         } else
 	if (!argcmp(str, "KeypairName")) {
@@ -7360,8 +7209,7 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->nested_virtualization = 0;
              } else {
-            		fprintf(stderr, "NestedVirtualization require true/false\n");
-            		return 1;
+            		BAD_RET("NestedVirtualization require true/false\n");
              }
         } else
 	if (!argcmp(str, "NetId")) {
@@ -7378,13 +7226,10 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Nics' require an index (example array ref NicLight.Nics.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Nics' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Nics' require an index (example array ref NicLight.Nics.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Nics' require a .\n");
             	      TRY_ALLOC_AT(s,nics, pa, pos, sizeof(*s->nics));
             	      cascade_struct = &s->nics[pos];
             	      cascade_parser = nic_light_parser;
@@ -7475,13 +7320,10 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'SecurityGroups' require an index (example array ref SecurityGroupLight.SecurityGroups.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'SecurityGroups' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'SecurityGroups' require an index (example array ref SecurityGroupLight.SecurityGroups.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'SecurityGroups' require a .\n");
             	      TRY_ALLOC_AT(s,security_groups, pa, pos, sizeof(*s->security_groups));
             	      cascade_struct = &s->security_groups[pos];
             	      cascade_parser = security_group_light_parser;
@@ -7518,13 +7360,10 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Tags' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -7597,13 +7436,10 @@ int vm_states_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'MaintenanceEvents' require an index (example array ref MaintenanceEvent.MaintenanceEvents.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'MaintenanceEvents' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'MaintenanceEvents' require an index (example array ref MaintenanceEvent.MaintenanceEvents.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'MaintenanceEvents' require a .\n");
             	      TRY_ALLOC_AT(s,maintenance_events, pa, pos, sizeof(*s->maintenance_events));
             	      cascade_struct = &s->maintenance_events[pos];
             	      cascade_parser = maintenance_event_parser;
@@ -7646,8 +7482,7 @@ int vm_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->bsu_optimized = 0;
              } else {
-            		fprintf(stderr, "BsuOptimized require true/false\n");
-            		return 1;
+            		BAD_RET("BsuOptimized require true/false\n");
              }
         } else
 	if (!argcmp(str, "MaxPrivateIps")) {
@@ -7707,13 +7542,10 @@ int volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'LinkedVolumes' require an index (example array ref LinkedVolume.LinkedVolumes.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'LinkedVolumes' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'LinkedVolumes' require an index (example array ref LinkedVolume.LinkedVolumes.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'LinkedVolumes' require a .\n");
             	      TRY_ALLOC_AT(s,linked_volumes, pa, pos, sizeof(*s->linked_volumes));
             	      cascade_struct = &s->linked_volumes[pos];
             	      cascade_parser = linked_volume_parser;
@@ -7755,13 +7587,10 @@ int volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Tags' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -7816,13 +7645,10 @@ int vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Routes' require an index (example array ref RouteLight.Routes.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Routes' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Routes' require an index (example array ref RouteLight.Routes.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Routes' require a .\n");
             	      TRY_ALLOC_AT(s,routes, pa, pos, sizeof(*s->routes));
             	      cascade_struct = &s->routes[pos];
             	      cascade_parser = route_light_parser;
@@ -7847,8 +7673,7 @@ int vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
              } else if (!strcasecmp(aa, "false")) {
             		s->static_routes_only = 0;
              } else {
-            		fprintf(stderr, "StaticRoutesOnly require true/false\n");
-            		return 1;
+            		BAD_RET("StaticRoutesOnly require true/false\n");
              }
         } else
 	if (!argcmp(str, "Tags")) {
@@ -7860,13 +7685,10 @@ int vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'Tags' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -7888,13 +7710,10 @@ int vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 
             	      ++dot_pos;
             	      pos = strtoul(dot_pos, &endptr, 0);
-            	      if (endptr == dot_pos) {
-            		      fprintf(stderr, "'VgwTelemetries' require an index (example array ref VgwTelemetry.VgwTelemetries.0)\n");
-            		      return -1;
-            	      } else if (*endptr != '.') {
-            		      fprintf(stderr, "'VgwTelemetries' require a .\n");
-            		      return -1;
-            	      }
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'VgwTelemetries' require an index (example array ref VgwTelemetry.VgwTelemetries.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'VgwTelemetries' require a .\n");
             	      TRY_ALLOC_AT(s,vgw_telemetries, pa, pos, sizeof(*s->vgw_telemetries));
             	      cascade_struct = &s->vgw_telemetries[pos];
             	      cascade_parser = vgw_telemetry_parser;
@@ -7996,8 +7815,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->account_id = 0;
              } else {
-            		fprintf(stderr, "AccountId require true/false\n");
-            		return 1;
+            		BAD_RET("AccountId require true/false\n");
              }
         } else
 	if (!argcmp(str, "CallDuration")) {
@@ -8007,8 +7825,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->call_duration = 0;
              } else {
-            		fprintf(stderr, "CallDuration require true/false\n");
-            		return 1;
+            		BAD_RET("CallDuration require true/false\n");
              }
         } else
 	if (!argcmp(str, "QueryAccessKey")) {
@@ -8018,8 +7835,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->query_access_key = 0;
              } else {
-            		fprintf(stderr, "QueryAccessKey require true/false\n");
-            		return 1;
+            		BAD_RET("QueryAccessKey require true/false\n");
              }
         } else
 	if (!argcmp(str, "QueryApiName")) {
@@ -8029,8 +7845,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->query_api_name = 0;
              } else {
-            		fprintf(stderr, "QueryApiName require true/false\n");
-            		return 1;
+            		BAD_RET("QueryApiName require true/false\n");
              }
         } else
 	if (!argcmp(str, "QueryApiVersion")) {
@@ -8040,8 +7855,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->query_api_version = 0;
              } else {
-            		fprintf(stderr, "QueryApiVersion require true/false\n");
-            		return 1;
+            		BAD_RET("QueryApiVersion require true/false\n");
              }
         } else
 	if (!argcmp(str, "QueryCallName")) {
@@ -8051,8 +7865,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->query_call_name = 0;
              } else {
-            		fprintf(stderr, "QueryCallName require true/false\n");
-            		return 1;
+            		BAD_RET("QueryCallName require true/false\n");
              }
         } else
 	if (!argcmp(str, "QueryDate")) {
@@ -8062,8 +7875,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->query_date = 0;
              } else {
-            		fprintf(stderr, "QueryDate require true/false\n");
-            		return 1;
+            		BAD_RET("QueryDate require true/false\n");
              }
         } else
 	if (!argcmp(str, "QueryHeaderRaw")) {
@@ -8073,8 +7885,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->query_header_raw = 0;
              } else {
-            		fprintf(stderr, "QueryHeaderRaw require true/false\n");
-            		return 1;
+            		BAD_RET("QueryHeaderRaw require true/false\n");
              }
         } else
 	if (!argcmp(str, "QueryHeaderSize")) {
@@ -8084,8 +7895,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->query_header_size = 0;
              } else {
-            		fprintf(stderr, "QueryHeaderSize require true/false\n");
-            		return 1;
+            		BAD_RET("QueryHeaderSize require true/false\n");
              }
         } else
 	if (!argcmp(str, "QueryIpAddress")) {
@@ -8095,8 +7905,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->query_ip_address = 0;
              } else {
-            		fprintf(stderr, "QueryIpAddress require true/false\n");
-            		return 1;
+            		BAD_RET("QueryIpAddress require true/false\n");
              }
         } else
 	if (!argcmp(str, "QueryPayloadRaw")) {
@@ -8106,8 +7915,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->query_payload_raw = 0;
              } else {
-            		fprintf(stderr, "QueryPayloadRaw require true/false\n");
-            		return 1;
+            		BAD_RET("QueryPayloadRaw require true/false\n");
              }
         } else
 	if (!argcmp(str, "QueryPayloadSize")) {
@@ -8117,8 +7925,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->query_payload_size = 0;
              } else {
-            		fprintf(stderr, "QueryPayloadSize require true/false\n");
-            		return 1;
+            		BAD_RET("QueryPayloadSize require true/false\n");
              }
         } else
 	if (!argcmp(str, "QueryUserAgent")) {
@@ -8128,8 +7935,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->query_user_agent = 0;
              } else {
-            		fprintf(stderr, "QueryUserAgent require true/false\n");
-            		return 1;
+            		BAD_RET("QueryUserAgent require true/false\n");
              }
         } else
 	if (!argcmp(str, "RequestId")) {
@@ -8139,8 +7945,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->request_id = 0;
              } else {
-            		fprintf(stderr, "RequestId require true/false\n");
-            		return 1;
+            		BAD_RET("RequestId require true/false\n");
              }
         } else
 	if (!argcmp(str, "ResponseSize")) {
@@ -8150,8 +7955,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->response_size = 0;
              } else {
-            		fprintf(stderr, "ResponseSize require true/false\n");
-            		return 1;
+            		BAD_RET("ResponseSize require true/false\n");
              }
         } else
 	if (!argcmp(str, "ResponseStatusCode")) {
@@ -8161,8 +7965,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else if (!strcasecmp(aa, "false")) {
             		s->response_status_code = 0;
              } else {
-            		fprintf(stderr, "ResponseStatusCode require true/false\n");
-            		return 1;
+            		BAD_RET("ResponseStatusCode require true/false\n");
              }
         } else
 	{
@@ -8174,8 +7977,8 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int main(int ac, char **av)
 {
-	auto_osc_env struct osc_env e;
-	auto_osc_str struct osc_str r;
+	auto_osc_env struct osc_env e = {0};
+	auto_osc_str struct osc_str r = {0};
 	int color_flag = 0;
 	int i;
 	char *help_appent = getenv("COGNAC_HELP_APPEND");
@@ -8189,13 +7992,17 @@ int main(int ac, char **av)
 		program_name = av[0];
 	else
 		++program_name;
+
+
 	for (i = 1; i < ac; ++i) {
 		if (!strcmp("--verbose", av[i])) {
 		  flag |= OSC_VERBOSE_MODE;
 		} else if (!strcmp("--insecure", av[i])) {
 		  flag |= OSC_INSECURE_MODE;
-		} else if (!strcmp("--insecure", av[i])) {
-		  flag |= OSC_INSECURE_MODE;
+		} else if (!strcmp("--raw-print", av[i])) {
+		  flag |= OAPI_RAW_OUTPUT;
+		} else if (!strcmp("--auth-password", av[i])) {
+		  flag |= OSC_ENV_PASSWORD_AUTH;
 		} else if (!argcmp2("--profile", av[i], '=')) {
 			if (av[i][sizeof("--profile") - 1] == '=') {
 				profile = &av[i][sizeof("--profile")];
@@ -8221,6 +8028,7 @@ int main(int ac, char **av)
 		       "options:\n"
 		       "\t--insecure	\tdoesn't verify SSL certificats\n"
 		       "\t--raw-print	\tdoesn't format the output\n"
+		       "\t--auth-password	\tuse password/login instead of AK/SK\n"
 		       "\t--verbose	\tcurl backend is now verbose\n"
 		       "\t--profile=PROFILE	\tselect profile"
 		       "\t--help [CallName]\tthis, can be used with call name, example:\n\t\t\t\t%s --help ReadVms\n"
@@ -8231,7 +8039,10 @@ int main(int ac, char **av)
 	}
 
 	for (i = 1; i < ac; ++i) {
-		if (!strcmp("--verbose", av[i]) || !strcmp("--insecure", av[i])) {
+		if (!strcmp("--verbose", av[i]) ||		\
+		    !strcmp("--insecure", av[i]) ||		\
+		    !strcmp("--auth-password", av[i]) ||	\
+		    !strcmp("--raw-print", av[i])) {
 			/* Avoid Unknow Calls */
 		} else if (!argcmp2("--profile", av[i], '=')) {
 			if (!av[i][sizeof("--profile") - 1]) {
@@ -8252,8 +8063,6 @@ int main(int ac, char **av)
 				}
 			}
 			goto show_help;
-		} else if (!strcmp("--raw-print", av[i])) {
-			program_flag |= OAPI_RAW_OUTPUT;
 		} else if (!strcmp("--color", av[i])) {
 			color_flag |= JSON_C_TO_STRING_COLOR;
 		} else
@@ -8274,14 +8083,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto update_vpn_connection_arg;
@@ -8309,8 +8112,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "VirtualGatewayId") ) {
@@ -8341,18 +8143,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UpdateVpnConnection'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UpdateVpnConnection'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_vpn_connection_arg;
 		     }
 		     cret = osc_update_vpn_connection(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateVpnConnection: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -8382,14 +8180,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto update_volume_arg;
@@ -8412,8 +8204,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Iops") ) {
@@ -8437,18 +8228,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UpdateVolume'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UpdateVolume'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_volume_arg;
 		     }
 		     cret = osc_update_volume(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateVolume: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -8478,14 +8265,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto update_vm_arg;
@@ -8510,13 +8291,10 @@ int main(int ac, char **av)
 
 				          	      ++dot_pos;
 				          	      pos = strtoul(dot_pos, &endptr, 0);
-				          	      if (endptr == dot_pos) {
-				          		      fprintf(stderr, "'BlockDeviceMappings' require an index (example array ref BlockDeviceMappingVmUpdate.BlockDeviceMappings.0)\n");
-				          		      return -1;
-				          	      } else if (*endptr != '.') {
-				          		      fprintf(stderr, "'BlockDeviceMappings' require a .\n");
-				          		      return -1;
-				          	      }
+				          	      if (endptr == dot_pos)
+				          		      BAD_RET("'BlockDeviceMappings' require an index (example array ref BlockDeviceMappingVmUpdate.BlockDeviceMappings.0)\n");
+				          	      else if (*endptr != '.')
+				          		      BAD_RET("'BlockDeviceMappings' require a .\n");
 				          	      TRY_ALLOC_AT(s,block_device_mappings, pa, pos, sizeof(*s->block_device_mappings));
 				          	      cascade_struct = &s->block_device_mappings[pos];
 				          	      cascade_parser = block_device_mapping_vm_update_parser;
@@ -8536,8 +8314,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->bsu_optimized = 0;
 				           } else {
-				          		fprintf(stderr, "BsuOptimized require true/false\n");
-				          		return 1;
+				          		BAD_RET("BsuOptimized require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "DeletionProtection") ) {
@@ -8547,8 +8324,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->deletion_protection = 0;
 				           } else {
-				          		fprintf(stderr, "DeletionProtection require true/false\n");
-				          		return 1;
+				          		BAD_RET("DeletionProtection require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "DryRun") ) {
@@ -8558,8 +8334,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "IsSourceDestChecked") ) {
@@ -8569,8 +8344,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->is_source_dest_checked = 0;
 				           } else {
-				          		fprintf(stderr, "IsSourceDestChecked require true/false\n");
-				          		return 1;
+				          		BAD_RET("IsSourceDestChecked require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "KeypairName") ) {
@@ -8585,8 +8359,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->nested_virtualization = 0;
 				           } else {
-				          		fprintf(stderr, "NestedVirtualization require true/false\n");
-				          		return 1;
+				          		BAD_RET("NestedVirtualization require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Performance") ) {
@@ -8622,18 +8395,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UpdateVm'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UpdateVm'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_vm_arg;
 		     }
 		     cret = osc_update_vm(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateVm: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -8663,14 +8432,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto update_subnet_arg;
@@ -8693,8 +8456,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "MapPublicIpOnLaunch") ) {
@@ -8704,8 +8466,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->map_public_ip_on_launch = 0;
 				           } else {
-				          		fprintf(stderr, "MapPublicIpOnLaunch require true/false\n");
-				          		return 1;
+				          		BAD_RET("MapPublicIpOnLaunch require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "SubnetId") ) {
@@ -8714,18 +8475,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UpdateSubnet'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UpdateSubnet'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_subnet_arg;
 		     }
 		     cret = osc_update_subnet(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateSubnet: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -8755,14 +8512,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto update_snapshot_arg;
@@ -8785,8 +8536,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "PermissionsToCreateVolume") ) {
@@ -8812,18 +8562,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UpdateSnapshot'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UpdateSnapshot'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_snapshot_arg;
 		     }
 		     cret = osc_update_snapshot(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateSnapshot: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -8853,14 +8599,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto update_server_certificate_arg;
@@ -8883,8 +8623,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Name") ) {
@@ -8903,18 +8642,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UpdateServerCertificate'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UpdateServerCertificate'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_server_certificate_arg;
 		     }
 		     cret = osc_update_server_certificate(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateServerCertificate: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -8944,14 +8679,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto update_route_propagation_arg;
@@ -8974,8 +8703,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Enable") ) {
@@ -8985,8 +8713,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->enable = 0;
 				           } else {
-				          		fprintf(stderr, "Enable require true/false\n");
-				          		return 1;
+				          		BAD_RET("Enable require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "RouteTableId") ) {
@@ -9000,18 +8727,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UpdateRoutePropagation'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UpdateRoutePropagation'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_route_propagation_arg;
 		     }
 		     cret = osc_update_route_propagation(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateRoutePropagation: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -9041,14 +8764,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto update_route_arg;
@@ -9076,8 +8793,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "GatewayId") ) {
@@ -9111,18 +8827,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UpdateRoute'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UpdateRoute'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_route_arg;
 		     }
 		     cret = osc_update_route(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateRoute: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -9152,14 +8864,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto update_nic_arg;
@@ -9187,8 +8893,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "LinkNic") ) {
@@ -9221,18 +8926,14 @@ int main(int ac, char **av)
 				             SET_NEXT(s->security_group_ids, (aa), pa);
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UpdateNic'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UpdateNic'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_nic_arg;
 		     }
 		     cret = osc_update_nic(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateNic: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -9262,14 +8963,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto update_net_access_point_arg;
@@ -9299,8 +8994,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "NetAccessPointId") ) {
@@ -9316,18 +9010,14 @@ int main(int ac, char **av)
 				             SET_NEXT(s->remove_route_table_ids, (aa), pa);
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UpdateNetAccessPoint'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UpdateNetAccessPoint'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_net_access_point_arg;
 		     }
 		     cret = osc_update_net_access_point(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateNetAccessPoint: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -9357,14 +9047,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto update_net_arg;
@@ -9392,8 +9076,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "NetId") ) {
@@ -9402,18 +9085,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UpdateNet'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UpdateNet'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_net_arg;
 		     }
 		     cret = osc_update_net(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateNet: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -9443,14 +9122,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto update_load_balancer_arg;
@@ -9490,8 +9163,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "HealthCheck") ) {
@@ -9540,8 +9212,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->secured_cookies = 0;
 				           } else {
-				          		fprintf(stderr, "SecuredCookies require true/false\n");
-				          		return 1;
+				          		BAD_RET("SecuredCookies require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "SecurityGroups") ) {
@@ -9557,18 +9228,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UpdateLoadBalancer'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UpdateLoadBalancer'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_load_balancer_arg;
 		     }
 		     cret = osc_update_load_balancer(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateLoadBalancer: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -9598,14 +9265,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto update_listener_rule_arg;
@@ -9628,8 +9289,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "HostPattern") ) {
@@ -9648,18 +9308,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UpdateListenerRule'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UpdateListenerRule'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_listener_rule_arg;
 		     }
 		     cret = osc_update_listener_rule(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateListenerRule: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -9689,14 +9345,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto update_image_arg;
@@ -9719,8 +9369,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "ImageId") ) {
@@ -9746,18 +9395,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UpdateImage'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UpdateImage'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_image_arg;
 		     }
 		     cret = osc_update_image(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateImage: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -9787,14 +9432,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto update_flexible_gpu_arg;
@@ -9817,8 +9456,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->delete_on_vm_deletion = 0;
 				           } else {
-				          		fprintf(stderr, "DeleteOnVmDeletion require true/false\n");
-				          		return 1;
+				          		BAD_RET("DeleteOnVmDeletion require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "DryRun") ) {
@@ -9828,8 +9466,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "FlexibleGpuId") ) {
@@ -9838,18 +9475,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UpdateFlexibleGpu'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UpdateFlexibleGpu'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_flexible_gpu_arg;
 		     }
 		     cret = osc_update_flexible_gpu(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateFlexibleGpu: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -9879,14 +9512,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto update_direct_link_interface_arg;
@@ -9914,8 +9541,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Mtu") ) {
@@ -9924,18 +9550,14 @@ int main(int ac, char **av)
 				          s->mtu = atoi(aa);
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UpdateDirectLinkInterface'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UpdateDirectLinkInterface'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_direct_link_interface_arg;
 		     }
 		     cret = osc_update_direct_link_interface(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateDirectLinkInterface: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -9965,14 +9587,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto update_ca_arg;
@@ -10005,23 +9621,18 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UpdateCa'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UpdateCa'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_ca_arg;
 		     }
 		     cret = osc_update_ca(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateCa: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10051,14 +9662,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto update_api_access_rule_arg;
@@ -10105,8 +9710,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "IpRanges") ) {
@@ -10117,18 +9721,14 @@ int main(int ac, char **av)
 				             SET_NEXT(s->ip_ranges, (aa), pa);
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UpdateApiAccessRule'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UpdateApiAccessRule'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_api_access_rule_arg;
 		     }
 		     cret = osc_update_api_access_rule(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateApiAccessRule: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10158,14 +9758,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto update_api_access_policy_arg;
@@ -10188,8 +9782,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "MaxAccessKeyExpirationSeconds") ) {
@@ -10204,23 +9797,18 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->require_trusted_env = 0;
 				           } else {
-				          		fprintf(stderr, "RequireTrustedEnv require true/false\n");
-				          		return 1;
+				          		BAD_RET("RequireTrustedEnv require true/false\n");
 				           }
 				      } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UpdateApiAccessPolicy'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UpdateApiAccessPolicy'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_api_access_policy_arg;
 		     }
 		     cret = osc_update_api_access_policy(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateApiAccessPolicy: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10250,14 +9838,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto update_account_arg;
@@ -10302,8 +9884,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Email") ) {
@@ -10352,18 +9933,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UpdateAccount'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UpdateAccount'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_account_arg;
 		     }
 		     cret = osc_update_account(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateAccount: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10393,14 +9970,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto update_access_key_arg;
@@ -10428,8 +9999,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "ExpirationDate") ) {
@@ -10443,18 +10013,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UpdateAccessKey'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UpdateAccessKey'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_access_key_arg;
 		     }
 		     cret = osc_update_access_key(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateAccessKey: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10484,14 +10050,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto unlink_volume_arg;
@@ -10514,8 +10074,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "ForceUnlink") ) {
@@ -10525,8 +10084,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->force_unlink = 0;
 				           } else {
-				          		fprintf(stderr, "ForceUnlink require true/false\n");
-				          		return 1;
+				          		BAD_RET("ForceUnlink require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "VolumeId") ) {
@@ -10535,18 +10093,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UnlinkVolume'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UnlinkVolume'\n", next_a);
 			    }
 		            i += incr;
 			    goto unlink_volume_arg;
 		     }
 		     cret = osc_unlink_volume(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkVolume: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10576,14 +10130,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto unlink_virtual_gateway_arg;
@@ -10606,8 +10154,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "NetId") ) {
@@ -10621,18 +10168,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UnlinkVirtualGateway'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UnlinkVirtualGateway'\n", next_a);
 			    }
 		            i += incr;
 			    goto unlink_virtual_gateway_arg;
 		     }
 		     cret = osc_unlink_virtual_gateway(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkVirtualGateway: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10662,14 +10205,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto unlink_route_table_arg;
@@ -10692,8 +10229,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "LinkRouteTableId") ) {
@@ -10702,18 +10238,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UnlinkRouteTable'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UnlinkRouteTable'\n", next_a);
 			    }
 		            i += incr;
 			    goto unlink_route_table_arg;
 		     }
 		     cret = osc_unlink_route_table(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkRouteTable: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10743,14 +10275,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto unlink_public_ip_arg;
@@ -10773,8 +10299,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "LinkPublicIpId") ) {
@@ -10788,18 +10313,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UnlinkPublicIp'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UnlinkPublicIp'\n", next_a);
 			    }
 		            i += incr;
 			    goto unlink_public_ip_arg;
 		     }
 		     cret = osc_unlink_public_ip(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkPublicIp: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10829,14 +10350,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto unlink_private_ips_arg;
@@ -10859,8 +10374,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "NicId") ) {
@@ -10876,18 +10390,14 @@ int main(int ac, char **av)
 				             SET_NEXT(s->private_ips, (aa), pa);
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UnlinkPrivateIps'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UnlinkPrivateIps'\n", next_a);
 			    }
 		            i += incr;
 			    goto unlink_private_ips_arg;
 		     }
 		     cret = osc_unlink_private_ips(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkPrivateIps: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10917,14 +10427,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto unlink_nic_arg;
@@ -10947,8 +10451,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "LinkNicId") ) {
@@ -10957,18 +10460,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UnlinkNic'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UnlinkNic'\n", next_a);
 			    }
 		            i += incr;
 			    goto unlink_nic_arg;
 		     }
 		     cret = osc_unlink_nic(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkNic: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10998,14 +10497,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto unlink_load_balancer_backend_machines_arg;
@@ -11042,8 +10535,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "LoadBalancerName") ) {
@@ -11052,18 +10544,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UnlinkLoadBalancerBackendMachines'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UnlinkLoadBalancerBackendMachines'\n", next_a);
 			    }
 		            i += incr;
 			    goto unlink_load_balancer_backend_machines_arg;
 		     }
 		     cret = osc_unlink_load_balancer_backend_machines(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkLoadBalancerBackendMachines: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11093,14 +10581,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto unlink_internet_service_arg;
@@ -11123,8 +10605,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "InternetServiceId") ) {
@@ -11138,18 +10619,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UnlinkInternetService'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UnlinkInternetService'\n", next_a);
 			    }
 		            i += incr;
 			    goto unlink_internet_service_arg;
 		     }
 		     cret = osc_unlink_internet_service(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkInternetService: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11179,14 +10656,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto unlink_flexible_gpu_arg;
@@ -11209,8 +10680,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "FlexibleGpuId") ) {
@@ -11219,18 +10689,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'UnlinkFlexibleGpu'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'UnlinkFlexibleGpu'\n", next_a);
 			    }
 		            i += incr;
 			    goto unlink_flexible_gpu_arg;
 		     }
 		     cret = osc_unlink_flexible_gpu(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkFlexibleGpu: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11260,14 +10726,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto stop_vms_arg;
@@ -11290,8 +10750,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "ForceStop") ) {
@@ -11301,8 +10760,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->force_stop = 0;
 				           } else {
-				          		fprintf(stderr, "ForceStop require true/false\n");
-				          		return 1;
+				          		BAD_RET("ForceStop require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "VmIds") ) {
@@ -11313,18 +10771,14 @@ int main(int ac, char **av)
 				             SET_NEXT(s->vm_ids, (aa), pa);
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'StopVms'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'StopVms'\n", next_a);
 			    }
 		            i += incr;
 			    goto stop_vms_arg;
 		     }
 		     cret = osc_stop_vms(&e, &r, &a);
             	     TRY(cret, "fail to call StopVms: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11354,14 +10808,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto start_vms_arg;
@@ -11384,8 +10832,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "VmIds") ) {
@@ -11396,18 +10843,14 @@ int main(int ac, char **av)
 				             SET_NEXT(s->vm_ids, (aa), pa);
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'StartVms'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'StartVms'\n", next_a);
 			    }
 		            i += incr;
 			    goto start_vms_arg;
 		     }
 		     cret = osc_start_vms(&e, &r, &a);
             	     TRY(cret, "fail to call StartVms: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11437,14 +10880,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto send_reset_password_email_arg;
@@ -11467,8 +10904,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Email") ) {
@@ -11477,18 +10913,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'SendResetPasswordEmail'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'SendResetPasswordEmail'\n", next_a);
 			    }
 		            i += incr;
 			    goto send_reset_password_email_arg;
 		     }
 		     cret = osc_send_reset_password_email(&e, &r, &a);
             	     TRY(cret, "fail to call SendResetPasswordEmail: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11518,14 +10950,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto reset_account_password_arg;
@@ -11548,8 +10974,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Password") ) {
@@ -11563,18 +10988,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ResetAccountPassword'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ResetAccountPassword'\n", next_a);
 			    }
 		            i += incr;
 			    goto reset_account_password_arg;
 		     }
 		     cret = osc_reset_account_password(&e, &r, &a);
             	     TRY(cret, "fail to call ResetAccountPassword: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11604,14 +11025,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto reject_net_peering_arg;
@@ -11634,8 +11049,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "NetPeeringId") ) {
@@ -11644,18 +11058,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'RejectNetPeering'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'RejectNetPeering'\n", next_a);
 			    }
 		            i += incr;
 			    goto reject_net_peering_arg;
 		     }
 		     cret = osc_reject_net_peering(&e, &r, &a);
             	     TRY(cret, "fail to call RejectNetPeering: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11685,14 +11095,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto register_vms_in_load_balancer_arg;
@@ -11722,8 +11126,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "LoadBalancerName") ) {
@@ -11732,18 +11135,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'RegisterVmsInLoadBalancer'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'RegisterVmsInLoadBalancer'\n", next_a);
 			    }
 		            i += incr;
 			    goto register_vms_in_load_balancer_arg;
 		     }
 		     cret = osc_register_vms_in_load_balancer(&e, &r, &a);
             	     TRY(cret, "fail to call RegisterVmsInLoadBalancer: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11773,14 +11172,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto reboot_vms_arg;
@@ -11803,8 +11196,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "VmIds") ) {
@@ -11815,18 +11207,14 @@ int main(int ac, char **av)
 				             SET_NEXT(s->vm_ids, (aa), pa);
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'RebootVms'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'RebootVms'\n", next_a);
 			    }
 		            i += incr;
 			    goto reboot_vms_arg;
 		     }
 		     cret = osc_reboot_vms(&e, &r, &a);
             	     TRY(cret, "fail to call RebootVms: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11856,14 +11244,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_vpn_connections_arg;
@@ -11886,8 +11268,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -11908,18 +11289,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadVpnConnections'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadVpnConnections'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_vpn_connections_arg;
 		     }
 		     cret = osc_read_vpn_connections(&e, &r, &a);
             	     TRY(cret, "fail to call ReadVpnConnections: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11949,14 +11326,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_volumes_arg;
@@ -11979,8 +11350,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -12001,18 +11371,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadVolumes'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadVolumes'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_volumes_arg;
 		     }
 		     cret = osc_read_volumes(&e, &r, &a);
             	     TRY(cret, "fail to call ReadVolumes: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12042,14 +11408,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_vms_state_arg;
@@ -12072,8 +11432,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->all_vms = 0;
 				           } else {
-				          		fprintf(stderr, "AllVms require true/false\n");
-				          		return 1;
+				          		BAD_RET("AllVms require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "DryRun") ) {
@@ -12083,8 +11442,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -12105,18 +11463,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadVmsState'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadVmsState'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_vms_state_arg;
 		     }
 		     cret = osc_read_vms_state(&e, &r, &a);
             	     TRY(cret, "fail to call ReadVmsState: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12146,14 +11500,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_vms_health_arg;
@@ -12183,8 +11531,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "LoadBalancerName") ) {
@@ -12193,18 +11540,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadVmsHealth'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadVmsHealth'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_vms_health_arg;
 		     }
 		     cret = osc_read_vms_health(&e, &r, &a);
             	     TRY(cret, "fail to call ReadVmsHealth: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12234,14 +11577,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_vms_arg;
@@ -12264,8 +11601,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -12286,18 +11622,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadVms'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadVms'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_vms_arg;
 		     }
 		     cret = osc_read_vms(&e, &r, &a);
             	     TRY(cret, "fail to call ReadVms: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12327,14 +11659,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_vm_types_arg;
@@ -12357,8 +11683,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -12379,18 +11704,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadVmTypes'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadVmTypes'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_vm_types_arg;
 		     }
 		     cret = osc_read_vm_types(&e, &r, &a);
             	     TRY(cret, "fail to call ReadVmTypes: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12420,14 +11741,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_virtual_gateways_arg;
@@ -12450,8 +11765,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -12472,18 +11786,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadVirtualGateways'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadVirtualGateways'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_virtual_gateways_arg;
 		     }
 		     cret = osc_read_virtual_gateways(&e, &r, &a);
             	     TRY(cret, "fail to call ReadVirtualGateways: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12513,14 +11823,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_tags_arg;
@@ -12543,8 +11847,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -12565,18 +11868,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadTags'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadTags'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_tags_arg;
 		     }
 		     cret = osc_read_tags(&e, &r, &a);
             	     TRY(cret, "fail to call ReadTags: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12606,14 +11905,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_subregions_arg;
@@ -12636,8 +11929,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -12658,18 +11950,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadSubregions'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadSubregions'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_subregions_arg;
 		     }
 		     cret = osc_read_subregions(&e, &r, &a);
             	     TRY(cret, "fail to call ReadSubregions: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12699,14 +11987,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_subnets_arg;
@@ -12729,8 +12011,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -12751,18 +12032,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadSubnets'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadSubnets'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_subnets_arg;
 		     }
 		     cret = osc_read_subnets(&e, &r, &a);
             	     TRY(cret, "fail to call ReadSubnets: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12792,14 +12069,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_snapshots_arg;
@@ -12822,8 +12093,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -12844,18 +12114,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadSnapshots'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadSnapshots'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_snapshots_arg;
 		     }
 		     cret = osc_read_snapshots(&e, &r, &a);
             	     TRY(cret, "fail to call ReadSnapshots: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12885,14 +12151,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_snapshot_export_tasks_arg;
@@ -12915,8 +12175,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -12937,18 +12196,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadSnapshotExportTasks'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadSnapshotExportTasks'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_snapshot_export_tasks_arg;
 		     }
 		     cret = osc_read_snapshot_export_tasks(&e, &r, &a);
             	     TRY(cret, "fail to call ReadSnapshotExportTasks: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12978,14 +12233,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_server_certificates_arg;
@@ -13008,8 +12257,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -13030,18 +12278,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadServerCertificates'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadServerCertificates'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_server_certificates_arg;
 		     }
 		     cret = osc_read_server_certificates(&e, &r, &a);
             	     TRY(cret, "fail to call ReadServerCertificates: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13071,14 +12315,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_security_groups_arg;
@@ -13101,8 +12339,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -13123,18 +12360,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadSecurityGroups'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadSecurityGroups'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_security_groups_arg;
 		     }
 		     cret = osc_read_security_groups(&e, &r, &a);
             	     TRY(cret, "fail to call ReadSecurityGroups: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13164,14 +12397,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_secret_access_key_arg;
@@ -13199,23 +12426,18 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadSecretAccessKey'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadSecretAccessKey'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_secret_access_key_arg;
 		     }
 		     cret = osc_read_secret_access_key(&e, &r, &a);
             	     TRY(cret, "fail to call ReadSecretAccessKey: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13245,14 +12467,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_route_tables_arg;
@@ -13275,8 +12491,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -13297,18 +12512,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadRouteTables'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadRouteTables'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_route_tables_arg;
 		     }
 		     cret = osc_read_route_tables(&e, &r, &a);
             	     TRY(cret, "fail to call ReadRouteTables: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13338,14 +12549,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_regions_arg;
@@ -13368,23 +12573,18 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadRegions'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadRegions'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_regions_arg;
 		     }
 		     cret = osc_read_regions(&e, &r, &a);
             	     TRY(cret, "fail to call ReadRegions: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13414,14 +12614,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_quotas_arg;
@@ -13444,8 +12638,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -13466,18 +12659,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadQuotas'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadQuotas'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_quotas_arg;
 		     }
 		     cret = osc_read_quotas(&e, &r, &a);
             	     TRY(cret, "fail to call ReadQuotas: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13507,14 +12696,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_public_ips_arg;
@@ -13537,8 +12720,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -13559,18 +12741,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadPublicIps'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadPublicIps'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_public_ips_arg;
 		     }
 		     cret = osc_read_public_ips(&e, &r, &a);
             	     TRY(cret, "fail to call ReadPublicIps: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13600,14 +12778,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_public_ip_ranges_arg;
@@ -13630,23 +12802,18 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadPublicIpRanges'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadPublicIpRanges'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_public_ip_ranges_arg;
 		     }
 		     cret = osc_read_public_ip_ranges(&e, &r, &a);
             	     TRY(cret, "fail to call ReadPublicIpRanges: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13676,14 +12843,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_public_catalog_arg;
@@ -13706,23 +12867,18 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadPublicCatalog'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadPublicCatalog'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_public_catalog_arg;
 		     }
 		     cret = osc_read_public_catalog(&e, &r, &a);
             	     TRY(cret, "fail to call ReadPublicCatalog: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13752,14 +12908,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_product_types_arg;
@@ -13782,8 +12932,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -13804,18 +12953,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadProductTypes'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadProductTypes'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_product_types_arg;
 		     }
 		     cret = osc_read_product_types(&e, &r, &a);
             	     TRY(cret, "fail to call ReadProductTypes: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13845,14 +12990,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_nics_arg;
@@ -13875,8 +13014,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -13897,18 +13035,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadNics'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadNics'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_nics_arg;
 		     }
 		     cret = osc_read_nics(&e, &r, &a);
             	     TRY(cret, "fail to call ReadNics: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13938,14 +13072,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_nets_arg;
@@ -13968,8 +13096,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -13990,18 +13117,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadNets'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadNets'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_nets_arg;
 		     }
 		     cret = osc_read_nets(&e, &r, &a);
             	     TRY(cret, "fail to call ReadNets: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14031,14 +13154,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_net_peerings_arg;
@@ -14061,8 +13178,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -14083,18 +13199,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadNetPeerings'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadNetPeerings'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_net_peerings_arg;
 		     }
 		     cret = osc_read_net_peerings(&e, &r, &a);
             	     TRY(cret, "fail to call ReadNetPeerings: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14124,14 +13236,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_net_access_points_arg;
@@ -14154,8 +13260,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -14176,18 +13281,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadNetAccessPoints'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadNetAccessPoints'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_net_access_points_arg;
 		     }
 		     cret = osc_read_net_access_points(&e, &r, &a);
             	     TRY(cret, "fail to call ReadNetAccessPoints: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14217,14 +13318,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_net_access_point_services_arg;
@@ -14247,8 +13342,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -14269,18 +13363,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadNetAccessPointServices'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadNetAccessPointServices'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_net_access_point_services_arg;
 		     }
 		     cret = osc_read_net_access_point_services(&e, &r, &a);
             	     TRY(cret, "fail to call ReadNetAccessPointServices: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14310,14 +13400,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_nat_services_arg;
@@ -14340,8 +13424,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -14362,18 +13445,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadNatServices'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadNatServices'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_nat_services_arg;
 		     }
 		     cret = osc_read_nat_services(&e, &r, &a);
             	     TRY(cret, "fail to call ReadNatServices: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14403,14 +13482,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_locations_arg;
@@ -14433,23 +13506,18 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadLocations'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadLocations'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_locations_arg;
 		     }
 		     cret = osc_read_locations(&e, &r, &a);
             	     TRY(cret, "fail to call ReadLocations: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14479,14 +13547,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_load_balancers_arg;
@@ -14509,8 +13571,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -14531,18 +13592,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadLoadBalancers'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadLoadBalancers'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_load_balancers_arg;
 		     }
 		     cret = osc_read_load_balancers(&e, &r, &a);
             	     TRY(cret, "fail to call ReadLoadBalancers: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14572,14 +13629,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_load_balancer_tags_arg;
@@ -14602,8 +13653,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "LoadBalancerNames") ) {
@@ -14614,18 +13664,14 @@ int main(int ac, char **av)
 				             SET_NEXT(s->load_balancer_names, (aa), pa);
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadLoadBalancerTags'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadLoadBalancerTags'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_load_balancer_tags_arg;
 		     }
 		     cret = osc_read_load_balancer_tags(&e, &r, &a);
             	     TRY(cret, "fail to call ReadLoadBalancerTags: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14655,14 +13701,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_listener_rules_arg;
@@ -14685,8 +13725,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -14707,18 +13746,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadListenerRules'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadListenerRules'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_listener_rules_arg;
 		     }
 		     cret = osc_read_listener_rules(&e, &r, &a);
             	     TRY(cret, "fail to call ReadListenerRules: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14748,14 +13783,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_keypairs_arg;
@@ -14778,8 +13807,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -14800,18 +13828,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadKeypairs'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadKeypairs'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_keypairs_arg;
 		     }
 		     cret = osc_read_keypairs(&e, &r, &a);
             	     TRY(cret, "fail to call ReadKeypairs: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14841,14 +13865,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_internet_services_arg;
@@ -14871,8 +13889,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -14893,18 +13910,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadInternetServices'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadInternetServices'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_internet_services_arg;
 		     }
 		     cret = osc_read_internet_services(&e, &r, &a);
             	     TRY(cret, "fail to call ReadInternetServices: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14934,14 +13947,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_images_arg;
@@ -14964,8 +13971,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -14986,18 +13992,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadImages'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadImages'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_images_arg;
 		     }
 		     cret = osc_read_images(&e, &r, &a);
             	     TRY(cret, "fail to call ReadImages: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15027,14 +14029,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_image_export_tasks_arg;
@@ -15057,8 +14053,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -15079,18 +14074,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadImageExportTasks'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadImageExportTasks'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_image_export_tasks_arg;
 		     }
 		     cret = osc_read_image_export_tasks(&e, &r, &a);
             	     TRY(cret, "fail to call ReadImageExportTasks: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15120,14 +14111,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_flexible_gpus_arg;
@@ -15150,8 +14135,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -15172,18 +14156,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadFlexibleGpus'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadFlexibleGpus'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_flexible_gpus_arg;
 		     }
 		     cret = osc_read_flexible_gpus(&e, &r, &a);
             	     TRY(cret, "fail to call ReadFlexibleGpus: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15213,14 +14193,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_flexible_gpu_catalog_arg;
@@ -15243,23 +14217,18 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadFlexibleGpuCatalog'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadFlexibleGpuCatalog'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_flexible_gpu_catalog_arg;
 		     }
 		     cret = osc_read_flexible_gpu_catalog(&e, &r, &a);
             	     TRY(cret, "fail to call ReadFlexibleGpuCatalog: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15289,14 +14258,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_direct_links_arg;
@@ -15319,8 +14282,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -15341,18 +14303,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadDirectLinks'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadDirectLinks'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_direct_links_arg;
 		     }
 		     cret = osc_read_direct_links(&e, &r, &a);
             	     TRY(cret, "fail to call ReadDirectLinks: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15382,14 +14340,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_direct_link_interfaces_arg;
@@ -15412,8 +14364,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -15434,18 +14385,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadDirectLinkInterfaces'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadDirectLinkInterfaces'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_direct_link_interfaces_arg;
 		     }
 		     cret = osc_read_direct_link_interfaces(&e, &r, &a);
             	     TRY(cret, "fail to call ReadDirectLinkInterfaces: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15475,14 +14422,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_dhcp_options_arg;
@@ -15505,8 +14446,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -15527,18 +14467,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadDhcpOptions'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadDhcpOptions'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_dhcp_options_arg;
 		     }
 		     cret = osc_read_dhcp_options(&e, &r, &a);
             	     TRY(cret, "fail to call ReadDhcpOptions: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15568,14 +14504,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_consumption_account_arg;
@@ -15598,8 +14528,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "FromDate") ) {
@@ -15614,8 +14543,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->overall = 0;
 				           } else {
-				          		fprintf(stderr, "Overall require true/false\n");
-				          		return 1;
+				          		BAD_RET("Overall require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "ToDate") ) {
@@ -15624,18 +14552,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadConsumptionAccount'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadConsumptionAccount'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_consumption_account_arg;
 		     }
 		     cret = osc_read_consumption_account(&e, &r, &a);
             	     TRY(cret, "fail to call ReadConsumptionAccount: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15665,14 +14589,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_console_output_arg;
@@ -15695,8 +14613,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "VmId") ) {
@@ -15705,18 +14622,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadConsoleOutput'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadConsoleOutput'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_console_output_arg;
 		     }
 		     cret = osc_read_console_output(&e, &r, &a);
             	     TRY(cret, "fail to call ReadConsoleOutput: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15746,14 +14659,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_client_gateways_arg;
@@ -15776,8 +14683,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -15798,18 +14704,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadClientGateways'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadClientGateways'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_client_gateways_arg;
 		     }
 		     cret = osc_read_client_gateways(&e, &r, &a);
             	     TRY(cret, "fail to call ReadClientGateways: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15839,14 +14741,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_catalog_arg;
@@ -15869,23 +14765,18 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadCatalog'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadCatalog'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_catalog_arg;
 		     }
 		     cret = osc_read_catalog(&e, &r, &a);
             	     TRY(cret, "fail to call ReadCatalog: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15915,14 +14806,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_cas_arg;
@@ -15945,8 +14830,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -15967,18 +14851,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadCas'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadCas'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_cas_arg;
 		     }
 		     cret = osc_read_cas(&e, &r, &a);
             	     TRY(cret, "fail to call ReadCas: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16008,14 +14888,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_api_logs_arg;
@@ -16038,8 +14912,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -16087,18 +14960,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadApiLogs'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadApiLogs'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_api_logs_arg;
 		     }
 		     cret = osc_read_api_logs(&e, &r, &a);
             	     TRY(cret, "fail to call ReadApiLogs: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16128,14 +14997,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_api_access_rules_arg;
@@ -16158,8 +15021,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -16180,18 +15042,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadApiAccessRules'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadApiAccessRules'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_api_access_rules_arg;
 		     }
 		     cret = osc_read_api_access_rules(&e, &r, &a);
             	     TRY(cret, "fail to call ReadApiAccessRules: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16221,14 +15079,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_api_access_policy_arg;
@@ -16251,23 +15103,18 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadApiAccessPolicy'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadApiAccessPolicy'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_api_access_policy_arg;
 		     }
 		     cret = osc_read_api_access_policy(&e, &r, &a);
             	     TRY(cret, "fail to call ReadApiAccessPolicy: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16297,14 +15144,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_admin_password_arg;
@@ -16327,8 +15168,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "VmId") ) {
@@ -16337,18 +15177,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadAdminPassword'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadAdminPassword'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_admin_password_arg;
 		     }
 		     cret = osc_read_admin_password(&e, &r, &a);
             	     TRY(cret, "fail to call ReadAdminPassword: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16378,14 +15214,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_accounts_arg;
@@ -16408,23 +15238,18 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadAccounts'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadAccounts'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_accounts_arg;
 		     }
 		     cret = osc_read_accounts(&e, &r, &a);
             	     TRY(cret, "fail to call ReadAccounts: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16454,14 +15279,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto read_access_keys_arg;
@@ -16484,8 +15303,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Filters") ) {
@@ -16506,18 +15324,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'ReadAccessKeys'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'ReadAccessKeys'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_access_keys_arg;
 		     }
 		     cret = osc_read_access_keys(&e, &r, &a);
             	     TRY(cret, "fail to call ReadAccessKeys: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16547,14 +15361,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto link_volume_arg;
@@ -16582,8 +15390,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "VmId") ) {
@@ -16597,18 +15404,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'LinkVolume'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'LinkVolume'\n", next_a);
 			    }
 		            i += incr;
 			    goto link_volume_arg;
 		     }
 		     cret = osc_link_volume(&e, &r, &a);
             	     TRY(cret, "fail to call LinkVolume: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16638,14 +15441,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto link_virtual_gateway_arg;
@@ -16668,8 +15465,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "NetId") ) {
@@ -16683,18 +15479,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'LinkVirtualGateway'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'LinkVirtualGateway'\n", next_a);
 			    }
 		            i += incr;
 			    goto link_virtual_gateway_arg;
 		     }
 		     cret = osc_link_virtual_gateway(&e, &r, &a);
             	     TRY(cret, "fail to call LinkVirtualGateway: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16724,14 +15516,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto link_route_table_arg;
@@ -16754,8 +15540,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "RouteTableId") ) {
@@ -16769,18 +15554,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'LinkRouteTable'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'LinkRouteTable'\n", next_a);
 			    }
 		            i += incr;
 			    goto link_route_table_arg;
 		     }
 		     cret = osc_link_route_table(&e, &r, &a);
             	     TRY(cret, "fail to call LinkRouteTable: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16810,14 +15591,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto link_public_ip_arg;
@@ -16840,8 +15615,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->allow_relink = 0;
 				           } else {
-				          		fprintf(stderr, "AllowRelink require true/false\n");
-				          		return 1;
+				          		BAD_RET("AllowRelink require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "DryRun") ) {
@@ -16851,8 +15625,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "NicId") ) {
@@ -16881,18 +15654,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'LinkPublicIp'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'LinkPublicIp'\n", next_a);
 			    }
 		            i += incr;
 			    goto link_public_ip_arg;
 		     }
 		     cret = osc_link_public_ip(&e, &r, &a);
             	     TRY(cret, "fail to call LinkPublicIp: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16922,14 +15691,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto link_private_ips_arg;
@@ -16952,8 +15715,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->allow_relink = 0;
 				           } else {
-				          		fprintf(stderr, "AllowRelink require true/false\n");
-				          		return 1;
+				          		BAD_RET("AllowRelink require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "DryRun") ) {
@@ -16963,8 +15725,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "NicId") ) {
@@ -16985,18 +15746,14 @@ int main(int ac, char **av)
 				          s->secondary_private_ip_count = atoi(aa);
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'LinkPrivateIps'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'LinkPrivateIps'\n", next_a);
 			    }
 		            i += incr;
 			    goto link_private_ips_arg;
 		     }
 		     cret = osc_link_private_ips(&e, &r, &a);
             	     TRY(cret, "fail to call LinkPrivateIps: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17026,14 +15783,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto link_nic_arg;
@@ -17061,8 +15812,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "NicId") ) {
@@ -17076,18 +15826,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'LinkNic'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'LinkNic'\n", next_a);
 			    }
 		            i += incr;
 			    goto link_nic_arg;
 		     }
 		     cret = osc_link_nic(&e, &r, &a);
             	     TRY(cret, "fail to call LinkNic: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17117,14 +15863,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto link_load_balancer_backend_machines_arg;
@@ -17161,8 +15901,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "LoadBalancerName") ) {
@@ -17171,18 +15910,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'LinkLoadBalancerBackendMachines'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'LinkLoadBalancerBackendMachines'\n", next_a);
 			    }
 		            i += incr;
 			    goto link_load_balancer_backend_machines_arg;
 		     }
 		     cret = osc_link_load_balancer_backend_machines(&e, &r, &a);
             	     TRY(cret, "fail to call LinkLoadBalancerBackendMachines: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17212,14 +15947,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto link_internet_service_arg;
@@ -17242,8 +15971,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "InternetServiceId") ) {
@@ -17257,18 +15985,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'LinkInternetService'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'LinkInternetService'\n", next_a);
 			    }
 		            i += incr;
 			    goto link_internet_service_arg;
 		     }
 		     cret = osc_link_internet_service(&e, &r, &a);
             	     TRY(cret, "fail to call LinkInternetService: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17298,14 +16022,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto link_flexible_gpu_arg;
@@ -17328,8 +16046,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "FlexibleGpuId") ) {
@@ -17343,18 +16060,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'LinkFlexibleGpu'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'LinkFlexibleGpu'\n", next_a);
 			    }
 		            i += incr;
 			    goto link_flexible_gpu_arg;
 		     }
 		     cret = osc_link_flexible_gpu(&e, &r, &a);
             	     TRY(cret, "fail to call LinkFlexibleGpu: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17384,14 +16097,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto deregister_vms_in_load_balancer_arg;
@@ -17421,8 +16128,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "LoadBalancerName") ) {
@@ -17431,18 +16137,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeregisterVmsInLoadBalancer'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeregisterVmsInLoadBalancer'\n", next_a);
 			    }
 		            i += incr;
 			    goto deregister_vms_in_load_balancer_arg;
 		     }
 		     cret = osc_deregister_vms_in_load_balancer(&e, &r, &a);
             	     TRY(cret, "fail to call DeregisterVmsInLoadBalancer: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17472,14 +16174,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_vpn_connection_route_arg;
@@ -17507,8 +16203,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "VpnConnectionId") ) {
@@ -17517,18 +16212,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteVpnConnectionRoute'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteVpnConnectionRoute'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_vpn_connection_route_arg;
 		     }
 		     cret = osc_delete_vpn_connection_route(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteVpnConnectionRoute: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17558,14 +16249,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_vpn_connection_arg;
@@ -17588,8 +16273,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "VpnConnectionId") ) {
@@ -17598,18 +16282,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteVpnConnection'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteVpnConnection'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_vpn_connection_arg;
 		     }
 		     cret = osc_delete_vpn_connection(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteVpnConnection: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17639,14 +16319,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_volume_arg;
@@ -17669,8 +16343,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "VolumeId") ) {
@@ -17679,18 +16352,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteVolume'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteVolume'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_volume_arg;
 		     }
 		     cret = osc_delete_volume(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteVolume: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17720,14 +16389,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_vms_arg;
@@ -17750,8 +16413,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "VmIds") ) {
@@ -17762,18 +16424,14 @@ int main(int ac, char **av)
 				             SET_NEXT(s->vm_ids, (aa), pa);
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteVms'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteVms'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_vms_arg;
 		     }
 		     cret = osc_delete_vms(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteVms: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17803,14 +16461,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_virtual_gateway_arg;
@@ -17833,8 +16485,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "VirtualGatewayId") ) {
@@ -17843,18 +16494,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteVirtualGateway'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteVirtualGateway'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_virtual_gateway_arg;
 		     }
 		     cret = osc_delete_virtual_gateway(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteVirtualGateway: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17884,14 +16531,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_tags_arg;
@@ -17914,8 +16555,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "ResourceIds") ) {
@@ -17934,13 +16574,10 @@ int main(int ac, char **av)
 
 				          	      ++dot_pos;
 				          	      pos = strtoul(dot_pos, &endptr, 0);
-				          	      if (endptr == dot_pos) {
-				          		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-				          		      return -1;
-				          	      } else if (*endptr != '.') {
-				          		      fprintf(stderr, "'Tags' require a .\n");
-				          		      return -1;
-				          	      }
+				          	      if (endptr == dot_pos)
+				          		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+				          	      else if (*endptr != '.')
+				          		      BAD_RET("'Tags' require a .\n");
 				          	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
 				          	      cascade_struct = &s->tags[pos];
 				          	      cascade_parser = resource_tag_parser;
@@ -17954,18 +16591,14 @@ int main(int ac, char **av)
 				          }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteTags'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteTags'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_tags_arg;
 		     }
 		     cret = osc_delete_tags(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteTags: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17995,14 +16628,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_subnet_arg;
@@ -18025,8 +16652,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "SubnetId") ) {
@@ -18035,18 +16661,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteSubnet'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteSubnet'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_subnet_arg;
 		     }
 		     cret = osc_delete_subnet(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteSubnet: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18076,14 +16698,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_snapshot_arg;
@@ -18106,8 +16722,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "SnapshotId") ) {
@@ -18116,18 +16731,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteSnapshot'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteSnapshot'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_snapshot_arg;
 		     }
 		     cret = osc_delete_snapshot(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteSnapshot: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18157,14 +16768,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_server_certificate_arg;
@@ -18187,8 +16792,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Name") ) {
@@ -18197,18 +16801,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteServerCertificate'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteServerCertificate'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_server_certificate_arg;
 		     }
 		     cret = osc_delete_server_certificate(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteServerCertificate: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18238,14 +16838,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_security_group_rule_arg;
@@ -18268,8 +16862,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Flow") ) {
@@ -18301,13 +16894,10 @@ int main(int ac, char **av)
 
 				          	      ++dot_pos;
 				          	      pos = strtoul(dot_pos, &endptr, 0);
-				          	      if (endptr == dot_pos) {
-				          		      fprintf(stderr, "'Rules' require an index (example array ref SecurityGroupRule.Rules.0)\n");
-				          		      return -1;
-				          	      } else if (*endptr != '.') {
-				          		      fprintf(stderr, "'Rules' require a .\n");
-				          		      return -1;
-				          	      }
+				          	      if (endptr == dot_pos)
+				          		      BAD_RET("'Rules' require an index (example array ref SecurityGroupRule.Rules.0)\n");
+				          	      else if (*endptr != '.')
+				          		      BAD_RET("'Rules' require a .\n");
 				          	      TRY_ALLOC_AT(s,rules, pa, pos, sizeof(*s->rules));
 				          	      cascade_struct = &s->rules[pos];
 				          	      cascade_parser = security_group_rule_parser;
@@ -18341,18 +16931,14 @@ int main(int ac, char **av)
 				          s->to_port_range = atoi(aa);
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteSecurityGroupRule'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteSecurityGroupRule'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_security_group_rule_arg;
 		     }
 		     cret = osc_delete_security_group_rule(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteSecurityGroupRule: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18382,14 +16968,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_security_group_arg;
@@ -18412,8 +16992,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "SecurityGroupId") ) {
@@ -18427,18 +17006,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteSecurityGroup'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteSecurityGroup'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_security_group_arg;
 		     }
 		     cret = osc_delete_security_group(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteSecurityGroup: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18468,14 +17043,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_route_table_arg;
@@ -18498,8 +17067,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "RouteTableId") ) {
@@ -18508,18 +17076,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteRouteTable'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteRouteTable'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_route_table_arg;
 		     }
 		     cret = osc_delete_route_table(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteRouteTable: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18549,14 +17113,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_route_arg;
@@ -18584,8 +17142,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "RouteTableId") ) {
@@ -18594,18 +17151,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteRoute'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteRoute'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_route_arg;
 		     }
 		     cret = osc_delete_route(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteRoute: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18635,14 +17188,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_public_ip_arg;
@@ -18665,8 +17212,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "PublicIp") ) {
@@ -18680,18 +17226,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeletePublicIp'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeletePublicIp'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_public_ip_arg;
 		     }
 		     cret = osc_delete_public_ip(&e, &r, &a);
             	     TRY(cret, "fail to call DeletePublicIp: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18721,14 +17263,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_nic_arg;
@@ -18751,8 +17287,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "NicId") ) {
@@ -18761,18 +17296,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteNic'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteNic'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_nic_arg;
 		     }
 		     cret = osc_delete_nic(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteNic: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18802,14 +17333,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_net_peering_arg;
@@ -18832,8 +17357,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "NetPeeringId") ) {
@@ -18842,18 +17366,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteNetPeering'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteNetPeering'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_net_peering_arg;
 		     }
 		     cret = osc_delete_net_peering(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteNetPeering: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18883,14 +17403,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_net_access_point_arg;
@@ -18913,8 +17427,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "NetAccessPointId") ) {
@@ -18923,18 +17436,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteNetAccessPoint'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteNetAccessPoint'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_net_access_point_arg;
 		     }
 		     cret = osc_delete_net_access_point(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteNetAccessPoint: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18964,14 +17473,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_net_arg;
@@ -18994,8 +17497,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "NetId") ) {
@@ -19004,18 +17506,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteNet'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteNet'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_net_arg;
 		     }
 		     cret = osc_delete_net(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteNet: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19045,14 +17543,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_nat_service_arg;
@@ -19075,8 +17567,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "NatServiceId") ) {
@@ -19085,18 +17576,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteNatService'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteNatService'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_nat_service_arg;
 		     }
 		     cret = osc_delete_nat_service(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteNatService: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19126,14 +17613,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_load_balancer_tags_arg;
@@ -19156,8 +17637,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "LoadBalancerNames") ) {
@@ -19176,13 +17656,10 @@ int main(int ac, char **av)
 
 				          	      ++dot_pos;
 				          	      pos = strtoul(dot_pos, &endptr, 0);
-				          	      if (endptr == dot_pos) {
-				          		      fprintf(stderr, "'Tags' require an index (example array ref ResourceLoadBalancerTag.Tags.0)\n");
-				          		      return -1;
-				          	      } else if (*endptr != '.') {
-				          		      fprintf(stderr, "'Tags' require a .\n");
-				          		      return -1;
-				          	      }
+				          	      if (endptr == dot_pos)
+				          		      BAD_RET("'Tags' require an index (example array ref ResourceLoadBalancerTag.Tags.0)\n");
+				          	      else if (*endptr != '.')
+				          		      BAD_RET("'Tags' require a .\n");
 				          	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
 				          	      cascade_struct = &s->tags[pos];
 				          	      cascade_parser = resource_load_balancer_tag_parser;
@@ -19196,18 +17673,14 @@ int main(int ac, char **av)
 				          }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteLoadBalancerTags'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteLoadBalancerTags'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_load_balancer_tags_arg;
 		     }
 		     cret = osc_delete_load_balancer_tags(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteLoadBalancerTags: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19237,14 +17710,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_load_balancer_policy_arg;
@@ -19267,8 +17734,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "LoadBalancerName") ) {
@@ -19282,18 +17748,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteLoadBalancerPolicy'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteLoadBalancerPolicy'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_load_balancer_policy_arg;
 		     }
 		     cret = osc_delete_load_balancer_policy(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteLoadBalancerPolicy: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19323,14 +17785,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_load_balancer_listeners_arg;
@@ -19353,8 +17809,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "LoadBalancerName") ) {
@@ -19370,18 +17825,14 @@ int main(int ac, char **av)
 				             SET_NEXT(s->load_balancer_ports, atoi(aa), pa);
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteLoadBalancerListeners'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteLoadBalancerListeners'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_load_balancer_listeners_arg;
 		     }
 		     cret = osc_delete_load_balancer_listeners(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteLoadBalancerListeners: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19411,14 +17862,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_load_balancer_arg;
@@ -19441,8 +17886,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "LoadBalancerName") ) {
@@ -19451,18 +17895,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteLoadBalancer'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteLoadBalancer'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_load_balancer_arg;
 		     }
 		     cret = osc_delete_load_balancer(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteLoadBalancer: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19492,14 +17932,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_listener_rule_arg;
@@ -19522,8 +17956,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "ListenerRuleName") ) {
@@ -19532,18 +17965,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteListenerRule'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteListenerRule'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_listener_rule_arg;
 		     }
 		     cret = osc_delete_listener_rule(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteListenerRule: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19573,14 +18002,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_keypair_arg;
@@ -19603,8 +18026,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "KeypairName") ) {
@@ -19613,18 +18035,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteKeypair'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteKeypair'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_keypair_arg;
 		     }
 		     cret = osc_delete_keypair(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteKeypair: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19654,14 +18072,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_internet_service_arg;
@@ -19684,8 +18096,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "InternetServiceId") ) {
@@ -19694,18 +18105,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteInternetService'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteInternetService'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_internet_service_arg;
 		     }
 		     cret = osc_delete_internet_service(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteInternetService: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19735,14 +18142,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_image_arg;
@@ -19765,8 +18166,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "ImageId") ) {
@@ -19775,18 +18175,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteImage'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteImage'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_image_arg;
 		     }
 		     cret = osc_delete_image(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteImage: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19816,14 +18212,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_flexible_gpu_arg;
@@ -19846,8 +18236,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "FlexibleGpuId") ) {
@@ -19856,18 +18245,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteFlexibleGpu'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteFlexibleGpu'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_flexible_gpu_arg;
 		     }
 		     cret = osc_delete_flexible_gpu(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteFlexibleGpu: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19897,14 +18282,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_export_task_arg;
@@ -19927,8 +18306,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "ExportTaskId") ) {
@@ -19937,18 +18315,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteExportTask'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteExportTask'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_export_task_arg;
 		     }
 		     cret = osc_delete_export_task(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteExportTask: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19978,14 +18352,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_direct_link_interface_arg;
@@ -20013,23 +18381,18 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteDirectLinkInterface'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteDirectLinkInterface'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_direct_link_interface_arg;
 		     }
 		     cret = osc_delete_direct_link_interface(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteDirectLinkInterface: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20059,14 +18422,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_direct_link_arg;
@@ -20094,23 +18451,18 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteDirectLink'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteDirectLink'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_direct_link_arg;
 		     }
 		     cret = osc_delete_direct_link(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteDirectLink: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20140,14 +18492,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_dhcp_options_arg;
@@ -20175,23 +18521,18 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteDhcpOptions'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteDhcpOptions'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_dhcp_options_arg;
 		     }
 		     cret = osc_delete_dhcp_options(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteDhcpOptions: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20221,14 +18562,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_client_gateway_arg;
@@ -20256,23 +18591,18 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteClientGateway'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteClientGateway'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_client_gateway_arg;
 		     }
 		     cret = osc_delete_client_gateway(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteClientGateway: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20302,14 +18632,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_ca_arg;
@@ -20337,23 +18661,18 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteCa'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteCa'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_ca_arg;
 		     }
 		     cret = osc_delete_ca(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteCa: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20383,14 +18702,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_api_access_rule_arg;
@@ -20418,23 +18731,18 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteApiAccessRule'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteApiAccessRule'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_api_access_rule_arg;
 		     }
 		     cret = osc_delete_api_access_rule(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteApiAccessRule: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20464,14 +18772,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto delete_access_key_arg;
@@ -20499,23 +18801,18 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'DeleteAccessKey'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'DeleteAccessKey'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_access_key_arg;
 		     }
 		     cret = osc_delete_access_key(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteAccessKey: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20545,14 +18842,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_vpn_connection_route_arg;
@@ -20580,8 +18871,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "VpnConnectionId") ) {
@@ -20590,18 +18880,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateVpnConnectionRoute'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateVpnConnectionRoute'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_vpn_connection_route_arg;
 		     }
 		     cret = osc_create_vpn_connection_route(&e, &r, &a);
             	     TRY(cret, "fail to call CreateVpnConnectionRoute: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20631,14 +18917,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_vpn_connection_arg;
@@ -20671,8 +18951,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "StaticRoutesOnly") ) {
@@ -20682,8 +18961,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->static_routes_only = 0;
 				           } else {
-				          		fprintf(stderr, "StaticRoutesOnly require true/false\n");
-				          		return 1;
+				          		BAD_RET("StaticRoutesOnly require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "VirtualGatewayId") ) {
@@ -20692,18 +18970,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateVpnConnection'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateVpnConnection'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_vpn_connection_arg;
 		     }
 		     cret = osc_create_vpn_connection(&e, &r, &a);
             	     TRY(cret, "fail to call CreateVpnConnection: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20733,14 +19007,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_volume_arg;
@@ -20763,8 +19031,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Iops") ) {
@@ -20793,18 +19060,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateVolume'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateVolume'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_volume_arg;
 		     }
 		     cret = osc_create_volume(&e, &r, &a);
             	     TRY(cret, "fail to call CreateVolume: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20834,14 +19097,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_vms_arg;
@@ -20866,13 +19123,10 @@ int main(int ac, char **av)
 
 				          	      ++dot_pos;
 				          	      pos = strtoul(dot_pos, &endptr, 0);
-				          	      if (endptr == dot_pos) {
-				          		      fprintf(stderr, "'BlockDeviceMappings' require an index (example array ref BlockDeviceMappingVmCreation.BlockDeviceMappings.0)\n");
-				          		      return -1;
-				          	      } else if (*endptr != '.') {
-				          		      fprintf(stderr, "'BlockDeviceMappings' require a .\n");
-				          		      return -1;
-				          	      }
+				          	      if (endptr == dot_pos)
+				          		      BAD_RET("'BlockDeviceMappings' require an index (example array ref BlockDeviceMappingVmCreation.BlockDeviceMappings.0)\n");
+				          	      else if (*endptr != '.')
+				          		      BAD_RET("'BlockDeviceMappings' require a .\n");
 				          	      TRY_ALLOC_AT(s,block_device_mappings, pa, pos, sizeof(*s->block_device_mappings));
 				          	      cascade_struct = &s->block_device_mappings[pos];
 				          	      cascade_parser = block_device_mapping_vm_creation_parser;
@@ -20892,8 +19146,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->boot_on_creation = 0;
 				           } else {
-				          		fprintf(stderr, "BootOnCreation require true/false\n");
-				          		return 1;
+				          		BAD_RET("BootOnCreation require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "BsuOptimized") ) {
@@ -20903,8 +19156,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->bsu_optimized = 0;
 				           } else {
-				          		fprintf(stderr, "BsuOptimized require true/false\n");
-				          		return 1;
+				          		BAD_RET("BsuOptimized require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "ClientToken") ) {
@@ -20919,8 +19171,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->deletion_protection = 0;
 				           } else {
-				          		fprintf(stderr, "DeletionProtection require true/false\n");
-				          		return 1;
+				          		BAD_RET("DeletionProtection require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "DryRun") ) {
@@ -20930,8 +19181,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "ImageId") ) {
@@ -20961,8 +19211,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->nested_virtualization = 0;
 				           } else {
-				          		fprintf(stderr, "NestedVirtualization require true/false\n");
-				          		return 1;
+				          		BAD_RET("NestedVirtualization require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Nics") ) {
@@ -20974,13 +19223,10 @@ int main(int ac, char **av)
 
 				          	      ++dot_pos;
 				          	      pos = strtoul(dot_pos, &endptr, 0);
-				          	      if (endptr == dot_pos) {
-				          		      fprintf(stderr, "'Nics' require an index (example array ref NicForVmCreation.Nics.0)\n");
-				          		      return -1;
-				          	      } else if (*endptr != '.') {
-				          		      fprintf(stderr, "'Nics' require a .\n");
-				          		      return -1;
-				          	      }
+				          	      if (endptr == dot_pos)
+				          		      BAD_RET("'Nics' require an index (example array ref NicForVmCreation.Nics.0)\n");
+				          	      else if (*endptr != '.')
+				          		      BAD_RET("'Nics' require a .\n");
 				          	      TRY_ALLOC_AT(s,nics, pa, pos, sizeof(*s->nics));
 				          	      cascade_struct = &s->nics[pos];
 				          	      cascade_parser = nic_for_vm_creation_parser;
@@ -21057,18 +19303,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateVms'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateVms'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_vms_arg;
 		     }
 		     cret = osc_create_vms(&e, &r, &a);
             	     TRY(cret, "fail to call CreateVms: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21098,14 +19340,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_virtual_gateway_arg;
@@ -21133,23 +19369,18 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateVirtualGateway'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateVirtualGateway'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_virtual_gateway_arg;
 		     }
 		     cret = osc_create_virtual_gateway(&e, &r, &a);
             	     TRY(cret, "fail to call CreateVirtualGateway: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21179,14 +19410,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_tags_arg;
@@ -21209,8 +19434,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "ResourceIds") ) {
@@ -21229,13 +19453,10 @@ int main(int ac, char **av)
 
 				          	      ++dot_pos;
 				          	      pos = strtoul(dot_pos, &endptr, 0);
-				          	      if (endptr == dot_pos) {
-				          		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-				          		      return -1;
-				          	      } else if (*endptr != '.') {
-				          		      fprintf(stderr, "'Tags' require a .\n");
-				          		      return -1;
-				          	      }
+				          	      if (endptr == dot_pos)
+				          		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+				          	      else if (*endptr != '.')
+				          		      BAD_RET("'Tags' require a .\n");
 				          	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
 				          	      cascade_struct = &s->tags[pos];
 				          	      cascade_parser = resource_tag_parser;
@@ -21249,18 +19470,14 @@ int main(int ac, char **av)
 				          }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateTags'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateTags'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_tags_arg;
 		     }
 		     cret = osc_create_tags(&e, &r, &a);
             	     TRY(cret, "fail to call CreateTags: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21290,14 +19507,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_subnet_arg;
@@ -21320,8 +19531,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "IpRange") ) {
@@ -21340,18 +19550,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateSubnet'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateSubnet'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_subnet_arg;
 		     }
 		     cret = osc_create_subnet(&e, &r, &a);
             	     TRY(cret, "fail to call CreateSubnet: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21381,14 +19587,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_snapshot_export_task_arg;
@@ -21411,8 +19611,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "OsuExport") ) {
@@ -21438,18 +19637,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateSnapshotExportTask'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateSnapshotExportTask'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_snapshot_export_task_arg;
 		     }
 		     cret = osc_create_snapshot_export_task(&e, &r, &a);
             	     TRY(cret, "fail to call CreateSnapshotExportTask: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21479,14 +19674,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_snapshot_arg;
@@ -21514,8 +19703,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "FileLocation") ) {
@@ -21544,18 +19732,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateSnapshot'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateSnapshot'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_snapshot_arg;
 		     }
 		     cret = osc_create_snapshot(&e, &r, &a);
             	     TRY(cret, "fail to call CreateSnapshot: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21585,14 +19769,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_server_certificate_arg;
@@ -21625,8 +19803,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Name") ) {
@@ -21645,18 +19822,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateServerCertificate'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateServerCertificate'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_server_certificate_arg;
 		     }
 		     cret = osc_create_server_certificate(&e, &r, &a);
             	     TRY(cret, "fail to call CreateServerCertificate: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21686,14 +19859,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_security_group_rule_arg;
@@ -21716,8 +19883,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Flow") ) {
@@ -21749,13 +19915,10 @@ int main(int ac, char **av)
 
 				          	      ++dot_pos;
 				          	      pos = strtoul(dot_pos, &endptr, 0);
-				          	      if (endptr == dot_pos) {
-				          		      fprintf(stderr, "'Rules' require an index (example array ref SecurityGroupRule.Rules.0)\n");
-				          		      return -1;
-				          	      } else if (*endptr != '.') {
-				          		      fprintf(stderr, "'Rules' require a .\n");
-				          		      return -1;
-				          	      }
+				          	      if (endptr == dot_pos)
+				          		      BAD_RET("'Rules' require an index (example array ref SecurityGroupRule.Rules.0)\n");
+				          	      else if (*endptr != '.')
+				          		      BAD_RET("'Rules' require a .\n");
 				          	      TRY_ALLOC_AT(s,rules, pa, pos, sizeof(*s->rules));
 				          	      cascade_struct = &s->rules[pos];
 				          	      cascade_parser = security_group_rule_parser;
@@ -21789,18 +19952,14 @@ int main(int ac, char **av)
 				          s->to_port_range = atoi(aa);
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateSecurityGroupRule'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateSecurityGroupRule'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_security_group_rule_arg;
 		     }
 		     cret = osc_create_security_group_rule(&e, &r, &a);
             	     TRY(cret, "fail to call CreateSecurityGroupRule: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21830,14 +19989,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_security_group_arg;
@@ -21865,8 +20018,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "NetId") ) {
@@ -21880,18 +20032,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateSecurityGroup'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateSecurityGroup'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_security_group_arg;
 		     }
 		     cret = osc_create_security_group(&e, &r, &a);
             	     TRY(cret, "fail to call CreateSecurityGroup: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21921,14 +20069,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_route_table_arg;
@@ -21951,8 +20093,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "NetId") ) {
@@ -21961,18 +20102,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateRouteTable'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateRouteTable'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_route_table_arg;
 		     }
 		     cret = osc_create_route_table(&e, &r, &a);
             	     TRY(cret, "fail to call CreateRouteTable: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22002,14 +20139,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_route_arg;
@@ -22037,8 +20168,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "GatewayId") ) {
@@ -22072,18 +20202,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateRoute'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateRoute'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_route_arg;
 		     }
 		     cret = osc_create_route(&e, &r, &a);
             	     TRY(cret, "fail to call CreateRoute: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22113,14 +20239,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_public_ip_arg;
@@ -22143,23 +20263,18 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreatePublicIp'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreatePublicIp'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_public_ip_arg;
 		     }
 		     cret = osc_create_public_ip(&e, &r, &a);
             	     TRY(cret, "fail to call CreatePublicIp: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22189,14 +20304,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_nic_arg;
@@ -22224,8 +20333,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "PrivateIps") ) {
@@ -22237,13 +20345,10 @@ int main(int ac, char **av)
 
 				          	      ++dot_pos;
 				          	      pos = strtoul(dot_pos, &endptr, 0);
-				          	      if (endptr == dot_pos) {
-				          		      fprintf(stderr, "'PrivateIps' require an index (example array ref PrivateIpLight.PrivateIps.0)\n");
-				          		      return -1;
-				          	      } else if (*endptr != '.') {
-				          		      fprintf(stderr, "'PrivateIps' require a .\n");
-				          		      return -1;
-				          	      }
+				          	      if (endptr == dot_pos)
+				          		      BAD_RET("'PrivateIps' require an index (example array ref PrivateIpLight.PrivateIps.0)\n");
+				          	      else if (*endptr != '.')
+				          		      BAD_RET("'PrivateIps' require a .\n");
 				          	      TRY_ALLOC_AT(s,private_ips, pa, pos, sizeof(*s->private_ips));
 				          	      cascade_struct = &s->private_ips[pos];
 				          	      cascade_parser = private_ip_light_parser;
@@ -22269,18 +20374,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateNic'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateNic'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_nic_arg;
 		     }
 		     cret = osc_create_nic(&e, &r, &a);
             	     TRY(cret, "fail to call CreateNic: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22310,14 +20411,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_net_peering_arg;
@@ -22345,8 +20440,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "SourceNetId") ) {
@@ -22355,18 +20449,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateNetPeering'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateNetPeering'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_net_peering_arg;
 		     }
 		     cret = osc_create_net_peering(&e, &r, &a);
             	     TRY(cret, "fail to call CreateNetPeering: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22396,14 +20486,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_net_access_point_arg;
@@ -22426,8 +20510,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "NetId") ) {
@@ -22448,18 +20531,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateNetAccessPoint'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateNetAccessPoint'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_net_access_point_arg;
 		     }
 		     cret = osc_create_net_access_point(&e, &r, &a);
             	     TRY(cret, "fail to call CreateNetAccessPoint: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22489,14 +20568,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_net_arg;
@@ -22519,8 +20592,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "IpRange") ) {
@@ -22534,18 +20606,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateNet'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateNet'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_net_arg;
 		     }
 		     cret = osc_create_net(&e, &r, &a);
             	     TRY(cret, "fail to call CreateNet: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22575,14 +20643,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_nat_service_arg;
@@ -22605,8 +20667,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "PublicIpId") ) {
@@ -22620,18 +20681,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateNatService'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateNatService'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_nat_service_arg;
 		     }
 		     cret = osc_create_nat_service(&e, &r, &a);
             	     TRY(cret, "fail to call CreateNatService: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22661,14 +20718,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_load_balancer_tags_arg;
@@ -22691,8 +20742,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "LoadBalancerNames") ) {
@@ -22711,13 +20761,10 @@ int main(int ac, char **av)
 
 				          	      ++dot_pos;
 				          	      pos = strtoul(dot_pos, &endptr, 0);
-				          	      if (endptr == dot_pos) {
-				          		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-				          		      return -1;
-				          	      } else if (*endptr != '.') {
-				          		      fprintf(stderr, "'Tags' require a .\n");
-				          		      return -1;
-				          	      }
+				          	      if (endptr == dot_pos)
+				          		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+				          	      else if (*endptr != '.')
+				          		      BAD_RET("'Tags' require a .\n");
 				          	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
 				          	      cascade_struct = &s->tags[pos];
 				          	      cascade_parser = resource_tag_parser;
@@ -22731,18 +20778,14 @@ int main(int ac, char **av)
 				          }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateLoadBalancerTags'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateLoadBalancerTags'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_load_balancer_tags_arg;
 		     }
 		     cret = osc_create_load_balancer_tags(&e, &r, &a);
             	     TRY(cret, "fail to call CreateLoadBalancerTags: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22772,14 +20815,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_load_balancer_policy_arg;
@@ -22812,8 +20849,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "LoadBalancerName") ) {
@@ -22832,18 +20868,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateLoadBalancerPolicy'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateLoadBalancerPolicy'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_load_balancer_policy_arg;
 		     }
 		     cret = osc_create_load_balancer_policy(&e, &r, &a);
             	     TRY(cret, "fail to call CreateLoadBalancerPolicy: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22873,14 +20905,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_load_balancer_listeners_arg;
@@ -22903,8 +20929,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Listeners") ) {
@@ -22916,13 +20941,10 @@ int main(int ac, char **av)
 
 				          	      ++dot_pos;
 				          	      pos = strtoul(dot_pos, &endptr, 0);
-				          	      if (endptr == dot_pos) {
-				          		      fprintf(stderr, "'Listeners' require an index (example array ref ListenerForCreation.Listeners.0)\n");
-				          		      return -1;
-				          	      } else if (*endptr != '.') {
-				          		      fprintf(stderr, "'Listeners' require a .\n");
-				          		      return -1;
-				          	      }
+				          	      if (endptr == dot_pos)
+				          		      BAD_RET("'Listeners' require an index (example array ref ListenerForCreation.Listeners.0)\n");
+				          	      else if (*endptr != '.')
+				          		      BAD_RET("'Listeners' require a .\n");
 				          	      TRY_ALLOC_AT(s,listeners, pa, pos, sizeof(*s->listeners));
 				          	      cascade_struct = &s->listeners[pos];
 				          	      cascade_parser = listener_for_creation_parser;
@@ -22941,18 +20963,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateLoadBalancerListeners'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateLoadBalancerListeners'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_load_balancer_listeners_arg;
 		     }
 		     cret = osc_create_load_balancer_listeners(&e, &r, &a);
             	     TRY(cret, "fail to call CreateLoadBalancerListeners: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22982,14 +21000,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_load_balancer_arg;
@@ -23012,8 +21024,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Listeners") ) {
@@ -23025,13 +21036,10 @@ int main(int ac, char **av)
 
 				          	      ++dot_pos;
 				          	      pos = strtoul(dot_pos, &endptr, 0);
-				          	      if (endptr == dot_pos) {
-				          		      fprintf(stderr, "'Listeners' require an index (example array ref ListenerForCreation.Listeners.0)\n");
-				          		      return -1;
-				          	      } else if (*endptr != '.') {
-				          		      fprintf(stderr, "'Listeners' require a .\n");
-				          		      return -1;
-				          	      }
+				          	      if (endptr == dot_pos)
+				          		      BAD_RET("'Listeners' require an index (example array ref ListenerForCreation.Listeners.0)\n");
+				          	      else if (*endptr != '.')
+				          		      BAD_RET("'Listeners' require a .\n");
 				          	      TRY_ALLOC_AT(s,listeners, pa, pos, sizeof(*s->listeners));
 				          	      cascade_struct = &s->listeners[pos];
 				          	      cascade_parser = listener_for_creation_parser;
@@ -23089,13 +21097,10 @@ int main(int ac, char **av)
 
 				          	      ++dot_pos;
 				          	      pos = strtoul(dot_pos, &endptr, 0);
-				          	      if (endptr == dot_pos) {
-				          		      fprintf(stderr, "'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
-				          		      return -1;
-				          	      } else if (*endptr != '.') {
-				          		      fprintf(stderr, "'Tags' require a .\n");
-				          		      return -1;
-				          	      }
+				          	      if (endptr == dot_pos)
+				          		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+				          	      else if (*endptr != '.')
+				          		      BAD_RET("'Tags' require a .\n");
 				          	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
 				          	      cascade_struct = &s->tags[pos];
 				          	      cascade_parser = resource_tag_parser;
@@ -23109,18 +21114,14 @@ int main(int ac, char **av)
 				          }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateLoadBalancer'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateLoadBalancer'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_load_balancer_arg;
 		     }
 		     cret = osc_create_load_balancer(&e, &r, &a);
             	     TRY(cret, "fail to call CreateLoadBalancer: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23150,14 +21151,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_listener_rule_arg;
@@ -23180,8 +21175,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Listener") ) {
@@ -23226,18 +21220,14 @@ int main(int ac, char **av)
 				             SET_NEXT(s->vm_ids, (aa), pa);
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateListenerRule'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateListenerRule'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_listener_rule_arg;
 		     }
 		     cret = osc_create_listener_rule(&e, &r, &a);
             	     TRY(cret, "fail to call CreateListenerRule: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23267,14 +21257,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_keypair_arg;
@@ -23297,8 +21281,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "KeypairName") ) {
@@ -23312,18 +21295,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateKeypair'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateKeypair'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_keypair_arg;
 		     }
 		     cret = osc_create_keypair(&e, &r, &a);
             	     TRY(cret, "fail to call CreateKeypair: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23353,14 +21332,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_internet_service_arg;
@@ -23383,23 +21356,18 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateInternetService'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateInternetService'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_internet_service_arg;
 		     }
 		     cret = osc_create_internet_service(&e, &r, &a);
             	     TRY(cret, "fail to call CreateInternetService: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23429,14 +21397,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_image_export_task_arg;
@@ -23459,8 +21421,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "ImageId") ) {
@@ -23486,18 +21447,14 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateImageExportTask'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateImageExportTask'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_image_export_task_arg;
 		     }
 		     cret = osc_create_image_export_task(&e, &r, &a);
             	     TRY(cret, "fail to call CreateImageExportTask: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23527,14 +21484,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_image_arg;
@@ -23564,13 +21515,10 @@ int main(int ac, char **av)
 
 				          	      ++dot_pos;
 				          	      pos = strtoul(dot_pos, &endptr, 0);
-				          	      if (endptr == dot_pos) {
-				          		      fprintf(stderr, "'BlockDeviceMappings' require an index (example array ref BlockDeviceMappingImage.BlockDeviceMappings.0)\n");
-				          		      return -1;
-				          	      } else if (*endptr != '.') {
-				          		      fprintf(stderr, "'BlockDeviceMappings' require a .\n");
-				          		      return -1;
-				          	      }
+				          	      if (endptr == dot_pos)
+				          		      BAD_RET("'BlockDeviceMappings' require an index (example array ref BlockDeviceMappingImage.BlockDeviceMappings.0)\n");
+				          	      else if (*endptr != '.')
+				          		      BAD_RET("'BlockDeviceMappings' require a .\n");
 				          	      TRY_ALLOC_AT(s,block_device_mappings, pa, pos, sizeof(*s->block_device_mappings));
 				          	      cascade_struct = &s->block_device_mappings[pos];
 				          	      cascade_parser = block_device_mapping_image_parser;
@@ -23595,8 +21543,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "FileLocation") ) {
@@ -23616,8 +21563,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->no_reboot = 0;
 				           } else {
-				          		fprintf(stderr, "NoReboot require true/false\n");
-				          		return 1;
+				          		BAD_RET("NoReboot require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "RootDeviceName") ) {
@@ -23641,18 +21587,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateImage'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateImage'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_image_arg;
 		     }
 		     cret = osc_create_image(&e, &r, &a);
             	     TRY(cret, "fail to call CreateImage: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23682,14 +21624,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_flexible_gpu_arg;
@@ -23712,8 +21648,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->delete_on_vm_deletion = 0;
 				           } else {
-				          		fprintf(stderr, "DeleteOnVmDeletion require true/false\n");
-				          		return 1;
+				          		BAD_RET("DeleteOnVmDeletion require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "DryRun") ) {
@@ -23723,8 +21658,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Generation") ) {
@@ -23743,18 +21677,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateFlexibleGpu'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateFlexibleGpu'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_flexible_gpu_arg;
 		     }
 		     cret = osc_create_flexible_gpu(&e, &r, &a);
             	     TRY(cret, "fail to call CreateFlexibleGpu: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23784,14 +21714,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_direct_link_interface_arg;
@@ -23836,23 +21760,18 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateDirectLinkInterface'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateDirectLinkInterface'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_direct_link_interface_arg;
 		     }
 		     cret = osc_create_direct_link_interface(&e, &r, &a);
             	     TRY(cret, "fail to call CreateDirectLinkInterface: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23882,14 +21801,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_direct_link_arg;
@@ -23922,8 +21835,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Location") ) {
@@ -23932,18 +21844,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateDirectLink'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateDirectLink'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_direct_link_arg;
 		     }
 		     cret = osc_create_direct_link(&e, &r, &a);
             	     TRY(cret, "fail to call CreateDirectLink: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23973,14 +21881,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_dhcp_options_arg;
@@ -24015,8 +21917,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "LogServers") ) {
@@ -24034,18 +21935,14 @@ int main(int ac, char **av)
 				             SET_NEXT(s->ntp_servers, (aa), pa);
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateDhcpOptions'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateDhcpOptions'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_dhcp_options_arg;
 		     }
 		     cret = osc_create_dhcp_options(&e, &r, &a);
             	     TRY(cret, "fail to call CreateDhcpOptions: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -24075,14 +21972,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_client_gateway_arg;
@@ -24115,8 +22006,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "PublicIp") ) {
@@ -24125,18 +22015,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateClientGateway'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateClientGateway'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_client_gateway_arg;
 		     }
 		     cret = osc_create_client_gateway(&e, &r, &a);
             	     TRY(cret, "fail to call CreateClientGateway: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -24166,14 +22052,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_ca_arg;
@@ -24206,23 +22086,18 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateCa'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateCa'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_ca_arg;
 		     }
 		     cret = osc_create_ca(&e, &r, &a);
             	     TRY(cret, "fail to call CreateCa: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -24252,14 +22127,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_api_access_rule_arg;
@@ -24301,8 +22170,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "IpRanges") ) {
@@ -24313,18 +22181,14 @@ int main(int ac, char **av)
 				             SET_NEXT(s->ip_ranges, (aa), pa);
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateApiAccessRule'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateApiAccessRule'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_api_access_rule_arg;
 		     }
 		     cret = osc_create_api_access_rule(&e, &r, &a);
             	     TRY(cret, "fail to call CreateApiAccessRule: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -24354,14 +22218,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_account_arg;
@@ -24411,8 +22269,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Email") ) {
@@ -24461,18 +22318,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateAccount'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateAccount'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_account_arg;
 		     }
 		     cret = osc_create_account(&e, &r, &a);
             	     TRY(cret, "fail to call CreateAccount: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -24502,14 +22355,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto create_access_key_arg;
@@ -24532,8 +22379,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "ExpirationDate") ) {
@@ -24542,18 +22388,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CreateAccessKey'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CreateAccessKey'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_access_key_arg;
 		     }
 		     cret = osc_create_access_key(&e, &r, &a);
             	     TRY(cret, "fail to call CreateAccessKey: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -24583,14 +22425,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto check_authentication_arg;
@@ -24613,8 +22449,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "Login") ) {
@@ -24628,18 +22463,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'CheckAuthentication'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'CheckAuthentication'\n", next_a);
 			    }
 		            i += incr;
 			    goto check_authentication_arg;
 		     }
 		     cret = osc_check_authentication(&e, &r, &a);
             	     TRY(cret, "fail to call CheckAuthentication: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -24669,14 +22500,8 @@ int main(int ac, char **av)
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 
-		      	   if (!cascade_struct) {
-		      	          fprintf(stderr, "cascade need to be se first\n");
-		      	      	  return 1;
-		      	   }
-			   if (!aa || aa[0] == '-') {
-			      	  fprintf(stderr, "cascade need an argument\n");
-		      	      	  return 1;
-			   }
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
 			   i += 2;
 		       	   goto accept_net_peering_arg;
@@ -24699,8 +22524,7 @@ int main(int ac, char **av)
 				           } else if (!strcasecmp(aa, "false")) {
 				          		s->dry_run = 0;
 				           } else {
-				          		fprintf(stderr, "DryRun require true/false\n");
-				          		return 1;
+				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
 			      if (!argcmp(next_a, "NetPeeringId") ) {
@@ -24709,18 +22533,14 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				fprintf(stderr, "'%s' is not a valide argument for 'AcceptNetPeering'\n", next_a);
-				return 1;
+				BAD_RET("'%s' is not a valide argument for 'AcceptNetPeering'\n", next_a);
 			    }
 		            i += incr;
 			    goto accept_net_peering_arg;
 		     }
 		     cret = osc_accept_net_peering(&e, &r, &a);
             	     TRY(cret, "fail to call AcceptNetPeering: %s\n", curl_easy_strerror(cret));
-		     if (!r.buf) {
-			    fprintf(stderr, "connection sucessful, but empty responce\n");
-			    return 1;
-		     }
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
