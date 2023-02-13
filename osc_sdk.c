@@ -2472,7 +2472,7 @@ int osc_str_append_string(struct osc_str *osc_str, const char *str)
 	return 0;
 }
 
-#define LOAD_CFG_TRY(test,  ...)				\
+#define TRY(test,  ...)						\
 	if (test) fprintf(stderr, __VA_ARGS__); return -1;
 
 #define LOAD_CFG_GET_HOME(buf)						\
@@ -2480,8 +2480,8 @@ int osc_str_append_string(struct osc_str *osc_str, const char *str)
 		const char *dest = CFG_FILE;				\
 		char *home = getenv("HOME");				\
 									\
-		LOAD_CFG_TRY(strlen(home) + sizeof CFG_FILE > sizeof buf, \
-			     "home path too big");			\
+		TRY(strlen(home) + sizeof CFG_FILE > sizeof buf,	\
+		    "home path too big");				\
 		strcpy(stpcpy(buf, home), dest);			\
 	}
 
@@ -2495,13 +2495,13 @@ int osc_load_ak_sk_from_conf(const char *profile, char **ak, char **sk)
 	*sk = NULL;
 	*ak = NULL;
 	js = json_object_from_file(buf);
-	LOAD_CFG_TRY(!js, "can't open %s\n", buf);
+	TRY(!js, "can't open %s\n", buf);
 	js = json_object_object_get(js, profile);
-	LOAD_CFG_TRY(!js, "can't find profile %s\n", profile);
+	TRY(!js, "can't find profile %s\n", profile);
 	ak_js = json_object_object_get(js, "access_key");
-	LOAD_CFG_TRY(!ak_js, "can't find 'access_key' in profile '%s'\n", profile);
+	TRY(!ak_js, "can't find 'access_key' in profile '%s'\n", profile);
 	sk_js = json_object_object_get(js, "secret_key");
-	LOAD_CFG_TRY(!sk_js, "can't find 'secret_key' in profile '%s'\n", profile);
+	TRY(!sk_js, "can't find 'secret_key' in profile '%s'\n", profile);
 
 	*ak = strdup(json_object_get_string(json_object_object_get(js, "access_key")));
 	*sk = strdup(json_object_get_string(json_object_object_get(js, "secret_key")));
@@ -2518,11 +2518,11 @@ int osc_load_loging_password_from_conf(const char *profile,
 	*password = NULL;
 	*email = NULL;
 	js = json_object_from_file(buf);
-	LOAD_CFG_TRY(!js, "can't open %s\n", buf);
+	TRY(!js, "can't open %s\n", buf);
 	js = json_object_object_get(js, profile);
-	LOAD_CFG_TRY(!js, "can't find profile '%s'\n", profile);
+	TRY(!js, "can't find profile '%s'\n", profile);
 	login_js = json_object_object_get(js, "login");
-	LOAD_CFG_TRY(!login_js, "can't find 'login' in profile '%s'\n", profile);
+	TRY(!login_js, "can't find 'login' in profile '%s'\n", profile);
 	*email = strdup(json_object_get_string(login_js));
 
 	pass_js = json_object_object_get(js, "password");
@@ -2541,7 +2541,7 @@ int osc_load_region_from_conf(const char *profile, char **region)
 
 	LOAD_CFG_GET_HOME(buf)
 	js = json_object_from_file(buf);
-	LOAD_CFG_TRY(!js, "can't open %s\n", buf);
+	TRY(!js, "can't open %s\n", buf);
 	js = json_object_object_get(js, profile);
 	if (!js)
 		return -1;
@@ -2562,7 +2562,7 @@ int osc_load_cert_from_conf(const char *profile, char **cert, char **key)
 
 	LOAD_CFG_GET_HOME(buf)
 	js = json_object_from_file(buf);
-	LOAD_CFG_TRY(!js, "can't open %s\n", buf);
+	TRY(!js, "can't open %s\n", buf);
 	js = json_object_object_get(js, profile);
 	if (!js)
 		return 0;
@@ -35999,15 +35999,20 @@ int osc_init_sdk(struct osc_env *e, const char *profile, unsigned int flag)
 	} else if (e->auth_method == OSC_PASSWORD_METHOD) {
 		time_t clock;
 		struct tm tm;
+		struct tm *tmp;
 		char time_hdr[TIME_HDR_KEY_L + TIMESTAMP_SIZE] = TIME_HDR_KEY;
 
 		time(&clock);
-		if (!gmtime_r(&clock, &tm)) {
-			fprintf(stderr, "gmtime_r fail\n");
-			return -1;
-		}
+#ifdef SAFE_C
+		TRY(!gmtime_r(&clock, &tm), "gmtime_r fail\n");
+		tmp = &tm;
+#else
+		(void)tm;
+		tmp = gmtime(&clock);
+		CHK_BAD_RET(!tmp, &clock);
+#endif
 		strftime(time_hdr + TIME_HDR_KEY_L - 1,
-			 TIMESTAMP_SIZE, "%Y%m%dT%H%M%SZ", &tm);
+			 TIMESTAMP_SIZE, "%Y%m%dT%H%M%SZ", tmp);
 		e->headers = curl_slist_append(e->headers, time_hdr);
 	}
 	curl_easy_setopt(e->c, CURLOPT_HTTPHEADER, e->headers);

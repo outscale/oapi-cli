@@ -52,7 +52,11 @@ extern "C" {
  */
 #define auto_osc_str __attribute__((cleanup(osc_deinit_str)))
 #define auto_osc_env __attribute__((cleanup(osc_deinit_sdk)))
+
+#define SAFE_C 1
 #endif
+
+
 
 struct osc_str {
 	int len;
