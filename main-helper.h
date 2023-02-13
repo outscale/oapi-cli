@@ -21,7 +21,7 @@ struct ptr_array {
 			int sz = i + 1;					\
 			int oidx = ptr_array_get_idx(pa, s->a);		\
 			s->a = osc_realloc(s->a, sz * size);		\
-			CHK_BAD_RET(s->a, "allocation fail\n");		\
+			CHK_BAD_RET(!s->a, "allocation fail\n");	\
 			if (oidx < 0)					\
 				ptr_array_append(pa, s->a);		\
 			else {						\
