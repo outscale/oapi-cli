@@ -27887,7 +27887,7 @@ int osc_init_sdk(struct osc_env *e, const char *profile, unsigned int flag)
 #else
 		(void)tm;
 		tmp = gmtime(&clock);
-		CHK_BAD_RET(!tmp, &clock);
+		TRY(!tmp, "gmtime fail\n");
 #endif
 		strftime(time_hdr + TIME_HDR_KEY_L - 1,
 			 TIMESTAMP_SIZE, "%Y%m%dT%H%M%SZ", tmp);
