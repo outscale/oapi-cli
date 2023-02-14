@@ -52,6 +52,7 @@
 
 #ifdef _WIN32
 
+#define SAFE_C 0
 
 static inline char* stpcpy(char *dest, const char *src)
 {
@@ -61,6 +62,10 @@ static inline char* stpcpy(char *dest, const char *src)
 	*dest = 0;
 	return dest;
 }
+
+#else
+
+#define SAFE_C 1
 
 #endif
 
@@ -27876,7 +27881,7 @@ int osc_init_sdk(struct osc_env *e, const char *profile, unsigned int flag)
 		char time_hdr[TIME_HDR_KEY_L + TIMESTAMP_SIZE] = TIME_HDR_KEY;
 
 		time(&clock);
-#ifdef SAFE_C
+#if SAFE_C == 1
 		TRY(!gmtime_r(&clock, &tm), "gmtime_r fail\n");
 		tmp = &tm;
 #else
