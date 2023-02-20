@@ -90,5 +90,6 @@ static inline int ptr_array_free_all(struct ptr_array *pa)
 	return 0;
 }
 
+#define auto_ptr_array __attribute__((cleanup(ptr_array_free_all)))
 
 #endif /* MAIN_HELPER_H_ */

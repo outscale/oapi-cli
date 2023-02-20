@@ -8068,7 +8068,7 @@ int main(int ac, char **av)
 		} else
               if (!strcmp("UpdateVpnConnection", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_vpn_connection_arg a = {0};
 		     struct osc_update_vpn_connection_arg *s = &a;
@@ -8161,11 +8161,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateVolume", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_volume_arg a = {0};
 		     struct osc_update_volume_arg *s = &a;
@@ -8246,11 +8245,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateVm", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_vm_arg a = {0};
 		     struct osc_update_vm_arg *s = &a;
@@ -8413,11 +8411,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateSubnet", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_subnet_arg a = {0};
 		     struct osc_update_subnet_arg *s = &a;
@@ -8493,11 +8490,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateSnapshot", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_snapshot_arg a = {0};
 		     struct osc_update_snapshot_arg *s = &a;
@@ -8580,11 +8576,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateServerCertificate", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_server_certificate_arg a = {0};
 		     struct osc_update_server_certificate_arg *s = &a;
@@ -8660,11 +8655,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateRoutePropagation", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_route_propagation_arg a = {0};
 		     struct osc_update_route_propagation_arg *s = &a;
@@ -8745,11 +8739,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateRoute", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_route_arg a = {0};
 		     struct osc_update_route_arg *s = &a;
@@ -8845,11 +8838,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateNic", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_nic_arg a = {0};
 		     struct osc_update_nic_arg *s = &a;
@@ -8944,11 +8936,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateNetAccessPoint", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_net_access_point_arg a = {0};
 		     struct osc_update_net_access_point_arg *s = &a;
@@ -9028,11 +9019,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateNet", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_net_arg a = {0};
 		     struct osc_update_net_arg *s = &a;
@@ -9103,11 +9093,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateLoadBalancer", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_load_balancer_arg a = {0};
 		     struct osc_update_load_balancer_arg *s = &a;
@@ -9246,11 +9235,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateListenerRule", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_listener_rule_arg a = {0};
 		     struct osc_update_listener_rule_arg *s = &a;
@@ -9326,11 +9314,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateImage", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_image_arg a = {0};
 		     struct osc_update_image_arg *s = &a;
@@ -9413,11 +9400,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateFlexibleGpu", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_flexible_gpu_arg a = {0};
 		     struct osc_update_flexible_gpu_arg *s = &a;
@@ -9493,11 +9479,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateDirectLinkInterface", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_direct_link_interface_arg a = {0};
 		     struct osc_update_direct_link_interface_arg *s = &a;
@@ -9568,11 +9553,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateCa", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_ca_arg a = {0};
 		     struct osc_update_ca_arg *s = &a;
@@ -9643,11 +9627,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateApiAccessRule", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_api_access_rule_arg a = {0};
 		     struct osc_update_api_access_rule_arg *s = &a;
@@ -9739,11 +9722,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateApiAccessPolicy", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_api_access_policy_arg a = {0};
 		     struct osc_update_api_access_policy_arg *s = &a;
@@ -9819,11 +9801,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateAccount", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_account_arg a = {0};
 		     struct osc_update_account_arg *s = &a;
@@ -9951,11 +9932,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UpdateAccessKey", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_access_key_arg a = {0};
 		     struct osc_update_access_key_arg *s = &a;
@@ -10031,11 +10011,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UnlinkVolume", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_volume_arg a = {0};
 		     struct osc_unlink_volume_arg *s = &a;
@@ -10111,11 +10090,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UnlinkVirtualGateway", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_virtual_gateway_arg a = {0};
 		     struct osc_unlink_virtual_gateway_arg *s = &a;
@@ -10186,11 +10164,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UnlinkRouteTable", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_route_table_arg a = {0};
 		     struct osc_unlink_route_table_arg *s = &a;
@@ -10256,11 +10233,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UnlinkPublicIp", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_public_ip_arg a = {0};
 		     struct osc_unlink_public_ip_arg *s = &a;
@@ -10331,11 +10307,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UnlinkPrivateIps", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_private_ips_arg a = {0};
 		     struct osc_unlink_private_ips_arg *s = &a;
@@ -10408,11 +10383,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UnlinkNic", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_nic_arg a = {0};
 		     struct osc_unlink_nic_arg *s = &a;
@@ -10478,11 +10452,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UnlinkLoadBalancerBackendMachines", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_load_balancer_backend_machines_arg a = {0};
 		     struct osc_unlink_load_balancer_backend_machines_arg *s = &a;
@@ -10562,11 +10535,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UnlinkInternetService", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_internet_service_arg a = {0};
 		     struct osc_unlink_internet_service_arg *s = &a;
@@ -10637,11 +10609,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("UnlinkFlexibleGpu", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_flexible_gpu_arg a = {0};
 		     struct osc_unlink_flexible_gpu_arg *s = &a;
@@ -10707,11 +10678,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("StopVms", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_stop_vms_arg a = {0};
 		     struct osc_stop_vms_arg *s = &a;
@@ -10789,11 +10759,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("StartVms", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_start_vms_arg a = {0};
 		     struct osc_start_vms_arg *s = &a;
@@ -10861,11 +10830,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("SendResetPasswordEmail", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_send_reset_password_email_arg a = {0};
 		     struct osc_send_reset_password_email_arg *s = &a;
@@ -10931,11 +10899,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ResetAccountPassword", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_reset_account_password_arg a = {0};
 		     struct osc_reset_account_password_arg *s = &a;
@@ -11006,11 +10973,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("RejectNetPeering", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_reject_net_peering_arg a = {0};
 		     struct osc_reject_net_peering_arg *s = &a;
@@ -11076,11 +11042,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("RegisterVmsInLoadBalancer", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_register_vms_in_load_balancer_arg a = {0};
 		     struct osc_register_vms_in_load_balancer_arg *s = &a;
@@ -11153,11 +11118,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("RebootVms", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_reboot_vms_arg a = {0};
 		     struct osc_reboot_vms_arg *s = &a;
@@ -11225,11 +11189,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadVpnConnections", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_vpn_connections_arg a = {0};
 		     struct osc_read_vpn_connections_arg *s = &a;
@@ -11307,11 +11270,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadVolumes", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_volumes_arg a = {0};
 		     struct osc_read_volumes_arg *s = &a;
@@ -11389,11 +11351,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadVmsState", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_vms_state_arg a = {0};
 		     struct osc_read_vms_state_arg *s = &a;
@@ -11481,11 +11442,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadVmsHealth", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_vms_health_arg a = {0};
 		     struct osc_read_vms_health_arg *s = &a;
@@ -11558,11 +11518,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadVms", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_vms_arg a = {0};
 		     struct osc_read_vms_arg *s = &a;
@@ -11640,11 +11599,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadVmTypes", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_vm_types_arg a = {0};
 		     struct osc_read_vm_types_arg *s = &a;
@@ -11722,11 +11680,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadVirtualGateways", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_virtual_gateways_arg a = {0};
 		     struct osc_read_virtual_gateways_arg *s = &a;
@@ -11804,11 +11761,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadTags", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_tags_arg a = {0};
 		     struct osc_read_tags_arg *s = &a;
@@ -11886,11 +11842,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadSubregions", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_subregions_arg a = {0};
 		     struct osc_read_subregions_arg *s = &a;
@@ -11968,11 +11923,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadSubnets", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_subnets_arg a = {0};
 		     struct osc_read_subnets_arg *s = &a;
@@ -12050,11 +12004,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadSnapshots", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_snapshots_arg a = {0};
 		     struct osc_read_snapshots_arg *s = &a;
@@ -12132,11 +12085,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadSnapshotExportTasks", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_snapshot_export_tasks_arg a = {0};
 		     struct osc_read_snapshot_export_tasks_arg *s = &a;
@@ -12214,11 +12166,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadServerCertificates", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_server_certificates_arg a = {0};
 		     struct osc_read_server_certificates_arg *s = &a;
@@ -12296,11 +12247,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadSecurityGroups", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_security_groups_arg a = {0};
 		     struct osc_read_security_groups_arg *s = &a;
@@ -12378,11 +12328,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadSecretAccessKey", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_secret_access_key_arg a = {0};
 		     struct osc_read_secret_access_key_arg *s = &a;
@@ -12448,11 +12397,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadRouteTables", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_route_tables_arg a = {0};
 		     struct osc_read_route_tables_arg *s = &a;
@@ -12530,11 +12478,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadRegions", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_regions_arg a = {0};
 		     struct osc_read_regions_arg *s = &a;
@@ -12595,11 +12542,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadQuotas", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_quotas_arg a = {0};
 		     struct osc_read_quotas_arg *s = &a;
@@ -12677,11 +12623,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadPublicIps", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_public_ips_arg a = {0};
 		     struct osc_read_public_ips_arg *s = &a;
@@ -12759,11 +12704,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadPublicIpRanges", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_public_ip_ranges_arg a = {0};
 		     struct osc_read_public_ip_ranges_arg *s = &a;
@@ -12824,11 +12768,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadPublicCatalog", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_public_catalog_arg a = {0};
 		     struct osc_read_public_catalog_arg *s = &a;
@@ -12889,11 +12832,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadProductTypes", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_product_types_arg a = {0};
 		     struct osc_read_product_types_arg *s = &a;
@@ -12971,11 +12913,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadNics", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_nics_arg a = {0};
 		     struct osc_read_nics_arg *s = &a;
@@ -13053,11 +12994,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadNets", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_nets_arg a = {0};
 		     struct osc_read_nets_arg *s = &a;
@@ -13135,11 +13075,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadNetPeerings", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_net_peerings_arg a = {0};
 		     struct osc_read_net_peerings_arg *s = &a;
@@ -13217,11 +13156,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadNetAccessPoints", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_net_access_points_arg a = {0};
 		     struct osc_read_net_access_points_arg *s = &a;
@@ -13299,11 +13237,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadNetAccessPointServices", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_net_access_point_services_arg a = {0};
 		     struct osc_read_net_access_point_services_arg *s = &a;
@@ -13381,11 +13318,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadNatServices", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_nat_services_arg a = {0};
 		     struct osc_read_nat_services_arg *s = &a;
@@ -13463,11 +13399,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadLocations", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_locations_arg a = {0};
 		     struct osc_read_locations_arg *s = &a;
@@ -13528,11 +13463,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadLoadBalancers", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_load_balancers_arg a = {0};
 		     struct osc_read_load_balancers_arg *s = &a;
@@ -13610,11 +13544,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadLoadBalancerTags", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_load_balancer_tags_arg a = {0};
 		     struct osc_read_load_balancer_tags_arg *s = &a;
@@ -13682,11 +13615,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadListenerRules", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_listener_rules_arg a = {0};
 		     struct osc_read_listener_rules_arg *s = &a;
@@ -13764,11 +13696,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadKeypairs", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_keypairs_arg a = {0};
 		     struct osc_read_keypairs_arg *s = &a;
@@ -13846,11 +13777,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadInternetServices", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_internet_services_arg a = {0};
 		     struct osc_read_internet_services_arg *s = &a;
@@ -13928,11 +13858,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadImages", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_images_arg a = {0};
 		     struct osc_read_images_arg *s = &a;
@@ -14010,11 +13939,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadImageExportTasks", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_image_export_tasks_arg a = {0};
 		     struct osc_read_image_export_tasks_arg *s = &a;
@@ -14092,11 +14020,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadFlexibleGpus", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_flexible_gpus_arg a = {0};
 		     struct osc_read_flexible_gpus_arg *s = &a;
@@ -14174,11 +14101,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadFlexibleGpuCatalog", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_flexible_gpu_catalog_arg a = {0};
 		     struct osc_read_flexible_gpu_catalog_arg *s = &a;
@@ -14239,11 +14165,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadDirectLinks", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_direct_links_arg a = {0};
 		     struct osc_read_direct_links_arg *s = &a;
@@ -14321,11 +14246,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadDirectLinkInterfaces", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_direct_link_interfaces_arg a = {0};
 		     struct osc_read_direct_link_interfaces_arg *s = &a;
@@ -14403,11 +14327,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadDhcpOptions", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_dhcp_options_arg a = {0};
 		     struct osc_read_dhcp_options_arg *s = &a;
@@ -14485,11 +14408,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadConsumptionAccount", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_consumption_account_arg a = {0};
 		     struct osc_read_consumption_account_arg *s = &a;
@@ -14570,11 +14492,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadConsoleOutput", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_console_output_arg a = {0};
 		     struct osc_read_console_output_arg *s = &a;
@@ -14640,11 +14561,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadClientGateways", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_client_gateways_arg a = {0};
 		     struct osc_read_client_gateways_arg *s = &a;
@@ -14722,11 +14642,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadCatalog", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_catalog_arg a = {0};
 		     struct osc_read_catalog_arg *s = &a;
@@ -14787,11 +14706,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadCas", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_cas_arg a = {0};
 		     struct osc_read_cas_arg *s = &a;
@@ -14869,11 +14787,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadApiLogs", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_api_logs_arg a = {0};
 		     struct osc_read_api_logs_arg *s = &a;
@@ -14978,11 +14895,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadApiAccessRules", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_api_access_rules_arg a = {0};
 		     struct osc_read_api_access_rules_arg *s = &a;
@@ -15060,11 +14976,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadApiAccessPolicy", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_api_access_policy_arg a = {0};
 		     struct osc_read_api_access_policy_arg *s = &a;
@@ -15125,11 +15040,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadAdminPassword", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_admin_password_arg a = {0};
 		     struct osc_read_admin_password_arg *s = &a;
@@ -15195,11 +15109,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadAccounts", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_accounts_arg a = {0};
 		     struct osc_read_accounts_arg *s = &a;
@@ -15260,11 +15173,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("ReadAccessKeys", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_access_keys_arg a = {0};
 		     struct osc_read_access_keys_arg *s = &a;
@@ -15342,11 +15254,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("LinkVolume", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_volume_arg a = {0};
 		     struct osc_link_volume_arg *s = &a;
@@ -15422,11 +15333,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("LinkVirtualGateway", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_virtual_gateway_arg a = {0};
 		     struct osc_link_virtual_gateway_arg *s = &a;
@@ -15497,11 +15407,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("LinkRouteTable", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_route_table_arg a = {0};
 		     struct osc_link_route_table_arg *s = &a;
@@ -15572,11 +15481,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("LinkPublicIp", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_public_ip_arg a = {0};
 		     struct osc_link_public_ip_arg *s = &a;
@@ -15672,11 +15580,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("LinkPrivateIps", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_private_ips_arg a = {0};
 		     struct osc_link_private_ips_arg *s = &a;
@@ -15764,11 +15671,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("LinkNic", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_nic_arg a = {0};
 		     struct osc_link_nic_arg *s = &a;
@@ -15844,11 +15750,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("LinkLoadBalancerBackendMachines", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_load_balancer_backend_machines_arg a = {0};
 		     struct osc_link_load_balancer_backend_machines_arg *s = &a;
@@ -15928,11 +15833,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("LinkInternetService", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_internet_service_arg a = {0};
 		     struct osc_link_internet_service_arg *s = &a;
@@ -16003,11 +15907,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("LinkFlexibleGpu", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_flexible_gpu_arg a = {0};
 		     struct osc_link_flexible_gpu_arg *s = &a;
@@ -16078,11 +15981,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeregisterVmsInLoadBalancer", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_deregister_vms_in_load_balancer_arg a = {0};
 		     struct osc_deregister_vms_in_load_balancer_arg *s = &a;
@@ -16155,11 +16057,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteVpnConnectionRoute", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_vpn_connection_route_arg a = {0};
 		     struct osc_delete_vpn_connection_route_arg *s = &a;
@@ -16230,11 +16131,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteVpnConnection", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_vpn_connection_arg a = {0};
 		     struct osc_delete_vpn_connection_arg *s = &a;
@@ -16300,11 +16200,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteVolume", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_volume_arg a = {0};
 		     struct osc_delete_volume_arg *s = &a;
@@ -16370,11 +16269,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteVms", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_vms_arg a = {0};
 		     struct osc_delete_vms_arg *s = &a;
@@ -16442,11 +16340,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteVirtualGateway", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_virtual_gateway_arg a = {0};
 		     struct osc_delete_virtual_gateway_arg *s = &a;
@@ -16512,11 +16409,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteTags", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_tags_arg a = {0};
 		     struct osc_delete_tags_arg *s = &a;
@@ -16609,11 +16505,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteSubnet", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_subnet_arg a = {0};
 		     struct osc_delete_subnet_arg *s = &a;
@@ -16679,11 +16574,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteSnapshot", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_snapshot_arg a = {0};
 		     struct osc_delete_snapshot_arg *s = &a;
@@ -16749,11 +16643,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteServerCertificate", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_server_certificate_arg a = {0};
 		     struct osc_delete_server_certificate_arg *s = &a;
@@ -16819,11 +16712,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteSecurityGroupRule", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_security_group_rule_arg a = {0};
 		     struct osc_delete_security_group_rule_arg *s = &a;
@@ -16949,11 +16841,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteSecurityGroup", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_security_group_arg a = {0};
 		     struct osc_delete_security_group_arg *s = &a;
@@ -17024,11 +16915,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteRouteTable", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_route_table_arg a = {0};
 		     struct osc_delete_route_table_arg *s = &a;
@@ -17094,11 +16984,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteRoute", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_route_arg a = {0};
 		     struct osc_delete_route_arg *s = &a;
@@ -17169,11 +17058,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeletePublicIp", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_public_ip_arg a = {0};
 		     struct osc_delete_public_ip_arg *s = &a;
@@ -17244,11 +17132,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteNic", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_nic_arg a = {0};
 		     struct osc_delete_nic_arg *s = &a;
@@ -17314,11 +17201,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteNetPeering", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_net_peering_arg a = {0};
 		     struct osc_delete_net_peering_arg *s = &a;
@@ -17384,11 +17270,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteNetAccessPoint", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_net_access_point_arg a = {0};
 		     struct osc_delete_net_access_point_arg *s = &a;
@@ -17454,11 +17339,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteNet", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_net_arg a = {0};
 		     struct osc_delete_net_arg *s = &a;
@@ -17524,11 +17408,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteNatService", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_nat_service_arg a = {0};
 		     struct osc_delete_nat_service_arg *s = &a;
@@ -17594,11 +17477,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteLoadBalancerTags", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_load_balancer_tags_arg a = {0};
 		     struct osc_delete_load_balancer_tags_arg *s = &a;
@@ -17691,11 +17573,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteLoadBalancerPolicy", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_load_balancer_policy_arg a = {0};
 		     struct osc_delete_load_balancer_policy_arg *s = &a;
@@ -17766,11 +17647,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteLoadBalancerListeners", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_load_balancer_listeners_arg a = {0};
 		     struct osc_delete_load_balancer_listeners_arg *s = &a;
@@ -17843,11 +17723,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteLoadBalancer", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_load_balancer_arg a = {0};
 		     struct osc_delete_load_balancer_arg *s = &a;
@@ -17913,11 +17792,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteListenerRule", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_listener_rule_arg a = {0};
 		     struct osc_delete_listener_rule_arg *s = &a;
@@ -17983,11 +17861,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteKeypair", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_keypair_arg a = {0};
 		     struct osc_delete_keypair_arg *s = &a;
@@ -18053,11 +17930,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteInternetService", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_internet_service_arg a = {0};
 		     struct osc_delete_internet_service_arg *s = &a;
@@ -18123,11 +17999,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteImage", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_image_arg a = {0};
 		     struct osc_delete_image_arg *s = &a;
@@ -18193,11 +18068,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteFlexibleGpu", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_flexible_gpu_arg a = {0};
 		     struct osc_delete_flexible_gpu_arg *s = &a;
@@ -18263,11 +18137,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteExportTask", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_export_task_arg a = {0};
 		     struct osc_delete_export_task_arg *s = &a;
@@ -18333,11 +18206,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteDirectLinkInterface", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_direct_link_interface_arg a = {0};
 		     struct osc_delete_direct_link_interface_arg *s = &a;
@@ -18403,11 +18275,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteDirectLink", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_direct_link_arg a = {0};
 		     struct osc_delete_direct_link_arg *s = &a;
@@ -18473,11 +18344,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteDhcpOptions", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_dhcp_options_arg a = {0};
 		     struct osc_delete_dhcp_options_arg *s = &a;
@@ -18543,11 +18413,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteClientGateway", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_client_gateway_arg a = {0};
 		     struct osc_delete_client_gateway_arg *s = &a;
@@ -18613,11 +18482,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteCa", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_ca_arg a = {0};
 		     struct osc_delete_ca_arg *s = &a;
@@ -18683,11 +18551,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteApiAccessRule", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_api_access_rule_arg a = {0};
 		     struct osc_delete_api_access_rule_arg *s = &a;
@@ -18753,11 +18620,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("DeleteAccessKey", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_access_key_arg a = {0};
 		     struct osc_delete_access_key_arg *s = &a;
@@ -18823,11 +18689,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateVpnConnectionRoute", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_vpn_connection_route_arg a = {0};
 		     struct osc_create_vpn_connection_route_arg *s = &a;
@@ -18898,11 +18763,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateVpnConnection", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_vpn_connection_arg a = {0};
 		     struct osc_create_vpn_connection_arg *s = &a;
@@ -18988,11 +18852,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateVolume", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_volume_arg a = {0};
 		     struct osc_create_volume_arg *s = &a;
@@ -19078,11 +18941,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateVms", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_vms_arg a = {0};
 		     struct osc_create_vms_arg *s = &a;
@@ -19321,11 +19183,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateVirtualGateway", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_virtual_gateway_arg a = {0};
 		     struct osc_create_virtual_gateway_arg *s = &a;
@@ -19391,11 +19252,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateTags", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_tags_arg a = {0};
 		     struct osc_create_tags_arg *s = &a;
@@ -19488,11 +19348,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateSubnet", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_subnet_arg a = {0};
 		     struct osc_create_subnet_arg *s = &a;
@@ -19568,11 +19427,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateSnapshotExportTask", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_snapshot_export_task_arg a = {0};
 		     struct osc_create_snapshot_export_task_arg *s = &a;
@@ -19655,11 +19513,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateSnapshot", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_snapshot_arg a = {0};
 		     struct osc_create_snapshot_arg *s = &a;
@@ -19750,11 +19607,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateServerCertificate", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_server_certificate_arg a = {0};
 		     struct osc_create_server_certificate_arg *s = &a;
@@ -19840,11 +19696,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateSecurityGroupRule", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_security_group_rule_arg a = {0};
 		     struct osc_create_security_group_rule_arg *s = &a;
@@ -19970,11 +19825,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateSecurityGroup", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_security_group_arg a = {0};
 		     struct osc_create_security_group_arg *s = &a;
@@ -20050,11 +19904,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateRouteTable", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_route_table_arg a = {0};
 		     struct osc_create_route_table_arg *s = &a;
@@ -20120,11 +19973,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateRoute", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_route_arg a = {0};
 		     struct osc_create_route_arg *s = &a;
@@ -20220,11 +20072,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreatePublicIp", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_public_ip_arg a = {0};
 		     struct osc_create_public_ip_arg *s = &a;
@@ -20285,11 +20136,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateNic", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_nic_arg a = {0};
 		     struct osc_create_nic_arg *s = &a;
@@ -20392,11 +20242,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateNetPeering", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_net_peering_arg a = {0};
 		     struct osc_create_net_peering_arg *s = &a;
@@ -20467,11 +20316,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateNetAccessPoint", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_net_access_point_arg a = {0};
 		     struct osc_create_net_access_point_arg *s = &a;
@@ -20549,11 +20397,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateNet", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_net_arg a = {0};
 		     struct osc_create_net_arg *s = &a;
@@ -20624,11 +20471,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateNatService", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_nat_service_arg a = {0};
 		     struct osc_create_nat_service_arg *s = &a;
@@ -20699,11 +20545,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateLoadBalancerTags", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_load_balancer_tags_arg a = {0};
 		     struct osc_create_load_balancer_tags_arg *s = &a;
@@ -20796,11 +20641,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateLoadBalancerPolicy", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_load_balancer_policy_arg a = {0};
 		     struct osc_create_load_balancer_policy_arg *s = &a;
@@ -20886,11 +20730,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateLoadBalancerListeners", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_load_balancer_listeners_arg a = {0};
 		     struct osc_create_load_balancer_listeners_arg *s = &a;
@@ -20981,11 +20824,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateLoadBalancer", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_load_balancer_arg a = {0};
 		     struct osc_create_load_balancer_arg *s = &a;
@@ -21132,11 +20974,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateListenerRule", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_listener_rule_arg a = {0};
 		     struct osc_create_listener_rule_arg *s = &a;
@@ -21238,11 +21079,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateKeypair", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_keypair_arg a = {0};
 		     struct osc_create_keypair_arg *s = &a;
@@ -21313,11 +21153,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateInternetService", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_internet_service_arg a = {0};
 		     struct osc_create_internet_service_arg *s = &a;
@@ -21378,11 +21217,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateImageExportTask", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_image_export_task_arg a = {0};
 		     struct osc_create_image_export_task_arg *s = &a;
@@ -21465,11 +21303,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateImage", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_image_arg a = {0};
 		     struct osc_create_image_arg *s = &a;
@@ -21605,11 +21442,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateFlexibleGpu", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_flexible_gpu_arg a = {0};
 		     struct osc_create_flexible_gpu_arg *s = &a;
@@ -21695,11 +21531,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateDirectLinkInterface", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_direct_link_interface_arg a = {0};
 		     struct osc_create_direct_link_interface_arg *s = &a;
@@ -21782,11 +21617,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateDirectLink", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_direct_link_arg a = {0};
 		     struct osc_create_direct_link_arg *s = &a;
@@ -21862,11 +21696,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateDhcpOptions", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_dhcp_options_arg a = {0};
 		     struct osc_create_dhcp_options_arg *s = &a;
@@ -21953,11 +21786,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateClientGateway", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_client_gateway_arg a = {0};
 		     struct osc_create_client_gateway_arg *s = &a;
@@ -22033,11 +21865,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateCa", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_ca_arg a = {0};
 		     struct osc_create_ca_arg *s = &a;
@@ -22108,11 +21939,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateApiAccessRule", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_api_access_rule_arg a = {0};
 		     struct osc_create_api_access_rule_arg *s = &a;
@@ -22199,11 +22029,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateAccount", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_account_arg a = {0};
 		     struct osc_create_account_arg *s = &a;
@@ -22336,11 +22165,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CreateAccessKey", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_access_key_arg a = {0};
 		     struct osc_create_access_key_arg *s = &a;
@@ -22406,11 +22234,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("CheckAuthentication", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_check_authentication_arg a = {0};
 		     struct osc_check_authentication_arg *s = &a;
@@ -22481,11 +22308,10 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
               if (!strcmp("AcceptNetPeering", av[i])) {
 		     json_object *jobj;
-		     struct ptr_array opa = {0};
+		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_accept_net_peering_arg a = {0};
 		     struct osc_accept_net_peering_arg *s = &a;
@@ -22551,7 +22377,6 @@ int main(int ac, char **av)
 			     json_object_put(jobj);
 		      }
 		     osc_deinit_str(&r);
-		     ptr_array_free_all(pa);
 	      } else
 		{
 			printf("Unknow Call %s\n", av[i]);
