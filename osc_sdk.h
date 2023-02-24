@@ -56,8 +56,6 @@ extern "C" {
 #define SAFE_C 1
 #endif
 
-
-
 struct osc_str {
 	int len;
 	char *buf;
@@ -70,16 +68,22 @@ struct osc_str {
 #define OSC_ENV_FREE_CERT 1 << 4
 #define OSC_ENV_FREE_SSLKEY 1 << 5
 #define OSC_ENV_FREE_SK 1 << 6
-#define OSC_ENV_PASSWORD_AUTH 1 << 7 /* force password/login usage */
 
 #define OSC_ENV_FREE_AK_SK (OSC_ENV_FREE_AK | OSC_ENV_FREE_SK)
 
-#define OSC_API_VERSION "1.24"
+#define OSC_API_VERSION "1.25"
 #define OSC_SDK_VERSION 0xC061AC
 
 enum osc_auth_method {
 	OSC_AKSK_METHOD,
-	OSC_PASSWORD_METHOD
+	OSC_PASSWORD_METHOD,
+	OSC_NONE_METHOD
+};
+
+struct osc_env_conf {
+	char *login;
+	char *password;
+	enum osc_auth_method auth_method;
 };
 
 struct osc_env {
@@ -736,7 +740,8 @@ struct direct_link {
 struct direct_link_interface {
         /*
          * The BGP (Border Gateway Protocol) ASN (Autonomous System Number) on 
-         * the customer's side of the DirectLink interface.
+         * the customer's side of the DirectLink interface. This number must be 
+         * between `64512` and `65534`.
          */
         int is_set_bgp_asn;
 	int bgp_asn; /* int */
@@ -808,7 +813,7 @@ struct direct_link_interfaces {
 	char *location; /* string */
         /*
          * The maximum transmission unit (MTU) of the DirectLink interface, in 
-         * bytes (by default, `1500`).
+         * bytes (always `1500`).
          */
         int is_set_mtu;
 	int mtu; /* int */
@@ -2556,13 +2561,16 @@ struct health_check {
 
 struct permissions_on_resource {
         /*
-         * The account ID of one or more users who have permissions for the 
-         * resource.
+         * One or more account IDs that the permission is associated with.
          */
         char *account_ids_str;
 	char **account_ids; /* array string */
         /*
-         * If true, the resource is public. If false, the resource is private.
+         * A global permission for all accounts.<br />\n(Request) Set this 
+         * parameter to true to make the resource public (if the parent 
+         * parameter is `Additions`) or to make the resource private (if the 
+         * parent parameter is `Removals`).<br />\n(Response) If true, the 
+         * resource is public. If false, the resource is private.
          */
         int is_set_global_permission;
 	int global_permission; /* bool */
@@ -4223,7 +4231,7 @@ struct security_group_rule {
         char *ip_ranges_str;
 	char **ip_ranges; /* array string */
         /*
-         * Information about one or more members of a security group.
+         * Information about one or more source or destination security groups.
          */
         char *security_groups_members_str;
         int nb_security_groups_members;
@@ -4245,15 +4253,17 @@ struct security_group_rule {
 
 struct security_groups_member {
         /*
-         * The account ID of a user.
+         * The account ID that owns the source or destination security group.
          */
 	char *account_id; /* string */
         /*
-         * The ID of the security group.
+         * The ID of a source or destination security group that you want to 
+         * link to the security group of the rule.
          */
 	char *security_group_id; /* string */
         /*
-         * The name of the security group.
+         * (Public Cloud only) The name of a source or destination security 
+         * group that you want to link to the security group of the rule.
          */
 	char *security_group_name; /* string */
 };
@@ -5094,10 +5104,15 @@ struct osc_update_vm_arg  {
         int is_set_is_source_dest_checked;
 	int is_source_dest_checked; /* bool */
         /*
-         * The name of the keypair.<br />\nTo complete the replacement, manually 
-         * replace the old public key with the new public key in the 
-         * ~/.ssh/authorized_keys file located in the VM. Restart the VM to 
-         * apply the change.
+         * The name of a keypair you want to associate with the VM.<br />\nWhen 
+         * you replace the keypair of a VM with another one, the metadata of the 
+         * VM is modified to reflect the new public key, but the replacement is 
+         * still not effective in the operating system of the VM. To complete 
+         * the replacement and effectively apply the new keypair, you need to 
+         * perform other actions inside the VM. For more information, see 
+         * [Modifying the Keypair of an 
+         * Instance](https://docs.outscale.com/en/userguide/Modifying-the-Keypair
+         * -of-an-Instance.html).
          */
 	char *keypair_name; /* string */
         /*
@@ -5484,7 +5499,7 @@ struct osc_update_direct_link_interface_arg  {
 	int dry_run; /* bool */
         /*
          * The maximum transmission unit (MTU) of the DirectLink interface, in 
-         * bytes (either `1500` or `9000`).
+         * bytes (always `1500`).
          */
         int is_set_mtu;
 	int mtu; /* int */
@@ -8025,8 +8040,8 @@ struct osc_create_security_group_rule_arg  {
         int nb_rules;
 	struct security_group_rule *rules; /* array ref SecurityGroupRule */
         /*
-         * The account ID of the owner of the security group for which you want 
-         * to create a rule.
+         * The account ID that owns the source or destination security group 
+         * specified in the `SecurityGroupNameToLink` parameter.
          */
 	char *security_group_account_id_to_link; /* string */
         /*
@@ -8034,8 +8049,8 @@ struct osc_create_security_group_rule_arg  {
          */
 	char *security_group_id; /* string */
         /*
-         * The ID of the source security group. If you are in the Public Cloud, 
-         * you can also specify the name of the source security group.
+         * The ID of a source or destination security group that you want to 
+         * link to the security group of the rule.
          */
 	char *security_group_name_to_link; /* string */
         /*
@@ -8863,6 +8878,8 @@ int osc_load_cert_from_conf(const char *profile, char **cert_path,
 void osc_init_str(struct osc_str *r);
 void osc_deinit_str(struct osc_str *r);
 int osc_init_sdk(struct osc_env *e, const char *profile, unsigned int flag);
+int osc_init_sdk_ext(struct osc_env *e, const char *profile,
+		     unsigned int flag, struct osc_env_conf *cfg);
 void osc_deinit_sdk(struct osc_env *e);
 
 /*

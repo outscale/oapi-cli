@@ -7975,6 +7975,18 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 }
 
 
+
+static int str_profile_to_int(const char *str)
+{
+	if (!strcmp(str, "password") || !strcmp(str, "basic"))
+		return OSC_PASSWORD_METHOD;
+	else if (!strcmp(str, "none"))
+		return OSC_NONE_METHOD;
+	else if (!strcmp(str, "accesskey"))
+		return OSC_AKSK_METHOD;
+	return -1;
+}
+
 int main(int ac, char **av)
 {
 	auto_osc_env struct osc_env e = {0};
@@ -7985,14 +7997,16 @@ int main(int ac, char **av)
 	unsigned int flag = 0;
 	unsigned int program_flag = 0;
 	char *program_name = strrchr(av[0], '/');
-	char *profile =  NULL;
+	char *profile = NULL;
+	char *login = NULL;
+	char *password = NULL;
+	int auth_m = OSC_AKSK_METHOD;
 	int ret = 1;
 
 	if (!program_name)
 		program_name = av[0];
 	else
 		++program_name;
-
 
 	for (i = 1; i < ac; ++i) {
 		if (!strcmp("--verbose", av[i])) {
@@ -8001,25 +8015,68 @@ int main(int ac, char **av)
 		  flag |= OSC_INSECURE_MODE;
 		} else if (!strcmp("--raw-print", av[i])) {
 		  flag |= OAPI_RAW_OUTPUT;
-		} else if (!strcmp("--auth-password", av[i])) {
-		  flag |= OSC_ENV_PASSWORD_AUTH;
+		} else if (!strcmp("--raw-print", av[i])) {
+		  flag |= OAPI_RAW_OUTPUT;
+		} else if (!argcmp2("--authentication_method", av[i], '=')) {
+			const char *auth_str;
+			if (av[i][sizeof("--authentication_method") - 1] == '=') {
+				auth_str = &av[i][sizeof("--authentication_method")];
+			} else if (!av[i][sizeof("--authentication_method") - 1]) {
+				TRY(!av[i+1], "-- need an authentication_method\n");
+				auth_str = av[i+1];
+				++i;
+			} else {
+				fprintf(stderr, "--authentication_method seems weirds\n");
+				return 1;
+			}
+			auth_m = str_profile_to_int(auth_str);
+			TRY(auth_m < 0, "%s unknow authentication_method\n", auth_str);
 		} else if (!argcmp2("--profile", av[i], '=')) {
 			if (av[i][sizeof("--profile") - 1] == '=') {
 				profile = &av[i][sizeof("--profile")];
 			} else if (!av[i][sizeof("--profile") - 1]) {
-				if (!av[i+1]) {
-					fprintf(stderr, "--profile need a profile");
-					return 1;
-				}
+				TRY(!av[i+1], "--profile need a profile");
 				profile = av[i+1];
 				++i;
 			} else {
 				fprintf(stderr, "--profile seems weirds");
 				return 1;
 			}
+		} else if (!argcmp2("--password", av[i], '=')) {
+			if (av[i][sizeof("--password") - 1] == '=') {
+				password = &av[i][sizeof("--password")];
+			} else if (!av[i][sizeof("--password") - 1]) {
+				TRY(!av[i+1], "--password need a password");
+				password = av[i+1];
+				++i;
+			} else {
+				fprintf(stderr, "--password seems weirds");
+				return 1;
+			}
+		} else if (!argcmp2("--login", av[i], '=')) {
+			if (av[i][sizeof("--login") - 1] == '=') {
+				login = &av[i][sizeof("--login")];
+			} else if (!av[i][sizeof("--login") - 1]) {
+				TRY(!av[i+1], "--login need a login");
+				login = av[i+1];
+				++i;
+			} else {
+				fprintf(stderr, "--login seems weirds");
+				return 1;
+			}
 		}
 	}
-	TRY(osc_init_sdk(&e, profile, flag), "fail to init C sdk\n");
+
+	if (login || password)
+		auth_m = OSC_PASSWORD_METHOD;
+
+	TRY(osc_init_sdk_ext(&e, profile, flag,
+			     &(struct osc_env_conf){
+				     .auth_method=auth_m,
+				     .password=password,
+				     .login=login
+			     }),
+	    "fail to init C sdk\n");
 	osc_init_str(&r);
 
 	if (ac < 2) {
@@ -8028,9 +8085,11 @@ int main(int ac, char **av)
 		       "options:\n"
 		       "\t--insecure	\tdoesn't verify SSL certificats\n"
 		       "\t--raw-print	\tdoesn't format the output\n"
-		       "\t--auth-password	\tuse password/login instead of AK/SK\n"
+		       "\t--authentication_method=METHODE\tset authentification method,  password|accesskey|none\n"
 		       "\t--verbose	\tcurl backend is now verbose\n"
-		       "\t--profile=PROFILE	\tselect profile"
+		       "\t--profile=PROFILE	\tselect profile\n"
+		       "\t--login=EMAIL		\tset email, and authentification as password\n"
+		       "\t--password=PASS	\tset password, and authentification as password\n"
 		       "\t--help [CallName]\tthis, can be used with call name, example:\n\t\t\t\t%s --help ReadVms\n"
 		       "\t--color	\t\ttry to colorize json if json-c support it\n%s%s",
 		       program_name, program_name, help_appent ? help_appent : "",
@@ -8041,11 +8100,22 @@ int main(int ac, char **av)
 	for (i = 1; i < ac; ++i) {
 		if (!strcmp("--verbose", av[i]) ||		\
 		    !strcmp("--insecure", av[i]) ||		\
-		    !strcmp("--auth-password", av[i]) ||	\
 		    !strcmp("--raw-print", av[i])) {
 			/* Avoid Unknow Calls */
 		} else if (!argcmp2("--profile", av[i], '=')) {
 			if (!av[i][sizeof("--profile") - 1]) {
+				++i;
+			}
+		} else if (!argcmp2("--authentication_method", av[i], '=')) {
+			if (!av[i][sizeof("--authentication_method") - 1]) {
+				++i;
+			}
+		} else if (!argcmp2("--password", av[i], '=')) {
+			if (!av[i][sizeof("--password") - 1]) {
+				++i;
+			}
+		} else if (!argcmp2("--login", av[i], '=')) {
+			if (!av[i][sizeof("--login") - 1]) {
 				++i;
 			}
 		} else if (!strcmp("--help", av[i])) {

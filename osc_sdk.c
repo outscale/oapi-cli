@@ -253,13 +253,13 @@ static const char *calls_name[] = {
 static const char *calls_descriptions[] = {
 	"Usage: oapi-cli UpdateVpnConnection [options]\n" "Modifies the specified attributes of a VPN connection.\n" "\nRequired Argument: VpnConnectionId \n"
 ,
-	"Usage: oapi-cli UpdateVolume [options]\n" "Modifies the specified attributes of a volume. Cold volumes are volumes that \n" "are attached to stopped VMs or that are detached. Hot volumes are volumes that \n" "are attached to running VMs.\n\n**[NOTE]**\nWhen the modification is not \n" "instantaneous, the response displays the previous value. You can use the \n" "[ReadVolumes](#readvolumes) method to see the new value.\n" "\nRequired Argument: VolumeId \n"
+	"Usage: oapi-cli UpdateVolume [options]\n" "Modifies the specified attributes of a volume.\nCold volumes are volumes that \n" "are attached to stopped or stopping VMs, or that are detached. Hot volumes are \n" "volumes that are attached to running VMs.\n\n**[NOTE]**\nWhen the modification \n" "is not instantaneous, the response displays the previous value. You can use the \n" "[ReadVolumes](#readvolumes) method to see the new value.\n" "\nRequired Argument: VolumeId \n"
 ,
 	"Usage: oapi-cli UpdateVm [options]\n" "Modifies the specified attributes of a virtual machine (VM).\nYou must stop the \n" "VM before modifying the following attributes:\n* `NestedVirtualization`\n* \n" "`Performance`\n* `UserData`\n* `VmType`\n" "\nRequired Argument: VmId \n"
 ,
 	"Usage: oapi-cli UpdateSubnet [options]\n" "Modifies the specified attribute of a Subnet.\n" "\nRequired Argument: SubnetId, MapPublicIpOnLaunch \n"
 ,
-	"Usage: oapi-cli UpdateSnapshot [options]\n" "Modifies the permissions for a specified snapshot.\nYou can add or remove \n" "permissions for specified account IDs or groups. You can share a snapshot with \n" "a user that is in the same Region. The user can create a copy of the snapshot \n" "you shared, obtaining all the rights for the copy of the snapshot.\n" "\nRequired Argument: SnapshotId, PermissionsToCreateVolume \n"
+	"Usage: oapi-cli UpdateSnapshot [options]\n" "Modifies the permissions for a specified snapshot.\nYou must specify either the \n" "`Additions` or the `Removals` parameter.\nAfter sharing a snapshot with an \n" "account, the other account can create a copy of it that they own. For more \n" "information about copying snapshots, see [CreateSnapshot](#createsnapshot).\n" "\nRequired Argument: SnapshotId, PermissionsToCreateVolume \n"
 ,
 	"Usage: oapi-cli UpdateServerCertificate [options]\n" "Modifies the name and/or the path of a specified server certificate.\n" "\nRequired Argument: Name \n"
 ,
@@ -277,7 +277,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli UpdateListenerRule [options]\n" "Updates the pattern of the listener rule.\nThis call updates the pattern \n" "matching algorithm for incoming traffic.\n" "\nRequired Argument: ListenerRuleName \n"
 ,
-	"Usage: oapi-cli UpdateImage [options]\n" "Modifies the specified attribute of an OUTSCALE machine image (OMI).\nYou can \n" "specify only one attribute at a time. You can modify the permissions to access \n" "the OMI by adding or removing account IDs or groups. You can share an OMI with \n" "a user that is in the same Region. The user can create a copy of the OMI you \n" "shared, obtaining all the rights for the copy of the OMI. For more information, \n" "see [CreateImage](#createimage).\n" "\nRequired Argument: ImageId, PermissionsToLaunch \n"
+	"Usage: oapi-cli UpdateImage [options]\n" "Modifies the access permissions for an OUTSCALE machine image (OMI).\nYou must \n" "specify either the `Additions` or the `Removals` parameter.\nAfter sharing an \n" "OMI with an account, the other account can create a copy of it that they own. \n" "For more information about copying OMIs, see [CreateImage](#createimage).\n" "\nRequired Argument: ImageId, PermissionsToLaunch \n"
 ,
 	"Usage: oapi-cli UpdateFlexibleGpu [options]\n" "Modifies a flexible GPU (fGPU) behavior.\n" "\nRequired Argument: FlexibleGpuId \n"
 ,
@@ -541,7 +541,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli CreateServerCertificate [options]\n" "Creates a server certificate and its matching private key.\nThese elements can \n" "be used with other services (for example, to configure SSL termination on load \n" "balancers).\nYou can also specify the chain of intermediate certification \n" "authorities if your certificate is not directly signed by a root one. You can \n" "specify multiple intermediate certification authorities in the \n" "`CertificateChain` parameter. To do so, concatenate all certificates in the \n" "correct order (the first certificate must be the authority of your certificate, \n" "the second must the the authority of the first one, and so on).\nThe private \n" "key must be a RSA key in PKCS1 form. To check this, open the PEM file and \n" "ensure its header reads as follows: BEGIN RSA PRIVATE KEY.\n[IMPORTANT]\nThis \n" "private key must not be protected by a password or a passphrase.\n" "\nRequired Argument: Body, PrivateKey, Name \n"
 ,
-	"Usage: oapi-cli CreateSecurityGroupRule [options]\n" "Configures the rules for a security group.\nThe modifications are effective at \n" "virtual machine (VM) level as quickly as possible, but a small delay may \n" "occur.\n\nYou can add one or more egress rules to a security group for use with \n" "a Net.\nIt allows VMs to send traffic to either one or more destination IP \n" "ranges or destination security groups for the same Net.\nWe recommend using a \n" "set of IP permissions to authorize outbound access to a destination security \n" "group. We also recommended this method to create a rule with a specific IP \n" "protocol and a specific port range. In a set of IP permissions, we recommend to \n" "specify the the protocol.\n\nYou can also add one or more ingress rules to a \n" "security group.\nIn the public Cloud, this action allows one or more IP ranges \n" "to access a security group for your account, or allows one or more security \n" "groups (source groups) to access a security group for your own OUTSCALE account \n" "or another one.\nIn a Net, this action allows one or more IP ranges to access a \n" "security group for your Net, or allows one or more other security groups \n" "(source groups) to access a security group for your Net. All the security \n" "groups must be for the same Net.\n\n**[NOTE]**\nBy default, traffic between two \n" "security groups is allowed through both public and private IPs. To restrict it \n" "to private IPs only, contact our Support team: support@outscale.com.\n" "\nRequired Argument: SecurityGroupId, Flow \n"
+	"Usage: oapi-cli CreateSecurityGroupRule [options]\n" "Adds one or more rules to a security group.\nUse the `SecurityGroupId` \n" "parameter to specify the security group for which you want to create a \n" "rule.\nUse the `Flow` parameter to specify if you want an inbound rule or an \n" "outbound rule.\nAn inbound rule allows the security group to receive \n" "traffic:\n* Either from a specific IP range (`IpRange` parameter) on a specific \n" "port range (`FromPortRange` and `ToPortRange` parameters) and specific protocol \n" "(`IpProtocol` parameter).\n* Or from another specific security group \n" "(`SecurityGroupAccountIdToLink` and `SecurityGroupNameToLink` \n" "parameters).\n\n(Net only) An outbound rule works similarly but allows the \n" "security group to send traffic rather than receive traffic.\n\nAlternatively, \n" "you can use the `Rules` parameter to add several rules at the same \n" "time.\n\n**[NOTE]**\n* The modifications are effective as quickly as possible, \n" "but a small delay may occur.\n* By default, traffic between two security groups \n" "is allowed through both public and private IPs. To restrict traffic to private \n" "IPs only, contact our Support team at support@outscale.com.\n" "\nRequired Argument: SecurityGroupId, Flow \n"
 ,
 	"Usage: oapi-cli CreateSecurityGroup [options]\n" "Creates a security group.\nThis action creates a security group either in the \n" "public Cloud or in a specified Net. By default, a default security group for \n" "use in the public Cloud and a default security group for use in a Net are \n" "created.\nWhen launching a virtual machine (VM), if no security group is \n" "explicitly specified, the appropriate default security group is assigned to the \n" "VM. Default security groups include a default rule granting VMs network access \n" "to each other.\nWhen creating a security group, you specify a name. Two \n" "security groups for use in the public Cloud or for use in a Net cannot have the \n" "same name.\nYou can have up to 500 security groups in the public Cloud. You can \n" "create up to 500 security groups per Net.\nTo add or remove rules, use the \n" "[CreateSecurityGroupRule](#createsecuritygrouprule) method.\n" "\nRequired Argument: Description, SecurityGroupName \n"
 ,
@@ -653,10 +653,15 @@ static const char *calls_args_descriptions[] = {
 	"	false, it is disabled. This value must be false for a NAT VM to \n"
 	"	perform network address translation (NAT) in a Net.\n"
 "KeypairName: string\n"
-	"	The name of the keypair.\nTo complete the replacement, manually \n"
-	"	replace the old public key with the new public key in the \n"
-	"	~/.ssh/authorized_keys file located in the VM. Restart the VM to \n"
-	"	apply the change.\n"
+	"	The name of a keypair you want to associate with the VM.\nWhen you \n"
+	"	replace the keypair of a VM with another one, the metadata of the VM \n"
+	"	is modified to reflect the new public key, but the replacement is \n"
+	"	still not effective in the operating system of the VM. To complete \n"
+	"	the replacement and effectively apply the new keypair, you need to \n"
+	"	perform other actions inside the VM. For more information, see \n"
+	"	[Modifying the Keypair of an \n"
+	"	Instance](https://docs.outscale.com/en/userguide/Modifying-the-Keypair\n"
+	"	-of-an-Instance.html).\n"
 "NestedVirtualization: bool\n"
 	"	(dedicated tenancy only) If true, nested virtualization is enabled. \n"
 	"	If false, it is disabled.\n"
@@ -841,7 +846,7 @@ static const char *calls_args_descriptions[] = {
 	"	the action.\n"
 "Mtu: int\n"
 	"	The maximum transmission unit (MTU) of the DirectLink interface, in \n"
-	"	bytes (either `1500` or `9000`).\n"
+	"	bytes (always `1500`).\n"
 ,
 	"CaId: string\n"
 	"	The ID of the CA.\n"
@@ -1978,13 +1983,13 @@ static const char *calls_args_descriptions[] = {
 	"	following parent parameters: `FromPortRange`, `IpProtocol`, \n"
 	"	`IpRange`, and `ToPortRange`.\n"
 "SecurityGroupAccountIdToLink: string\n"
-	"	The account ID of the owner of the security group for which you want \n"
-	"	to create a rule.\n"
+	"	The account ID that owns the source or destination security group \n"
+	"	specified in the `SecurityGroupNameToLink` parameter.\n"
 "SecurityGroupId: string\n"
 	"	The ID of the security group for which you want to create a rule.\n"
 "SecurityGroupNameToLink: string\n"
-	"	The ID of the source security group. If you are in the Public Cloud, \n"
-	"	you can also specify the name of the source security group.\n"
+	"	The ID of a source or destination security group that you want to \n"
+	"	link to the security group of the rule.\n"
 "ToPortRange: int\n"
 	"	The end of the port range for the TCP and UDP protocols, or an ICMP \n"
 	"	code number. If you specify this parameter, you cannot specify the \n"
@@ -2499,20 +2504,27 @@ int osc_load_ak_sk_from_conf(const char *profile, char **ak, char **sk)
 	char buf[1024];
 	struct json_object *js, *ak_js, *sk_js;
 
+	if (!ak && !sk)
+		return 0;
 	LOAD_CFG_GET_HOME(buf);
-	*sk = NULL;
-	*ak = NULL;
+	if (sk)
+		*sk = NULL;
+	if (ak)
+		*ak = NULL;
 	js = json_object_from_file(buf);
 	TRY(!js, "can't open %s\n", buf);
 	js = json_object_object_get(js, profile);
 	TRY(!js, "can't find profile %s\n", profile);
-	ak_js = json_object_object_get(js, "access_key");
-	TRY(!ak_js, "can't find 'access_key' in profile '%s'\n", profile);
-	sk_js = json_object_object_get(js, "secret_key");
-	TRY(!sk_js, "can't find 'secret_key' in profile '%s'\n", profile);
-
-	*ak = strdup(json_object_get_string(json_object_object_get(js, "access_key")));
-	*sk = strdup(json_object_get_string(json_object_object_get(js, "secret_key")));
+	if (ak) {
+		ak_js = json_object_object_get(js, "access_key");
+		TRY(!ak_js, "can't find 'access_key' in profile '%s'\n", profile);
+		*ak = strdup(json_object_get_string(json_object_object_get(js, "access_key")));
+	}
+	if (sk) {
+		sk_js = json_object_object_get(js, "secret_key");
+		TRY(!sk_js, "can't find 'secret_key' in profile '%s'\n", profile);
+		*sk = strdup(json_object_get_string(json_object_object_get(js, "secret_key")));
+	}
 	return 0;
 }
 
@@ -2522,22 +2534,30 @@ int osc_load_loging_password_from_conf(const char *profile,
 	char buf[1024];
 	struct json_object *js, *login_js, *pass_js;
 
-	LOAD_CFG_GET_HOME(buf)
-	*password = NULL;
-	*email = NULL;
+	if (!email && !password)
+		return 0;
+	LOAD_CFG_GET_HOME(buf);
+	if (password)
+		*password = NULL;
+	if (email)
+		*email = NULL;
 	js = json_object_from_file(buf);
 	TRY(!js, "can't open %s\n", buf);
 	js = json_object_object_get(js, profile);
 	TRY(!js, "can't find profile '%s'\n", profile);
-	login_js = json_object_object_get(js, "login");
-	TRY(!login_js, "can't find 'login' in profile '%s'\n", profile);
-	*email = strdup(json_object_get_string(login_js));
-
-	pass_js = json_object_object_get(js, "password");
-	if (!pass_js) {
-		return 0; /* is optional */
+	if (email) {
+		login_js = json_object_object_get(js, "login");
+		TRY(!login_js, "can't find 'login' in profile '%s'\n", profile);
+		*email = strdup(json_object_get_string(login_js));
 	}
-	*password = strdup(json_object_get_string(pass_js));
+
+	if (password) {
+		pass_js = json_object_object_get(js, "password");
+		if (!pass_js) {
+			return 0; /* is optional */
+		}
+		*password = strdup(json_object_get_string(pass_js));
+	}
 	return 0;
 }
 
@@ -27758,7 +27778,22 @@ int osc_sdk_set_useragent(struct osc_env *e, const char *str)
 	return curl_easy_setopt(e->c, CURLOPT_USERAGENT, str);
 }
 
-int osc_init_sdk(struct osc_env *e, const char *profile, unsigned int flag)
+static inline char *cfg_login(struct osc_env_conf *cfg)
+{
+	if (!cfg)
+		return NULL;
+	return cfg->login;
+}
+
+static inline char *cfg_pass(struct osc_env_conf *cfg)
+{
+	if (!cfg)
+		return NULL;
+	return cfg->password;
+}
+
+int osc_init_sdk_ext(struct osc_env *e, const char *profile, unsigned int flag,
+		     struct osc_env_conf *cfg)
 {
 	char *ca = getenv("CURL_CA_BUNDLE");
 	char *endpoint;
@@ -27766,53 +27801,69 @@ int osc_init_sdk(struct osc_env *e, const char *profile, unsigned int flag)
 	char *cert = getenv("OSC_X509_CLIENT_CERT");
 	char *sslkey = getenv("OSC_X509_CLIENT_KEY");
 	char *auth = getenv("OSC_AUTH_METHOD");
+	char *force_log = cfg_login(cfg);
+	char *force_pass = cfg_pass(cfg);
 
 	strcpy(stpcpy(user_agent, "osc-sdk-c/"), osc_sdk_version_str());
 	e->region = getenv("OSC_REGION");
 	e->flag = flag;
-	e->auth_method = flag & OSC_ENV_PASSWORD_AUTH ? OSC_PASSWORD_METHOD :
-		OSC_AKSK_METHOD;
+	e->auth_method = cfg ? cfg->auth_method : OSC_AKSK_METHOD;
 	endpoint = getenv("OSC_ENDPOINT_API");
 	osc_init_str(&e->endpoint);
 
-	if (auth && (!strcmp(auth, "password") || !strcmp(auth, "basic")))
+	if (auth && (!strcmp(auth, "password") || !strcmp(auth, "basic"))) {
 		e->auth_method = OSC_PASSWORD_METHOD;
-	else if (auth && strcmp(auth, "accesskey")) {
+	} else if (auth && !strcmp(auth, "none")) {
+		e->auth_method = OSC_NONE_METHOD;
+	} else if (auth && strcmp(auth, "accesskey")) {
 		fprintf(stderr, "'%s' invalid authentication method\n", auth);
 		return -1;
 	}
 
+	if (force_log)
+		e->ak = force_log;
+	if (force_pass)
+		e->sk = force_pass;
 	if (!profile) {
 		profile = getenv("OSC_PROFILE");
 		if (e->auth_method == OSC_PASSWORD_METHOD) {
-			e->ak = getenv("OSC_LOGIN");
-			e->sk = getenv("OSC_PASSWORD");
+			if (!force_log)
+				e->ak = getenv("OSC_LOGIN");
+			if (!force_pass)
+				e->sk =  getenv("OSC_PASSWORD");
 		} else {
-			e->ak = getenv("OSC_ACCESS_KEY");
-			e->sk = getenv("OSC_SECRET_KEY");
+			if (!force_log)
+				e->ak = getenv("OSC_ACCESS_KEY");
+			if (!force_pass)
+				e->sk = getenv("OSC_SECRET_KEY");
 		}
 		if (!profile && (!e->ak || !e->sk))
 			profile = "default";
-
 	}
 
 	if (profile) {
 		int f;
 
 		if (e->auth_method == OSC_PASSWORD_METHOD) {
-			if (osc_load_loging_password_from_conf(profile, &e->ak,
-							       &e->sk) < 0)
-				return -1;
-			e->flag |= OSC_ENV_FREE_AK;
-			if (!e->sk)
-				e->sk = getenv("OSC_PASSWORD");
-			else
-				e->flag |= OSC_ENV_FREE_SK;
+			STRY(osc_load_loging_password_from_conf(
+				    profile, force_log ? NULL : &e->ak,
+				    force_pass ? NULL : &e->sk) < 0);
+			if (!force_log)
+				e->flag |= OSC_ENV_FREE_AK;
+			if (!force_pass) {
+				if (!e->sk)
+					e->sk = getenv("OSC_PASSWORD");
+				else
+					e->flag |= OSC_ENV_FREE_SK;
+			}
 		} else {
-			if (osc_load_ak_sk_from_conf(profile, &e->ak,
-						     &e->sk) < 0)
-				return -1;
-			e->flag |= OSC_ENV_FREE_AK_SK;
+			STRY(osc_load_ak_sk_from_conf(
+				    profile, force_log ? NULL : &e->ak,
+				    force_pass ? NULL : &e->sk) < 0);
+			if (!force_log)
+				e->flag |= OSC_ENV_FREE_AK;
+			if (!force_pass)
+				e->flag |= OSC_ENV_FREE_SK;
 		}
 		if (!osc_load_region_from_conf(profile, &e->region))
 			e->flag |= OSC_ENV_FREE_REGION;
@@ -27894,10 +27945,18 @@ int osc_init_sdk(struct osc_env *e, const char *profile, unsigned int flag)
 		e->headers = curl_slist_append(e->headers, time_hdr);
 	}
 	curl_easy_setopt(e->c, CURLOPT_HTTPHEADER, e->headers);
-	curl_easy_setopt(e->c, CURLOPT_USERNAME, e->ak);
-	curl_easy_setopt(e->c, CURLOPT_PASSWORD, e->sk);
+
+	if (e->auth_method != OSC_NONE_METHOD) {
+		curl_easy_setopt(e->c, CURLOPT_USERNAME, e->ak);
+		curl_easy_setopt(e->c, CURLOPT_PASSWORD, e->sk);
+	}
 
 	return 0;
+}
+
+int osc_init_sdk(struct osc_env *e, const char *profile, unsigned int flag)
+{
+	return osc_init_sdk_ext(e, profile, flag, NULL);
 }
 
 void osc_deinit_sdk(struct osc_env *e)
