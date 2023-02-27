@@ -13,7 +13,7 @@ jobs:
     - name: install dependancies
       run: |
         sudo apt-get update --fix-missing
-        sudo apt-get install -y -f -o Acquire::Retries=3 jq libjson-c-dev libcurl4-openssl-dev pkg-config libfuse2
+        sudo apt-get install -y -f -o Acquire::Retries=3 jq libjson-c-dev libcurl4-openssl-dev pkg-config libfuse2 cargo
     - name: Build and test
       run: |
         CFLAGS="-fsanitize=address -O0 -g" make
