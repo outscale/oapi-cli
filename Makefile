@@ -57,5 +57,6 @@ clean:
 
 tests:
 	./tests.sh
+	./local-tests.sh
 
 .PHONY: clean test clean_all gen
