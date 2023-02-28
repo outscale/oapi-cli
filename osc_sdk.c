@@ -2416,6 +2416,24 @@ const char *osc_find_args_description(const char *call_name)
 
 #endif  /* WITH_DESCRIPTION */
 
+#ifdef WITH_C11_THREAD_LOCAL
+#define THREAD_LOCAL _Thread_local
+#else
+#define THREAD_LOCAL
+#endif
+
+static THREAD_LOCAL const char *cfg_path;
+
+void osc_set_cfg_path(const char *cfg)
+{
+	cfg_path = cfg;
+}
+
+const char *osc_set_get_path(void)
+{
+	return cfg_path;
+}
+
 void *osc_realloc(void *buf, size_t l)
 {
 	void *ret = realloc(buf, l);
@@ -2502,17 +2520,21 @@ int osc_str_append_string(struct osc_str *osc_str, const char *str)
 int osc_load_ak_sk_from_conf(const char *profile, char **ak, char **sk)
 {
 	char buf[1024];
+	const char *cfg = cfg_path;
 	struct json_object *js, *ak_js, *sk_js;
 
 	if (!ak && !sk)
 		return 0;
-	LOAD_CFG_GET_HOME(buf);
+	if (!cfg) {
+		LOAD_CFG_GET_HOME(buf);
+		cfg = buf;
+	}
 	if (sk)
 		*sk = NULL;
 	if (ak)
 		*ak = NULL;
-	js = json_object_from_file(buf);
-	TRY(!js, "can't open %s\n", buf);
+	js = json_object_from_file(cfg);
+	TRY(!js, "can't open %s\n", cfg);
 	js = json_object_object_get(js, profile);
 	TRY(!js, "can't find profile %s\n", profile);
 	if (ak) {
@@ -2532,17 +2554,21 @@ int osc_load_loging_password_from_conf(const char *profile,
 				       char **email, char **password)
 {
 	char buf[1024];
+	const char *cfg = cfg_path;
 	struct json_object *js, *login_js, *pass_js;
 
 	if (!email && !password)
 		return 0;
-	LOAD_CFG_GET_HOME(buf);
+	if (!cfg) {
+		LOAD_CFG_GET_HOME(buf);
+		cfg = buf;
+	}
 	if (password)
 		*password = NULL;
 	if (email)
 		*email = NULL;
-	js = json_object_from_file(buf);
-	TRY(!js, "can't open %s\n", buf);
+	js = json_object_from_file(cfg);
+	TRY(!js, "can't open %s\n", cfg);
 	js = json_object_object_get(js, profile);
 	TRY(!js, "can't find profile '%s'\n", profile);
 	if (email) {
@@ -2564,12 +2590,16 @@ int osc_load_loging_password_from_conf(const char *profile,
 int osc_load_region_from_conf(const char *profile, char **region)
 {
 	struct json_object *region_obj;
+	const char *cfg = cfg_path;
 	char buf[1024];
 	struct json_object *js;
 
-	LOAD_CFG_GET_HOME(buf)
-	js = json_object_from_file(buf);
-	TRY(!js, "can't open %s\n", buf);
+	if (!cfg) {
+		LOAD_CFG_GET_HOME(buf);
+		cfg = buf;
+	}
+	js = json_object_from_file(cfg);
+	TRY(!js, "can't open %s\n", cfg);
 	js = json_object_object_get(js, profile);
 	if (!js)
 		return -1;
@@ -2585,12 +2615,16 @@ int osc_load_region_from_conf(const char *profile, char **region)
 int osc_load_cert_from_conf(const char *profile, char **cert, char **key)
 {
 	struct json_object *cert_obj, *key_obj, *js;
+	const char *cfg = cfg_path;
 	char buf[1024];
 	int ret = 0;
 
-	LOAD_CFG_GET_HOME(buf)
-	js = json_object_from_file(buf);
-	TRY(!js, "can't open %s\n", buf);
+	if (!cfg) {
+		LOAD_CFG_GET_HOME(buf);
+		cfg = buf;
+	}
+	js = json_object_from_file(cfg);
+	TRY(!js, "can't open %s\n", cfg);
 	js = json_object_object_get(js, profile);
 	if (!js)
 		return 0;
