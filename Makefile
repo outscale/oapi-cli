@@ -59,4 +59,9 @@ tests:
 	./tests.sh
 	./local-tests.sh
 
+tests-appimage:
+	./local-tests.sh ./oapi-cli-x86_64.AppImage
+
+tests-all: tests tests-appimage
+
 .PHONY: clean test clean_all gen
