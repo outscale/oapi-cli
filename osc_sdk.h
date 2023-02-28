@@ -8924,6 +8924,10 @@ int osc_sdk_set_useragent(struct osc_env *e, const char *str);
 
 void *osc_realloc(void *buf, size_t l);
 
+/* set/get config path, thread safe if -DWITH_C11_THREAD_LOCAL=1 is set */
+void osc_set_cfg_path(const char *cfg);
+const char *osc_set_get_path(void);
+
 #ifdef WITH_DESCRIPTION
 
 const char *osc_find_description(const char *call_name);

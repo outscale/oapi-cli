@@ -8031,6 +8031,19 @@ int main(int ac, char **av)
 			}
 			auth_m = str_profile_to_int(auth_str);
 			TRY(auth_m < 0, "%s unknow authentication_method\n", auth_str);
+		} else if (!argcmp2("--config", av[i], '=')) {
+			const char *cfg_str;
+			if (av[i][sizeof("--config") - 1] == '=') {
+				cfg_str = &av[i][sizeof("--config")];
+			} else if (!av[i][sizeof("--config") - 1]) {
+				TRY(!av[i+1], "--config need a path\n");
+				cfg_str = av[i+1];
+				++i;
+			} else {
+				fprintf(stderr, "--config seems weirds\n");
+				return 1;
+			}
+			osc_set_cfg_path(cfg_str);
 		} else if (!argcmp2("--profile", av[i], '=')) {
 			if (av[i][sizeof("--profile") - 1] == '=') {
 				profile = &av[i][sizeof("--profile")];
@@ -8085,6 +8098,7 @@ int main(int ac, char **av)
 		       "options:\n"
 		       "\t--insecure	\tdoesn't verify SSL certificats\n"
 		       "\t--raw-print	\tdoesn't format the output\n"
+		       "\t--config=PATH		\tconfig file path\n"
 		       "\t--authentication_method=METHODE\tset authentification method,  password|accesskey|none\n"
 		       "\t--verbose	\tcurl backend is now verbose\n"
 		       "\t--profile=PROFILE	\tselect profile\n"
@@ -8108,6 +8122,10 @@ int main(int ac, char **av)
 			}
 		} else if (!argcmp2("--authentication_method", av[i], '=')) {
 			if (!av[i][sizeof("--authentication_method") - 1]) {
+				++i;
+			}
+		} else if (!argcmp2("--config", av[i], '=')) {
+			if (!av[i][sizeof("--config") - 1]) {
 				++i;
 			}
 		} else if (!argcmp2("--password", av[i], '=')) {
