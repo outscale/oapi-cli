@@ -1,0 +1,15 @@
+{
+    "default": {
+        "access_key": "FAKE0123456789ABCAKE",
+	"login": "titi",
+        "secret_key": "FAKE00000000000011111111111000000000FAKE",
+        "region": "eu-west-2"
+    },
+    "my": {
+	"access_key": "FALLOUT2BESTFALLOUTA",
+	"login": "joe",
+	"password": "ashita wa dochira",
+	"secret_key": "BALDURSGATE1ISBETTERTHAN2000000000000000",
+	"region": "eu-west-2"
+    }
+}
