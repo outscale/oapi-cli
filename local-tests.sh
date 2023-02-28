@@ -26,9 +26,21 @@ trap "echo [Test Create vms and read with user 0 FAIL]" ERR
 echo '[Test Create vms and read with user 0 OK]'
 
 
-trap "echo [Test Read vms with user 2 is empty FAIL]" ERR
+trap "echo [Test Read vms with user 1 is empty FAIL]" ERR
 export OSC_LOGIN=titi
 ./oapi-cli   --password='toto' ReadVms --Filters.VmIds[] i-00000003 | jq .Vms | grep '\[]' > /dev/null
-echo "[Test Read vms with user 2 is empty Ok]"
+echo "[Test Read vms with user 1 is empty OK]"
+
+trap "echo [Test Read vms with user 1 (default) is not empty, with conf FAIL]" ERR
+./oapi-cli  --config="./local-tests-cfg.json" --authentication_method=password ReadVms --Filters.VmIds[] i-00000003 | jq .Vms | grep '\[]' > /dev/null
+echo "[Test Read vms with user 1 (default) is not empty, with conf Ok]"
+
+trap "echo [Test Read vms with user 0 (my) is not empty, with conf FAIL]" ERR
+./oapi-cli  --config="./local-tests-cfg.json" --authentication_method=password --profile=my ReadVms --Filters.VmIds[] i-00000003 | jq .Vms | grep 'i-00000003' > /dev/null
+echo "[Test Read vms with user 0 (my) is not empty, with conf Ok]"
+
+trap "echo [Test Read vms with user 0 (my) is not empty, with conf (separate argument) FAIL]" ERR
+./oapi-cli  --config="./local-tests-cfg.json" --authentication_method password --profile my ReadVms --Filters.VmIds[] i-00000003 | jq .Vms | grep 'i-00000003' > /dev/null
+echo "[Test Read vms with user 0 (my) is not empty, with conf (separate argument) Ok]"
 
 pkill ricochet
