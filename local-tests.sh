@@ -46,8 +46,8 @@ export OSC_LOGIN=titi
 oapi-cli   --password='toto' ReadVms --Filters.VmIds[] i-00000003 | jq .Vms | grep '\[]' > /dev/null
 echo "[Test Read vms with user 1 is empty OK]"
 
-trap "echo [Test Read vms with user 1 (default) is not empty, with conf FAIL]" ERR
-oapi-cli  --config="./local-tests-cfg.json" --authentication_method=password ReadVms --Filters.VmIds[] i-00000003 | jq .Vms | grep '\[]' > /dev/null
+trap "echo '[Test Read vms with user 1 (default) is not empty, with conf FAIL]'" ERR
+OSC_PASSWORD=lol oapi-cli  --config="./local-tests-cfg.json" --authentication_method=password ReadVms --Filters.VmIds[] i-00000003 | jq .Vms | grep '\[]' > /dev/null
 echo "[Test Read vms with user 1 (default) is not empty, with conf Ok]"
 
 trap "echo [Test Read vms with user 0 (my) is not empty, with conf FAIL]" ERR
