@@ -2422,6 +2422,16 @@ const char *osc_find_args_description(const char *call_name)
 #define THREAD_LOCAL
 #endif
 
+static void osc_json_c_obj_put(json_object **js)
+{
+	if (!*js)
+		return;
+	json_object_put(*js);
+}
+
+#define auto_osc_json_c_obj_put __attribute__((cleanup(osc_json_c_obj_put)))
+
+
 static THREAD_LOCAL const char *cfg_path;
 
 void osc_set_cfg_path(const char *cfg)
@@ -2500,6 +2510,12 @@ int osc_str_append_string(struct osc_str *osc_str, const char *str)
 	return 0;
 }
 
+static char *osc_strdup(const char *str) {
+	if (!str)
+		return NULL;
+	return strdup(str);
+}
+
 #define TRY(test,  ...)						\
 	if (test) { fprintf(stderr, __VA_ARGS__); return -1; }
 
@@ -2522,6 +2538,7 @@ int osc_load_ak_sk_from_conf(const char *profile, char **ak, char **sk)
 	char buf[1024];
 	const char *cfg = cfg_path;
 	struct json_object *js, *ak_js, *sk_js;
+	auto_osc_json_c_obj_put struct json_object *to_free = NULL;
 
 	if (!ak && !sk)
 		return 0;
@@ -2535,6 +2552,7 @@ int osc_load_ak_sk_from_conf(const char *profile, char **ak, char **sk)
 		*ak = NULL;
 	js = json_object_from_file(cfg);
 	TRY(!js, "can't open %s\n", cfg);
+	to_free = js;
 	js = json_object_object_get(js, profile);
 	TRY(!js, "can't find profile %s\n", profile);
 	if (ak) {
@@ -2555,6 +2573,7 @@ int osc_load_loging_password_from_conf(const char *profile,
 {
 	char buf[1024];
 	const char *cfg = cfg_path;
+	auto_osc_json_c_obj_put struct json_object *to_free = NULL;
 	struct json_object *js, *login_js, *pass_js;
 
 	if (!email && !password)
@@ -2569,12 +2588,13 @@ int osc_load_loging_password_from_conf(const char *profile,
 		*email = NULL;
 	js = json_object_from_file(cfg);
 	TRY(!js, "can't open %s\n", cfg);
+	to_free = js;
 	js = json_object_object_get(js, profile);
 	TRY(!js, "can't find profile '%s'\n", profile);
 	if (email) {
 		login_js = json_object_object_get(js, "login");
 		TRY(!login_js, "can't find 'login' in profile '%s'\n", profile);
-		*email = strdup(json_object_get_string(login_js));
+		*email = osc_strdup(json_object_get_string(login_js));
 	}
 
 	if (password) {
@@ -2582,7 +2602,7 @@ int osc_load_loging_password_from_conf(const char *profile,
 		if (!pass_js) {
 			return 0; /* is optional */
 		}
-		*password = strdup(json_object_get_string(pass_js));
+		*password = osc_strdup(json_object_get_string(pass_js));
 	}
 	return 0;
 }
@@ -2593,6 +2613,7 @@ int osc_load_region_from_conf(const char *profile, char **region)
 	const char *cfg = cfg_path;
 	char buf[1024];
 	struct json_object *js;
+	auto_osc_json_c_obj_put struct json_object *to_free = NULL;
 
 	if (!cfg) {
 		LOAD_CFG_GET_HOME(buf);
@@ -2600,6 +2621,7 @@ int osc_load_region_from_conf(const char *profile, char **region)
 	}
 	js = json_object_from_file(cfg);
 	TRY(!js, "can't open %s\n", cfg);
+	to_free = js;
 	js = json_object_object_get(js, profile);
 	if (!js)
 		return -1;
@@ -2608,7 +2630,7 @@ int osc_load_region_from_conf(const char *profile, char **region)
 	if (!region_obj) {
 		return -1;
 	}
-	*region = strdup(json_object_get_string(region_obj));
+	*region = osc_strdup(json_object_get_string(region_obj));
 	return 0;
 }
 
@@ -2616,6 +2638,7 @@ int osc_load_cert_from_conf(const char *profile, char **cert, char **key)
 {
 	struct json_object *cert_obj, *key_obj, *js;
 	const char *cfg = cfg_path;
+	auto_osc_json_c_obj_put struct json_object *to_free = NULL;
 	char buf[1024];
 	int ret = 0;
 
@@ -2625,6 +2648,7 @@ int osc_load_cert_from_conf(const char *profile, char **cert, char **key)
 	}
 	js = json_object_from_file(cfg);
 	TRY(!js, "can't open %s\n", cfg);
+	to_free = js;
 	js = json_object_object_get(js, profile);
 	if (!js)
 		return 0;
@@ -2633,13 +2657,13 @@ int osc_load_cert_from_conf(const char *profile, char **cert, char **key)
 	if (!cert_obj)
 		cert_obj = json_object_object_get(js, "client_certificate");
 	if (cert_obj) {
-		*cert = strdup(json_object_get_string(cert_obj));
+		*cert = osc_strdup(json_object_get_string(cert_obj));
 		ret |= OSC_ENV_FREE_CERT;
 	}
 
 	key_obj = json_object_object_get(js, "x509_client_sslkey");
 	if (key_obj) {
-		*key = strdup(json_object_get_string(key_obj));
+		*key = osc_strdup(json_object_get_string(key_obj));
 		ret |= OSC_ENV_FREE_SSLKEY;
 	}
 
