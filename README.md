@@ -74,6 +74,12 @@ export OSC_ACCESS_KEY=ACCESS_KEY
 export OSC_SECRET_KEY=SECRET_KEY
 ```
 
+LOGIN/PASSWORD:
+```bash
+export OSC_LOGIN=LOGIN
+export OSC_PASSWORD=PASSWORD
+```
+
 Region:
 ```bash
 export OSC_REGION=REGION # default is eu-west-2
