@@ -21,9 +21,6 @@ export JSON_C_WTF=/build/json-c/
 
 cd build/
 
-ls
-ls COGNAC
-
 cmake --version
 
 make json-c/.git
