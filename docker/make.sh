@@ -5,7 +5,7 @@
 if [ -n "$1" ]; then
     if [ "$1" = "cp" ]; then
 	mkdir build
-	cp -rvf oapi-cli ./build
+	cp -rvf oapi-cli/* ./build
     else
 	git clone $1 ./build
 	git checkout origin/master

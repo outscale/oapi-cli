@@ -7,5 +7,6 @@ RUN yum update -y
 
 RUN yum install -y git autoconf make cmake3 json-c-devel centos-release-scl-rh
 RUN yum install -y devtoolset-11-gcc-c++
+RUN ln -s /usr/bin/cmake3 /usr/bin/cmake
 
 RUN yum clean all
