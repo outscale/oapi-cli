@@ -19,6 +19,13 @@ fi
 
 cd build/
 
+# I HATE CMAKE I HATE CMAKE I HATE CMAKE I HATE CMAKE
+# (if this trick work, I WON'T REMOVE THIS COMMENT)
+export CMAKE_SOURCE_DIR /build/json-c/
+
+ls
+ls COGNAC
+
 rm -rvf /oapi-cli/docker-package/
 make oapi-cli-x86_64.AppImage
 
