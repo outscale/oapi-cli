@@ -17,7 +17,9 @@ json-c/.git:
 json-c-build/libjson-c.a: json-c/.git
 	rm -rvf ./json-c-build
 	mkdir json-c-build
-	cd json-c-build && cmake ../json-c/ "$${CMAKE_ARG}" # might need to be replace by cmake3
+	ls
+	ls json-c
+	cmake -S json-c -B json-c-build "$${CMAKE_ARG}" # might need to be replace by cmake3
 	make -C json-c-build json-c-static
 
 main-helper.h:
