@@ -17,7 +17,7 @@ else
     git clean -df
 fi
 
-export JSON_C_WTF=/build/json-c-build/
+export JSON_C_WTF=/build/json-c/
 
 cd build/
 
