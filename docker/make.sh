@@ -26,10 +26,15 @@ cmake --version
 make json-c/.git
 
 mkdir json-c-build
-
 cd json-c-build
+echo CMAKE NOW
+
 cmake ../json-c/
 cd ..
+echo "do the make \!\!"
+make -C json-c-build json-c-static
+
+echo ========= make json-c-build/libjson-c.a ========
 
 make json-c-build/libjson-c.a
 
