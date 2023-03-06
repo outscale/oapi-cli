@@ -5,9 +5,10 @@ RUN yum info epel-release
 RUN yum install -y  epel-release wget
 RUN yum update -y
 
-RUN yum install -y git autoconf make cmake3 json-c-devel centos-release-scl-rh libnghttp2 libpsl libssh2
+RUN yum install -y git autoconf make cmake3 json-c-devel centos-release-scl-rh libnghttp2 libpsl
 RUN yum install -y devtoolset-11-gcc-c++
 RUN ln -s /usr/bin/cmake3 /usr/bin/cmake
+RUN rpm -i "https://mirror.city-fan.org/ftp/contrib/libraries/libssh2-1.10.0-7.0.cf.fc19.x86_64.rpm"
 RUN rpm -i "https://mirror.city-fan.org/ftp/contrib/sysutils/Mirroring/libcurl-7.88.1-1.0.cf.fc19.x86_64.rpm"
 
 RUN yum clean all
