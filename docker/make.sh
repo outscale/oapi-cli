@@ -32,7 +32,7 @@ echo CMAKE NOW
 cmake ../json-c/
 cd ..
 echo "do the make \!\!"
-make -C json-c-build json-c-static
+make -C json-c-build json-c-static || 1 # ignore example compilation error
 
 echo ========= make json-c-build/libjson-c.a ========
 
