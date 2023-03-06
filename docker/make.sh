@@ -24,6 +24,8 @@ cd build/
 ls
 ls COGNAC
 
+cmake --version
+
 rm -rvf /oapi-cli/docker-package/
 make oapi-cli-x86_64.AppImage
 
