@@ -4,20 +4,20 @@
 
 if [ -n "$1" ]; then
     if [ "$1" = "cp" ]; then
-	mkdir oapuild
-	cp -rvf oapi-cli/* ./oapuild
+	mkdir build
+	cp -rvf oapi-cli/* ./build
     else
-	git clone $1 ./oapuild
+	git clone $1 ./build
 	git checkout origin/master
 	git clean -df
     fi
 else
-    git clone oapi-cli ./oapuild
+    git clone oapi-cli ./build
     git checkout origin/master
     git clean -df
 fi
 
-cd oapuild/
+cd build/
 
 ls
 ls COGNAC

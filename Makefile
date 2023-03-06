@@ -19,7 +19,7 @@ json-c-build/libjson-c.a: json-c/.git
 	mkdir json-c-build
 	ls
 	ls json-c
-	cmake --trace -Sjson-c -Bjson-c-build "$${CMAKE_ARG}" # might need to be replace by cmake3
+	cmake --trace -S./json-c -B./json-c-build "$${CMAKE_ARG}" # might need to be replace by cmake3
 	make -C json-c-build json-c-static
 
 main-helper.h:
