@@ -34,10 +34,6 @@ cd ..
 echo "do the make \!\!"
 make -C json-c-build json-c-static || 1 # ignore example compilation error
 
-echo ========= make json-c-build/libjson-c.a ========
-
-make json-c-build/libjson-c.a
-
 rm -rvf /oapi-cli/docker-package/
 make oapi-cli-x86_64.AppImage
 
