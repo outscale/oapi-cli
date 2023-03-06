@@ -26,6 +26,16 @@ ls COGNAC
 
 cmake --version
 
+make json-c/.git
+
+mkdir json-c-build
+
+cd json-c-build
+cmake ../json-c/
+cd ..
+
+make json-c-build/libjson-c.a
+
 rm -rvf /oapi-cli/docker-package/
 make oapi-cli-x86_64.AppImage
 
