@@ -4,24 +4,20 @@
 
 if [ -n "$1" ]; then
     if [ "$1" = "cp" ]; then
-	mkdir build
-	cp -rvf oapi-cli/* ./build
+	mkdir oapuild
+	cp -rvf oapi-cli/* ./oapuild
     else
-	git clone $1 ./build
+	git clone $1 ./oapuild
 	git checkout origin/master
 	git clean -df
     fi
 else
-    git clone oapi-cli ./build
+    git clone oapi-cli ./oapuild
     git checkout origin/master
     git clean -df
 fi
 
-cd build/
-
-# I HATE CMAKE I HATE CMAKE I HATE CMAKE I HATE CMAKE
-# (if this trick work, I WON'T REMOVE THIS COMMENT)
-export CMAKE_SOURCE_DIR /build/json-c/
+cd oapuild/
 
 ls
 ls COGNAC
