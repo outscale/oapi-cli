@@ -43,7 +43,7 @@ cp curl/lib/.libs/libcurl.a .
 
 echo CURL_LD=libcurl.a > config.mk
 
-export CURL_CFLAGS=curl/include/
+export CURL_BASH_CFLAGS=-Icurl/include/
 
 echo "do the make \!\!"
 make -C json-c-build json-c-static || 1 # ignore example compilation error
