@@ -2,10 +2,10 @@ LD_LIB_PATH=:./json-c-build
 JSON_C_LDFLAGS=./json-c-build/libjson-c.a
 JSON_C_CFLAGS=-I./json-c -I./json-c-build
 JSON_C_RULE=./json-c-build/libjson-c.a
-CURL_LD=-lcurl
-OAPI_RULE_DEPEDENCIES=
+API_RULE_DEPEDENCIES=
 OAPI_APPIMAGE_RULE_DEPEDENCIES=
 
+include config.mk
 include COGNAC/oapi-cli.mk
 
 COGNAC/oapi-cli.mk:

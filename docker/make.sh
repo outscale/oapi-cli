@@ -31,6 +31,18 @@ echo CMAKE NOW
 
 cmake ../json-c/
 cd ..
+
+git clone https://github.com/curl/curl.git
+cd curl
+autoreconf -fi
+./configure --with-openssl
+make
+cd ..
+
+cp curl/lib/.libs/libcurl.a .
+
+echo CURL_LD=libcurl.a > config.mk
+
 echo "do the make \!\!"
 make -C json-c-build json-c-static || 1 # ignore example compilation error
 
