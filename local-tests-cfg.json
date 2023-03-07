@@ -2,14 +2,14 @@
     "default": {
         "access_key": "0123456789ABCDEFGHIJ",
 	"login": "titi",
-        "secret_key": "FAKE00000000000011111111111000000000FAKE",
+        "secret_key": "0000000000000000111111111110000000000000",
         "region": "eu-west-2"
     },
     "my": {
 	"access_key": "ABCDEFGHIJ0123456789",
 	"login": "joe",
 	"password": "ashita wa dochira",
-	"secret_key": "BALDURSGATE1ISBETTERTHAN2000000000000000",
+	"secret_key": "0000000000000000000000000000000000000000",
 	"region": "eu-west-2"
     }
 }
