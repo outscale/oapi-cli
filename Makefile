@@ -4,7 +4,6 @@ JSON_C_CFLAGS=-I./json-c -I./json-c-build
 JSON_C_RULE=./json-c-build/libjson-c.a
 API_RULE_DEPEDENCIES=
 OAPI_APPIMAGE_RULE_DEPEDENCIES=
-CURL_CFLAGS="$${CURL_CFLAGS}"
 
 include config.mk
 include COGNAC/oapi-cli.mk
