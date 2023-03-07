@@ -39,7 +39,9 @@ autoreconf -fi
 make
 cd ..
 
-cp curl/lib/.libs/libcurl.a .
+cp -v curl/lib/.libs/libcurl.a .
+
+pwd
 
 echo CURL_LD=libcurl.a > config.mk
 
