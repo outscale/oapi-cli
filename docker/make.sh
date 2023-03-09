@@ -39,11 +39,12 @@ autoreconf -fi
 make
 cd ..
 
-cp -v curl/lib/.libs/libcurl.a .
+cp -v curl/lib/.libs/libcurl.so .
 
 pwd
 
-echo CURL_LD=libcurl.a > config.mk
+echo CURL_LD="-L./ -lcurl" > config.mk
+echo LD_LIB_PATH+=":./" >> config.mk
 
 export CURL_BASH_CFLAGS=-Icurl/include/
 
