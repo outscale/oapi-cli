@@ -69,4 +69,4 @@ rm -rvf /oapi-cli/docker-package/
 mkdir /oapi-cli/docker-package/
 cp oapi-cli-x86_64.AppImage /oapi-cli/docker-package/
 cp /etc/pki/tls/certs/ca-bundle.crt /oapi-cli/docker-package/
-cp lslog /oapi-cli/docker-package/
+

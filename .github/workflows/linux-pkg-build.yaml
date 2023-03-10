@@ -15,8 +15,8 @@ jobs:
       run: |
         sudo apt-get update --fix-missing
         sudo apt-get install -y -f -o Acquire::Retries=3 cargo
-        sudo docker build  -t oapi-build ./docker
-        sudo docker run --device /dev/fuse --cap-add SYS_ADMIN -v $PWD:/oapi-cli oapi-build scl enable devtoolset-11 -- /oapi-cli/docker/make.sh cp
+        docker build  -t oapi-build ./docker
+        docker run --device /dev/fuse --cap-add SYS_ADMIN --privileged=True -v $PWD:/oapi-cli oapi-build scl enable devtoolset-11 -- /oapi-cli/docker/make.sh cp
         sudo chown $(whoami) -R ./docker-package/
         ./docker-package/oapi-cli-x86_64.AppImage -h
         make tests-appimage
