@@ -60,9 +60,7 @@ make -C json-c-build json-c-static || 1 # ignore example compilation error
 make
 echo "some ldds"
 echo "oapi-clip"
-LD_LIBRARY_PATH=$LD_LIB_PATH ldd oapi-cli
 echo "libcurl.so"
-LD_LIBRARY_PATH=$LD_LIB_PATH ldd libcurl.so
 make oapi-cli-x86_64.AppImage
 
 rm -rvf /oapi-cli/docker-package/
