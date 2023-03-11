@@ -4,6 +4,7 @@ JSON_C_CFLAGS=-I./json-c -I./json-c-build
 JSON_C_RULE=./json-c-build/libjson-c.a
 API_RULE_DEPEDENCIES=
 OAPI_APPIMAGE_RULE_DEPEDENCIES=
+APPIMAGETOOL_OPTION=
 
 include config.mk
 include COGNAC/oapi-cli.mk

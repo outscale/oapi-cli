@@ -51,6 +51,7 @@ pwd
 
 echo CURL_LD="-L$PWD -lcurl" > config.mk
 echo LD_LIB_PATH="$PWD/json-c-build:$PWD/curl/lib/.libs/" >> config.mk
+echo APPIMAGETOOL_OPTION="--appimage-extract-and-run" >> config.mk
 
 export CURL_BASH_CFLAGS=-Icurl/include/
 
