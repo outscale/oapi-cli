@@ -40,12 +40,12 @@ or sourcing `oapi-cli-completion.bash` file
 
 For zsh, you might need to create a file like:
 ```zsh
-user@machine-on-zsh ~ % cat  ~/osc-cli-completion.zsh
+user@machine-on-zsh ~ % cat  ~/oapi-cli-completion.zsh
 ```
 ```
 autoload bashcompinit
 bashcompinit
-source $HOME/osc-cli-completion.bash
+source $HOME/oapi-cli-completion.bash
 ```
 
 # Config
@@ -100,10 +100,10 @@ export OSC_ENDPOINT_API=XXX
 oapi-cli is pre-packaged for Linux as a standalone AppImage.
 
     Download oapi-cli-x86_64.AppImage from latest version in releases.
-    Allow file to be executed by running chmod a+x osc-cli-x86_64.AppImage
-    Run osc-cli: ./osc-cli-x86_64.AppImage
+    Allow file to be executed by running chmod a+x oapi-cli-x86_64.AppImage
+    Run oapi-cli: ./oapi-cli-x86_64.AppImage
 
-Optionally, you can install it for all users: sudo mv osc-cli-x86_64.AppImage /usr/local/bin/osc-cli and just run osc-cli.
+Optionally, you can install it for all users: sudo mv oapi-cli-x86_64.AppImage /usr/local/bin/oapi-cli and just run oapi-cli. (as long as /usr/local/bin/ is in your PATH environement variable)
 
 if you have this error (or one similar about fuse):
 
