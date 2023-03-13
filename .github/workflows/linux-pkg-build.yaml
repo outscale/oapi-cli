@@ -18,7 +18,7 @@ jobs:
         docker build  -t oapi-build ./docker
         docker run --device /dev/fuse --cap-add SYS_ADMIN --privileged=True -v $PWD:/oapi-cli oapi-build scl enable devtoolset-11 -- /oapi-cli/docker/make.sh cp
         sudo chown $(whoami) -R ./docker-package/
-        ./docker-package/oapi-cli-x86_64.AppImage -h
+        ./docker-package/oapi-cli-x86_64.AppImage --appimage-extract-and-run -h
         make tests-appimage
         mv docker-package/oapi-cli-x86_64.AppImage .
     - name: Upload artifacts
