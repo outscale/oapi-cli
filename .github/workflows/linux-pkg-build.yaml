@@ -20,8 +20,8 @@ jobs:
         sudo chown $(whoami) -R ./docker-package/
         ./docker-package/oapi-cli-x86_64.AppImage --appimage-extract-and-run --help
         ./docker-package/oapi-cli-x86_64.AppImage --help
+        cp docker-package/oapi-cli-x86_64.AppImage .
         make tests-appimage
-        mv docker-package/oapi-cli-x86_64.AppImage .
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       if: ${{ github.event_name != 'push' }}
