@@ -7,12 +7,6 @@ for opt in "$@"; do
     fi
 done
 
-curl-config --ca > /dev/null
-RET=$?
-if [ $RET -eq 0 ]; then
-    export CURL_CA_BUNDLE=$(curl-config --ca)
-fi
-
 export COGNAC_HELP_APPEND="$(echo -en '\t--bash-completion\tprint bash completion(appimage only)\n\t--appimage-help\t\tappimage helps')"
 
 LD_LIBRARY_PATH=${APPDIR}/usr/lib/ "${APPDIR}/usr/bin/oapi-cli" "$@"
