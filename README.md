@@ -94,3 +94,32 @@ Endpoint:
 ```bash
 export OSC_ENDPOINT_API=XXX
 ```
+
+## Installing on Linux
+
+oapi-cli is pre-packaged for Linux as a standalone AppImage.
+
+    Download oapi-cli-x86_64.AppImage from latest version in releases.
+    Allow file to be executed by running chmod a+x osc-cli-x86_64.AppImage
+    Run osc-cli: ./osc-cli-x86_64.AppImage
+
+Optionally, you can install it for all users: sudo mv osc-cli-x86_64.AppImage /usr/local/bin/osc-cli and just run osc-cli.
+
+if you have this error (or one similar about fuse):
+
+fuse: failed to exec fusermount: No such file or directory
+
+Cannot mount AppImage, please check your FUSE setup.
+You might still be able to extract the contents of this AppImage
+if you run it with the --appimage-extract option.
+See https://github.com/AppImage/AppImageKit/wiki/FUSE
+for more information
+open dir error: No such file or directory
+
+You can either install fuse yourself, or execute the appimage with --appimage-extract-and-run option
+
+Example:
+
+./oapi-cli-x86_64.AppImage --appimage-extract-and-run ReadImages
+
+using appimage-extract-and-run extract the content of the AppImage in a temporary directory and execute it, this operation is a lot slower than using fuse, and the fuse solution should be use if posible.
