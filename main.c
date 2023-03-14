@@ -8083,16 +8083,7 @@ int main(int ac, char **av)
 	if (login || password)
 		auth_m = OSC_PASSWORD_METHOD;
 
-	TRY(osc_init_sdk_ext(&e, profile, flag,
-			     &(struct osc_env_conf){
-				     .auth_method=auth_m,
-				     .password=password,
-				     .login=login
-			     }),
-	    "fail to init C sdk\n");
-	osc_init_str(&r);
-
-	if (ac < 2) {
+	if (ac < 2 || (ac == 2 && !strcmp(av[1], "--help"))) {
 	show_help:
 		printf("Usage: %s [--help] CallName [options] [--Params ParamArgument]\n"
 		       "options:\n"
@@ -8110,6 +8101,15 @@ int main(int ac, char **av)
 		       help_appent ? "\n" : "");
 		return 0;
 	}
+
+	TRY(osc_init_sdk_ext(&e, profile, flag,
+			     &(struct osc_env_conf){
+				     .auth_method=auth_m,
+				     .password=password,
+				     .login=login
+			     }),
+	    "fail to init C sdk\n");
+	osc_init_str(&r);
 
 	for (i = 1; i < ac; ++i) {
 		if (!strcmp("--verbose", av[i]) ||		\

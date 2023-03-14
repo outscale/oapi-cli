@@ -1,4 +1,4 @@
-name: tests
+name: linux-pkg-build
 on:
   pull_request:
     branches: [ master ]
@@ -10,20 +10,19 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v2
-    - name: install dependancies
+    - uses: snickerbockers/submodules-init@v4
+    - name: Build the Docker image
       run: |
         sudo apt-get update --fix-missing
-        sudo apt-get install -y -f -o Acquire::Retries=3 jq libjson-c-dev libcurl4-openssl-dev pkg-config libfuse2 cargo
-    - name: Build and test
-      run: |
-        CFLAGS="-fsanitize=address -O0 -g" make
-        make oapi-cli-x86_64.AppImage
-        make tests-all
-      env:
-        OSC_ACCESS_KEY: ${{secrets.OSC_ACCESS_KEY}}
-        OSC_SECRET_KEY: ${{secrets.OSC_SECRET_KEY}}
-        OSC_REGION: ${{secrets.OSC_REGION}}
-   - name: Upload artifacts
+        sudo apt-get install -y -f -o Acquire::Retries=3 cargo libfuse2
+        docker build  -t oapi-build ./docker
+        docker run --device /dev/fuse --cap-add SYS_ADMIN --privileged=True -v $PWD:/oapi-cli oapi-build scl enable devtoolset-11 -- /oapi-cli/docker/make.sh cp
+        sudo chown $(whoami) -R ./docker-package/
+        ./docker-package/oapi-cli-x86_64.AppImage --appimage-extract-and-run --help
+        ./docker-package/oapi-cli-x86_64.AppImage --help
+        cp docker-package/oapi-cli-x86_64.AppImage .
+        make tests-appimage
+    - name: Upload artifacts
       uses: actions/upload-artifact@v2
       if: ${{ github.event_name != 'push' }}
       with:

@@ -2,9 +2,11 @@ LD_LIB_PATH=:./json-c-build
 JSON_C_LDFLAGS=./json-c-build/libjson-c.a
 JSON_C_CFLAGS=-I./json-c -I./json-c-build
 JSON_C_RULE=./json-c-build/libjson-c.a
-CURL_LD=-lcurl
-OAPI_RULE_DEPEDENCIES=
+API_RULE_DEPEDENCIES=
+OAPI_APPIMAGE_RULE_DEPEDENCIES=
+APPIMAGETOOL_OPTION=
 
+include config.mk
 include COGNAC/oapi-cli.mk
 
 COGNAC/oapi-cli.mk:
@@ -16,7 +18,7 @@ json-c/.git:
 json-c-build/libjson-c.a: json-c/.git
 	rm -rvf ./json-c-build
 	mkdir json-c-build
-	cd json-c-build && cmake ../json-c/ "$${CMAKE_ARG}" # might need to be replace by cmake3
+	cd json-c-build && cmake ../json-c "$${CMAKE_ARG}" # might need to be replace by cmake3
 	make -C json-c-build json-c-static
 
 main-helper.h:

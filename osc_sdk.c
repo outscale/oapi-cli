@@ -27974,7 +27974,7 @@ int osc_init_sdk_ext(struct osc_env *e, const char *profile, unsigned int flag,
 	curl_easy_setopt(e->c, CURLOPT_WRITEFUNCTION, write_data);
 	curl_easy_setopt(e->c, CURLOPT_USERAGENT, user_agent);
 
-	/* setting CA is CURL_CA_BUNDLE is set */
+	/* setting CA if CURL_CA_BUNDLE is set */
 	if (ca)
 	  curl_easy_setopt(e->c, CURLOPT_CAINFO, ca);
 
