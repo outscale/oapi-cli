@@ -99,27 +99,32 @@ export OSC_ENDPOINT_API=XXX
 
 oapi-cli is pre-packaged for Linux as a standalone AppImage.
 
-    Download oapi-cli-x86_64.AppImage from latest version in releases.
-    Allow file to be executed by running chmod a+x oapi-cli-x86_64.AppImage
+    Download oapi-cli-x86_64.AppImage from [nightly build](https://github.com/outscale/oapi-cli/releases/tag/nightly-linux).
+    Allow file to be executed by running chmod a+x ./oapi-cli-x86_64.AppImage
     Run oapi-cli: ./oapi-cli-x86_64.AppImage
 
-Optionally, you can install it for all users: sudo mv oapi-cli-x86_64.AppImage /usr/local/bin/oapi-cli and just run oapi-cli. (as long as /usr/local/bin/ is in your PATH environement variable)
+Optionally, you can install it for all users:
+```sh
+sudo mv oapi-cli-x86_64.AppImage /usr/local/bin/oapi-cli
+```
+and run `oapi-cli`. (as long as /usr/local/bin/ is in your PATH environement variable)
 
 if you have this error (or one similar about fuse):
 
+```
 fuse: failed to exec fusermount: No such file or directory
-
 Cannot mount AppImage, please check your FUSE setup.
-You might still be able to extract the contents of this AppImage
-if you run it with the --appimage-extract option.
 See https://github.com/AppImage/AppImageKit/wiki/FUSE
 for more information
 open dir error: No such file or directory
+```
 
+You might still be able to extract the contents of this AppImage if you run it with the `--appimage-extract` option.
 You can either install fuse yourself, or execute the appimage with --appimage-extract-and-run option
 
 Example:
-
+```
 ./oapi-cli-x86_64.AppImage --appimage-extract-and-run ReadImages
+```
 
 using appimage-extract-and-run extract the content of the AppImage in a temporary directory and execute it, this operation is a lot slower than using fuse, and the fuse solution should be use if posible.
