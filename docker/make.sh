@@ -58,13 +58,8 @@ echo "do the make \!\!"
 make -C json-c-build json-c-static || 1 # ignore example compilation error
 
 make
-echo "some ldds"
-echo "oapi-clip"
-echo "libcurl.so"
 make oapi-cli-x86_64.AppImage
 
 rm -rvf /oapi-cli/docker-package/
 mkdir /oapi-cli/docker-package/
 cp oapi-cli-x86_64.AppImage /oapi-cli/docker-package/
-cp /etc/pki/tls/certs/ca-bundle.crt /oapi-cli/docker-package/
-
