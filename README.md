@@ -126,7 +126,7 @@ open dir error: No such file or directory
 ```
 
 You might still be able to extract the contents of this AppImage if you run it with the `--appimage-extract` option.
-You can either install fuse yourself, or execute the appimage with --appimage-extract-and-run option
+You can either install fuse yourself, or execute the appimage with `--appimage-extract-and-run` option
 
 Example:
 ```
