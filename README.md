@@ -19,14 +19,20 @@ Examples of complex argument, with DeleteTags
 ```bash
 oapi-cli DeleteTags --ResourceIds '["ID0", "ID1"]' --Tags.0.Key k0 ..Value v0 --Tags.1.Key k1 ..Value v1
 ```
-is the same as but using [] syntaxe for `ResourceIds`, and without cascade argument.
+is the same as but using [] syntaxe for `ResourceIds`, and without cascade argument, but in color.
 ```bash
-oapi-cli DeleteTags --ResourceIds[] "ID0" --ResourceIds[] "ID1"  --Tags.0.Key k0 --Tags.0.Value v0 --Tags.1.Key k1 --Tags.1.Value v1
+oapi-cli --color DeleteTags --ResourceIds[] "ID0" --ResourceIds[] "ID1"  --Tags.0.Key k0 --Tags.0.Value v0 --Tags.1.Key k1 --Tags.1.Value v1
 ```
 and the same as, using osc-cli-like notation
 ```bash
 oapi-cli DeleteTags --ResourceIds '["ID0", "ID1"]'  --Tags '[{"Key": "k0", "Value": "v0"}, {"Key": "k1", "Value": "v1"}]'
 ```
+
+show debug information (HTTP info, and json send to the api)
+```bash
+oapi-cli --verbose ReadVms
+```
+
 *Note that with osc-cli, you need to add `api`, here, as we only support outscale api, this is remove*
 
 # Autocompletion
