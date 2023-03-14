@@ -47,6 +47,8 @@
 
 #define OAPI_RAW_OUTPUT 1
 
+#define OAPI_CLI_UAGENT "oapi-cli/0.1.0; osc-sdk-c/"
+
 #define TRY(f, args...)						\
 	do {							\
 		if (f) {fprintf(stderr, args);  return 1;}	\
@@ -8110,6 +8112,12 @@ int main(int ac, char **av)
 			     }),
 	    "fail to init C sdk\n");
 	osc_init_str(&r);
+
+	char user_agent[OSC_SDK_VERSON_L + sizeof OAPI_CLI_UAGENT] =
+		OAPI_CLI_UAGENT;
+
+	strcpy(user_agent + sizeof OAPI_CLI_UAGENT - 1, osc_sdk_version_str());
+	osc_sdk_set_useragent(&e, user_agent);
 
 	for (i = 1; i < ac; ++i) {
 		if (!strcmp("--verbose", av[i]) ||		\
