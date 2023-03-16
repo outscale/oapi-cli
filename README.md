@@ -104,10 +104,11 @@ export OSC_ENDPOINT_API=XXX
 ## Installing on Linux
 
 oapi-cli is pre-packaged for Linux as a standalone AppImage.
+Download oapi-cli-x86_64.AppImage from [nightly build](https://github.com/outscale/oapi-cli/releases/tag/nightly-linux).
+Allow file to be executed by running 
+`chmod a+x ./oapi-cli-x86_64.AppImage`
 
-    Download oapi-cli-x86_64.AppImage from [nightly build](https://github.com/outscale/oapi-cli/releases/tag/nightly-linux).
-    Allow file to be executed by running chmod a+x ./oapi-cli-x86_64.AppImage
-    Run oapi-cli: ./oapi-cli-x86_64.AppImage
+Run oapi-cli: `./oapi-cli-x86_64.AppImage`
 
 Optionally, you can install it for all users:
 ```sh
