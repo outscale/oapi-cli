@@ -8017,8 +8017,20 @@ int main(int ac, char **av)
 		  flag |= OSC_INSECURE_MODE;
 		} else if (!strcmp("--raw-print", av[i])) {
 		  flag |= OAPI_RAW_OUTPUT;
-		} else if (!strcmp("--raw-print", av[i])) {
-		  flag |= OAPI_RAW_OUTPUT;
+		} else if (!argcmp2("--auth-method", av[i], '=')) {
+			const char *auth_str;
+			if (av[i][sizeof("--auth-method") - 1] == '=') {
+				auth_str = &av[i][sizeof("--auth-method")];
+			} else if (!av[i][sizeof("--auth-method") - 1]) {
+				TRY(!av[i+1], "-- need an auth-method\n");
+				auth_str = av[i+1];
+				++i;
+			} else {
+				fprintf(stderr, "--auth-method seems weirds\n");
+				return 1;
+			}
+			auth_m = str_profile_to_int(auth_str);
+			TRY(auth_m < 0, "%s unknow auth-method\n", auth_str);
 		} else if (!argcmp2("--authentication_method", av[i], '=')) {
 			const char *auth_str;
 			if (av[i][sizeof("--authentication_method") - 1] == '=') {
@@ -8087,18 +8099,18 @@ int main(int ac, char **av)
 
 	if (ac < 2 || (ac == 2 && !strcmp(av[1], "--help"))) {
 	show_help:
-		printf("Usage: %s [--help] CallName [options] [--Params ParamArgument]\n"
-		       "options:\n"
-		       "\t--insecure	\tdoesn't verify SSL certificats\n"
-		       "\t--raw-print	\tdoesn't format the output\n"
-		       "\t--config=PATH		\tconfig file path\n"
-		       "\t--authentication_method=METHODE\tset authentification method,  password|accesskey|none\n"
-		       "\t--verbose	\tcurl backend is now verbose\n"
-		       "\t--profile=PROFILE	\tselect profile\n"
-		       "\t--login=EMAIL		\tset email, and authentification as password\n"
-		       "\t--password=PASS	\tset password, and authentification as password\n"
-		       "\t--help [CallName]\tthis, can be used with call name, example:\n\t\t\t\t%s --help ReadVms\n"
-		       "\t--color	\t\ttry to colorize json if json-c support it\n%s%s",
+                printf("Usage: %s [--help] CallName [options] [--Params ParamArgument]\n"
+                       "options:\n"
+                       "\t--auth-method=METHODE set authentification method, password|accesskey|none\n"
+                       "\t--color               try to colorize json if json-c support it\n"
+                       "\t--config=PATH         config file path\n"
+                       "\t--help [CallName]     this, can be used with call name, example:\n\t\t\t\t%s --help ReadVms\n"
+                       "\t--insecure            doesn't verify SSL certificats\n"
+                       "\t--login=EMAIL         set email, and authentification as password\n"
+                       "\t--password=PASS       set password, and authentification as password\n"
+                       "\t--profile=PROFILE     select profile\n"
+                       "\t--raw-print           doesn't format the output\n"
+                       "\t--verbose             curl backend is now verbose\n%s%s",
 		       program_name, program_name, help_appent ? help_appent : "",
 		       help_appent ? "\n" : "");
 		return 0;
@@ -8126,6 +8138,10 @@ int main(int ac, char **av)
 			/* Avoid Unknow Calls */
 		} else if (!argcmp2("--profile", av[i], '=')) {
 			if (!av[i][sizeof("--profile") - 1]) {
+				++i;
+			}
+		} else if (!argcmp2("--auth-method", av[i], '=')) {
+			if (!av[i][sizeof("--auth-method") - 1]) {
 				++i;
 			}
 		} else if (!argcmp2("--authentication_method", av[i], '=')) {
