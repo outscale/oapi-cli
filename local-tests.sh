@@ -33,7 +33,7 @@ oapi-cli --help > /dev/null
 echo [Test \"$oapi_cli\" --help OK]
 
 trap "echo '[Test \"$oapi_cli\" --help NyanCat doesn t crash FAIL]'" ERR
-oapi-cli --help NyanCat | grep 'Unknow Call' > /dev/null
+oapi-cli --help NyanCat --config="./local-tests-cfg.json" | grep 'Unknow Call' > /dev/null
 echo [Test \"$oapi_cli\" --help NyanCat doesn t crash OK]
 
 trap "echo [Test unknow user is unknow FAIL]" ERR
