@@ -32,6 +32,10 @@ trap "echo [Test \"$oapi_cli\" --help FAIL]" ERR
 oapi-cli --help > /dev/null
 echo [Test \"$oapi_cli\" --help OK]
 
+trap "echo '[Test \"$oapi_cli\" --help NyanCat doesn t crash FAIL]'" ERR
+oapi-cli --help NyanCat | grep 'Unknow Call' > /dev/null
+echo [Test \"$oapi_cli\" --help NyanCat doesn t crash OK]
+
 trap "echo [Test unknow user is unknow FAIL]" ERR
 oapi-cli   --password=useless --login=non-existant CreateVms ReadVms  ReadVms --Filters.VmIds[] i-00000000 | grep 'Unknow user' > /dev/null
 echo "[Test unknow user is unknow OK]"
@@ -39,7 +43,6 @@ echo "[Test unknow user is unknow OK]"
 trap "echo [Test Create vms and read with user 0 FAIL]" ERR
 oapi-cli  --password='ashita wa dochida' --login='joe' CreateVms ReadVms  ReadVms --Filters.VmIds[] i-00000003 | jq .Vms  > /dev/null
 echo '[Test Create vms and read with user 0 OK]'
-
 
 trap "echo [Test Read vms with user 1 is empty FAIL]" ERR
 export OSC_LOGIN=titi
