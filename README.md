@@ -134,3 +134,6 @@ Example:
 ```
 
 using appimage-extract-and-run extract the content of the AppImage in a temporary directory and execute it, this operation is a lot slower than using fuse, and the fuse solution should be use if posible.
+
+# Notes
+SDK itself is generated from Outscale's [COGNAC](https://github.com/outscale/COGNAC) using [osc-api](https://github.com/outscale/osc-api) description.
