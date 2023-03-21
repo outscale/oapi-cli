@@ -23,20 +23,3 @@ jobs:
         OSC_ACCESS_KEY: ${{secrets.OSC_ACCESS_KEY}}
         OSC_SECRET_KEY: ${{secrets.OSC_SECRET_KEY}}
         OSC_REGION: ${{secrets.OSC_REGION}}
-   - name: Upload artifacts
-      uses: actions/upload-artifact@v2
-      if: ${{ github.event_name != 'push' }}
-      with:
-        name: oapi-cli-linux
-        path: |
-          oapi-cli-x86_64.AppImage
-    - name: upload nightly
-      uses: "marvinpinto/action-automatic-releases@latest"
-      if: ${{ github.event_name == 'push' }}
-      with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        prerelease: true
-        automatic_release_tag: "nightly-linux"
-        title: "Linux Development Build"
-        files: |
-          oapi-cli-x86_64.AppImage
