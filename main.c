@@ -8208,7 +8208,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -8304,7 +8304,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -8388,7 +8388,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -8554,7 +8554,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -8633,7 +8633,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -8719,7 +8719,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -8798,7 +8798,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -8882,7 +8882,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -8981,7 +8981,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -9079,7 +9079,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -9162,7 +9162,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -9236,7 +9236,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -9378,7 +9378,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -9457,7 +9457,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -9543,7 +9543,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -9622,7 +9622,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -9696,7 +9696,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -9770,7 +9770,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -9865,7 +9865,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -9944,7 +9944,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -10075,7 +10075,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -10154,7 +10154,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -10233,7 +10233,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -10307,7 +10307,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -10376,7 +10376,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -10450,7 +10450,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -10526,7 +10526,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -10595,7 +10595,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -10678,7 +10678,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -10752,7 +10752,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -10821,7 +10821,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -10902,7 +10902,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -10973,7 +10973,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -11042,7 +11042,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -11116,7 +11116,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -11185,7 +11185,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -11261,7 +11261,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -11332,7 +11332,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -11413,7 +11413,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -11494,7 +11494,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -11585,7 +11585,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -11661,7 +11661,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -11742,7 +11742,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -11823,7 +11823,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -11904,7 +11904,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -11985,7 +11985,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -12066,7 +12066,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -12147,7 +12147,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -12228,7 +12228,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -12309,7 +12309,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -12390,7 +12390,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -12471,7 +12471,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -12540,7 +12540,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -12621,7 +12621,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -12685,7 +12685,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -12766,7 +12766,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -12847,7 +12847,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -12911,7 +12911,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -12975,7 +12975,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -13056,7 +13056,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -13137,7 +13137,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -13218,7 +13218,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -13299,7 +13299,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -13380,7 +13380,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -13461,7 +13461,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -13542,7 +13542,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -13606,7 +13606,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -13687,7 +13687,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -13758,7 +13758,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -13839,7 +13839,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -13920,7 +13920,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -14001,7 +14001,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -14082,7 +14082,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -14163,7 +14163,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -14244,7 +14244,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -14308,7 +14308,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -14389,7 +14389,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -14470,7 +14470,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -14551,7 +14551,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -14635,7 +14635,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -14704,7 +14704,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -14785,7 +14785,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -14849,7 +14849,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -14930,7 +14930,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -15038,7 +15038,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -15119,7 +15119,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -15183,7 +15183,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -15252,7 +15252,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -15316,7 +15316,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -15397,7 +15397,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -15476,7 +15476,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -15550,7 +15550,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -15624,7 +15624,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -15723,7 +15723,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -15814,7 +15814,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -15893,7 +15893,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -15976,7 +15976,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -16050,7 +16050,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -16124,7 +16124,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -16200,7 +16200,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -16274,7 +16274,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -16343,7 +16343,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -16412,7 +16412,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -16483,7 +16483,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -16552,7 +16552,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -16648,7 +16648,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -16717,7 +16717,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -16786,7 +16786,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -16855,7 +16855,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -16984,7 +16984,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -17058,7 +17058,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -17127,7 +17127,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -17201,7 +17201,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -17275,7 +17275,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -17344,7 +17344,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -17413,7 +17413,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -17482,7 +17482,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -17551,7 +17551,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -17620,7 +17620,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -17716,7 +17716,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -17790,7 +17790,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -17866,7 +17866,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -17935,7 +17935,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -18004,7 +18004,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -18073,7 +18073,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -18142,7 +18142,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -18211,7 +18211,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -18280,7 +18280,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -18349,7 +18349,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -18418,7 +18418,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -18487,7 +18487,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -18556,7 +18556,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -18625,7 +18625,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -18694,7 +18694,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -18763,7 +18763,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -18832,7 +18832,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -18906,7 +18906,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -18995,7 +18995,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -19084,7 +19084,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -19326,7 +19326,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -19395,7 +19395,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -19491,7 +19491,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -19570,7 +19570,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -19656,7 +19656,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -19750,7 +19750,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -19839,7 +19839,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -19968,7 +19968,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -20047,7 +20047,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -20116,7 +20116,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -20215,7 +20215,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -20279,7 +20279,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -20385,7 +20385,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -20459,7 +20459,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -20540,7 +20540,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -20614,7 +20614,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -20688,7 +20688,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -20784,7 +20784,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -20873,7 +20873,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -20967,7 +20967,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -21117,7 +21117,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -21222,7 +21222,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -21296,7 +21296,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -21360,7 +21360,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -21446,7 +21446,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -21585,7 +21585,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -21674,7 +21674,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -21760,7 +21760,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -21839,7 +21839,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -21929,7 +21929,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -22008,7 +22008,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -22082,7 +22082,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -22172,7 +22172,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -22308,7 +22308,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -22377,7 +22377,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
@@ -22451,7 +22451,7 @@ int main(int ac, char **av)
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
 			     int incr = aa ? 2 : 1;
 
-			     if (aa && aa[0] == '-' && aa[1] == '-') {
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
