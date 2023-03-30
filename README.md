@@ -101,6 +101,15 @@ Endpoint:
 export OSC_ENDPOINT_API=XXX
 ```
 
+## installing on Macos
+
+```bash
+git clone https://github.com/outscale-mgo/homebrew-core
+cd homebrew-core
+git checkout oapi-cli
+brew install Formula/oapi-cli.rb
+```
+
 ## Installing on Linux
 
 oapi-cli is pre-packaged for Linux as a standalone AppImage.
