@@ -8017,7 +8017,7 @@ int main(int ac, char **av)
 		  flag |= OSC_INSECURE_MODE;
 		} else if (!strcmp("--raw-print", av[i])) {
 		  flag |= OAPI_RAW_OUTPUT;
-		} else if (!strcmp("--help", av[i])) {
+		} else if (!strcmp("--help", av[i]) || !strcmp("-h", av[i])) {
 		  auth_m = OSC_NONE_METHOD;
 		} else if (!argcmp2("--auth-method", av[i], '=')) {
 			const char *auth_str;
@@ -8103,16 +8103,16 @@ int main(int ac, char **av)
 	show_help:
                 printf("Usage: %s [--help] CallName [options] [--Params ParamArgument]\n"
                        "options:\n"
-                       "\t--auth-method=METHODE set authentification method, password|accesskey|none\n"
-                       "\t--color               try to colorize json if json-c support it\n"
-                       "\t--config=PATH         config file path\n"
-                       "\t--help [CallName]     this, can be used with call name, example:\n\t\t\t\t%s --help ReadVms\n"
-                       "\t--insecure            doesn't verify SSL certificats\n"
-                       "\t--login=EMAIL         set email, and authentification as password\n"
-                       "\t--password=PASS       set password, and authentification as password\n"
-                       "\t--profile=PROFILE     select profile\n"
-                       "\t--raw-print           doesn't format the output\n"
-                       "\t--verbose             curl backend is now verbose\n%s%s",
+                       "\t    --auth-method=METHODE set authentification method, password|accesskey|none\n"
+                       "\t    --color               try to colorize json if json-c support it\n"
+                       "\t    --config=PATH         config file path\n"
+                       "\t-h, --help [CallName]     this, can be used with call name, example:\n\t\t\t\t%s --help ReadVms\n"
+                       "\t    --insecure            doesn't verify SSL certificats\n"
+                       "\t    --login=EMAIL         set email, and authentification as password\n"
+                       "\t    --password=PASS       set password, and authentification as password\n"
+                       "\t    --profile=PROFILE     select profile\n"
+                       "\t    --raw-print           doesn't format the output\n"
+                       "\t    --verbose             curl backend is now verbose\n%s%s",
 		       program_name, program_name, help_appent ? help_appent : "",
 		       help_appent ? "\n" : "");
 		return 0;
@@ -8162,7 +8162,7 @@ int main(int ac, char **av)
 			if (!av[i][sizeof("--login") - 1]) {
 				++i;
 			}
-		} else if (!strcmp("--help", av[i])) {
+		} else if (!strcmp("--help", av[i]) || !strcmp("-h", av[i])) {
 			if (av[i+1]) {
 				const char *cd = osc_find_description(av[i+1]);
 				const char *cad = osc_find_args_description(av[i+1]);
