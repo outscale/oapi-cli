@@ -54,6 +54,7 @@
 		if (f) {fprintf(stderr, args);  return 1;}	\
 	} while(0)
 
+
 static int argcmp2(const char *s1, const char *s2, char dst)
 {
 	while (*s1 == *s2 && *s1 && *s2) {
@@ -63,7 +64,7 @@ static int argcmp2(const char *s1, const char *s2, char dst)
 	if ((*s2 == dst && *s1 == '\0') ||
 	    (*s1 == dst && *s2 == '\0'))
 		return 0;
-	return *s1 != *s2;
+	return *s1 - *s2;
 }
 
 static int argcmp(const char *s1, const char *s2)
@@ -93,6 +94,7 @@ int bsu_to_update_vm_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int ca_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int catalog_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int catalog_entry_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int catalogs_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int client_gateway_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int consumption_entry_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int dhcp_options_set_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -104,6 +106,7 @@ int filters_access_keys_parser(void *s, char *str, char *aa, struct ptr_array *p
 int filters_api_access_rule_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_api_log_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_ca_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int filters_catalogs_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_client_gateway_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_dhcp_options_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_direct_link_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -133,6 +136,8 @@ int filters_subregion_parser(void *s, char *str, char *aa, struct ptr_array *pa)
 int filters_tag_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_virtual_gateway_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_vm_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int filters_vm_group_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int filters_vm_template_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_vm_type_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_vms_state_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_volume_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -213,8 +218,10 @@ int tag_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int vgw_telemetry_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int virtual_gateway_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int vm_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int vm_group_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int vm_state_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int vm_states_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int vm_template_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int vm_type_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int volume_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int vpn_connection_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -223,17 +230,18 @@ int with_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 
 int accepter_net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct accepter_net *s = v_s;
-	if (!argcmp(str, "AccountId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccountId")) == 0 || aret == '=') {
             TRY(!aa, "AccountId argument missing\n");
             s->account_id = aa; // string string
 
          } else
-	if (!argcmp(str, "IpRange")) {
+	if ((aret = argcmp(str, "IpRange")) == 0 || aret == '=') {
             TRY(!aa, "IpRange argument missing\n");
             s->ip_range = aa; // string string
 
          } else
-	if (!argcmp(str, "NetId")) {
+	if ((aret = argcmp(str, "NetId")) == 0 || aret == '=') {
             TRY(!aa, "NetId argument missing\n");
             s->net_id = aa; // string string
 
@@ -246,27 +254,28 @@ int accepter_net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int access_key_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct access_key *s = v_s;
-	if (!argcmp(str, "AccessKeyId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccessKeyId")) == 0 || aret == '=') {
             TRY(!aa, "AccessKeyId argument missing\n");
             s->access_key_id = aa; // string string
 
          } else
-	if (!argcmp(str, "CreationDate")) {
+	if ((aret = argcmp(str, "CreationDate")) == 0 || aret == '=') {
             TRY(!aa, "CreationDate argument missing\n");
             s->creation_date = aa; // string string
 
          } else
-	if (!argcmp(str, "ExpirationDate")) {
+	if ((aret = argcmp(str, "ExpirationDate")) == 0 || aret == '=') {
             TRY(!aa, "ExpirationDate argument missing\n");
             s->expiration_date = aa; // string string
 
          } else
-	if (!argcmp(str, "LastModificationDate")) {
+	if ((aret = argcmp(str, "LastModificationDate")) == 0 || aret == '=') {
             TRY(!aa, "LastModificationDate argument missing\n");
             s->last_modification_date = aa; // string string
 
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
@@ -279,32 +288,33 @@ int access_key_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int access_key_secret_key_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct access_key_secret_key *s = v_s;
-	if (!argcmp(str, "AccessKeyId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccessKeyId")) == 0 || aret == '=') {
             TRY(!aa, "AccessKeyId argument missing\n");
             s->access_key_id = aa; // string string
 
          } else
-	if (!argcmp(str, "CreationDate")) {
+	if ((aret = argcmp(str, "CreationDate")) == 0 || aret == '=') {
             TRY(!aa, "CreationDate argument missing\n");
             s->creation_date = aa; // string string
 
          } else
-	if (!argcmp(str, "ExpirationDate")) {
+	if ((aret = argcmp(str, "ExpirationDate")) == 0 || aret == '=') {
             TRY(!aa, "ExpirationDate argument missing\n");
             s->expiration_date = aa; // string string
 
          } else
-	if (!argcmp(str, "LastModificationDate")) {
+	if ((aret = argcmp(str, "LastModificationDate")) == 0 || aret == '=') {
             TRY(!aa, "LastModificationDate argument missing\n");
             s->last_modification_date = aa; // string string
 
          } else
-	if (!argcmp(str, "SecretKey")) {
+	if ((aret = argcmp(str, "SecretKey")) == 0 || aret == '=') {
             TRY(!aa, "SecretKey argument missing\n");
             s->secret_key = aa; // string string
 
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
@@ -317,7 +327,8 @@ int access_key_secret_key_parser(void *v_s, char *str, char *aa, struct ptr_arra
 
 int access_log_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct access_log *s = v_s;
-	if (!argcmp(str, "IsEnabled")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "IsEnabled")) == 0 || aret == '=') {
             s->is_set_is_enabled = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->is_enabled = 1;
@@ -327,17 +338,17 @@ int access_log_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("IsEnabled require true/false\n");
              }
         } else
-	if (!argcmp(str, "OsuBucketName")) {
+	if ((aret = argcmp(str, "OsuBucketName")) == 0 || aret == '=') {
             TRY(!aa, "OsuBucketName argument missing\n");
             s->osu_bucket_name = aa; // string string
 
          } else
-	if (!argcmp(str, "OsuBucketPrefix")) {
+	if ((aret = argcmp(str, "OsuBucketPrefix")) == 0 || aret == '=') {
             TRY(!aa, "OsuBucketPrefix argument missing\n");
             s->osu_bucket_prefix = aa; // string string
 
          } else
-	if (!argcmp(str, "PublicationInterval")) {
+	if ((aret = argcmp(str, "PublicationInterval")) == 0 || aret == '=') {
             TRY(!aa, "PublicationInterval argument missing\n");
             s->is_set_publication_interval = 1;
             s->publication_interval = atoi(aa);
@@ -350,79 +361,80 @@ int access_log_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int account_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct account *s = v_s;
-	if (!argcmp(str, "AccountId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccountId")) == 0 || aret == '=') {
             TRY(!aa, "AccountId argument missing\n");
             s->account_id = aa; // string string
 
          } else
-	if (!argcmp(str, "AdditionalEmails")) {
+	if ((aret = argcmp(str, "AdditionalEmails")) == 0 || aret == '=') {
             	 TRY(!aa, "AdditionalEmails argument missing\n");
                s->additional_emails_str = aa;
-         } else if (!strcmp(str, "AdditionalEmails[]")) {
+         } else if (!(aret = strcmp(str, "AdditionalEmails[]")) || aret == '=') {
                TRY(!aa, "AdditionalEmails[] argument missing\n");
                SET_NEXT(s->additional_emails, (aa), pa);
          } else
-	if (!argcmp(str, "City")) {
+	if ((aret = argcmp(str, "City")) == 0 || aret == '=') {
             TRY(!aa, "City argument missing\n");
             s->city = aa; // string string
 
          } else
-	if (!argcmp(str, "CompanyName")) {
+	if ((aret = argcmp(str, "CompanyName")) == 0 || aret == '=') {
             TRY(!aa, "CompanyName argument missing\n");
             s->company_name = aa; // string string
 
          } else
-	if (!argcmp(str, "Country")) {
+	if ((aret = argcmp(str, "Country")) == 0 || aret == '=') {
             TRY(!aa, "Country argument missing\n");
             s->country = aa; // string string
 
          } else
-	if (!argcmp(str, "CustomerId")) {
+	if ((aret = argcmp(str, "CustomerId")) == 0 || aret == '=') {
             TRY(!aa, "CustomerId argument missing\n");
             s->customer_id = aa; // string string
 
          } else
-	if (!argcmp(str, "Email")) {
+	if ((aret = argcmp(str, "Email")) == 0 || aret == '=') {
             TRY(!aa, "Email argument missing\n");
             s->email = aa; // string string
 
          } else
-	if (!argcmp(str, "FirstName")) {
+	if ((aret = argcmp(str, "FirstName")) == 0 || aret == '=') {
             TRY(!aa, "FirstName argument missing\n");
             s->first_name = aa; // string string
 
          } else
-	if (!argcmp(str, "JobTitle")) {
+	if ((aret = argcmp(str, "JobTitle")) == 0 || aret == '=') {
             TRY(!aa, "JobTitle argument missing\n");
             s->job_title = aa; // string string
 
          } else
-	if (!argcmp(str, "LastName")) {
+	if ((aret = argcmp(str, "LastName")) == 0 || aret == '=') {
             TRY(!aa, "LastName argument missing\n");
             s->last_name = aa; // string string
 
          } else
-	if (!argcmp(str, "MobileNumber")) {
+	if ((aret = argcmp(str, "MobileNumber")) == 0 || aret == '=') {
             TRY(!aa, "MobileNumber argument missing\n");
             s->mobile_number = aa; // string string
 
          } else
-	if (!argcmp(str, "PhoneNumber")) {
+	if ((aret = argcmp(str, "PhoneNumber")) == 0 || aret == '=') {
             TRY(!aa, "PhoneNumber argument missing\n");
             s->phone_number = aa; // string string
 
          } else
-	if (!argcmp(str, "StateProvince")) {
+	if ((aret = argcmp(str, "StateProvince")) == 0 || aret == '=') {
             TRY(!aa, "StateProvince argument missing\n");
             s->state_province = aa; // string string
 
          } else
-	if (!argcmp(str, "VatNumber")) {
+	if ((aret = argcmp(str, "VatNumber")) == 0 || aret == '=') {
             TRY(!aa, "VatNumber argument missing\n");
             s->vat_number = aa; // string string
 
          } else
-	if (!argcmp(str, "ZipCode")) {
+	if ((aret = argcmp(str, "ZipCode")) == 0 || aret == '=') {
             TRY(!aa, "ZipCode argument missing\n");
             s->zip_code = aa; // string string
 
@@ -435,12 +447,13 @@ int account_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int api_access_policy_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct api_access_policy *s = v_s;
-	if (!argcmp(str, "MaxAccessKeyExpirationSeconds")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "MaxAccessKeyExpirationSeconds")) == 0 || aret == '=') {
             TRY(!aa, "MaxAccessKeyExpirationSeconds argument missing\n");
             s->is_set_max_access_key_expiration_seconds = 1;
             s->max_access_key_expiration_seconds = atoi(aa);
          } else
-	if (!argcmp(str, "RequireTrustedEnv")) {
+	if ((aret = argcmp(str, "RequireTrustedEnv")) == 0 || aret == '=') {
             s->is_set_require_trusted_env = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->require_trusted_env = 1;
@@ -458,34 +471,35 @@ int api_access_policy_parser(void *v_s, char *str, char *aa, struct ptr_array *p
 
 int api_access_rule_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct api_access_rule *s = v_s;
-	if (!argcmp(str, "ApiAccessRuleId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "ApiAccessRuleId")) == 0 || aret == '=') {
             TRY(!aa, "ApiAccessRuleId argument missing\n");
             s->api_access_rule_id = aa; // string string
 
          } else
-	if (!argcmp(str, "CaIds")) {
+	if ((aret = argcmp(str, "CaIds")) == 0 || aret == '=') {
             	 TRY(!aa, "CaIds argument missing\n");
                s->ca_ids_str = aa;
-         } else if (!strcmp(str, "CaIds[]")) {
+         } else if (!(aret = strcmp(str, "CaIds[]")) || aret == '=') {
                TRY(!aa, "CaIds[] argument missing\n");
                SET_NEXT(s->ca_ids, (aa), pa);
          } else
-	if (!argcmp(str, "Cns")) {
+	if ((aret = argcmp(str, "Cns")) == 0 || aret == '=') {
             	 TRY(!aa, "Cns argument missing\n");
                s->cns_str = aa;
-         } else if (!strcmp(str, "Cns[]")) {
+         } else if (!(aret = strcmp(str, "Cns[]")) || aret == '=') {
                TRY(!aa, "Cns[] argument missing\n");
                SET_NEXT(s->cns, (aa), pa);
          } else
-	if (!argcmp(str, "Description")) {
+	if ((aret = argcmp(str, "Description")) == 0 || aret == '=') {
             TRY(!aa, "Description argument missing\n");
             s->description = aa; // string string
 
          } else
-	if (!argcmp(str, "IpRanges")) {
+	if ((aret = argcmp(str, "IpRanges")) == 0 || aret == '=') {
             	 TRY(!aa, "IpRanges argument missing\n");
                s->ip_ranges_str = aa;
-         } else if (!strcmp(str, "IpRanges[]")) {
+         } else if (!(aret = strcmp(str, "IpRanges[]")) || aret == '=') {
                TRY(!aa, "IpRanges[] argument missing\n");
                SET_NEXT(s->ip_ranges, (aa), pa);
          } else
@@ -497,12 +511,13 @@ int api_access_rule_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
 
 int application_sticky_cookie_policy_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct application_sticky_cookie_policy *s = v_s;
-	if (!argcmp(str, "CookieName")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "CookieName")) == 0 || aret == '=') {
             TRY(!aa, "CookieName argument missing\n");
             s->cookie_name = aa; // string string
 
          } else
-	if (!argcmp(str, "PolicyName")) {
+	if ((aret = argcmp(str, "PolicyName")) == 0 || aret == '=') {
             TRY(!aa, "PolicyName argument missing\n");
             s->policy_name = aa; // string string
 
@@ -515,22 +530,23 @@ int application_sticky_cookie_policy_parser(void *v_s, char *str, char *aa, stru
 
 int backend_vm_health_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct backend_vm_health *s = v_s;
-	if (!argcmp(str, "Description")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Description")) == 0 || aret == '=') {
             TRY(!aa, "Description argument missing\n");
             s->description = aa; // string string
 
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "StateReason")) {
+	if ((aret = argcmp(str, "StateReason")) == 0 || aret == '=') {
             TRY(!aa, "StateReason argument missing\n");
             s->state_reason = aa; // string string
 
          } else
-	if (!argcmp(str, "VmId")) {
+	if ((aret = argcmp(str, "VmId")) == 0 || aret == '=') {
             TRY(!aa, "VmId argument missing\n");
             s->vm_id = aa; // string string
 
@@ -543,7 +559,8 @@ int backend_vm_health_parser(void *v_s, char *str, char *aa, struct ptr_array *p
 
 int block_device_mapping_created_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct block_device_mapping_created *s = v_s;
-	if (!argcmp(str, "Bsu")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Bsu")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "Bsu argument missing\n");
@@ -560,7 +577,7 @@ int block_device_mapping_created_parser(void *v_s, char *str, char *aa, struct p
                    s->bsu_str = aa;
              }
          } else
-	if (!argcmp(str, "DeviceName")) {
+	if ((aret = argcmp(str, "DeviceName")) == 0 || aret == '=') {
             TRY(!aa, "DeviceName argument missing\n");
             s->device_name = aa; // string string
 
@@ -573,7 +590,8 @@ int block_device_mapping_created_parser(void *v_s, char *str, char *aa, struct p
 
 int block_device_mapping_image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct block_device_mapping_image *s = v_s;
-	if (!argcmp(str, "Bsu")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Bsu")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "Bsu argument missing\n");
@@ -590,12 +608,12 @@ int block_device_mapping_image_parser(void *v_s, char *str, char *aa, struct ptr
                    s->bsu_str = aa;
              }
          } else
-	if (!argcmp(str, "DeviceName")) {
+	if ((aret = argcmp(str, "DeviceName")) == 0 || aret == '=') {
             TRY(!aa, "DeviceName argument missing\n");
             s->device_name = aa; // string string
 
          } else
-	if (!argcmp(str, "VirtualDeviceName")) {
+	if ((aret = argcmp(str, "VirtualDeviceName")) == 0 || aret == '=') {
             TRY(!aa, "VirtualDeviceName argument missing\n");
             s->virtual_device_name = aa; // string string
 
@@ -608,7 +626,8 @@ int block_device_mapping_image_parser(void *v_s, char *str, char *aa, struct ptr
 
 int block_device_mapping_vm_creation_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct block_device_mapping_vm_creation *s = v_s;
-	if (!argcmp(str, "Bsu")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Bsu")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "Bsu argument missing\n");
@@ -625,17 +644,17 @@ int block_device_mapping_vm_creation_parser(void *v_s, char *str, char *aa, stru
                    s->bsu_str = aa;
              }
          } else
-	if (!argcmp(str, "DeviceName")) {
+	if ((aret = argcmp(str, "DeviceName")) == 0 || aret == '=') {
             TRY(!aa, "DeviceName argument missing\n");
             s->device_name = aa; // string string
 
          } else
-	if (!argcmp(str, "NoDevice")) {
+	if ((aret = argcmp(str, "NoDevice")) == 0 || aret == '=') {
             TRY(!aa, "NoDevice argument missing\n");
             s->no_device = aa; // string string
 
          } else
-	if (!argcmp(str, "VirtualDeviceName")) {
+	if ((aret = argcmp(str, "VirtualDeviceName")) == 0 || aret == '=') {
             TRY(!aa, "VirtualDeviceName argument missing\n");
             s->virtual_device_name = aa; // string string
 
@@ -648,7 +667,8 @@ int block_device_mapping_vm_creation_parser(void *v_s, char *str, char *aa, stru
 
 int block_device_mapping_vm_update_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct block_device_mapping_vm_update *s = v_s;
-	if (!argcmp(str, "Bsu")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Bsu")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "Bsu argument missing\n");
@@ -665,17 +685,17 @@ int block_device_mapping_vm_update_parser(void *v_s, char *str, char *aa, struct
                    s->bsu_str = aa;
              }
          } else
-	if (!argcmp(str, "DeviceName")) {
+	if ((aret = argcmp(str, "DeviceName")) == 0 || aret == '=') {
             TRY(!aa, "DeviceName argument missing\n");
             s->device_name = aa; // string string
 
          } else
-	if (!argcmp(str, "NoDevice")) {
+	if ((aret = argcmp(str, "NoDevice")) == 0 || aret == '=') {
             TRY(!aa, "NoDevice argument missing\n");
             s->no_device = aa; // string string
 
          } else
-	if (!argcmp(str, "VirtualDeviceName")) {
+	if ((aret = argcmp(str, "VirtualDeviceName")) == 0 || aret == '=') {
             TRY(!aa, "VirtualDeviceName argument missing\n");
             s->virtual_device_name = aa; // string string
 
@@ -688,7 +708,8 @@ int block_device_mapping_vm_update_parser(void *v_s, char *str, char *aa, struct
 
 int bsu_created_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct bsu_created *s = v_s;
-	if (!argcmp(str, "DeleteOnVmDeletion")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "DeleteOnVmDeletion")) == 0 || aret == '=') {
             s->is_set_delete_on_vm_deletion = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->delete_on_vm_deletion = 1;
@@ -698,17 +719,17 @@ int bsu_created_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("DeleteOnVmDeletion require true/false\n");
              }
         } else
-	if (!argcmp(str, "LinkDate")) {
+	if ((aret = argcmp(str, "LinkDate")) == 0 || aret == '=') {
             TRY(!aa, "LinkDate argument missing\n");
             s->link_date = aa; // string string
 
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "VolumeId")) {
+	if ((aret = argcmp(str, "VolumeId")) == 0 || aret == '=') {
             TRY(!aa, "VolumeId argument missing\n");
             s->volume_id = aa; // string string
 
@@ -721,7 +742,8 @@ int bsu_created_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int bsu_to_create_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct bsu_to_create *s = v_s;
-	if (!argcmp(str, "DeleteOnVmDeletion")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "DeleteOnVmDeletion")) == 0 || aret == '=') {
             s->is_set_delete_on_vm_deletion = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->delete_on_vm_deletion = 1;
@@ -731,22 +753,22 @@ int bsu_to_create_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("DeleteOnVmDeletion require true/false\n");
              }
         } else
-	if (!argcmp(str, "Iops")) {
+	if ((aret = argcmp(str, "Iops")) == 0 || aret == '=') {
             TRY(!aa, "Iops argument missing\n");
             s->is_set_iops = 1;
             s->iops = atoi(aa);
          } else
-	if (!argcmp(str, "SnapshotId")) {
+	if ((aret = argcmp(str, "SnapshotId")) == 0 || aret == '=') {
             TRY(!aa, "SnapshotId argument missing\n");
             s->snapshot_id = aa; // string string
 
          } else
-	if (!argcmp(str, "VolumeSize")) {
+	if ((aret = argcmp(str, "VolumeSize")) == 0 || aret == '=') {
             TRY(!aa, "VolumeSize argument missing\n");
             s->is_set_volume_size = 1;
             s->volume_size = atoi(aa);
          } else
-	if (!argcmp(str, "VolumeType")) {
+	if ((aret = argcmp(str, "VolumeType")) == 0 || aret == '=') {
             TRY(!aa, "VolumeType argument missing\n");
             s->volume_type = aa; // string string
 
@@ -759,7 +781,8 @@ int bsu_to_create_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int bsu_to_update_vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct bsu_to_update_vm *s = v_s;
-	if (!argcmp(str, "DeleteOnVmDeletion")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "DeleteOnVmDeletion")) == 0 || aret == '=') {
             s->is_set_delete_on_vm_deletion = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->delete_on_vm_deletion = 1;
@@ -769,7 +792,7 @@ int bsu_to_update_vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
             		BAD_RET("DeleteOnVmDeletion require true/false\n");
              }
         } else
-	if (!argcmp(str, "VolumeId")) {
+	if ((aret = argcmp(str, "VolumeId")) == 0 || aret == '=') {
             TRY(!aa, "VolumeId argument missing\n");
             s->volume_id = aa; // string string
 
@@ -782,17 +805,18 @@ int bsu_to_update_vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
 
 int ca_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct ca *s = v_s;
-	if (!argcmp(str, "CaFingerprint")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "CaFingerprint")) == 0 || aret == '=') {
             TRY(!aa, "CaFingerprint argument missing\n");
             s->ca_fingerprint = aa; // string string
 
          } else
-	if (!argcmp(str, "CaId")) {
+	if ((aret = argcmp(str, "CaId")) == 0 || aret == '=') {
             TRY(!aa, "CaId argument missing\n");
             s->ca_id = aa; // string string
 
          } else
-	if (!argcmp(str, "Description")) {
+	if ((aret = argcmp(str, "Description")) == 0 || aret == '=') {
             TRY(!aa, "Description argument missing\n");
             s->description = aa; // string string
 
@@ -805,7 +829,8 @@ int ca_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int catalog_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct catalog *s = v_s;
-	if (!argcmp(str, "Entries")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Entries")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -838,42 +863,43 @@ int catalog_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int catalog_entry_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct catalog_entry *s = v_s;
-	if (!argcmp(str, "Category")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Category")) == 0 || aret == '=') {
             TRY(!aa, "Category argument missing\n");
             s->category = aa; // string string
 
          } else
-	if (!argcmp(str, "Flags")) {
+	if ((aret = argcmp(str, "Flags")) == 0 || aret == '=') {
             TRY(!aa, "Flags argument missing\n");
             s->flags = aa; // string string
 
          } else
-	if (!argcmp(str, "Operation")) {
+	if ((aret = argcmp(str, "Operation")) == 0 || aret == '=') {
             TRY(!aa, "Operation argument missing\n");
             s->operation = aa; // string string
 
          } else
-	if (!argcmp(str, "Service")) {
+	if ((aret = argcmp(str, "Service")) == 0 || aret == '=') {
             TRY(!aa, "Service argument missing\n");
             s->service = aa; // string string
 
          } else
-	if (!argcmp(str, "SubregionName")) {
+	if ((aret = argcmp(str, "SubregionName")) == 0 || aret == '=') {
             TRY(!aa, "SubregionName argument missing\n");
             s->subregion_name = aa; // string string
 
          } else
-	if (!argcmp(str, "Title")) {
+	if ((aret = argcmp(str, "Title")) == 0 || aret == '=') {
             TRY(!aa, "Title argument missing\n");
             s->title = aa; // string string
 
          } else
-	if (!argcmp(str, "Type")) {
+	if ((aret = argcmp(str, "Type")) == 0 || aret == '=') {
             TRY(!aa, "Type argument missing\n");
             s->type = aa; // string string
 
          } else
-	if (!argcmp(str, "UnitPrice")) {
+	if ((aret = argcmp(str, "UnitPrice")) == 0 || aret == '=') {
             TRY(!aa, "UnitPrice argument missing\n");
             s->is_set_unit_price = 1;
             s->unit_price = atof(aa);
@@ -884,34 +910,84 @@ int catalog_entry_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	return 0;
 }
 
-int client_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
-	    struct client_gateway *s = v_s;
-	if (!argcmp(str, "BgpAsn")) {
-            TRY(!aa, "BgpAsn argument missing\n");
-            s->is_set_bgp_asn = 1;
-            s->bgp_asn = atoi(aa);
+int catalogs_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct catalogs *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "Entries")) == 0 || aret == '=') {
+            char *dot_pos = strchr(str, '.');
+
+            if (dot_pos) {
+            	      int pos;
+            	      char *endptr;
+
+            	      ++dot_pos;
+            	      pos = strtoul(dot_pos, &endptr, 0);
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Entries' require an index (example array ref CatalogEntry.Entries.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Entries' require a .\n");
+            	      TRY_ALLOC_AT(s,entries, pa, pos, sizeof(*s->entries));
+            	      cascade_struct = &s->entries[pos];
+            	      cascade_parser = catalog_entry_parser;
+            	      if (endptr[1] == '.') {
+            		     ++endptr;
+            	      }
+            	      catalog_entry_parser(&s->entries[pos], endptr + 1, aa, pa);
+             } else {
+            	TRY(!aa, "Entries argument missing\n");
+            	s->entries_str = aa; // array ref CatalogEntry ref
+            }
          } else
-	if (!argcmp(str, "ClientGatewayId")) {
-            TRY(!aa, "ClientGatewayId argument missing\n");
-            s->client_gateway_id = aa; // string string
+	if ((aret = argcmp(str, "FromDate")) == 0 || aret == '=') {
+            TRY(!aa, "FromDate argument missing\n");
+            s->from_date = aa; // string string
 
          } else
-	if (!argcmp(str, "ConnectionType")) {
-            TRY(!aa, "ConnectionType argument missing\n");
-            s->connection_type = aa; // string string
-
-         } else
-	if (!argcmp(str, "PublicIp")) {
-            TRY(!aa, "PublicIp argument missing\n");
-            s->public_ip = aa; // string string
-
-         } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "ToDate")) == 0 || aret == '=') {
+            TRY(!aa, "ToDate argument missing\n");
+            s->to_date = aa; // string string
+
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'Catalogs'\n", str);
+	}
+	return 0;
+}
+
+int client_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct client_gateway *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "BgpAsn")) == 0 || aret == '=') {
+            TRY(!aa, "BgpAsn argument missing\n");
+            s->is_set_bgp_asn = 1;
+            s->bgp_asn = atoi(aa);
+         } else
+	if ((aret = argcmp(str, "ClientGatewayId")) == 0 || aret == '=') {
+            TRY(!aa, "ClientGatewayId argument missing\n");
+            s->client_gateway_id = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "ConnectionType")) == 0 || aret == '=') {
+            TRY(!aa, "ConnectionType argument missing\n");
+            s->connection_type = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "PublicIp")) == 0 || aret == '=') {
+            TRY(!aa, "PublicIp argument missing\n");
+            s->public_ip = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
+            TRY(!aa, "State argument missing\n");
+            s->state = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -944,57 +1020,58 @@ int client_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 
 int consumption_entry_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct consumption_entry *s = v_s;
-	if (!argcmp(str, "AccountId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccountId")) == 0 || aret == '=') {
             TRY(!aa, "AccountId argument missing\n");
             s->account_id = aa; // string string
 
          } else
-	if (!argcmp(str, "Category")) {
+	if ((aret = argcmp(str, "Category")) == 0 || aret == '=') {
             TRY(!aa, "Category argument missing\n");
             s->category = aa; // string string
 
          } else
-	if (!argcmp(str, "FromDate")) {
+	if ((aret = argcmp(str, "FromDate")) == 0 || aret == '=') {
             TRY(!aa, "FromDate argument missing\n");
             s->from_date = aa; // string string
 
          } else
-	if (!argcmp(str, "Operation")) {
+	if ((aret = argcmp(str, "Operation")) == 0 || aret == '=') {
             TRY(!aa, "Operation argument missing\n");
             s->operation = aa; // string string
 
          } else
-	if (!argcmp(str, "PayingAccountId")) {
+	if ((aret = argcmp(str, "PayingAccountId")) == 0 || aret == '=') {
             TRY(!aa, "PayingAccountId argument missing\n");
             s->paying_account_id = aa; // string string
 
          } else
-	if (!argcmp(str, "Service")) {
+	if ((aret = argcmp(str, "Service")) == 0 || aret == '=') {
             TRY(!aa, "Service argument missing\n");
             s->service = aa; // string string
 
          } else
-	if (!argcmp(str, "SubregionName")) {
+	if ((aret = argcmp(str, "SubregionName")) == 0 || aret == '=') {
             TRY(!aa, "SubregionName argument missing\n");
             s->subregion_name = aa; // string string
 
          } else
-	if (!argcmp(str, "Title")) {
+	if ((aret = argcmp(str, "Title")) == 0 || aret == '=') {
             TRY(!aa, "Title argument missing\n");
             s->title = aa; // string string
 
          } else
-	if (!argcmp(str, "ToDate")) {
+	if ((aret = argcmp(str, "ToDate")) == 0 || aret == '=') {
             TRY(!aa, "ToDate argument missing\n");
             s->to_date = aa; // string string
 
          } else
-	if (!argcmp(str, "Type")) {
+	if ((aret = argcmp(str, "Type")) == 0 || aret == '=') {
             TRY(!aa, "Type argument missing\n");
             s->type = aa; // string string
 
          } else
-	if (!argcmp(str, "Value")) {
+	if ((aret = argcmp(str, "Value")) == 0 || aret == '=') {
             TRY(!aa, "Value argument missing\n");
             s->is_set_value = 1;
             s->value = atof(aa);
@@ -1007,7 +1084,8 @@ int consumption_entry_parser(void *v_s, char *str, char *aa, struct ptr_array *p
 
 int dhcp_options_set_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct dhcp_options_set *s = v_s;
-	if (!argcmp(str, "Default")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Default")) == 0 || aret == '=') {
             s->is_set_default_arg = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->default_arg = 1;
@@ -1017,38 +1095,38 @@ int dhcp_options_set_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
             		BAD_RET("Default require true/false\n");
              }
         } else
-	if (!argcmp(str, "DhcpOptionsSetId")) {
+	if ((aret = argcmp(str, "DhcpOptionsSetId")) == 0 || aret == '=') {
             TRY(!aa, "DhcpOptionsSetId argument missing\n");
             s->dhcp_options_set_id = aa; // string string
 
          } else
-	if (!argcmp(str, "DomainName")) {
+	if ((aret = argcmp(str, "DomainName")) == 0 || aret == '=') {
             TRY(!aa, "DomainName argument missing\n");
             s->domain_name = aa; // string string
 
          } else
-	if (!argcmp(str, "DomainNameServers")) {
+	if ((aret = argcmp(str, "DomainNameServers")) == 0 || aret == '=') {
             	 TRY(!aa, "DomainNameServers argument missing\n");
                s->domain_name_servers_str = aa;
-         } else if (!strcmp(str, "DomainNameServers[]")) {
+         } else if (!(aret = strcmp(str, "DomainNameServers[]")) || aret == '=') {
                TRY(!aa, "DomainNameServers[] argument missing\n");
                SET_NEXT(s->domain_name_servers, (aa), pa);
          } else
-	if (!argcmp(str, "LogServers")) {
+	if ((aret = argcmp(str, "LogServers")) == 0 || aret == '=') {
             	 TRY(!aa, "LogServers argument missing\n");
                s->log_servers_str = aa;
-         } else if (!strcmp(str, "LogServers[]")) {
+         } else if (!(aret = strcmp(str, "LogServers[]")) || aret == '=') {
                TRY(!aa, "LogServers[] argument missing\n");
                SET_NEXT(s->log_servers, (aa), pa);
          } else
-	if (!argcmp(str, "NtpServers")) {
+	if ((aret = argcmp(str, "NtpServers")) == 0 || aret == '=') {
             	 TRY(!aa, "NtpServers argument missing\n");
                s->ntp_servers_str = aa;
-         } else if (!strcmp(str, "NtpServers[]")) {
+         } else if (!(aret = strcmp(str, "NtpServers[]")) || aret == '=') {
                TRY(!aa, "NtpServers[] argument missing\n");
                SET_NEXT(s->ntp_servers, (aa), pa);
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -1081,37 +1159,38 @@ int dhcp_options_set_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
 
 int direct_link_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct direct_link *s = v_s;
-	if (!argcmp(str, "AccountId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccountId")) == 0 || aret == '=') {
             TRY(!aa, "AccountId argument missing\n");
             s->account_id = aa; // string string
 
          } else
-	if (!argcmp(str, "Bandwidth")) {
+	if ((aret = argcmp(str, "Bandwidth")) == 0 || aret == '=') {
             TRY(!aa, "Bandwidth argument missing\n");
             s->bandwidth = aa; // string string
 
          } else
-	if (!argcmp(str, "DirectLinkId")) {
+	if ((aret = argcmp(str, "DirectLinkId")) == 0 || aret == '=') {
             TRY(!aa, "DirectLinkId argument missing\n");
             s->direct_link_id = aa; // string string
 
          } else
-	if (!argcmp(str, "DirectLinkName")) {
+	if ((aret = argcmp(str, "DirectLinkName")) == 0 || aret == '=') {
             TRY(!aa, "DirectLinkName argument missing\n");
             s->direct_link_name = aa; // string string
 
          } else
-	if (!argcmp(str, "Location")) {
+	if ((aret = argcmp(str, "Location")) == 0 || aret == '=') {
             TRY(!aa, "Location argument missing\n");
             s->location = aa; // string string
 
          } else
-	if (!argcmp(str, "RegionName")) {
+	if ((aret = argcmp(str, "RegionName")) == 0 || aret == '=') {
             TRY(!aa, "RegionName argument missing\n");
             s->region_name = aa; // string string
 
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
@@ -1124,37 +1203,38 @@ int direct_link_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int direct_link_interface_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct direct_link_interface *s = v_s;
-	if (!argcmp(str, "BgpAsn")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "BgpAsn")) == 0 || aret == '=') {
             TRY(!aa, "BgpAsn argument missing\n");
             s->is_set_bgp_asn = 1;
             s->bgp_asn = atoi(aa);
          } else
-	if (!argcmp(str, "BgpKey")) {
+	if ((aret = argcmp(str, "BgpKey")) == 0 || aret == '=') {
             TRY(!aa, "BgpKey argument missing\n");
             s->bgp_key = aa; // string string
 
          } else
-	if (!argcmp(str, "ClientPrivateIp")) {
+	if ((aret = argcmp(str, "ClientPrivateIp")) == 0 || aret == '=') {
             TRY(!aa, "ClientPrivateIp argument missing\n");
             s->client_private_ip = aa; // string string
 
          } else
-	if (!argcmp(str, "DirectLinkInterfaceName")) {
+	if ((aret = argcmp(str, "DirectLinkInterfaceName")) == 0 || aret == '=') {
             TRY(!aa, "DirectLinkInterfaceName argument missing\n");
             s->direct_link_interface_name = aa; // string string
 
          } else
-	if (!argcmp(str, "OutscalePrivateIp")) {
+	if ((aret = argcmp(str, "OutscalePrivateIp")) == 0 || aret == '=') {
             TRY(!aa, "OutscalePrivateIp argument missing\n");
             s->outscale_private_ip = aa; // string string
 
          } else
-	if (!argcmp(str, "VirtualGatewayId")) {
+	if ((aret = argcmp(str, "VirtualGatewayId")) == 0 || aret == '=') {
             TRY(!aa, "VirtualGatewayId argument missing\n");
             s->virtual_gateway_id = aa; // string string
 
          } else
-	if (!argcmp(str, "Vlan")) {
+	if ((aret = argcmp(str, "Vlan")) == 0 || aret == '=') {
             TRY(!aa, "Vlan argument missing\n");
             s->is_set_vlan = 1;
             s->vlan = atoi(aa);
@@ -1167,72 +1247,73 @@ int direct_link_interface_parser(void *v_s, char *str, char *aa, struct ptr_arra
 
 int direct_link_interfaces_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct direct_link_interfaces *s = v_s;
-	if (!argcmp(str, "AccountId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccountId")) == 0 || aret == '=') {
             TRY(!aa, "AccountId argument missing\n");
             s->account_id = aa; // string string
 
          } else
-	if (!argcmp(str, "BgpAsn")) {
+	if ((aret = argcmp(str, "BgpAsn")) == 0 || aret == '=') {
             TRY(!aa, "BgpAsn argument missing\n");
             s->is_set_bgp_asn = 1;
             s->bgp_asn = atoi(aa);
          } else
-	if (!argcmp(str, "BgpKey")) {
+	if ((aret = argcmp(str, "BgpKey")) == 0 || aret == '=') {
             TRY(!aa, "BgpKey argument missing\n");
             s->bgp_key = aa; // string string
 
          } else
-	if (!argcmp(str, "ClientPrivateIp")) {
+	if ((aret = argcmp(str, "ClientPrivateIp")) == 0 || aret == '=') {
             TRY(!aa, "ClientPrivateIp argument missing\n");
             s->client_private_ip = aa; // string string
 
          } else
-	if (!argcmp(str, "DirectLinkId")) {
+	if ((aret = argcmp(str, "DirectLinkId")) == 0 || aret == '=') {
             TRY(!aa, "DirectLinkId argument missing\n");
             s->direct_link_id = aa; // string string
 
          } else
-	if (!argcmp(str, "DirectLinkInterfaceId")) {
+	if ((aret = argcmp(str, "DirectLinkInterfaceId")) == 0 || aret == '=') {
             TRY(!aa, "DirectLinkInterfaceId argument missing\n");
             s->direct_link_interface_id = aa; // string string
 
          } else
-	if (!argcmp(str, "DirectLinkInterfaceName")) {
+	if ((aret = argcmp(str, "DirectLinkInterfaceName")) == 0 || aret == '=') {
             TRY(!aa, "DirectLinkInterfaceName argument missing\n");
             s->direct_link_interface_name = aa; // string string
 
          } else
-	if (!argcmp(str, "InterfaceType")) {
+	if ((aret = argcmp(str, "InterfaceType")) == 0 || aret == '=') {
             TRY(!aa, "InterfaceType argument missing\n");
             s->interface_type = aa; // string string
 
          } else
-	if (!argcmp(str, "Location")) {
+	if ((aret = argcmp(str, "Location")) == 0 || aret == '=') {
             TRY(!aa, "Location argument missing\n");
             s->location = aa; // string string
 
          } else
-	if (!argcmp(str, "Mtu")) {
+	if ((aret = argcmp(str, "Mtu")) == 0 || aret == '=') {
             TRY(!aa, "Mtu argument missing\n");
             s->is_set_mtu = 1;
             s->mtu = atoi(aa);
          } else
-	if (!argcmp(str, "OutscalePrivateIp")) {
+	if ((aret = argcmp(str, "OutscalePrivateIp")) == 0 || aret == '=') {
             TRY(!aa, "OutscalePrivateIp argument missing\n");
             s->outscale_private_ip = aa; // string string
 
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "VirtualGatewayId")) {
+	if ((aret = argcmp(str, "VirtualGatewayId")) == 0 || aret == '=') {
             TRY(!aa, "VirtualGatewayId argument missing\n");
             s->virtual_gateway_id = aa; // string string
 
          } else
-	if (!argcmp(str, "Vlan")) {
+	if ((aret = argcmp(str, "Vlan")) == 0 || aret == '=') {
             TRY(!aa, "Vlan argument missing\n");
             s->is_set_vlan = 1;
             s->vlan = atoi(aa);
@@ -1245,17 +1326,18 @@ int direct_link_interfaces_parser(void *v_s, char *str, char *aa, struct ptr_arr
 
 int errors_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct errors *s = v_s;
-	if (!argcmp(str, "Code")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Code")) == 0 || aret == '=') {
             TRY(!aa, "Code argument missing\n");
             s->code = aa; // string string
 
          } else
-	if (!argcmp(str, "Details")) {
+	if ((aret = argcmp(str, "Details")) == 0 || aret == '=') {
             TRY(!aa, "Details argument missing\n");
             s->details = aa; // string string
 
          } else
-	if (!argcmp(str, "Type")) {
+	if ((aret = argcmp(str, "Type")) == 0 || aret == '=') {
             TRY(!aa, "Type argument missing\n");
             s->type = aa; // string string
 
@@ -1268,17 +1350,18 @@ int errors_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int filters_access_keys_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_access_keys *s = v_s;
-	if (!argcmp(str, "AccessKeyIds")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccessKeyIds")) == 0 || aret == '=') {
             	 TRY(!aa, "AccessKeyIds argument missing\n");
                s->access_key_ids_str = aa;
-         } else if (!strcmp(str, "AccessKeyIds[]")) {
+         } else if (!(aret = strcmp(str, "AccessKeyIds[]")) || aret == '=') {
                TRY(!aa, "AccessKeyIds[] argument missing\n");
                SET_NEXT(s->access_key_ids, (aa), pa);
          } else
-	if (!argcmp(str, "States")) {
+	if ((aret = argcmp(str, "States")) == 0 || aret == '=') {
             	 TRY(!aa, "States argument missing\n");
                s->states_str = aa;
-         } else if (!strcmp(str, "States[]")) {
+         } else if (!(aret = strcmp(str, "States[]")) || aret == '=') {
                TRY(!aa, "States[] argument missing\n");
                SET_NEXT(s->states, (aa), pa);
          } else
@@ -1290,38 +1373,39 @@ int filters_access_keys_parser(void *v_s, char *str, char *aa, struct ptr_array 
 
 int filters_api_access_rule_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_api_access_rule *s = v_s;
-	if (!argcmp(str, "ApiAccessRuleIds")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "ApiAccessRuleIds")) == 0 || aret == '=') {
             	 TRY(!aa, "ApiAccessRuleIds argument missing\n");
                s->api_access_rule_ids_str = aa;
-         } else if (!strcmp(str, "ApiAccessRuleIds[]")) {
+         } else if (!(aret = strcmp(str, "ApiAccessRuleIds[]")) || aret == '=') {
                TRY(!aa, "ApiAccessRuleIds[] argument missing\n");
                SET_NEXT(s->api_access_rule_ids, (aa), pa);
          } else
-	if (!argcmp(str, "CaIds")) {
+	if ((aret = argcmp(str, "CaIds")) == 0 || aret == '=') {
             	 TRY(!aa, "CaIds argument missing\n");
                s->ca_ids_str = aa;
-         } else if (!strcmp(str, "CaIds[]")) {
+         } else if (!(aret = strcmp(str, "CaIds[]")) || aret == '=') {
                TRY(!aa, "CaIds[] argument missing\n");
                SET_NEXT(s->ca_ids, (aa), pa);
          } else
-	if (!argcmp(str, "Cns")) {
+	if ((aret = argcmp(str, "Cns")) == 0 || aret == '=') {
             	 TRY(!aa, "Cns argument missing\n");
                s->cns_str = aa;
-         } else if (!strcmp(str, "Cns[]")) {
+         } else if (!(aret = strcmp(str, "Cns[]")) || aret == '=') {
                TRY(!aa, "Cns[] argument missing\n");
                SET_NEXT(s->cns, (aa), pa);
          } else
-	if (!argcmp(str, "Descriptions")) {
+	if ((aret = argcmp(str, "Descriptions")) == 0 || aret == '=') {
             	 TRY(!aa, "Descriptions argument missing\n");
                s->descriptions_str = aa;
-         } else if (!strcmp(str, "Descriptions[]")) {
+         } else if (!(aret = strcmp(str, "Descriptions[]")) || aret == '=') {
                TRY(!aa, "Descriptions[] argument missing\n");
                SET_NEXT(s->descriptions, (aa), pa);
          } else
-	if (!argcmp(str, "IpRanges")) {
+	if ((aret = argcmp(str, "IpRanges")) == 0 || aret == '=') {
             	 TRY(!aa, "IpRanges argument missing\n");
                s->ip_ranges_str = aa;
-         } else if (!strcmp(str, "IpRanges[]")) {
+         } else if (!(aret = strcmp(str, "IpRanges[]")) || aret == '=') {
                TRY(!aa, "IpRanges[] argument missing\n");
                SET_NEXT(s->ip_ranges, (aa), pa);
          } else
@@ -1333,62 +1417,63 @@ int filters_api_access_rule_parser(void *v_s, char *str, char *aa, struct ptr_ar
 
 int filters_api_log_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_api_log *s = v_s;
-	if (!argcmp(str, "QueryAccessKeys")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "QueryAccessKeys")) == 0 || aret == '=') {
             	 TRY(!aa, "QueryAccessKeys argument missing\n");
                s->query_access_keys_str = aa;
-         } else if (!strcmp(str, "QueryAccessKeys[]")) {
+         } else if (!(aret = strcmp(str, "QueryAccessKeys[]")) || aret == '=') {
                TRY(!aa, "QueryAccessKeys[] argument missing\n");
                SET_NEXT(s->query_access_keys, (aa), pa);
          } else
-	if (!argcmp(str, "QueryApiNames")) {
+	if ((aret = argcmp(str, "QueryApiNames")) == 0 || aret == '=') {
             	 TRY(!aa, "QueryApiNames argument missing\n");
                s->query_api_names_str = aa;
-         } else if (!strcmp(str, "QueryApiNames[]")) {
+         } else if (!(aret = strcmp(str, "QueryApiNames[]")) || aret == '=') {
                TRY(!aa, "QueryApiNames[] argument missing\n");
                SET_NEXT(s->query_api_names, (aa), pa);
          } else
-	if (!argcmp(str, "QueryCallNames")) {
+	if ((aret = argcmp(str, "QueryCallNames")) == 0 || aret == '=') {
             	 TRY(!aa, "QueryCallNames argument missing\n");
                s->query_call_names_str = aa;
-         } else if (!strcmp(str, "QueryCallNames[]")) {
+         } else if (!(aret = strcmp(str, "QueryCallNames[]")) || aret == '=') {
                TRY(!aa, "QueryCallNames[] argument missing\n");
                SET_NEXT(s->query_call_names, (aa), pa);
          } else
-	if (!argcmp(str, "QueryDateAfter")) {
+	if ((aret = argcmp(str, "QueryDateAfter")) == 0 || aret == '=') {
             TRY(!aa, "QueryDateAfter argument missing\n");
             s->query_date_after = aa; // string string
 
          } else
-	if (!argcmp(str, "QueryDateBefore")) {
+	if ((aret = argcmp(str, "QueryDateBefore")) == 0 || aret == '=') {
             TRY(!aa, "QueryDateBefore argument missing\n");
             s->query_date_before = aa; // string string
 
          } else
-	if (!argcmp(str, "QueryIpAddresses")) {
+	if ((aret = argcmp(str, "QueryIpAddresses")) == 0 || aret == '=') {
             	 TRY(!aa, "QueryIpAddresses argument missing\n");
                s->query_ip_addresses_str = aa;
-         } else if (!strcmp(str, "QueryIpAddresses[]")) {
+         } else if (!(aret = strcmp(str, "QueryIpAddresses[]")) || aret == '=') {
                TRY(!aa, "QueryIpAddresses[] argument missing\n");
                SET_NEXT(s->query_ip_addresses, (aa), pa);
          } else
-	if (!argcmp(str, "QueryUserAgents")) {
+	if ((aret = argcmp(str, "QueryUserAgents")) == 0 || aret == '=') {
             	 TRY(!aa, "QueryUserAgents argument missing\n");
                s->query_user_agents_str = aa;
-         } else if (!strcmp(str, "QueryUserAgents[]")) {
+         } else if (!(aret = strcmp(str, "QueryUserAgents[]")) || aret == '=') {
                TRY(!aa, "QueryUserAgents[] argument missing\n");
                SET_NEXT(s->query_user_agents, (aa), pa);
          } else
-	if (!argcmp(str, "RequestIds")) {
+	if ((aret = argcmp(str, "RequestIds")) == 0 || aret == '=') {
             	 TRY(!aa, "RequestIds argument missing\n");
                s->request_ids_str = aa;
-         } else if (!strcmp(str, "RequestIds[]")) {
+         } else if (!(aret = strcmp(str, "RequestIds[]")) || aret == '=') {
                TRY(!aa, "RequestIds[] argument missing\n");
                SET_NEXT(s->request_ids, (aa), pa);
          } else
-	if (!argcmp(str, "ResponseStatusCodes")) {
+	if ((aret = argcmp(str, "ResponseStatusCodes")) == 0 || aret == '=') {
             	 TRY(!aa, "ResponseStatusCodes argument missing\n");
                s->response_status_codes_str = aa;
-         } else if (!strcmp(str, "ResponseStatusCodes[]")) {
+         } else if (!(aret = strcmp(str, "ResponseStatusCodes[]")) || aret == '=') {
                TRY(!aa, "ResponseStatusCodes[] argument missing\n");
                SET_NEXT(s->response_status_codes, atoi(aa), pa);
          } else
@@ -1400,24 +1485,25 @@ int filters_api_log_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
 
 int filters_ca_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_ca *s = v_s;
-	if (!argcmp(str, "CaFingerprints")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "CaFingerprints")) == 0 || aret == '=') {
             	 TRY(!aa, "CaFingerprints argument missing\n");
                s->ca_fingerprints_str = aa;
-         } else if (!strcmp(str, "CaFingerprints[]")) {
+         } else if (!(aret = strcmp(str, "CaFingerprints[]")) || aret == '=') {
                TRY(!aa, "CaFingerprints[] argument missing\n");
                SET_NEXT(s->ca_fingerprints, (aa), pa);
          } else
-	if (!argcmp(str, "CaIds")) {
+	if ((aret = argcmp(str, "CaIds")) == 0 || aret == '=') {
             	 TRY(!aa, "CaIds argument missing\n");
                s->ca_ids_str = aa;
-         } else if (!strcmp(str, "CaIds[]")) {
+         } else if (!(aret = strcmp(str, "CaIds[]")) || aret == '=') {
                TRY(!aa, "CaIds[] argument missing\n");
                SET_NEXT(s->ca_ids, (aa), pa);
          } else
-	if (!argcmp(str, "Descriptions")) {
+	if ((aret = argcmp(str, "Descriptions")) == 0 || aret == '=') {
             	 TRY(!aa, "Descriptions argument missing\n");
                s->descriptions_str = aa;
-         } else if (!strcmp(str, "Descriptions[]")) {
+         } else if (!(aret = strcmp(str, "Descriptions[]")) || aret == '=') {
                TRY(!aa, "Descriptions[] argument missing\n");
                SET_NEXT(s->descriptions, (aa), pa);
          } else
@@ -1427,61 +1513,91 @@ int filters_ca_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	return 0;
 }
 
+int filters_catalogs_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct filters_catalogs *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "CurrentCatalogOnly")) == 0 || aret == '=') {
+            s->is_set_current_catalog_only = 1;
+            if (!aa || !strcasecmp(aa, "true")) {
+            		s->current_catalog_only = 1;
+             } else if (!strcasecmp(aa, "false")) {
+            		s->current_catalog_only = 0;
+             } else {
+            		BAD_RET("CurrentCatalogOnly require true/false\n");
+             }
+        } else
+	if ((aret = argcmp(str, "FromDate")) == 0 || aret == '=') {
+            TRY(!aa, "FromDate argument missing\n");
+            s->from_date = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "ToDate")) == 0 || aret == '=') {
+            TRY(!aa, "ToDate argument missing\n");
+            s->to_date = aa; // string string
+
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'FiltersCatalogs'\n", str);
+	}
+	return 0;
+}
+
 int filters_client_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_client_gateway *s = v_s;
-	if (!argcmp(str, "BgpAsns")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "BgpAsns")) == 0 || aret == '=') {
             	 TRY(!aa, "BgpAsns argument missing\n");
                s->bgp_asns_str = aa;
-         } else if (!strcmp(str, "BgpAsns[]")) {
+         } else if (!(aret = strcmp(str, "BgpAsns[]")) || aret == '=') {
                TRY(!aa, "BgpAsns[] argument missing\n");
                SET_NEXT(s->bgp_asns, atoi(aa), pa);
          } else
-	if (!argcmp(str, "ClientGatewayIds")) {
+	if ((aret = argcmp(str, "ClientGatewayIds")) == 0 || aret == '=') {
             	 TRY(!aa, "ClientGatewayIds argument missing\n");
                s->client_gateway_ids_str = aa;
-         } else if (!strcmp(str, "ClientGatewayIds[]")) {
+         } else if (!(aret = strcmp(str, "ClientGatewayIds[]")) || aret == '=') {
                TRY(!aa, "ClientGatewayIds[] argument missing\n");
                SET_NEXT(s->client_gateway_ids, (aa), pa);
          } else
-	if (!argcmp(str, "ConnectionTypes")) {
+	if ((aret = argcmp(str, "ConnectionTypes")) == 0 || aret == '=') {
             	 TRY(!aa, "ConnectionTypes argument missing\n");
                s->connection_types_str = aa;
-         } else if (!strcmp(str, "ConnectionTypes[]")) {
+         } else if (!(aret = strcmp(str, "ConnectionTypes[]")) || aret == '=') {
                TRY(!aa, "ConnectionTypes[] argument missing\n");
                SET_NEXT(s->connection_types, (aa), pa);
          } else
-	if (!argcmp(str, "PublicIps")) {
+	if ((aret = argcmp(str, "PublicIps")) == 0 || aret == '=') {
             	 TRY(!aa, "PublicIps argument missing\n");
                s->public_ips_str = aa;
-         } else if (!strcmp(str, "PublicIps[]")) {
+         } else if (!(aret = strcmp(str, "PublicIps[]")) || aret == '=') {
                TRY(!aa, "PublicIps[] argument missing\n");
                SET_NEXT(s->public_ips, (aa), pa);
          } else
-	if (!argcmp(str, "States")) {
+	if ((aret = argcmp(str, "States")) == 0 || aret == '=') {
             	 TRY(!aa, "States argument missing\n");
                s->states_str = aa;
-         } else if (!strcmp(str, "States[]")) {
+         } else if (!(aret = strcmp(str, "States[]")) || aret == '=') {
                TRY(!aa, "States[] argument missing\n");
                SET_NEXT(s->states, (aa), pa);
          } else
-	if (!argcmp(str, "TagKeys")) {
+	if ((aret = argcmp(str, "TagKeys")) == 0 || aret == '=') {
             	 TRY(!aa, "TagKeys argument missing\n");
                s->tag_keys_str = aa;
-         } else if (!strcmp(str, "TagKeys[]")) {
+         } else if (!(aret = strcmp(str, "TagKeys[]")) || aret == '=') {
                TRY(!aa, "TagKeys[] argument missing\n");
                SET_NEXT(s->tag_keys, (aa), pa);
          } else
-	if (!argcmp(str, "TagValues")) {
+	if ((aret = argcmp(str, "TagValues")) == 0 || aret == '=') {
             	 TRY(!aa, "TagValues argument missing\n");
                s->tag_values_str = aa;
-         } else if (!strcmp(str, "TagValues[]")) {
+         } else if (!(aret = strcmp(str, "TagValues[]")) || aret == '=') {
                TRY(!aa, "TagValues[] argument missing\n");
                SET_NEXT(s->tag_values, (aa), pa);
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             	 TRY(!aa, "Tags argument missing\n");
                s->tags_str = aa;
-         } else if (!strcmp(str, "Tags[]")) {
+         } else if (!(aret = strcmp(str, "Tags[]")) || aret == '=') {
                TRY(!aa, "Tags[] argument missing\n");
                SET_NEXT(s->tags, (aa), pa);
          } else
@@ -1493,7 +1609,8 @@ int filters_client_gateway_parser(void *v_s, char *str, char *aa, struct ptr_arr
 
 int filters_dhcp_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_dhcp_options *s = v_s;
-	if (!argcmp(str, "Default")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Default")) == 0 || aret == '=') {
             s->is_set_default_arg = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->default_arg = 1;
@@ -1503,59 +1620,59 @@ int filters_dhcp_options_parser(void *v_s, char *str, char *aa, struct ptr_array
             		BAD_RET("Default require true/false\n");
              }
         } else
-	if (!argcmp(str, "DhcpOptionsSetIds")) {
+	if ((aret = argcmp(str, "DhcpOptionsSetIds")) == 0 || aret == '=') {
             	 TRY(!aa, "DhcpOptionsSetIds argument missing\n");
                s->dhcp_options_set_ids_str = aa;
-         } else if (!strcmp(str, "DhcpOptionsSetIds[]")) {
+         } else if (!(aret = strcmp(str, "DhcpOptionsSetIds[]")) || aret == '=') {
                TRY(!aa, "DhcpOptionsSetIds[] argument missing\n");
                SET_NEXT(s->dhcp_options_set_ids, (aa), pa);
          } else
-	if (!argcmp(str, "DomainNameServers")) {
+	if ((aret = argcmp(str, "DomainNameServers")) == 0 || aret == '=') {
             	 TRY(!aa, "DomainNameServers argument missing\n");
                s->domain_name_servers_str = aa;
-         } else if (!strcmp(str, "DomainNameServers[]")) {
+         } else if (!(aret = strcmp(str, "DomainNameServers[]")) || aret == '=') {
                TRY(!aa, "DomainNameServers[] argument missing\n");
                SET_NEXT(s->domain_name_servers, (aa), pa);
          } else
-	if (!argcmp(str, "DomainNames")) {
+	if ((aret = argcmp(str, "DomainNames")) == 0 || aret == '=') {
             	 TRY(!aa, "DomainNames argument missing\n");
                s->domain_names_str = aa;
-         } else if (!strcmp(str, "DomainNames[]")) {
+         } else if (!(aret = strcmp(str, "DomainNames[]")) || aret == '=') {
                TRY(!aa, "DomainNames[] argument missing\n");
                SET_NEXT(s->domain_names, (aa), pa);
          } else
-	if (!argcmp(str, "LogServers")) {
+	if ((aret = argcmp(str, "LogServers")) == 0 || aret == '=') {
             	 TRY(!aa, "LogServers argument missing\n");
                s->log_servers_str = aa;
-         } else if (!strcmp(str, "LogServers[]")) {
+         } else if (!(aret = strcmp(str, "LogServers[]")) || aret == '=') {
                TRY(!aa, "LogServers[] argument missing\n");
                SET_NEXT(s->log_servers, (aa), pa);
          } else
-	if (!argcmp(str, "NtpServers")) {
+	if ((aret = argcmp(str, "NtpServers")) == 0 || aret == '=') {
             	 TRY(!aa, "NtpServers argument missing\n");
                s->ntp_servers_str = aa;
-         } else if (!strcmp(str, "NtpServers[]")) {
+         } else if (!(aret = strcmp(str, "NtpServers[]")) || aret == '=') {
                TRY(!aa, "NtpServers[] argument missing\n");
                SET_NEXT(s->ntp_servers, (aa), pa);
          } else
-	if (!argcmp(str, "TagKeys")) {
+	if ((aret = argcmp(str, "TagKeys")) == 0 || aret == '=') {
             	 TRY(!aa, "TagKeys argument missing\n");
                s->tag_keys_str = aa;
-         } else if (!strcmp(str, "TagKeys[]")) {
+         } else if (!(aret = strcmp(str, "TagKeys[]")) || aret == '=') {
                TRY(!aa, "TagKeys[] argument missing\n");
                SET_NEXT(s->tag_keys, (aa), pa);
          } else
-	if (!argcmp(str, "TagValues")) {
+	if ((aret = argcmp(str, "TagValues")) == 0 || aret == '=') {
             	 TRY(!aa, "TagValues argument missing\n");
                s->tag_values_str = aa;
-         } else if (!strcmp(str, "TagValues[]")) {
+         } else if (!(aret = strcmp(str, "TagValues[]")) || aret == '=') {
                TRY(!aa, "TagValues[] argument missing\n");
                SET_NEXT(s->tag_values, (aa), pa);
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             	 TRY(!aa, "Tags argument missing\n");
                s->tags_str = aa;
-         } else if (!strcmp(str, "Tags[]")) {
+         } else if (!(aret = strcmp(str, "Tags[]")) || aret == '=') {
                TRY(!aa, "Tags[] argument missing\n");
                SET_NEXT(s->tags, (aa), pa);
          } else
@@ -1567,10 +1684,11 @@ int filters_dhcp_options_parser(void *v_s, char *str, char *aa, struct ptr_array
 
 int filters_direct_link_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_direct_link *s = v_s;
-	if (!argcmp(str, "DirectLinkIds")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "DirectLinkIds")) == 0 || aret == '=') {
             	 TRY(!aa, "DirectLinkIds argument missing\n");
                s->direct_link_ids_str = aa;
-         } else if (!strcmp(str, "DirectLinkIds[]")) {
+         } else if (!(aret = strcmp(str, "DirectLinkIds[]")) || aret == '=') {
                TRY(!aa, "DirectLinkIds[] argument missing\n");
                SET_NEXT(s->direct_link_ids, (aa), pa);
          } else
@@ -1582,17 +1700,18 @@ int filters_direct_link_parser(void *v_s, char *str, char *aa, struct ptr_array 
 
 int filters_direct_link_interface_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_direct_link_interface *s = v_s;
-	if (!argcmp(str, "DirectLinkIds")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "DirectLinkIds")) == 0 || aret == '=') {
             	 TRY(!aa, "DirectLinkIds argument missing\n");
                s->direct_link_ids_str = aa;
-         } else if (!strcmp(str, "DirectLinkIds[]")) {
+         } else if (!(aret = strcmp(str, "DirectLinkIds[]")) || aret == '=') {
                TRY(!aa, "DirectLinkIds[] argument missing\n");
                SET_NEXT(s->direct_link_ids, (aa), pa);
          } else
-	if (!argcmp(str, "DirectLinkInterfaceIds")) {
+	if ((aret = argcmp(str, "DirectLinkInterfaceIds")) == 0 || aret == '=') {
             	 TRY(!aa, "DirectLinkInterfaceIds argument missing\n");
                s->direct_link_interface_ids_str = aa;
-         } else if (!strcmp(str, "DirectLinkInterfaceIds[]")) {
+         } else if (!(aret = strcmp(str, "DirectLinkInterfaceIds[]")) || aret == '=') {
                TRY(!aa, "DirectLinkInterfaceIds[] argument missing\n");
                SET_NEXT(s->direct_link_interface_ids, (aa), pa);
          } else
@@ -1604,10 +1723,11 @@ int filters_direct_link_interface_parser(void *v_s, char *str, char *aa, struct 
 
 int filters_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_export_task *s = v_s;
-	if (!argcmp(str, "TaskIds")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "TaskIds")) == 0 || aret == '=') {
             	 TRY(!aa, "TaskIds argument missing\n");
                s->task_ids_str = aa;
-         } else if (!strcmp(str, "TaskIds[]")) {
+         } else if (!(aret = strcmp(str, "TaskIds[]")) || aret == '=') {
                TRY(!aa, "TaskIds[] argument missing\n");
                SET_NEXT(s->task_ids, (aa), pa);
          } else
@@ -1619,7 +1739,8 @@ int filters_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array 
 
 int filters_flexible_gpu_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_flexible_gpu *s = v_s;
-	if (!argcmp(str, "DeleteOnVmDeletion")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "DeleteOnVmDeletion")) == 0 || aret == '=') {
             s->is_set_delete_on_vm_deletion = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->delete_on_vm_deletion = 1;
@@ -1629,45 +1750,45 @@ int filters_flexible_gpu_parser(void *v_s, char *str, char *aa, struct ptr_array
             		BAD_RET("DeleteOnVmDeletion require true/false\n");
              }
         } else
-	if (!argcmp(str, "FlexibleGpuIds")) {
+	if ((aret = argcmp(str, "FlexibleGpuIds")) == 0 || aret == '=') {
             	 TRY(!aa, "FlexibleGpuIds argument missing\n");
                s->flexible_gpu_ids_str = aa;
-         } else if (!strcmp(str, "FlexibleGpuIds[]")) {
+         } else if (!(aret = strcmp(str, "FlexibleGpuIds[]")) || aret == '=') {
                TRY(!aa, "FlexibleGpuIds[] argument missing\n");
                SET_NEXT(s->flexible_gpu_ids, (aa), pa);
          } else
-	if (!argcmp(str, "Generations")) {
+	if ((aret = argcmp(str, "Generations")) == 0 || aret == '=') {
             	 TRY(!aa, "Generations argument missing\n");
                s->generations_str = aa;
-         } else if (!strcmp(str, "Generations[]")) {
+         } else if (!(aret = strcmp(str, "Generations[]")) || aret == '=') {
                TRY(!aa, "Generations[] argument missing\n");
                SET_NEXT(s->generations, (aa), pa);
          } else
-	if (!argcmp(str, "ModelNames")) {
+	if ((aret = argcmp(str, "ModelNames")) == 0 || aret == '=') {
             	 TRY(!aa, "ModelNames argument missing\n");
                s->model_names_str = aa;
-         } else if (!strcmp(str, "ModelNames[]")) {
+         } else if (!(aret = strcmp(str, "ModelNames[]")) || aret == '=') {
                TRY(!aa, "ModelNames[] argument missing\n");
                SET_NEXT(s->model_names, (aa), pa);
          } else
-	if (!argcmp(str, "States")) {
+	if ((aret = argcmp(str, "States")) == 0 || aret == '=') {
             	 TRY(!aa, "States argument missing\n");
                s->states_str = aa;
-         } else if (!strcmp(str, "States[]")) {
+         } else if (!(aret = strcmp(str, "States[]")) || aret == '=') {
                TRY(!aa, "States[] argument missing\n");
                SET_NEXT(s->states, (aa), pa);
          } else
-	if (!argcmp(str, "SubregionNames")) {
+	if ((aret = argcmp(str, "SubregionNames")) == 0 || aret == '=') {
             	 TRY(!aa, "SubregionNames argument missing\n");
                s->subregion_names_str = aa;
-         } else if (!strcmp(str, "SubregionNames[]")) {
+         } else if (!(aret = strcmp(str, "SubregionNames[]")) || aret == '=') {
                TRY(!aa, "SubregionNames[] argument missing\n");
                SET_NEXT(s->subregion_names, (aa), pa);
          } else
-	if (!argcmp(str, "VmIds")) {
+	if ((aret = argcmp(str, "VmIds")) == 0 || aret == '=') {
             	 TRY(!aa, "VmIds argument missing\n");
                s->vm_ids_str = aa;
-         } else if (!strcmp(str, "VmIds[]")) {
+         } else if (!(aret = strcmp(str, "VmIds[]")) || aret == '=') {
                TRY(!aa, "VmIds[] argument missing\n");
                SET_NEXT(s->vm_ids, (aa), pa);
          } else
@@ -1679,28 +1800,29 @@ int filters_flexible_gpu_parser(void *v_s, char *str, char *aa, struct ptr_array
 
 int filters_image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_image *s = v_s;
-	if (!argcmp(str, "AccountAliases")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccountAliases")) == 0 || aret == '=') {
             	 TRY(!aa, "AccountAliases argument missing\n");
                s->account_aliases_str = aa;
-         } else if (!strcmp(str, "AccountAliases[]")) {
+         } else if (!(aret = strcmp(str, "AccountAliases[]")) || aret == '=') {
                TRY(!aa, "AccountAliases[] argument missing\n");
                SET_NEXT(s->account_aliases, (aa), pa);
          } else
-	if (!argcmp(str, "AccountIds")) {
+	if ((aret = argcmp(str, "AccountIds")) == 0 || aret == '=') {
             	 TRY(!aa, "AccountIds argument missing\n");
                s->account_ids_str = aa;
-         } else if (!strcmp(str, "AccountIds[]")) {
+         } else if (!(aret = strcmp(str, "AccountIds[]")) || aret == '=') {
                TRY(!aa, "AccountIds[] argument missing\n");
                SET_NEXT(s->account_ids, (aa), pa);
          } else
-	if (!argcmp(str, "Architectures")) {
+	if ((aret = argcmp(str, "Architectures")) == 0 || aret == '=') {
             	 TRY(!aa, "Architectures argument missing\n");
                s->architectures_str = aa;
-         } else if (!strcmp(str, "Architectures[]")) {
+         } else if (!(aret = strcmp(str, "Architectures[]")) || aret == '=') {
                TRY(!aa, "Architectures[] argument missing\n");
                SET_NEXT(s->architectures, (aa), pa);
          } else
-	if (!argcmp(str, "BlockDeviceMappingDeleteOnVmDeletion")) {
+	if ((aret = argcmp(str, "BlockDeviceMappingDeleteOnVmDeletion")) == 0 || aret == '=') {
             s->is_set_block_device_mapping_delete_on_vm_deletion = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->block_device_mapping_delete_on_vm_deletion = 1;
@@ -1710,77 +1832,77 @@ int filters_image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("BlockDeviceMappingDeleteOnVmDeletion require true/false\n");
              }
         } else
-	if (!argcmp(str, "BlockDeviceMappingDeviceNames")) {
+	if ((aret = argcmp(str, "BlockDeviceMappingDeviceNames")) == 0 || aret == '=') {
             	 TRY(!aa, "BlockDeviceMappingDeviceNames argument missing\n");
                s->block_device_mapping_device_names_str = aa;
-         } else if (!strcmp(str, "BlockDeviceMappingDeviceNames[]")) {
+         } else if (!(aret = strcmp(str, "BlockDeviceMappingDeviceNames[]")) || aret == '=') {
                TRY(!aa, "BlockDeviceMappingDeviceNames[] argument missing\n");
                SET_NEXT(s->block_device_mapping_device_names, (aa), pa);
          } else
-	if (!argcmp(str, "BlockDeviceMappingSnapshotIds")) {
+	if ((aret = argcmp(str, "BlockDeviceMappingSnapshotIds")) == 0 || aret == '=') {
             	 TRY(!aa, "BlockDeviceMappingSnapshotIds argument missing\n");
                s->block_device_mapping_snapshot_ids_str = aa;
-         } else if (!strcmp(str, "BlockDeviceMappingSnapshotIds[]")) {
+         } else if (!(aret = strcmp(str, "BlockDeviceMappingSnapshotIds[]")) || aret == '=') {
                TRY(!aa, "BlockDeviceMappingSnapshotIds[] argument missing\n");
                SET_NEXT(s->block_device_mapping_snapshot_ids, (aa), pa);
          } else
-	if (!argcmp(str, "BlockDeviceMappingVolumeSizes")) {
+	if ((aret = argcmp(str, "BlockDeviceMappingVolumeSizes")) == 0 || aret == '=') {
             	 TRY(!aa, "BlockDeviceMappingVolumeSizes argument missing\n");
                s->block_device_mapping_volume_sizes_str = aa;
-         } else if (!strcmp(str, "BlockDeviceMappingVolumeSizes[]")) {
+         } else if (!(aret = strcmp(str, "BlockDeviceMappingVolumeSizes[]")) || aret == '=') {
                TRY(!aa, "BlockDeviceMappingVolumeSizes[] argument missing\n");
                SET_NEXT(s->block_device_mapping_volume_sizes, atoi(aa), pa);
          } else
-	if (!argcmp(str, "BlockDeviceMappingVolumeTypes")) {
+	if ((aret = argcmp(str, "BlockDeviceMappingVolumeTypes")) == 0 || aret == '=') {
             	 TRY(!aa, "BlockDeviceMappingVolumeTypes argument missing\n");
                s->block_device_mapping_volume_types_str = aa;
-         } else if (!strcmp(str, "BlockDeviceMappingVolumeTypes[]")) {
+         } else if (!(aret = strcmp(str, "BlockDeviceMappingVolumeTypes[]")) || aret == '=') {
                TRY(!aa, "BlockDeviceMappingVolumeTypes[] argument missing\n");
                SET_NEXT(s->block_device_mapping_volume_types, (aa), pa);
          } else
-	if (!argcmp(str, "Descriptions")) {
+	if ((aret = argcmp(str, "Descriptions")) == 0 || aret == '=') {
             	 TRY(!aa, "Descriptions argument missing\n");
                s->descriptions_str = aa;
-         } else if (!strcmp(str, "Descriptions[]")) {
+         } else if (!(aret = strcmp(str, "Descriptions[]")) || aret == '=') {
                TRY(!aa, "Descriptions[] argument missing\n");
                SET_NEXT(s->descriptions, (aa), pa);
          } else
-	if (!argcmp(str, "FileLocations")) {
+	if ((aret = argcmp(str, "FileLocations")) == 0 || aret == '=') {
             	 TRY(!aa, "FileLocations argument missing\n");
                s->file_locations_str = aa;
-         } else if (!strcmp(str, "FileLocations[]")) {
+         } else if (!(aret = strcmp(str, "FileLocations[]")) || aret == '=') {
                TRY(!aa, "FileLocations[] argument missing\n");
                SET_NEXT(s->file_locations, (aa), pa);
          } else
-	if (!argcmp(str, "Hypervisors")) {
+	if ((aret = argcmp(str, "Hypervisors")) == 0 || aret == '=') {
             	 TRY(!aa, "Hypervisors argument missing\n");
                s->hypervisors_str = aa;
-         } else if (!strcmp(str, "Hypervisors[]")) {
+         } else if (!(aret = strcmp(str, "Hypervisors[]")) || aret == '=') {
                TRY(!aa, "Hypervisors[] argument missing\n");
                SET_NEXT(s->hypervisors, (aa), pa);
          } else
-	if (!argcmp(str, "ImageIds")) {
+	if ((aret = argcmp(str, "ImageIds")) == 0 || aret == '=') {
             	 TRY(!aa, "ImageIds argument missing\n");
                s->image_ids_str = aa;
-         } else if (!strcmp(str, "ImageIds[]")) {
+         } else if (!(aret = strcmp(str, "ImageIds[]")) || aret == '=') {
                TRY(!aa, "ImageIds[] argument missing\n");
                SET_NEXT(s->image_ids, (aa), pa);
          } else
-	if (!argcmp(str, "ImageNames")) {
+	if ((aret = argcmp(str, "ImageNames")) == 0 || aret == '=') {
             	 TRY(!aa, "ImageNames argument missing\n");
                s->image_names_str = aa;
-         } else if (!strcmp(str, "ImageNames[]")) {
+         } else if (!(aret = strcmp(str, "ImageNames[]")) || aret == '=') {
                TRY(!aa, "ImageNames[] argument missing\n");
                SET_NEXT(s->image_names, (aa), pa);
          } else
-	if (!argcmp(str, "PermissionsToLaunchAccountIds")) {
+	if ((aret = argcmp(str, "PermissionsToLaunchAccountIds")) == 0 || aret == '=') {
             	 TRY(!aa, "PermissionsToLaunchAccountIds argument missing\n");
                s->permissions_to_launch_account_ids_str = aa;
-         } else if (!strcmp(str, "PermissionsToLaunchAccountIds[]")) {
+         } else if (!(aret = strcmp(str, "PermissionsToLaunchAccountIds[]")) || aret == '=') {
                TRY(!aa, "PermissionsToLaunchAccountIds[] argument missing\n");
                SET_NEXT(s->permissions_to_launch_account_ids, (aa), pa);
          } else
-	if (!argcmp(str, "PermissionsToLaunchGlobalPermission")) {
+	if ((aret = argcmp(str, "PermissionsToLaunchGlobalPermission")) == 0 || aret == '=') {
             s->is_set_permissions_to_launch_global_permission = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->permissions_to_launch_global_permission = 1;
@@ -1790,59 +1912,59 @@ int filters_image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("PermissionsToLaunchGlobalPermission require true/false\n");
              }
         } else
-	if (!argcmp(str, "ProductCodes")) {
+	if ((aret = argcmp(str, "ProductCodes")) == 0 || aret == '=') {
             	 TRY(!aa, "ProductCodes argument missing\n");
                s->product_codes_str = aa;
-         } else if (!strcmp(str, "ProductCodes[]")) {
+         } else if (!(aret = strcmp(str, "ProductCodes[]")) || aret == '=') {
                TRY(!aa, "ProductCodes[] argument missing\n");
                SET_NEXT(s->product_codes, (aa), pa);
          } else
-	if (!argcmp(str, "RootDeviceNames")) {
+	if ((aret = argcmp(str, "RootDeviceNames")) == 0 || aret == '=') {
             	 TRY(!aa, "RootDeviceNames argument missing\n");
                s->root_device_names_str = aa;
-         } else if (!strcmp(str, "RootDeviceNames[]")) {
+         } else if (!(aret = strcmp(str, "RootDeviceNames[]")) || aret == '=') {
                TRY(!aa, "RootDeviceNames[] argument missing\n");
                SET_NEXT(s->root_device_names, (aa), pa);
          } else
-	if (!argcmp(str, "RootDeviceTypes")) {
+	if ((aret = argcmp(str, "RootDeviceTypes")) == 0 || aret == '=') {
             	 TRY(!aa, "RootDeviceTypes argument missing\n");
                s->root_device_types_str = aa;
-         } else if (!strcmp(str, "RootDeviceTypes[]")) {
+         } else if (!(aret = strcmp(str, "RootDeviceTypes[]")) || aret == '=') {
                TRY(!aa, "RootDeviceTypes[] argument missing\n");
                SET_NEXT(s->root_device_types, (aa), pa);
          } else
-	if (!argcmp(str, "States")) {
+	if ((aret = argcmp(str, "States")) == 0 || aret == '=') {
             	 TRY(!aa, "States argument missing\n");
                s->states_str = aa;
-         } else if (!strcmp(str, "States[]")) {
+         } else if (!(aret = strcmp(str, "States[]")) || aret == '=') {
                TRY(!aa, "States[] argument missing\n");
                SET_NEXT(s->states, (aa), pa);
          } else
-	if (!argcmp(str, "TagKeys")) {
+	if ((aret = argcmp(str, "TagKeys")) == 0 || aret == '=') {
             	 TRY(!aa, "TagKeys argument missing\n");
                s->tag_keys_str = aa;
-         } else if (!strcmp(str, "TagKeys[]")) {
+         } else if (!(aret = strcmp(str, "TagKeys[]")) || aret == '=') {
                TRY(!aa, "TagKeys[] argument missing\n");
                SET_NEXT(s->tag_keys, (aa), pa);
          } else
-	if (!argcmp(str, "TagValues")) {
+	if ((aret = argcmp(str, "TagValues")) == 0 || aret == '=') {
             	 TRY(!aa, "TagValues argument missing\n");
                s->tag_values_str = aa;
-         } else if (!strcmp(str, "TagValues[]")) {
+         } else if (!(aret = strcmp(str, "TagValues[]")) || aret == '=') {
                TRY(!aa, "TagValues[] argument missing\n");
                SET_NEXT(s->tag_values, (aa), pa);
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             	 TRY(!aa, "Tags argument missing\n");
                s->tags_str = aa;
-         } else if (!strcmp(str, "Tags[]")) {
+         } else if (!(aret = strcmp(str, "Tags[]")) || aret == '=') {
                TRY(!aa, "Tags[] argument missing\n");
                SET_NEXT(s->tags, (aa), pa);
          } else
-	if (!argcmp(str, "VirtualizationTypes")) {
+	if ((aret = argcmp(str, "VirtualizationTypes")) == 0 || aret == '=') {
             	 TRY(!aa, "VirtualizationTypes argument missing\n");
                s->virtualization_types_str = aa;
-         } else if (!strcmp(str, "VirtualizationTypes[]")) {
+         } else if (!(aret = strcmp(str, "VirtualizationTypes[]")) || aret == '=') {
                TRY(!aa, "VirtualizationTypes[] argument missing\n");
                SET_NEXT(s->virtualization_types, (aa), pa);
          } else
@@ -1854,45 +1976,46 @@ int filters_image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int filters_internet_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_internet_service *s = v_s;
-	if (!argcmp(str, "InternetServiceIds")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "InternetServiceIds")) == 0 || aret == '=') {
             	 TRY(!aa, "InternetServiceIds argument missing\n");
                s->internet_service_ids_str = aa;
-         } else if (!strcmp(str, "InternetServiceIds[]")) {
+         } else if (!(aret = strcmp(str, "InternetServiceIds[]")) || aret == '=') {
                TRY(!aa, "InternetServiceIds[] argument missing\n");
                SET_NEXT(s->internet_service_ids, (aa), pa);
          } else
-	if (!argcmp(str, "LinkNetIds")) {
+	if ((aret = argcmp(str, "LinkNetIds")) == 0 || aret == '=') {
             	 TRY(!aa, "LinkNetIds argument missing\n");
                s->link_net_ids_str = aa;
-         } else if (!strcmp(str, "LinkNetIds[]")) {
+         } else if (!(aret = strcmp(str, "LinkNetIds[]")) || aret == '=') {
                TRY(!aa, "LinkNetIds[] argument missing\n");
                SET_NEXT(s->link_net_ids, (aa), pa);
          } else
-	if (!argcmp(str, "LinkStates")) {
+	if ((aret = argcmp(str, "LinkStates")) == 0 || aret == '=') {
             	 TRY(!aa, "LinkStates argument missing\n");
                s->link_states_str = aa;
-         } else if (!strcmp(str, "LinkStates[]")) {
+         } else if (!(aret = strcmp(str, "LinkStates[]")) || aret == '=') {
                TRY(!aa, "LinkStates[] argument missing\n");
                SET_NEXT(s->link_states, (aa), pa);
          } else
-	if (!argcmp(str, "TagKeys")) {
+	if ((aret = argcmp(str, "TagKeys")) == 0 || aret == '=') {
             	 TRY(!aa, "TagKeys argument missing\n");
                s->tag_keys_str = aa;
-         } else if (!strcmp(str, "TagKeys[]")) {
+         } else if (!(aret = strcmp(str, "TagKeys[]")) || aret == '=') {
                TRY(!aa, "TagKeys[] argument missing\n");
                SET_NEXT(s->tag_keys, (aa), pa);
          } else
-	if (!argcmp(str, "TagValues")) {
+	if ((aret = argcmp(str, "TagValues")) == 0 || aret == '=') {
             	 TRY(!aa, "TagValues argument missing\n");
                s->tag_values_str = aa;
-         } else if (!strcmp(str, "TagValues[]")) {
+         } else if (!(aret = strcmp(str, "TagValues[]")) || aret == '=') {
                TRY(!aa, "TagValues[] argument missing\n");
                SET_NEXT(s->tag_values, (aa), pa);
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             	 TRY(!aa, "Tags argument missing\n");
                s->tags_str = aa;
-         } else if (!strcmp(str, "Tags[]")) {
+         } else if (!(aret = strcmp(str, "Tags[]")) || aret == '=') {
                TRY(!aa, "Tags[] argument missing\n");
                SET_NEXT(s->tags, (aa), pa);
          } else
@@ -1904,17 +2027,18 @@ int filters_internet_service_parser(void *v_s, char *str, char *aa, struct ptr_a
 
 int filters_keypair_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_keypair *s = v_s;
-	if (!argcmp(str, "KeypairFingerprints")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "KeypairFingerprints")) == 0 || aret == '=') {
             	 TRY(!aa, "KeypairFingerprints argument missing\n");
                s->keypair_fingerprints_str = aa;
-         } else if (!strcmp(str, "KeypairFingerprints[]")) {
+         } else if (!(aret = strcmp(str, "KeypairFingerprints[]")) || aret == '=') {
                TRY(!aa, "KeypairFingerprints[] argument missing\n");
                SET_NEXT(s->keypair_fingerprints, (aa), pa);
          } else
-	if (!argcmp(str, "KeypairNames")) {
+	if ((aret = argcmp(str, "KeypairNames")) == 0 || aret == '=') {
             	 TRY(!aa, "KeypairNames argument missing\n");
                s->keypair_names_str = aa;
-         } else if (!strcmp(str, "KeypairNames[]")) {
+         } else if (!(aret = strcmp(str, "KeypairNames[]")) || aret == '=') {
                TRY(!aa, "KeypairNames[] argument missing\n");
                SET_NEXT(s->keypair_names, (aa), pa);
          } else
@@ -1926,10 +2050,11 @@ int filters_keypair_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
 
 int filters_listener_rule_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_listener_rule *s = v_s;
-	if (!argcmp(str, "ListenerRuleNames")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "ListenerRuleNames")) == 0 || aret == '=') {
             	 TRY(!aa, "ListenerRuleNames argument missing\n");
                s->listener_rule_names_str = aa;
-         } else if (!strcmp(str, "ListenerRuleNames[]")) {
+         } else if (!(aret = strcmp(str, "ListenerRuleNames[]")) || aret == '=') {
                TRY(!aa, "ListenerRuleNames[] argument missing\n");
                SET_NEXT(s->listener_rule_names, (aa), pa);
          } else
@@ -1941,10 +2066,11 @@ int filters_listener_rule_parser(void *v_s, char *str, char *aa, struct ptr_arra
 
 int filters_load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_load_balancer *s = v_s;
-	if (!argcmp(str, "LoadBalancerNames")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "LoadBalancerNames")) == 0 || aret == '=') {
             	 TRY(!aa, "LoadBalancerNames argument missing\n");
                s->load_balancer_names_str = aa;
-         } else if (!strcmp(str, "LoadBalancerNames[]")) {
+         } else if (!(aret = strcmp(str, "LoadBalancerNames[]")) || aret == '=') {
                TRY(!aa, "LoadBalancerNames[] argument missing\n");
                SET_NEXT(s->load_balancer_names, (aa), pa);
          } else
@@ -1956,52 +2082,53 @@ int filters_load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_arra
 
 int filters_nat_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_nat_service *s = v_s;
-	if (!argcmp(str, "NatServiceIds")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "NatServiceIds")) == 0 || aret == '=') {
             	 TRY(!aa, "NatServiceIds argument missing\n");
                s->nat_service_ids_str = aa;
-         } else if (!strcmp(str, "NatServiceIds[]")) {
+         } else if (!(aret = strcmp(str, "NatServiceIds[]")) || aret == '=') {
                TRY(!aa, "NatServiceIds[] argument missing\n");
                SET_NEXT(s->nat_service_ids, (aa), pa);
          } else
-	if (!argcmp(str, "NetIds")) {
+	if ((aret = argcmp(str, "NetIds")) == 0 || aret == '=') {
             	 TRY(!aa, "NetIds argument missing\n");
                s->net_ids_str = aa;
-         } else if (!strcmp(str, "NetIds[]")) {
+         } else if (!(aret = strcmp(str, "NetIds[]")) || aret == '=') {
                TRY(!aa, "NetIds[] argument missing\n");
                SET_NEXT(s->net_ids, (aa), pa);
          } else
-	if (!argcmp(str, "States")) {
+	if ((aret = argcmp(str, "States")) == 0 || aret == '=') {
             	 TRY(!aa, "States argument missing\n");
                s->states_str = aa;
-         } else if (!strcmp(str, "States[]")) {
+         } else if (!(aret = strcmp(str, "States[]")) || aret == '=') {
                TRY(!aa, "States[] argument missing\n");
                SET_NEXT(s->states, (aa), pa);
          } else
-	if (!argcmp(str, "SubnetIds")) {
+	if ((aret = argcmp(str, "SubnetIds")) == 0 || aret == '=') {
             	 TRY(!aa, "SubnetIds argument missing\n");
                s->subnet_ids_str = aa;
-         } else if (!strcmp(str, "SubnetIds[]")) {
+         } else if (!(aret = strcmp(str, "SubnetIds[]")) || aret == '=') {
                TRY(!aa, "SubnetIds[] argument missing\n");
                SET_NEXT(s->subnet_ids, (aa), pa);
          } else
-	if (!argcmp(str, "TagKeys")) {
+	if ((aret = argcmp(str, "TagKeys")) == 0 || aret == '=') {
             	 TRY(!aa, "TagKeys argument missing\n");
                s->tag_keys_str = aa;
-         } else if (!strcmp(str, "TagKeys[]")) {
+         } else if (!(aret = strcmp(str, "TagKeys[]")) || aret == '=') {
                TRY(!aa, "TagKeys[] argument missing\n");
                SET_NEXT(s->tag_keys, (aa), pa);
          } else
-	if (!argcmp(str, "TagValues")) {
+	if ((aret = argcmp(str, "TagValues")) == 0 || aret == '=') {
             	 TRY(!aa, "TagValues argument missing\n");
                s->tag_values_str = aa;
-         } else if (!strcmp(str, "TagValues[]")) {
+         } else if (!(aret = strcmp(str, "TagValues[]")) || aret == '=') {
                TRY(!aa, "TagValues[] argument missing\n");
                SET_NEXT(s->tag_values, (aa), pa);
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             	 TRY(!aa, "Tags argument missing\n");
                s->tags_str = aa;
-         } else if (!strcmp(str, "Tags[]")) {
+         } else if (!(aret = strcmp(str, "Tags[]")) || aret == '=') {
                TRY(!aa, "Tags[] argument missing\n");
                SET_NEXT(s->tags, (aa), pa);
          } else
@@ -2013,21 +2140,22 @@ int filters_nat_service_parser(void *v_s, char *str, char *aa, struct ptr_array 
 
 int filters_net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_net *s = v_s;
-	if (!argcmp(str, "DhcpOptionsSetIds")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "DhcpOptionsSetIds")) == 0 || aret == '=') {
             	 TRY(!aa, "DhcpOptionsSetIds argument missing\n");
                s->dhcp_options_set_ids_str = aa;
-         } else if (!strcmp(str, "DhcpOptionsSetIds[]")) {
+         } else if (!(aret = strcmp(str, "DhcpOptionsSetIds[]")) || aret == '=') {
                TRY(!aa, "DhcpOptionsSetIds[] argument missing\n");
                SET_NEXT(s->dhcp_options_set_ids, (aa), pa);
          } else
-	if (!argcmp(str, "IpRanges")) {
+	if ((aret = argcmp(str, "IpRanges")) == 0 || aret == '=') {
             	 TRY(!aa, "IpRanges argument missing\n");
                s->ip_ranges_str = aa;
-         } else if (!strcmp(str, "IpRanges[]")) {
+         } else if (!(aret = strcmp(str, "IpRanges[]")) || aret == '=') {
                TRY(!aa, "IpRanges[] argument missing\n");
                SET_NEXT(s->ip_ranges, (aa), pa);
          } else
-	if (!argcmp(str, "IsDefault")) {
+	if ((aret = argcmp(str, "IsDefault")) == 0 || aret == '=') {
             s->is_set_is_default_arg = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->is_default_arg = 1;
@@ -2037,38 +2165,38 @@ int filters_net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("IsDefault require true/false\n");
              }
         } else
-	if (!argcmp(str, "NetIds")) {
+	if ((aret = argcmp(str, "NetIds")) == 0 || aret == '=') {
             	 TRY(!aa, "NetIds argument missing\n");
                s->net_ids_str = aa;
-         } else if (!strcmp(str, "NetIds[]")) {
+         } else if (!(aret = strcmp(str, "NetIds[]")) || aret == '=') {
                TRY(!aa, "NetIds[] argument missing\n");
                SET_NEXT(s->net_ids, (aa), pa);
          } else
-	if (!argcmp(str, "States")) {
+	if ((aret = argcmp(str, "States")) == 0 || aret == '=') {
             	 TRY(!aa, "States argument missing\n");
                s->states_str = aa;
-         } else if (!strcmp(str, "States[]")) {
+         } else if (!(aret = strcmp(str, "States[]")) || aret == '=') {
                TRY(!aa, "States[] argument missing\n");
                SET_NEXT(s->states, (aa), pa);
          } else
-	if (!argcmp(str, "TagKeys")) {
+	if ((aret = argcmp(str, "TagKeys")) == 0 || aret == '=') {
             	 TRY(!aa, "TagKeys argument missing\n");
                s->tag_keys_str = aa;
-         } else if (!strcmp(str, "TagKeys[]")) {
+         } else if (!(aret = strcmp(str, "TagKeys[]")) || aret == '=') {
                TRY(!aa, "TagKeys[] argument missing\n");
                SET_NEXT(s->tag_keys, (aa), pa);
          } else
-	if (!argcmp(str, "TagValues")) {
+	if ((aret = argcmp(str, "TagValues")) == 0 || aret == '=') {
             	 TRY(!aa, "TagValues argument missing\n");
                s->tag_values_str = aa;
-         } else if (!strcmp(str, "TagValues[]")) {
+         } else if (!(aret = strcmp(str, "TagValues[]")) || aret == '=') {
                TRY(!aa, "TagValues[] argument missing\n");
                SET_NEXT(s->tag_values, (aa), pa);
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             	 TRY(!aa, "Tags argument missing\n");
                s->tags_str = aa;
-         } else if (!strcmp(str, "Tags[]")) {
+         } else if (!(aret = strcmp(str, "Tags[]")) || aret == '=') {
                TRY(!aa, "Tags[] argument missing\n");
                SET_NEXT(s->tags, (aa), pa);
          } else
@@ -2080,52 +2208,53 @@ int filters_net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int filters_net_access_point_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_net_access_point *s = v_s;
-	if (!argcmp(str, "NetAccessPointIds")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "NetAccessPointIds")) == 0 || aret == '=') {
             	 TRY(!aa, "NetAccessPointIds argument missing\n");
                s->net_access_point_ids_str = aa;
-         } else if (!strcmp(str, "NetAccessPointIds[]")) {
+         } else if (!(aret = strcmp(str, "NetAccessPointIds[]")) || aret == '=') {
                TRY(!aa, "NetAccessPointIds[] argument missing\n");
                SET_NEXT(s->net_access_point_ids, (aa), pa);
          } else
-	if (!argcmp(str, "NetIds")) {
+	if ((aret = argcmp(str, "NetIds")) == 0 || aret == '=') {
             	 TRY(!aa, "NetIds argument missing\n");
                s->net_ids_str = aa;
-         } else if (!strcmp(str, "NetIds[]")) {
+         } else if (!(aret = strcmp(str, "NetIds[]")) || aret == '=') {
                TRY(!aa, "NetIds[] argument missing\n");
                SET_NEXT(s->net_ids, (aa), pa);
          } else
-	if (!argcmp(str, "ServiceNames")) {
+	if ((aret = argcmp(str, "ServiceNames")) == 0 || aret == '=') {
             	 TRY(!aa, "ServiceNames argument missing\n");
                s->service_names_str = aa;
-         } else if (!strcmp(str, "ServiceNames[]")) {
+         } else if (!(aret = strcmp(str, "ServiceNames[]")) || aret == '=') {
                TRY(!aa, "ServiceNames[] argument missing\n");
                SET_NEXT(s->service_names, (aa), pa);
          } else
-	if (!argcmp(str, "States")) {
+	if ((aret = argcmp(str, "States")) == 0 || aret == '=') {
             	 TRY(!aa, "States argument missing\n");
                s->states_str = aa;
-         } else if (!strcmp(str, "States[]")) {
+         } else if (!(aret = strcmp(str, "States[]")) || aret == '=') {
                TRY(!aa, "States[] argument missing\n");
                SET_NEXT(s->states, (aa), pa);
          } else
-	if (!argcmp(str, "TagKeys")) {
+	if ((aret = argcmp(str, "TagKeys")) == 0 || aret == '=') {
             	 TRY(!aa, "TagKeys argument missing\n");
                s->tag_keys_str = aa;
-         } else if (!strcmp(str, "TagKeys[]")) {
+         } else if (!(aret = strcmp(str, "TagKeys[]")) || aret == '=') {
                TRY(!aa, "TagKeys[] argument missing\n");
                SET_NEXT(s->tag_keys, (aa), pa);
          } else
-	if (!argcmp(str, "TagValues")) {
+	if ((aret = argcmp(str, "TagValues")) == 0 || aret == '=') {
             	 TRY(!aa, "TagValues argument missing\n");
                s->tag_values_str = aa;
-         } else if (!strcmp(str, "TagValues[]")) {
+         } else if (!(aret = strcmp(str, "TagValues[]")) || aret == '=') {
                TRY(!aa, "TagValues[] argument missing\n");
                SET_NEXT(s->tag_values, (aa), pa);
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             	 TRY(!aa, "Tags argument missing\n");
                s->tags_str = aa;
-         } else if (!strcmp(str, "Tags[]")) {
+         } else if (!(aret = strcmp(str, "Tags[]")) || aret == '=') {
                TRY(!aa, "Tags[] argument missing\n");
                SET_NEXT(s->tags, (aa), pa);
          } else
@@ -2137,87 +2266,88 @@ int filters_net_access_point_parser(void *v_s, char *str, char *aa, struct ptr_a
 
 int filters_net_peering_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_net_peering *s = v_s;
-	if (!argcmp(str, "AccepterNetAccountIds")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccepterNetAccountIds")) == 0 || aret == '=') {
             	 TRY(!aa, "AccepterNetAccountIds argument missing\n");
                s->accepter_net_account_ids_str = aa;
-         } else if (!strcmp(str, "AccepterNetAccountIds[]")) {
+         } else if (!(aret = strcmp(str, "AccepterNetAccountIds[]")) || aret == '=') {
                TRY(!aa, "AccepterNetAccountIds[] argument missing\n");
                SET_NEXT(s->accepter_net_account_ids, (aa), pa);
          } else
-	if (!argcmp(str, "AccepterNetIpRanges")) {
+	if ((aret = argcmp(str, "AccepterNetIpRanges")) == 0 || aret == '=') {
             	 TRY(!aa, "AccepterNetIpRanges argument missing\n");
                s->accepter_net_ip_ranges_str = aa;
-         } else if (!strcmp(str, "AccepterNetIpRanges[]")) {
+         } else if (!(aret = strcmp(str, "AccepterNetIpRanges[]")) || aret == '=') {
                TRY(!aa, "AccepterNetIpRanges[] argument missing\n");
                SET_NEXT(s->accepter_net_ip_ranges, (aa), pa);
          } else
-	if (!argcmp(str, "AccepterNetNetIds")) {
+	if ((aret = argcmp(str, "AccepterNetNetIds")) == 0 || aret == '=') {
             	 TRY(!aa, "AccepterNetNetIds argument missing\n");
                s->accepter_net_net_ids_str = aa;
-         } else if (!strcmp(str, "AccepterNetNetIds[]")) {
+         } else if (!(aret = strcmp(str, "AccepterNetNetIds[]")) || aret == '=') {
                TRY(!aa, "AccepterNetNetIds[] argument missing\n");
                SET_NEXT(s->accepter_net_net_ids, (aa), pa);
          } else
-	if (!argcmp(str, "NetPeeringIds")) {
+	if ((aret = argcmp(str, "NetPeeringIds")) == 0 || aret == '=') {
             	 TRY(!aa, "NetPeeringIds argument missing\n");
                s->net_peering_ids_str = aa;
-         } else if (!strcmp(str, "NetPeeringIds[]")) {
+         } else if (!(aret = strcmp(str, "NetPeeringIds[]")) || aret == '=') {
                TRY(!aa, "NetPeeringIds[] argument missing\n");
                SET_NEXT(s->net_peering_ids, (aa), pa);
          } else
-	if (!argcmp(str, "SourceNetAccountIds")) {
+	if ((aret = argcmp(str, "SourceNetAccountIds")) == 0 || aret == '=') {
             	 TRY(!aa, "SourceNetAccountIds argument missing\n");
                s->source_net_account_ids_str = aa;
-         } else if (!strcmp(str, "SourceNetAccountIds[]")) {
+         } else if (!(aret = strcmp(str, "SourceNetAccountIds[]")) || aret == '=') {
                TRY(!aa, "SourceNetAccountIds[] argument missing\n");
                SET_NEXT(s->source_net_account_ids, (aa), pa);
          } else
-	if (!argcmp(str, "SourceNetIpRanges")) {
+	if ((aret = argcmp(str, "SourceNetIpRanges")) == 0 || aret == '=') {
             	 TRY(!aa, "SourceNetIpRanges argument missing\n");
                s->source_net_ip_ranges_str = aa;
-         } else if (!strcmp(str, "SourceNetIpRanges[]")) {
+         } else if (!(aret = strcmp(str, "SourceNetIpRanges[]")) || aret == '=') {
                TRY(!aa, "SourceNetIpRanges[] argument missing\n");
                SET_NEXT(s->source_net_ip_ranges, (aa), pa);
          } else
-	if (!argcmp(str, "SourceNetNetIds")) {
+	if ((aret = argcmp(str, "SourceNetNetIds")) == 0 || aret == '=') {
             	 TRY(!aa, "SourceNetNetIds argument missing\n");
                s->source_net_net_ids_str = aa;
-         } else if (!strcmp(str, "SourceNetNetIds[]")) {
+         } else if (!(aret = strcmp(str, "SourceNetNetIds[]")) || aret == '=') {
                TRY(!aa, "SourceNetNetIds[] argument missing\n");
                SET_NEXT(s->source_net_net_ids, (aa), pa);
          } else
-	if (!argcmp(str, "StateMessages")) {
+	if ((aret = argcmp(str, "StateMessages")) == 0 || aret == '=') {
             	 TRY(!aa, "StateMessages argument missing\n");
                s->state_messages_str = aa;
-         } else if (!strcmp(str, "StateMessages[]")) {
+         } else if (!(aret = strcmp(str, "StateMessages[]")) || aret == '=') {
                TRY(!aa, "StateMessages[] argument missing\n");
                SET_NEXT(s->state_messages, (aa), pa);
          } else
-	if (!argcmp(str, "StateNames")) {
+	if ((aret = argcmp(str, "StateNames")) == 0 || aret == '=') {
             	 TRY(!aa, "StateNames argument missing\n");
                s->state_names_str = aa;
-         } else if (!strcmp(str, "StateNames[]")) {
+         } else if (!(aret = strcmp(str, "StateNames[]")) || aret == '=') {
                TRY(!aa, "StateNames[] argument missing\n");
                SET_NEXT(s->state_names, (aa), pa);
          } else
-	if (!argcmp(str, "TagKeys")) {
+	if ((aret = argcmp(str, "TagKeys")) == 0 || aret == '=') {
             	 TRY(!aa, "TagKeys argument missing\n");
                s->tag_keys_str = aa;
-         } else if (!strcmp(str, "TagKeys[]")) {
+         } else if (!(aret = strcmp(str, "TagKeys[]")) || aret == '=') {
                TRY(!aa, "TagKeys[] argument missing\n");
                SET_NEXT(s->tag_keys, (aa), pa);
          } else
-	if (!argcmp(str, "TagValues")) {
+	if ((aret = argcmp(str, "TagValues")) == 0 || aret == '=') {
             	 TRY(!aa, "TagValues argument missing\n");
                s->tag_values_str = aa;
-         } else if (!strcmp(str, "TagValues[]")) {
+         } else if (!(aret = strcmp(str, "TagValues[]")) || aret == '=') {
                TRY(!aa, "TagValues[] argument missing\n");
                SET_NEXT(s->tag_values, (aa), pa);
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             	 TRY(!aa, "Tags argument missing\n");
                s->tags_str = aa;
-         } else if (!strcmp(str, "Tags[]")) {
+         } else if (!(aret = strcmp(str, "Tags[]")) || aret == '=') {
                TRY(!aa, "Tags[] argument missing\n");
                SET_NEXT(s->tags, (aa), pa);
          } else
@@ -2229,14 +2359,15 @@ int filters_net_peering_parser(void *v_s, char *str, char *aa, struct ptr_array 
 
 int filters_nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_nic *s = v_s;
-	if (!argcmp(str, "Descriptions")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Descriptions")) == 0 || aret == '=') {
             	 TRY(!aa, "Descriptions argument missing\n");
                s->descriptions_str = aa;
-         } else if (!strcmp(str, "Descriptions[]")) {
+         } else if (!(aret = strcmp(str, "Descriptions[]")) || aret == '=') {
                TRY(!aa, "Descriptions[] argument missing\n");
                SET_NEXT(s->descriptions, (aa), pa);
          } else
-	if (!argcmp(str, "IsSourceDestCheck")) {
+	if ((aret = argcmp(str, "IsSourceDestCheck")) == 0 || aret == '=') {
             s->is_set_is_source_dest_check = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->is_source_dest_check = 1;
@@ -2246,7 +2377,7 @@ int filters_nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("IsSourceDestCheck require true/false\n");
              }
         } else
-	if (!argcmp(str, "LinkNicDeleteOnVmDeletion")) {
+	if ((aret = argcmp(str, "LinkNicDeleteOnVmDeletion")) == 0 || aret == '=') {
             s->is_set_link_nic_delete_on_vm_deletion = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->link_nic_delete_on_vm_deletion = 1;
@@ -2256,112 +2387,112 @@ int filters_nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("LinkNicDeleteOnVmDeletion require true/false\n");
              }
         } else
-	if (!argcmp(str, "LinkNicDeviceNumbers")) {
+	if ((aret = argcmp(str, "LinkNicDeviceNumbers")) == 0 || aret == '=') {
             	 TRY(!aa, "LinkNicDeviceNumbers argument missing\n");
                s->link_nic_device_numbers_str = aa;
-         } else if (!strcmp(str, "LinkNicDeviceNumbers[]")) {
+         } else if (!(aret = strcmp(str, "LinkNicDeviceNumbers[]")) || aret == '=') {
                TRY(!aa, "LinkNicDeviceNumbers[] argument missing\n");
                SET_NEXT(s->link_nic_device_numbers, atoi(aa), pa);
          } else
-	if (!argcmp(str, "LinkNicLinkNicIds")) {
+	if ((aret = argcmp(str, "LinkNicLinkNicIds")) == 0 || aret == '=') {
             	 TRY(!aa, "LinkNicLinkNicIds argument missing\n");
                s->link_nic_link_nic_ids_str = aa;
-         } else if (!strcmp(str, "LinkNicLinkNicIds[]")) {
+         } else if (!(aret = strcmp(str, "LinkNicLinkNicIds[]")) || aret == '=') {
                TRY(!aa, "LinkNicLinkNicIds[] argument missing\n");
                SET_NEXT(s->link_nic_link_nic_ids, (aa), pa);
          } else
-	if (!argcmp(str, "LinkNicStates")) {
+	if ((aret = argcmp(str, "LinkNicStates")) == 0 || aret == '=') {
             	 TRY(!aa, "LinkNicStates argument missing\n");
                s->link_nic_states_str = aa;
-         } else if (!strcmp(str, "LinkNicStates[]")) {
+         } else if (!(aret = strcmp(str, "LinkNicStates[]")) || aret == '=') {
                TRY(!aa, "LinkNicStates[] argument missing\n");
                SET_NEXT(s->link_nic_states, (aa), pa);
          } else
-	if (!argcmp(str, "LinkNicVmAccountIds")) {
+	if ((aret = argcmp(str, "LinkNicVmAccountIds")) == 0 || aret == '=') {
             	 TRY(!aa, "LinkNicVmAccountIds argument missing\n");
                s->link_nic_vm_account_ids_str = aa;
-         } else if (!strcmp(str, "LinkNicVmAccountIds[]")) {
+         } else if (!(aret = strcmp(str, "LinkNicVmAccountIds[]")) || aret == '=') {
                TRY(!aa, "LinkNicVmAccountIds[] argument missing\n");
                SET_NEXT(s->link_nic_vm_account_ids, (aa), pa);
          } else
-	if (!argcmp(str, "LinkNicVmIds")) {
+	if ((aret = argcmp(str, "LinkNicVmIds")) == 0 || aret == '=') {
             	 TRY(!aa, "LinkNicVmIds argument missing\n");
                s->link_nic_vm_ids_str = aa;
-         } else if (!strcmp(str, "LinkNicVmIds[]")) {
+         } else if (!(aret = strcmp(str, "LinkNicVmIds[]")) || aret == '=') {
                TRY(!aa, "LinkNicVmIds[] argument missing\n");
                SET_NEXT(s->link_nic_vm_ids, (aa), pa);
          } else
-	if (!argcmp(str, "LinkPublicIpAccountIds")) {
+	if ((aret = argcmp(str, "LinkPublicIpAccountIds")) == 0 || aret == '=') {
             	 TRY(!aa, "LinkPublicIpAccountIds argument missing\n");
                s->link_public_ip_account_ids_str = aa;
-         } else if (!strcmp(str, "LinkPublicIpAccountIds[]")) {
+         } else if (!(aret = strcmp(str, "LinkPublicIpAccountIds[]")) || aret == '=') {
                TRY(!aa, "LinkPublicIpAccountIds[] argument missing\n");
                SET_NEXT(s->link_public_ip_account_ids, (aa), pa);
          } else
-	if (!argcmp(str, "LinkPublicIpLinkPublicIpIds")) {
+	if ((aret = argcmp(str, "LinkPublicIpLinkPublicIpIds")) == 0 || aret == '=') {
             	 TRY(!aa, "LinkPublicIpLinkPublicIpIds argument missing\n");
                s->link_public_ip_link_public_ip_ids_str = aa;
-         } else if (!strcmp(str, "LinkPublicIpLinkPublicIpIds[]")) {
+         } else if (!(aret = strcmp(str, "LinkPublicIpLinkPublicIpIds[]")) || aret == '=') {
                TRY(!aa, "LinkPublicIpLinkPublicIpIds[] argument missing\n");
                SET_NEXT(s->link_public_ip_link_public_ip_ids, (aa), pa);
          } else
-	if (!argcmp(str, "LinkPublicIpPublicIpIds")) {
+	if ((aret = argcmp(str, "LinkPublicIpPublicIpIds")) == 0 || aret == '=') {
             	 TRY(!aa, "LinkPublicIpPublicIpIds argument missing\n");
                s->link_public_ip_public_ip_ids_str = aa;
-         } else if (!strcmp(str, "LinkPublicIpPublicIpIds[]")) {
+         } else if (!(aret = strcmp(str, "LinkPublicIpPublicIpIds[]")) || aret == '=') {
                TRY(!aa, "LinkPublicIpPublicIpIds[] argument missing\n");
                SET_NEXT(s->link_public_ip_public_ip_ids, (aa), pa);
          } else
-	if (!argcmp(str, "LinkPublicIpPublicIps")) {
+	if ((aret = argcmp(str, "LinkPublicIpPublicIps")) == 0 || aret == '=') {
             	 TRY(!aa, "LinkPublicIpPublicIps argument missing\n");
                s->link_public_ip_public_ips_str = aa;
-         } else if (!strcmp(str, "LinkPublicIpPublicIps[]")) {
+         } else if (!(aret = strcmp(str, "LinkPublicIpPublicIps[]")) || aret == '=') {
                TRY(!aa, "LinkPublicIpPublicIps[] argument missing\n");
                SET_NEXT(s->link_public_ip_public_ips, (aa), pa);
          } else
-	if (!argcmp(str, "MacAddresses")) {
+	if ((aret = argcmp(str, "MacAddresses")) == 0 || aret == '=') {
             	 TRY(!aa, "MacAddresses argument missing\n");
                s->mac_addresses_str = aa;
-         } else if (!strcmp(str, "MacAddresses[]")) {
+         } else if (!(aret = strcmp(str, "MacAddresses[]")) || aret == '=') {
                TRY(!aa, "MacAddresses[] argument missing\n");
                SET_NEXT(s->mac_addresses, (aa), pa);
          } else
-	if (!argcmp(str, "NetIds")) {
+	if ((aret = argcmp(str, "NetIds")) == 0 || aret == '=') {
             	 TRY(!aa, "NetIds argument missing\n");
                s->net_ids_str = aa;
-         } else if (!strcmp(str, "NetIds[]")) {
+         } else if (!(aret = strcmp(str, "NetIds[]")) || aret == '=') {
                TRY(!aa, "NetIds[] argument missing\n");
                SET_NEXT(s->net_ids, (aa), pa);
          } else
-	if (!argcmp(str, "NicIds")) {
+	if ((aret = argcmp(str, "NicIds")) == 0 || aret == '=') {
             	 TRY(!aa, "NicIds argument missing\n");
                s->nic_ids_str = aa;
-         } else if (!strcmp(str, "NicIds[]")) {
+         } else if (!(aret = strcmp(str, "NicIds[]")) || aret == '=') {
                TRY(!aa, "NicIds[] argument missing\n");
                SET_NEXT(s->nic_ids, (aa), pa);
          } else
-	if (!argcmp(str, "PrivateDnsNames")) {
+	if ((aret = argcmp(str, "PrivateDnsNames")) == 0 || aret == '=') {
             	 TRY(!aa, "PrivateDnsNames argument missing\n");
                s->private_dns_names_str = aa;
-         } else if (!strcmp(str, "PrivateDnsNames[]")) {
+         } else if (!(aret = strcmp(str, "PrivateDnsNames[]")) || aret == '=') {
                TRY(!aa, "PrivateDnsNames[] argument missing\n");
                SET_NEXT(s->private_dns_names, (aa), pa);
          } else
-	if (!argcmp(str, "PrivateIpsLinkPublicIpAccountIds")) {
+	if ((aret = argcmp(str, "PrivateIpsLinkPublicIpAccountIds")) == 0 || aret == '=') {
             	 TRY(!aa, "PrivateIpsLinkPublicIpAccountIds argument missing\n");
                s->private_ips_link_public_ip_account_ids_str = aa;
-         } else if (!strcmp(str, "PrivateIpsLinkPublicIpAccountIds[]")) {
+         } else if (!(aret = strcmp(str, "PrivateIpsLinkPublicIpAccountIds[]")) || aret == '=') {
                TRY(!aa, "PrivateIpsLinkPublicIpAccountIds[] argument missing\n");
                SET_NEXT(s->private_ips_link_public_ip_account_ids, (aa), pa);
          } else
-	if (!argcmp(str, "PrivateIpsLinkPublicIpPublicIps")) {
+	if ((aret = argcmp(str, "PrivateIpsLinkPublicIpPublicIps")) == 0 || aret == '=') {
             	 TRY(!aa, "PrivateIpsLinkPublicIpPublicIps argument missing\n");
                s->private_ips_link_public_ip_public_ips_str = aa;
-         } else if (!strcmp(str, "PrivateIpsLinkPublicIpPublicIps[]")) {
+         } else if (!(aret = strcmp(str, "PrivateIpsLinkPublicIpPublicIps[]")) || aret == '=') {
                TRY(!aa, "PrivateIpsLinkPublicIpPublicIps[] argument missing\n");
                SET_NEXT(s->private_ips_link_public_ip_public_ips, (aa), pa);
          } else
-	if (!argcmp(str, "PrivateIpsPrimaryIp")) {
+	if ((aret = argcmp(str, "PrivateIpsPrimaryIp")) == 0 || aret == '=') {
             s->is_set_private_ips_primary_ip = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->private_ips_primary_ip = 1;
@@ -2371,66 +2502,66 @@ int filters_nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("PrivateIpsPrimaryIp require true/false\n");
              }
         } else
-	if (!argcmp(str, "PrivateIpsPrivateIps")) {
+	if ((aret = argcmp(str, "PrivateIpsPrivateIps")) == 0 || aret == '=') {
             	 TRY(!aa, "PrivateIpsPrivateIps argument missing\n");
                s->private_ips_private_ips_str = aa;
-         } else if (!strcmp(str, "PrivateIpsPrivateIps[]")) {
+         } else if (!(aret = strcmp(str, "PrivateIpsPrivateIps[]")) || aret == '=') {
                TRY(!aa, "PrivateIpsPrivateIps[] argument missing\n");
                SET_NEXT(s->private_ips_private_ips, (aa), pa);
          } else
-	if (!argcmp(str, "SecurityGroupIds")) {
+	if ((aret = argcmp(str, "SecurityGroupIds")) == 0 || aret == '=') {
             	 TRY(!aa, "SecurityGroupIds argument missing\n");
                s->security_group_ids_str = aa;
-         } else if (!strcmp(str, "SecurityGroupIds[]")) {
+         } else if (!(aret = strcmp(str, "SecurityGroupIds[]")) || aret == '=') {
                TRY(!aa, "SecurityGroupIds[] argument missing\n");
                SET_NEXT(s->security_group_ids, (aa), pa);
          } else
-	if (!argcmp(str, "SecurityGroupNames")) {
+	if ((aret = argcmp(str, "SecurityGroupNames")) == 0 || aret == '=') {
             	 TRY(!aa, "SecurityGroupNames argument missing\n");
                s->security_group_names_str = aa;
-         } else if (!strcmp(str, "SecurityGroupNames[]")) {
+         } else if (!(aret = strcmp(str, "SecurityGroupNames[]")) || aret == '=') {
                TRY(!aa, "SecurityGroupNames[] argument missing\n");
                SET_NEXT(s->security_group_names, (aa), pa);
          } else
-	if (!argcmp(str, "States")) {
+	if ((aret = argcmp(str, "States")) == 0 || aret == '=') {
             	 TRY(!aa, "States argument missing\n");
                s->states_str = aa;
-         } else if (!strcmp(str, "States[]")) {
+         } else if (!(aret = strcmp(str, "States[]")) || aret == '=') {
                TRY(!aa, "States[] argument missing\n");
                SET_NEXT(s->states, (aa), pa);
          } else
-	if (!argcmp(str, "SubnetIds")) {
+	if ((aret = argcmp(str, "SubnetIds")) == 0 || aret == '=') {
             	 TRY(!aa, "SubnetIds argument missing\n");
                s->subnet_ids_str = aa;
-         } else if (!strcmp(str, "SubnetIds[]")) {
+         } else if (!(aret = strcmp(str, "SubnetIds[]")) || aret == '=') {
                TRY(!aa, "SubnetIds[] argument missing\n");
                SET_NEXT(s->subnet_ids, (aa), pa);
          } else
-	if (!argcmp(str, "SubregionNames")) {
+	if ((aret = argcmp(str, "SubregionNames")) == 0 || aret == '=') {
             	 TRY(!aa, "SubregionNames argument missing\n");
                s->subregion_names_str = aa;
-         } else if (!strcmp(str, "SubregionNames[]")) {
+         } else if (!(aret = strcmp(str, "SubregionNames[]")) || aret == '=') {
                TRY(!aa, "SubregionNames[] argument missing\n");
                SET_NEXT(s->subregion_names, (aa), pa);
          } else
-	if (!argcmp(str, "TagKeys")) {
+	if ((aret = argcmp(str, "TagKeys")) == 0 || aret == '=') {
             	 TRY(!aa, "TagKeys argument missing\n");
                s->tag_keys_str = aa;
-         } else if (!strcmp(str, "TagKeys[]")) {
+         } else if (!(aret = strcmp(str, "TagKeys[]")) || aret == '=') {
                TRY(!aa, "TagKeys[] argument missing\n");
                SET_NEXT(s->tag_keys, (aa), pa);
          } else
-	if (!argcmp(str, "TagValues")) {
+	if ((aret = argcmp(str, "TagValues")) == 0 || aret == '=') {
             	 TRY(!aa, "TagValues argument missing\n");
                s->tag_values_str = aa;
-         } else if (!strcmp(str, "TagValues[]")) {
+         } else if (!(aret = strcmp(str, "TagValues[]")) || aret == '=') {
                TRY(!aa, "TagValues[] argument missing\n");
                SET_NEXT(s->tag_values, (aa), pa);
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             	 TRY(!aa, "Tags argument missing\n");
                s->tags_str = aa;
-         } else if (!strcmp(str, "Tags[]")) {
+         } else if (!(aret = strcmp(str, "Tags[]")) || aret == '=') {
                TRY(!aa, "Tags[] argument missing\n");
                SET_NEXT(s->tags, (aa), pa);
          } else
@@ -2442,10 +2573,11 @@ int filters_nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int filters_product_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_product_type *s = v_s;
-	if (!argcmp(str, "ProductTypeIds")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "ProductTypeIds")) == 0 || aret == '=') {
             	 TRY(!aa, "ProductTypeIds argument missing\n");
                s->product_type_ids_str = aa;
-         } else if (!strcmp(str, "ProductTypeIds[]")) {
+         } else if (!(aret = strcmp(str, "ProductTypeIds[]")) || aret == '=') {
                TRY(!aa, "ProductTypeIds[] argument missing\n");
                SET_NEXT(s->product_type_ids, (aa), pa);
          } else
@@ -2457,80 +2589,81 @@ int filters_product_type_parser(void *v_s, char *str, char *aa, struct ptr_array
 
 int filters_public_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_public_ip *s = v_s;
-	if (!argcmp(str, "LinkPublicIpIds")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "LinkPublicIpIds")) == 0 || aret == '=') {
             	 TRY(!aa, "LinkPublicIpIds argument missing\n");
                s->link_public_ip_ids_str = aa;
-         } else if (!strcmp(str, "LinkPublicIpIds[]")) {
+         } else if (!(aret = strcmp(str, "LinkPublicIpIds[]")) || aret == '=') {
                TRY(!aa, "LinkPublicIpIds[] argument missing\n");
                SET_NEXT(s->link_public_ip_ids, (aa), pa);
          } else
-	if (!argcmp(str, "NicAccountIds")) {
+	if ((aret = argcmp(str, "NicAccountIds")) == 0 || aret == '=') {
             	 TRY(!aa, "NicAccountIds argument missing\n");
                s->nic_account_ids_str = aa;
-         } else if (!strcmp(str, "NicAccountIds[]")) {
+         } else if (!(aret = strcmp(str, "NicAccountIds[]")) || aret == '=') {
                TRY(!aa, "NicAccountIds[] argument missing\n");
                SET_NEXT(s->nic_account_ids, (aa), pa);
          } else
-	if (!argcmp(str, "NicIds")) {
+	if ((aret = argcmp(str, "NicIds")) == 0 || aret == '=') {
             	 TRY(!aa, "NicIds argument missing\n");
                s->nic_ids_str = aa;
-         } else if (!strcmp(str, "NicIds[]")) {
+         } else if (!(aret = strcmp(str, "NicIds[]")) || aret == '=') {
                TRY(!aa, "NicIds[] argument missing\n");
                SET_NEXT(s->nic_ids, (aa), pa);
          } else
-	if (!argcmp(str, "Placements")) {
+	if ((aret = argcmp(str, "Placements")) == 0 || aret == '=') {
             	 TRY(!aa, "Placements argument missing\n");
                s->placements_str = aa;
-         } else if (!strcmp(str, "Placements[]")) {
+         } else if (!(aret = strcmp(str, "Placements[]")) || aret == '=') {
                TRY(!aa, "Placements[] argument missing\n");
                SET_NEXT(s->placements, (aa), pa);
          } else
-	if (!argcmp(str, "PrivateIps")) {
+	if ((aret = argcmp(str, "PrivateIps")) == 0 || aret == '=') {
             	 TRY(!aa, "PrivateIps argument missing\n");
                s->private_ips_str = aa;
-         } else if (!strcmp(str, "PrivateIps[]")) {
+         } else if (!(aret = strcmp(str, "PrivateIps[]")) || aret == '=') {
                TRY(!aa, "PrivateIps[] argument missing\n");
                SET_NEXT(s->private_ips, (aa), pa);
          } else
-	if (!argcmp(str, "PublicIpIds")) {
+	if ((aret = argcmp(str, "PublicIpIds")) == 0 || aret == '=') {
             	 TRY(!aa, "PublicIpIds argument missing\n");
                s->public_ip_ids_str = aa;
-         } else if (!strcmp(str, "PublicIpIds[]")) {
+         } else if (!(aret = strcmp(str, "PublicIpIds[]")) || aret == '=') {
                TRY(!aa, "PublicIpIds[] argument missing\n");
                SET_NEXT(s->public_ip_ids, (aa), pa);
          } else
-	if (!argcmp(str, "PublicIps")) {
+	if ((aret = argcmp(str, "PublicIps")) == 0 || aret == '=') {
             	 TRY(!aa, "PublicIps argument missing\n");
                s->public_ips_str = aa;
-         } else if (!strcmp(str, "PublicIps[]")) {
+         } else if (!(aret = strcmp(str, "PublicIps[]")) || aret == '=') {
                TRY(!aa, "PublicIps[] argument missing\n");
                SET_NEXT(s->public_ips, (aa), pa);
          } else
-	if (!argcmp(str, "TagKeys")) {
+	if ((aret = argcmp(str, "TagKeys")) == 0 || aret == '=') {
             	 TRY(!aa, "TagKeys argument missing\n");
                s->tag_keys_str = aa;
-         } else if (!strcmp(str, "TagKeys[]")) {
+         } else if (!(aret = strcmp(str, "TagKeys[]")) || aret == '=') {
                TRY(!aa, "TagKeys[] argument missing\n");
                SET_NEXT(s->tag_keys, (aa), pa);
          } else
-	if (!argcmp(str, "TagValues")) {
+	if ((aret = argcmp(str, "TagValues")) == 0 || aret == '=') {
             	 TRY(!aa, "TagValues argument missing\n");
                s->tag_values_str = aa;
-         } else if (!strcmp(str, "TagValues[]")) {
+         } else if (!(aret = strcmp(str, "TagValues[]")) || aret == '=') {
                TRY(!aa, "TagValues[] argument missing\n");
                SET_NEXT(s->tag_values, (aa), pa);
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             	 TRY(!aa, "Tags argument missing\n");
                s->tags_str = aa;
-         } else if (!strcmp(str, "Tags[]")) {
+         } else if (!(aret = strcmp(str, "Tags[]")) || aret == '=') {
                TRY(!aa, "Tags[] argument missing\n");
                SET_NEXT(s->tags, (aa), pa);
          } else
-	if (!argcmp(str, "VmIds")) {
+	if ((aret = argcmp(str, "VmIds")) == 0 || aret == '=') {
             	 TRY(!aa, "VmIds argument missing\n");
                s->vm_ids_str = aa;
-         } else if (!strcmp(str, "VmIds[]")) {
+         } else if (!(aret = strcmp(str, "VmIds[]")) || aret == '=') {
                TRY(!aa, "VmIds[] argument missing\n");
                SET_NEXT(s->vm_ids, (aa), pa);
          } else
@@ -2542,31 +2675,32 @@ int filters_public_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *p
 
 int filters_quota_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_quota *s = v_s;
-	if (!argcmp(str, "Collections")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Collections")) == 0 || aret == '=') {
             	 TRY(!aa, "Collections argument missing\n");
                s->collections_str = aa;
-         } else if (!strcmp(str, "Collections[]")) {
+         } else if (!(aret = strcmp(str, "Collections[]")) || aret == '=') {
                TRY(!aa, "Collections[] argument missing\n");
                SET_NEXT(s->collections, (aa), pa);
          } else
-	if (!argcmp(str, "QuotaNames")) {
+	if ((aret = argcmp(str, "QuotaNames")) == 0 || aret == '=') {
             	 TRY(!aa, "QuotaNames argument missing\n");
                s->quota_names_str = aa;
-         } else if (!strcmp(str, "QuotaNames[]")) {
+         } else if (!(aret = strcmp(str, "QuotaNames[]")) || aret == '=') {
                TRY(!aa, "QuotaNames[] argument missing\n");
                SET_NEXT(s->quota_names, (aa), pa);
          } else
-	if (!argcmp(str, "QuotaTypes")) {
+	if ((aret = argcmp(str, "QuotaTypes")) == 0 || aret == '=') {
             	 TRY(!aa, "QuotaTypes argument missing\n");
                s->quota_types_str = aa;
-         } else if (!strcmp(str, "QuotaTypes[]")) {
+         } else if (!(aret = strcmp(str, "QuotaTypes[]")) || aret == '=') {
                TRY(!aa, "QuotaTypes[] argument missing\n");
                SET_NEXT(s->quota_types, (aa), pa);
          } else
-	if (!argcmp(str, "ShortDescriptions")) {
+	if ((aret = argcmp(str, "ShortDescriptions")) == 0 || aret == '=') {
             	 TRY(!aa, "ShortDescriptions argument missing\n");
                s->short_descriptions_str = aa;
-         } else if (!strcmp(str, "ShortDescriptions[]")) {
+         } else if (!(aret = strcmp(str, "ShortDescriptions[]")) || aret == '=') {
                TRY(!aa, "ShortDescriptions[] argument missing\n");
                SET_NEXT(s->short_descriptions, (aa), pa);
          } else
@@ -2578,21 +2712,22 @@ int filters_quota_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int filters_route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_route_table *s = v_s;
-	if (!argcmp(str, "LinkRouteTableIds")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "LinkRouteTableIds")) == 0 || aret == '=') {
             	 TRY(!aa, "LinkRouteTableIds argument missing\n");
                s->link_route_table_ids_str = aa;
-         } else if (!strcmp(str, "LinkRouteTableIds[]")) {
+         } else if (!(aret = strcmp(str, "LinkRouteTableIds[]")) || aret == '=') {
                TRY(!aa, "LinkRouteTableIds[] argument missing\n");
                SET_NEXT(s->link_route_table_ids, (aa), pa);
          } else
-	if (!argcmp(str, "LinkRouteTableLinkRouteTableIds")) {
+	if ((aret = argcmp(str, "LinkRouteTableLinkRouteTableIds")) == 0 || aret == '=') {
             	 TRY(!aa, "LinkRouteTableLinkRouteTableIds argument missing\n");
                s->link_route_table_link_route_table_ids_str = aa;
-         } else if (!strcmp(str, "LinkRouteTableLinkRouteTableIds[]")) {
+         } else if (!(aret = strcmp(str, "LinkRouteTableLinkRouteTableIds[]")) || aret == '=') {
                TRY(!aa, "LinkRouteTableLinkRouteTableIds[] argument missing\n");
                SET_NEXT(s->link_route_table_link_route_table_ids, (aa), pa);
          } else
-	if (!argcmp(str, "LinkRouteTableMain")) {
+	if ((aret = argcmp(str, "LinkRouteTableMain")) == 0 || aret == '=') {
             s->is_set_link_route_table_main = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->link_route_table_main = 1;
@@ -2602,101 +2737,101 @@ int filters_route_table_parser(void *v_s, char *str, char *aa, struct ptr_array 
             		BAD_RET("LinkRouteTableMain require true/false\n");
              }
         } else
-	if (!argcmp(str, "LinkSubnetIds")) {
+	if ((aret = argcmp(str, "LinkSubnetIds")) == 0 || aret == '=') {
             	 TRY(!aa, "LinkSubnetIds argument missing\n");
                s->link_subnet_ids_str = aa;
-         } else if (!strcmp(str, "LinkSubnetIds[]")) {
+         } else if (!(aret = strcmp(str, "LinkSubnetIds[]")) || aret == '=') {
                TRY(!aa, "LinkSubnetIds[] argument missing\n");
                SET_NEXT(s->link_subnet_ids, (aa), pa);
          } else
-	if (!argcmp(str, "NetIds")) {
+	if ((aret = argcmp(str, "NetIds")) == 0 || aret == '=') {
             	 TRY(!aa, "NetIds argument missing\n");
                s->net_ids_str = aa;
-         } else if (!strcmp(str, "NetIds[]")) {
+         } else if (!(aret = strcmp(str, "NetIds[]")) || aret == '=') {
                TRY(!aa, "NetIds[] argument missing\n");
                SET_NEXT(s->net_ids, (aa), pa);
          } else
-	if (!argcmp(str, "RouteCreationMethods")) {
+	if ((aret = argcmp(str, "RouteCreationMethods")) == 0 || aret == '=') {
             	 TRY(!aa, "RouteCreationMethods argument missing\n");
                s->route_creation_methods_str = aa;
-         } else if (!strcmp(str, "RouteCreationMethods[]")) {
+         } else if (!(aret = strcmp(str, "RouteCreationMethods[]")) || aret == '=') {
                TRY(!aa, "RouteCreationMethods[] argument missing\n");
                SET_NEXT(s->route_creation_methods, (aa), pa);
          } else
-	if (!argcmp(str, "RouteDestinationIpRanges")) {
+	if ((aret = argcmp(str, "RouteDestinationIpRanges")) == 0 || aret == '=') {
             	 TRY(!aa, "RouteDestinationIpRanges argument missing\n");
                s->route_destination_ip_ranges_str = aa;
-         } else if (!strcmp(str, "RouteDestinationIpRanges[]")) {
+         } else if (!(aret = strcmp(str, "RouteDestinationIpRanges[]")) || aret == '=') {
                TRY(!aa, "RouteDestinationIpRanges[] argument missing\n");
                SET_NEXT(s->route_destination_ip_ranges, (aa), pa);
          } else
-	if (!argcmp(str, "RouteDestinationServiceIds")) {
+	if ((aret = argcmp(str, "RouteDestinationServiceIds")) == 0 || aret == '=') {
             	 TRY(!aa, "RouteDestinationServiceIds argument missing\n");
                s->route_destination_service_ids_str = aa;
-         } else if (!strcmp(str, "RouteDestinationServiceIds[]")) {
+         } else if (!(aret = strcmp(str, "RouteDestinationServiceIds[]")) || aret == '=') {
                TRY(!aa, "RouteDestinationServiceIds[] argument missing\n");
                SET_NEXT(s->route_destination_service_ids, (aa), pa);
          } else
-	if (!argcmp(str, "RouteGatewayIds")) {
+	if ((aret = argcmp(str, "RouteGatewayIds")) == 0 || aret == '=') {
             	 TRY(!aa, "RouteGatewayIds argument missing\n");
                s->route_gateway_ids_str = aa;
-         } else if (!strcmp(str, "RouteGatewayIds[]")) {
+         } else if (!(aret = strcmp(str, "RouteGatewayIds[]")) || aret == '=') {
                TRY(!aa, "RouteGatewayIds[] argument missing\n");
                SET_NEXT(s->route_gateway_ids, (aa), pa);
          } else
-	if (!argcmp(str, "RouteNatServiceIds")) {
+	if ((aret = argcmp(str, "RouteNatServiceIds")) == 0 || aret == '=') {
             	 TRY(!aa, "RouteNatServiceIds argument missing\n");
                s->route_nat_service_ids_str = aa;
-         } else if (!strcmp(str, "RouteNatServiceIds[]")) {
+         } else if (!(aret = strcmp(str, "RouteNatServiceIds[]")) || aret == '=') {
                TRY(!aa, "RouteNatServiceIds[] argument missing\n");
                SET_NEXT(s->route_nat_service_ids, (aa), pa);
          } else
-	if (!argcmp(str, "RouteNetPeeringIds")) {
+	if ((aret = argcmp(str, "RouteNetPeeringIds")) == 0 || aret == '=') {
             	 TRY(!aa, "RouteNetPeeringIds argument missing\n");
                s->route_net_peering_ids_str = aa;
-         } else if (!strcmp(str, "RouteNetPeeringIds[]")) {
+         } else if (!(aret = strcmp(str, "RouteNetPeeringIds[]")) || aret == '=') {
                TRY(!aa, "RouteNetPeeringIds[] argument missing\n");
                SET_NEXT(s->route_net_peering_ids, (aa), pa);
          } else
-	if (!argcmp(str, "RouteStates")) {
+	if ((aret = argcmp(str, "RouteStates")) == 0 || aret == '=') {
             	 TRY(!aa, "RouteStates argument missing\n");
                s->route_states_str = aa;
-         } else if (!strcmp(str, "RouteStates[]")) {
+         } else if (!(aret = strcmp(str, "RouteStates[]")) || aret == '=') {
                TRY(!aa, "RouteStates[] argument missing\n");
                SET_NEXT(s->route_states, (aa), pa);
          } else
-	if (!argcmp(str, "RouteTableIds")) {
+	if ((aret = argcmp(str, "RouteTableIds")) == 0 || aret == '=') {
             	 TRY(!aa, "RouteTableIds argument missing\n");
                s->route_table_ids_str = aa;
-         } else if (!strcmp(str, "RouteTableIds[]")) {
+         } else if (!(aret = strcmp(str, "RouteTableIds[]")) || aret == '=') {
                TRY(!aa, "RouteTableIds[] argument missing\n");
                SET_NEXT(s->route_table_ids, (aa), pa);
          } else
-	if (!argcmp(str, "RouteVmIds")) {
+	if ((aret = argcmp(str, "RouteVmIds")) == 0 || aret == '=') {
             	 TRY(!aa, "RouteVmIds argument missing\n");
                s->route_vm_ids_str = aa;
-         } else if (!strcmp(str, "RouteVmIds[]")) {
+         } else if (!(aret = strcmp(str, "RouteVmIds[]")) || aret == '=') {
                TRY(!aa, "RouteVmIds[] argument missing\n");
                SET_NEXT(s->route_vm_ids, (aa), pa);
          } else
-	if (!argcmp(str, "TagKeys")) {
+	if ((aret = argcmp(str, "TagKeys")) == 0 || aret == '=') {
             	 TRY(!aa, "TagKeys argument missing\n");
                s->tag_keys_str = aa;
-         } else if (!strcmp(str, "TagKeys[]")) {
+         } else if (!(aret = strcmp(str, "TagKeys[]")) || aret == '=') {
                TRY(!aa, "TagKeys[] argument missing\n");
                SET_NEXT(s->tag_keys, (aa), pa);
          } else
-	if (!argcmp(str, "TagValues")) {
+	if ((aret = argcmp(str, "TagValues")) == 0 || aret == '=') {
             	 TRY(!aa, "TagValues argument missing\n");
                s->tag_values_str = aa;
-         } else if (!strcmp(str, "TagValues[]")) {
+         } else if (!(aret = strcmp(str, "TagValues[]")) || aret == '=') {
                TRY(!aa, "TagValues[] argument missing\n");
                SET_NEXT(s->tag_values, (aa), pa);
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             	 TRY(!aa, "Tags argument missing\n");
                s->tags_str = aa;
-         } else if (!strcmp(str, "Tags[]")) {
+         } else if (!(aret = strcmp(str, "Tags[]")) || aret == '=') {
                TRY(!aa, "Tags[] argument missing\n");
                SET_NEXT(s->tags, (aa), pa);
          } else
@@ -2708,157 +2843,158 @@ int filters_route_table_parser(void *v_s, char *str, char *aa, struct ptr_array 
 
 int filters_security_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_security_group *s = v_s;
-	if (!argcmp(str, "AccountIds")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccountIds")) == 0 || aret == '=') {
             	 TRY(!aa, "AccountIds argument missing\n");
                s->account_ids_str = aa;
-         } else if (!strcmp(str, "AccountIds[]")) {
+         } else if (!(aret = strcmp(str, "AccountIds[]")) || aret == '=') {
                TRY(!aa, "AccountIds[] argument missing\n");
                SET_NEXT(s->account_ids, (aa), pa);
          } else
-	if (!argcmp(str, "Descriptions")) {
+	if ((aret = argcmp(str, "Descriptions")) == 0 || aret == '=') {
             	 TRY(!aa, "Descriptions argument missing\n");
                s->descriptions_str = aa;
-         } else if (!strcmp(str, "Descriptions[]")) {
+         } else if (!(aret = strcmp(str, "Descriptions[]")) || aret == '=') {
                TRY(!aa, "Descriptions[] argument missing\n");
                SET_NEXT(s->descriptions, (aa), pa);
          } else
-	if (!argcmp(str, "InboundRuleAccountIds")) {
+	if ((aret = argcmp(str, "InboundRuleAccountIds")) == 0 || aret == '=') {
             	 TRY(!aa, "InboundRuleAccountIds argument missing\n");
                s->inbound_rule_account_ids_str = aa;
-         } else if (!strcmp(str, "InboundRuleAccountIds[]")) {
+         } else if (!(aret = strcmp(str, "InboundRuleAccountIds[]")) || aret == '=') {
                TRY(!aa, "InboundRuleAccountIds[] argument missing\n");
                SET_NEXT(s->inbound_rule_account_ids, (aa), pa);
          } else
-	if (!argcmp(str, "InboundRuleFromPortRanges")) {
+	if ((aret = argcmp(str, "InboundRuleFromPortRanges")) == 0 || aret == '=') {
             	 TRY(!aa, "InboundRuleFromPortRanges argument missing\n");
                s->inbound_rule_from_port_ranges_str = aa;
-         } else if (!strcmp(str, "InboundRuleFromPortRanges[]")) {
+         } else if (!(aret = strcmp(str, "InboundRuleFromPortRanges[]")) || aret == '=') {
                TRY(!aa, "InboundRuleFromPortRanges[] argument missing\n");
                SET_NEXT(s->inbound_rule_from_port_ranges, atoi(aa), pa);
          } else
-	if (!argcmp(str, "InboundRuleIpRanges")) {
+	if ((aret = argcmp(str, "InboundRuleIpRanges")) == 0 || aret == '=') {
             	 TRY(!aa, "InboundRuleIpRanges argument missing\n");
                s->inbound_rule_ip_ranges_str = aa;
-         } else if (!strcmp(str, "InboundRuleIpRanges[]")) {
+         } else if (!(aret = strcmp(str, "InboundRuleIpRanges[]")) || aret == '=') {
                TRY(!aa, "InboundRuleIpRanges[] argument missing\n");
                SET_NEXT(s->inbound_rule_ip_ranges, (aa), pa);
          } else
-	if (!argcmp(str, "InboundRuleProtocols")) {
+	if ((aret = argcmp(str, "InboundRuleProtocols")) == 0 || aret == '=') {
             	 TRY(!aa, "InboundRuleProtocols argument missing\n");
                s->inbound_rule_protocols_str = aa;
-         } else if (!strcmp(str, "InboundRuleProtocols[]")) {
+         } else if (!(aret = strcmp(str, "InboundRuleProtocols[]")) || aret == '=') {
                TRY(!aa, "InboundRuleProtocols[] argument missing\n");
                SET_NEXT(s->inbound_rule_protocols, (aa), pa);
          } else
-	if (!argcmp(str, "InboundRuleSecurityGroupIds")) {
+	if ((aret = argcmp(str, "InboundRuleSecurityGroupIds")) == 0 || aret == '=') {
             	 TRY(!aa, "InboundRuleSecurityGroupIds argument missing\n");
                s->inbound_rule_security_group_ids_str = aa;
-         } else if (!strcmp(str, "InboundRuleSecurityGroupIds[]")) {
+         } else if (!(aret = strcmp(str, "InboundRuleSecurityGroupIds[]")) || aret == '=') {
                TRY(!aa, "InboundRuleSecurityGroupIds[] argument missing\n");
                SET_NEXT(s->inbound_rule_security_group_ids, (aa), pa);
          } else
-	if (!argcmp(str, "InboundRuleSecurityGroupNames")) {
+	if ((aret = argcmp(str, "InboundRuleSecurityGroupNames")) == 0 || aret == '=') {
             	 TRY(!aa, "InboundRuleSecurityGroupNames argument missing\n");
                s->inbound_rule_security_group_names_str = aa;
-         } else if (!strcmp(str, "InboundRuleSecurityGroupNames[]")) {
+         } else if (!(aret = strcmp(str, "InboundRuleSecurityGroupNames[]")) || aret == '=') {
                TRY(!aa, "InboundRuleSecurityGroupNames[] argument missing\n");
                SET_NEXT(s->inbound_rule_security_group_names, (aa), pa);
          } else
-	if (!argcmp(str, "InboundRuleToPortRanges")) {
+	if ((aret = argcmp(str, "InboundRuleToPortRanges")) == 0 || aret == '=') {
             	 TRY(!aa, "InboundRuleToPortRanges argument missing\n");
                s->inbound_rule_to_port_ranges_str = aa;
-         } else if (!strcmp(str, "InboundRuleToPortRanges[]")) {
+         } else if (!(aret = strcmp(str, "InboundRuleToPortRanges[]")) || aret == '=') {
                TRY(!aa, "InboundRuleToPortRanges[] argument missing\n");
                SET_NEXT(s->inbound_rule_to_port_ranges, atoi(aa), pa);
          } else
-	if (!argcmp(str, "NetIds")) {
+	if ((aret = argcmp(str, "NetIds")) == 0 || aret == '=') {
             	 TRY(!aa, "NetIds argument missing\n");
                s->net_ids_str = aa;
-         } else if (!strcmp(str, "NetIds[]")) {
+         } else if (!(aret = strcmp(str, "NetIds[]")) || aret == '=') {
                TRY(!aa, "NetIds[] argument missing\n");
                SET_NEXT(s->net_ids, (aa), pa);
          } else
-	if (!argcmp(str, "OutboundRuleAccountIds")) {
+	if ((aret = argcmp(str, "OutboundRuleAccountIds")) == 0 || aret == '=') {
             	 TRY(!aa, "OutboundRuleAccountIds argument missing\n");
                s->outbound_rule_account_ids_str = aa;
-         } else if (!strcmp(str, "OutboundRuleAccountIds[]")) {
+         } else if (!(aret = strcmp(str, "OutboundRuleAccountIds[]")) || aret == '=') {
                TRY(!aa, "OutboundRuleAccountIds[] argument missing\n");
                SET_NEXT(s->outbound_rule_account_ids, (aa), pa);
          } else
-	if (!argcmp(str, "OutboundRuleFromPortRanges")) {
+	if ((aret = argcmp(str, "OutboundRuleFromPortRanges")) == 0 || aret == '=') {
             	 TRY(!aa, "OutboundRuleFromPortRanges argument missing\n");
                s->outbound_rule_from_port_ranges_str = aa;
-         } else if (!strcmp(str, "OutboundRuleFromPortRanges[]")) {
+         } else if (!(aret = strcmp(str, "OutboundRuleFromPortRanges[]")) || aret == '=') {
                TRY(!aa, "OutboundRuleFromPortRanges[] argument missing\n");
                SET_NEXT(s->outbound_rule_from_port_ranges, atoi(aa), pa);
          } else
-	if (!argcmp(str, "OutboundRuleIpRanges")) {
+	if ((aret = argcmp(str, "OutboundRuleIpRanges")) == 0 || aret == '=') {
             	 TRY(!aa, "OutboundRuleIpRanges argument missing\n");
                s->outbound_rule_ip_ranges_str = aa;
-         } else if (!strcmp(str, "OutboundRuleIpRanges[]")) {
+         } else if (!(aret = strcmp(str, "OutboundRuleIpRanges[]")) || aret == '=') {
                TRY(!aa, "OutboundRuleIpRanges[] argument missing\n");
                SET_NEXT(s->outbound_rule_ip_ranges, (aa), pa);
          } else
-	if (!argcmp(str, "OutboundRuleProtocols")) {
+	if ((aret = argcmp(str, "OutboundRuleProtocols")) == 0 || aret == '=') {
             	 TRY(!aa, "OutboundRuleProtocols argument missing\n");
                s->outbound_rule_protocols_str = aa;
-         } else if (!strcmp(str, "OutboundRuleProtocols[]")) {
+         } else if (!(aret = strcmp(str, "OutboundRuleProtocols[]")) || aret == '=') {
                TRY(!aa, "OutboundRuleProtocols[] argument missing\n");
                SET_NEXT(s->outbound_rule_protocols, (aa), pa);
          } else
-	if (!argcmp(str, "OutboundRuleSecurityGroupIds")) {
+	if ((aret = argcmp(str, "OutboundRuleSecurityGroupIds")) == 0 || aret == '=') {
             	 TRY(!aa, "OutboundRuleSecurityGroupIds argument missing\n");
                s->outbound_rule_security_group_ids_str = aa;
-         } else if (!strcmp(str, "OutboundRuleSecurityGroupIds[]")) {
+         } else if (!(aret = strcmp(str, "OutboundRuleSecurityGroupIds[]")) || aret == '=') {
                TRY(!aa, "OutboundRuleSecurityGroupIds[] argument missing\n");
                SET_NEXT(s->outbound_rule_security_group_ids, (aa), pa);
          } else
-	if (!argcmp(str, "OutboundRuleSecurityGroupNames")) {
+	if ((aret = argcmp(str, "OutboundRuleSecurityGroupNames")) == 0 || aret == '=') {
             	 TRY(!aa, "OutboundRuleSecurityGroupNames argument missing\n");
                s->outbound_rule_security_group_names_str = aa;
-         } else if (!strcmp(str, "OutboundRuleSecurityGroupNames[]")) {
+         } else if (!(aret = strcmp(str, "OutboundRuleSecurityGroupNames[]")) || aret == '=') {
                TRY(!aa, "OutboundRuleSecurityGroupNames[] argument missing\n");
                SET_NEXT(s->outbound_rule_security_group_names, (aa), pa);
          } else
-	if (!argcmp(str, "OutboundRuleToPortRanges")) {
+	if ((aret = argcmp(str, "OutboundRuleToPortRanges")) == 0 || aret == '=') {
             	 TRY(!aa, "OutboundRuleToPortRanges argument missing\n");
                s->outbound_rule_to_port_ranges_str = aa;
-         } else if (!strcmp(str, "OutboundRuleToPortRanges[]")) {
+         } else if (!(aret = strcmp(str, "OutboundRuleToPortRanges[]")) || aret == '=') {
                TRY(!aa, "OutboundRuleToPortRanges[] argument missing\n");
                SET_NEXT(s->outbound_rule_to_port_ranges, atoi(aa), pa);
          } else
-	if (!argcmp(str, "SecurityGroupIds")) {
+	if ((aret = argcmp(str, "SecurityGroupIds")) == 0 || aret == '=') {
             	 TRY(!aa, "SecurityGroupIds argument missing\n");
                s->security_group_ids_str = aa;
-         } else if (!strcmp(str, "SecurityGroupIds[]")) {
+         } else if (!(aret = strcmp(str, "SecurityGroupIds[]")) || aret == '=') {
                TRY(!aa, "SecurityGroupIds[] argument missing\n");
                SET_NEXT(s->security_group_ids, (aa), pa);
          } else
-	if (!argcmp(str, "SecurityGroupNames")) {
+	if ((aret = argcmp(str, "SecurityGroupNames")) == 0 || aret == '=') {
             	 TRY(!aa, "SecurityGroupNames argument missing\n");
                s->security_group_names_str = aa;
-         } else if (!strcmp(str, "SecurityGroupNames[]")) {
+         } else if (!(aret = strcmp(str, "SecurityGroupNames[]")) || aret == '=') {
                TRY(!aa, "SecurityGroupNames[] argument missing\n");
                SET_NEXT(s->security_group_names, (aa), pa);
          } else
-	if (!argcmp(str, "TagKeys")) {
+	if ((aret = argcmp(str, "TagKeys")) == 0 || aret == '=') {
             	 TRY(!aa, "TagKeys argument missing\n");
                s->tag_keys_str = aa;
-         } else if (!strcmp(str, "TagKeys[]")) {
+         } else if (!(aret = strcmp(str, "TagKeys[]")) || aret == '=') {
                TRY(!aa, "TagKeys[] argument missing\n");
                SET_NEXT(s->tag_keys, (aa), pa);
          } else
-	if (!argcmp(str, "TagValues")) {
+	if ((aret = argcmp(str, "TagValues")) == 0 || aret == '=') {
             	 TRY(!aa, "TagValues argument missing\n");
                s->tag_values_str = aa;
-         } else if (!strcmp(str, "TagValues[]")) {
+         } else if (!(aret = strcmp(str, "TagValues[]")) || aret == '=') {
                TRY(!aa, "TagValues[] argument missing\n");
                SET_NEXT(s->tag_values, (aa), pa);
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             	 TRY(!aa, "Tags argument missing\n");
                s->tags_str = aa;
-         } else if (!strcmp(str, "Tags[]")) {
+         } else if (!(aret = strcmp(str, "Tags[]")) || aret == '=') {
                TRY(!aa, "Tags[] argument missing\n");
                SET_NEXT(s->tags, (aa), pa);
          } else
@@ -2870,10 +3006,11 @@ int filters_security_group_parser(void *v_s, char *str, char *aa, struct ptr_arr
 
 int filters_server_certificate_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_server_certificate *s = v_s;
-	if (!argcmp(str, "Paths")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Paths")) == 0 || aret == '=') {
             	 TRY(!aa, "Paths argument missing\n");
                s->paths_str = aa;
-         } else if (!strcmp(str, "Paths[]")) {
+         } else if (!(aret = strcmp(str, "Paths[]")) || aret == '=') {
                TRY(!aa, "Paths[] argument missing\n");
                SET_NEXT(s->paths, (aa), pa);
          } else
@@ -2885,17 +3022,18 @@ int filters_server_certificate_parser(void *v_s, char *str, char *aa, struct ptr
 
 int filters_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_service *s = v_s;
-	if (!argcmp(str, "ServiceIds")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "ServiceIds")) == 0 || aret == '=') {
             	 TRY(!aa, "ServiceIds argument missing\n");
                s->service_ids_str = aa;
-         } else if (!strcmp(str, "ServiceIds[]")) {
+         } else if (!(aret = strcmp(str, "ServiceIds[]")) || aret == '=') {
                TRY(!aa, "ServiceIds[] argument missing\n");
                SET_NEXT(s->service_ids, (aa), pa);
          } else
-	if (!argcmp(str, "ServiceNames")) {
+	if ((aret = argcmp(str, "ServiceNames")) == 0 || aret == '=') {
             	 TRY(!aa, "ServiceNames argument missing\n");
                s->service_names_str = aa;
-         } else if (!strcmp(str, "ServiceNames[]")) {
+         } else if (!(aret = strcmp(str, "ServiceNames[]")) || aret == '=') {
                TRY(!aa, "ServiceNames[] argument missing\n");
                SET_NEXT(s->service_names, (aa), pa);
          } else
@@ -2907,35 +3045,41 @@ int filters_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
 
 int filters_snapshot_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_snapshot *s = v_s;
-	if (!argcmp(str, "AccountAliases")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccountAliases")) == 0 || aret == '=') {
             	 TRY(!aa, "AccountAliases argument missing\n");
                s->account_aliases_str = aa;
-         } else if (!strcmp(str, "AccountAliases[]")) {
+         } else if (!(aret = strcmp(str, "AccountAliases[]")) || aret == '=') {
                TRY(!aa, "AccountAliases[] argument missing\n");
                SET_NEXT(s->account_aliases, (aa), pa);
          } else
-	if (!argcmp(str, "AccountIds")) {
+	if ((aret = argcmp(str, "AccountIds")) == 0 || aret == '=') {
             	 TRY(!aa, "AccountIds argument missing\n");
                s->account_ids_str = aa;
-         } else if (!strcmp(str, "AccountIds[]")) {
+         } else if (!(aret = strcmp(str, "AccountIds[]")) || aret == '=') {
                TRY(!aa, "AccountIds[] argument missing\n");
                SET_NEXT(s->account_ids, (aa), pa);
          } else
-	if (!argcmp(str, "Descriptions")) {
+	if ((aret = argcmp(str, "Descriptions")) == 0 || aret == '=') {
             	 TRY(!aa, "Descriptions argument missing\n");
                s->descriptions_str = aa;
-         } else if (!strcmp(str, "Descriptions[]")) {
+         } else if (!(aret = strcmp(str, "Descriptions[]")) || aret == '=') {
                TRY(!aa, "Descriptions[] argument missing\n");
                SET_NEXT(s->descriptions, (aa), pa);
          } else
-	if (!argcmp(str, "PermissionsToCreateVolumeAccountIds")) {
+	if ((aret = argcmp(str, "FromCreationDate")) == 0 || aret == '=') {
+            TRY(!aa, "FromCreationDate argument missing\n");
+            s->from_creation_date = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "PermissionsToCreateVolumeAccountIds")) == 0 || aret == '=') {
             	 TRY(!aa, "PermissionsToCreateVolumeAccountIds argument missing\n");
                s->permissions_to_create_volume_account_ids_str = aa;
-         } else if (!strcmp(str, "PermissionsToCreateVolumeAccountIds[]")) {
+         } else if (!(aret = strcmp(str, "PermissionsToCreateVolumeAccountIds[]")) || aret == '=') {
                TRY(!aa, "PermissionsToCreateVolumeAccountIds[] argument missing\n");
                SET_NEXT(s->permissions_to_create_volume_account_ids, (aa), pa);
          } else
-	if (!argcmp(str, "PermissionsToCreateVolumeGlobalPermission")) {
+	if ((aret = argcmp(str, "PermissionsToCreateVolumeGlobalPermission")) == 0 || aret == '=') {
             s->is_set_permissions_to_create_volume_global_permission = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->permissions_to_create_volume_global_permission = 1;
@@ -2945,59 +3089,64 @@ int filters_snapshot_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
             		BAD_RET("PermissionsToCreateVolumeGlobalPermission require true/false\n");
              }
         } else
-	if (!argcmp(str, "Progresses")) {
+	if ((aret = argcmp(str, "Progresses")) == 0 || aret == '=') {
             	 TRY(!aa, "Progresses argument missing\n");
                s->progresses_str = aa;
-         } else if (!strcmp(str, "Progresses[]")) {
+         } else if (!(aret = strcmp(str, "Progresses[]")) || aret == '=') {
                TRY(!aa, "Progresses[] argument missing\n");
                SET_NEXT(s->progresses, atoi(aa), pa);
          } else
-	if (!argcmp(str, "SnapshotIds")) {
+	if ((aret = argcmp(str, "SnapshotIds")) == 0 || aret == '=') {
             	 TRY(!aa, "SnapshotIds argument missing\n");
                s->snapshot_ids_str = aa;
-         } else if (!strcmp(str, "SnapshotIds[]")) {
+         } else if (!(aret = strcmp(str, "SnapshotIds[]")) || aret == '=') {
                TRY(!aa, "SnapshotIds[] argument missing\n");
                SET_NEXT(s->snapshot_ids, (aa), pa);
          } else
-	if (!argcmp(str, "States")) {
+	if ((aret = argcmp(str, "States")) == 0 || aret == '=') {
             	 TRY(!aa, "States argument missing\n");
                s->states_str = aa;
-         } else if (!strcmp(str, "States[]")) {
+         } else if (!(aret = strcmp(str, "States[]")) || aret == '=') {
                TRY(!aa, "States[] argument missing\n");
                SET_NEXT(s->states, (aa), pa);
          } else
-	if (!argcmp(str, "TagKeys")) {
+	if ((aret = argcmp(str, "TagKeys")) == 0 || aret == '=') {
             	 TRY(!aa, "TagKeys argument missing\n");
                s->tag_keys_str = aa;
-         } else if (!strcmp(str, "TagKeys[]")) {
+         } else if (!(aret = strcmp(str, "TagKeys[]")) || aret == '=') {
                TRY(!aa, "TagKeys[] argument missing\n");
                SET_NEXT(s->tag_keys, (aa), pa);
          } else
-	if (!argcmp(str, "TagValues")) {
+	if ((aret = argcmp(str, "TagValues")) == 0 || aret == '=') {
             	 TRY(!aa, "TagValues argument missing\n");
                s->tag_values_str = aa;
-         } else if (!strcmp(str, "TagValues[]")) {
+         } else if (!(aret = strcmp(str, "TagValues[]")) || aret == '=') {
                TRY(!aa, "TagValues[] argument missing\n");
                SET_NEXT(s->tag_values, (aa), pa);
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             	 TRY(!aa, "Tags argument missing\n");
                s->tags_str = aa;
-         } else if (!strcmp(str, "Tags[]")) {
+         } else if (!(aret = strcmp(str, "Tags[]")) || aret == '=') {
                TRY(!aa, "Tags[] argument missing\n");
                SET_NEXT(s->tags, (aa), pa);
          } else
-	if (!argcmp(str, "VolumeIds")) {
+	if ((aret = argcmp(str, "ToCreationDate")) == 0 || aret == '=') {
+            TRY(!aa, "ToCreationDate argument missing\n");
+            s->to_creation_date = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "VolumeIds")) == 0 || aret == '=') {
             	 TRY(!aa, "VolumeIds argument missing\n");
                s->volume_ids_str = aa;
-         } else if (!strcmp(str, "VolumeIds[]")) {
+         } else if (!(aret = strcmp(str, "VolumeIds[]")) || aret == '=') {
                TRY(!aa, "VolumeIds[] argument missing\n");
                SET_NEXT(s->volume_ids, (aa), pa);
          } else
-	if (!argcmp(str, "VolumeSizes")) {
+	if ((aret = argcmp(str, "VolumeSizes")) == 0 || aret == '=') {
             	 TRY(!aa, "VolumeSizes argument missing\n");
                s->volume_sizes_str = aa;
-         } else if (!strcmp(str, "VolumeSizes[]")) {
+         } else if (!(aret = strcmp(str, "VolumeSizes[]")) || aret == '=') {
                TRY(!aa, "VolumeSizes[] argument missing\n");
                SET_NEXT(s->volume_sizes, atoi(aa), pa);
          } else
@@ -3009,66 +3158,67 @@ int filters_snapshot_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
 
 int filters_subnet_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_subnet *s = v_s;
-	if (!argcmp(str, "AvailableIpsCounts")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AvailableIpsCounts")) == 0 || aret == '=') {
             	 TRY(!aa, "AvailableIpsCounts argument missing\n");
                s->available_ips_counts_str = aa;
-         } else if (!strcmp(str, "AvailableIpsCounts[]")) {
+         } else if (!(aret = strcmp(str, "AvailableIpsCounts[]")) || aret == '=') {
                TRY(!aa, "AvailableIpsCounts[] argument missing\n");
                SET_NEXT(s->available_ips_counts, atoi(aa), pa);
          } else
-	if (!argcmp(str, "IpRanges")) {
+	if ((aret = argcmp(str, "IpRanges")) == 0 || aret == '=') {
             	 TRY(!aa, "IpRanges argument missing\n");
                s->ip_ranges_str = aa;
-         } else if (!strcmp(str, "IpRanges[]")) {
+         } else if (!(aret = strcmp(str, "IpRanges[]")) || aret == '=') {
                TRY(!aa, "IpRanges[] argument missing\n");
                SET_NEXT(s->ip_ranges, (aa), pa);
          } else
-	if (!argcmp(str, "NetIds")) {
+	if ((aret = argcmp(str, "NetIds")) == 0 || aret == '=') {
             	 TRY(!aa, "NetIds argument missing\n");
                s->net_ids_str = aa;
-         } else if (!strcmp(str, "NetIds[]")) {
+         } else if (!(aret = strcmp(str, "NetIds[]")) || aret == '=') {
                TRY(!aa, "NetIds[] argument missing\n");
                SET_NEXT(s->net_ids, (aa), pa);
          } else
-	if (!argcmp(str, "States")) {
+	if ((aret = argcmp(str, "States")) == 0 || aret == '=') {
             	 TRY(!aa, "States argument missing\n");
                s->states_str = aa;
-         } else if (!strcmp(str, "States[]")) {
+         } else if (!(aret = strcmp(str, "States[]")) || aret == '=') {
                TRY(!aa, "States[] argument missing\n");
                SET_NEXT(s->states, (aa), pa);
          } else
-	if (!argcmp(str, "SubnetIds")) {
+	if ((aret = argcmp(str, "SubnetIds")) == 0 || aret == '=') {
             	 TRY(!aa, "SubnetIds argument missing\n");
                s->subnet_ids_str = aa;
-         } else if (!strcmp(str, "SubnetIds[]")) {
+         } else if (!(aret = strcmp(str, "SubnetIds[]")) || aret == '=') {
                TRY(!aa, "SubnetIds[] argument missing\n");
                SET_NEXT(s->subnet_ids, (aa), pa);
          } else
-	if (!argcmp(str, "SubregionNames")) {
+	if ((aret = argcmp(str, "SubregionNames")) == 0 || aret == '=') {
             	 TRY(!aa, "SubregionNames argument missing\n");
                s->subregion_names_str = aa;
-         } else if (!strcmp(str, "SubregionNames[]")) {
+         } else if (!(aret = strcmp(str, "SubregionNames[]")) || aret == '=') {
                TRY(!aa, "SubregionNames[] argument missing\n");
                SET_NEXT(s->subregion_names, (aa), pa);
          } else
-	if (!argcmp(str, "TagKeys")) {
+	if ((aret = argcmp(str, "TagKeys")) == 0 || aret == '=') {
             	 TRY(!aa, "TagKeys argument missing\n");
                s->tag_keys_str = aa;
-         } else if (!strcmp(str, "TagKeys[]")) {
+         } else if (!(aret = strcmp(str, "TagKeys[]")) || aret == '=') {
                TRY(!aa, "TagKeys[] argument missing\n");
                SET_NEXT(s->tag_keys, (aa), pa);
          } else
-	if (!argcmp(str, "TagValues")) {
+	if ((aret = argcmp(str, "TagValues")) == 0 || aret == '=') {
             	 TRY(!aa, "TagValues argument missing\n");
                s->tag_values_str = aa;
-         } else if (!strcmp(str, "TagValues[]")) {
+         } else if (!(aret = strcmp(str, "TagValues[]")) || aret == '=') {
                TRY(!aa, "TagValues[] argument missing\n");
                SET_NEXT(s->tag_values, (aa), pa);
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             	 TRY(!aa, "Tags argument missing\n");
                s->tags_str = aa;
-         } else if (!strcmp(str, "Tags[]")) {
+         } else if (!(aret = strcmp(str, "Tags[]")) || aret == '=') {
                TRY(!aa, "Tags[] argument missing\n");
                SET_NEXT(s->tags, (aa), pa);
          } else
@@ -3080,10 +3230,11 @@ int filters_subnet_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 
 int filters_subregion_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_subregion *s = v_s;
-	if (!argcmp(str, "SubregionNames")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "SubregionNames")) == 0 || aret == '=') {
             	 TRY(!aa, "SubregionNames argument missing\n");
                s->subregion_names_str = aa;
-         } else if (!strcmp(str, "SubregionNames[]")) {
+         } else if (!(aret = strcmp(str, "SubregionNames[]")) || aret == '=') {
                TRY(!aa, "SubregionNames[] argument missing\n");
                SET_NEXT(s->subregion_names, (aa), pa);
          } else
@@ -3095,31 +3246,32 @@ int filters_subregion_parser(void *v_s, char *str, char *aa, struct ptr_array *p
 
 int filters_tag_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_tag *s = v_s;
-	if (!argcmp(str, "Keys")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Keys")) == 0 || aret == '=') {
             	 TRY(!aa, "Keys argument missing\n");
                s->keys_str = aa;
-         } else if (!strcmp(str, "Keys[]")) {
+         } else if (!(aret = strcmp(str, "Keys[]")) || aret == '=') {
                TRY(!aa, "Keys[] argument missing\n");
                SET_NEXT(s->keys, (aa), pa);
          } else
-	if (!argcmp(str, "ResourceIds")) {
+	if ((aret = argcmp(str, "ResourceIds")) == 0 || aret == '=') {
             	 TRY(!aa, "ResourceIds argument missing\n");
                s->resource_ids_str = aa;
-         } else if (!strcmp(str, "ResourceIds[]")) {
+         } else if (!(aret = strcmp(str, "ResourceIds[]")) || aret == '=') {
                TRY(!aa, "ResourceIds[] argument missing\n");
                SET_NEXT(s->resource_ids, (aa), pa);
          } else
-	if (!argcmp(str, "ResourceTypes")) {
+	if ((aret = argcmp(str, "ResourceTypes")) == 0 || aret == '=') {
             	 TRY(!aa, "ResourceTypes argument missing\n");
                s->resource_types_str = aa;
-         } else if (!strcmp(str, "ResourceTypes[]")) {
+         } else if (!(aret = strcmp(str, "ResourceTypes[]")) || aret == '=') {
                TRY(!aa, "ResourceTypes[] argument missing\n");
                SET_NEXT(s->resource_types, (aa), pa);
          } else
-	if (!argcmp(str, "Values")) {
+	if ((aret = argcmp(str, "Values")) == 0 || aret == '=') {
             	 TRY(!aa, "Values argument missing\n");
                s->values_str = aa;
-         } else if (!strcmp(str, "Values[]")) {
+         } else if (!(aret = strcmp(str, "Values[]")) || aret == '=') {
                TRY(!aa, "Values[] argument missing\n");
                SET_NEXT(s->values, (aa), pa);
          } else
@@ -3131,59 +3283,60 @@ int filters_tag_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int filters_virtual_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_virtual_gateway *s = v_s;
-	if (!argcmp(str, "ConnectionTypes")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "ConnectionTypes")) == 0 || aret == '=') {
             	 TRY(!aa, "ConnectionTypes argument missing\n");
                s->connection_types_str = aa;
-         } else if (!strcmp(str, "ConnectionTypes[]")) {
+         } else if (!(aret = strcmp(str, "ConnectionTypes[]")) || aret == '=') {
                TRY(!aa, "ConnectionTypes[] argument missing\n");
                SET_NEXT(s->connection_types, (aa), pa);
          } else
-	if (!argcmp(str, "LinkNetIds")) {
+	if ((aret = argcmp(str, "LinkNetIds")) == 0 || aret == '=') {
             	 TRY(!aa, "LinkNetIds argument missing\n");
                s->link_net_ids_str = aa;
-         } else if (!strcmp(str, "LinkNetIds[]")) {
+         } else if (!(aret = strcmp(str, "LinkNetIds[]")) || aret == '=') {
                TRY(!aa, "LinkNetIds[] argument missing\n");
                SET_NEXT(s->link_net_ids, (aa), pa);
          } else
-	if (!argcmp(str, "LinkStates")) {
+	if ((aret = argcmp(str, "LinkStates")) == 0 || aret == '=') {
             	 TRY(!aa, "LinkStates argument missing\n");
                s->link_states_str = aa;
-         } else if (!strcmp(str, "LinkStates[]")) {
+         } else if (!(aret = strcmp(str, "LinkStates[]")) || aret == '=') {
                TRY(!aa, "LinkStates[] argument missing\n");
                SET_NEXT(s->link_states, (aa), pa);
          } else
-	if (!argcmp(str, "States")) {
+	if ((aret = argcmp(str, "States")) == 0 || aret == '=') {
             	 TRY(!aa, "States argument missing\n");
                s->states_str = aa;
-         } else if (!strcmp(str, "States[]")) {
+         } else if (!(aret = strcmp(str, "States[]")) || aret == '=') {
                TRY(!aa, "States[] argument missing\n");
                SET_NEXT(s->states, (aa), pa);
          } else
-	if (!argcmp(str, "TagKeys")) {
+	if ((aret = argcmp(str, "TagKeys")) == 0 || aret == '=') {
             	 TRY(!aa, "TagKeys argument missing\n");
                s->tag_keys_str = aa;
-         } else if (!strcmp(str, "TagKeys[]")) {
+         } else if (!(aret = strcmp(str, "TagKeys[]")) || aret == '=') {
                TRY(!aa, "TagKeys[] argument missing\n");
                SET_NEXT(s->tag_keys, (aa), pa);
          } else
-	if (!argcmp(str, "TagValues")) {
+	if ((aret = argcmp(str, "TagValues")) == 0 || aret == '=') {
             	 TRY(!aa, "TagValues argument missing\n");
                s->tag_values_str = aa;
-         } else if (!strcmp(str, "TagValues[]")) {
+         } else if (!(aret = strcmp(str, "TagValues[]")) || aret == '=') {
                TRY(!aa, "TagValues[] argument missing\n");
                SET_NEXT(s->tag_values, (aa), pa);
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             	 TRY(!aa, "Tags argument missing\n");
                s->tags_str = aa;
-         } else if (!strcmp(str, "Tags[]")) {
+         } else if (!(aret = strcmp(str, "Tags[]")) || aret == '=') {
                TRY(!aa, "Tags[] argument missing\n");
                SET_NEXT(s->tags, (aa), pa);
          } else
-	if (!argcmp(str, "VirtualGatewayIds")) {
+	if ((aret = argcmp(str, "VirtualGatewayIds")) == 0 || aret == '=') {
             	 TRY(!aa, "VirtualGatewayIds argument missing\n");
                s->virtual_gateway_ids_str = aa;
-         } else if (!strcmp(str, "VirtualGatewayIds[]")) {
+         } else if (!(aret = strcmp(str, "VirtualGatewayIds[]")) || aret == '=') {
                TRY(!aa, "VirtualGatewayIds[] argument missing\n");
                SET_NEXT(s->virtual_gateway_ids, (aa), pa);
          } else
@@ -3195,31 +3348,32 @@ int filters_virtual_gateway_parser(void *v_s, char *str, char *aa, struct ptr_ar
 
 int filters_vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_vm *s = v_s;
-	if (!argcmp(str, "TagKeys")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "TagKeys")) == 0 || aret == '=') {
             	 TRY(!aa, "TagKeys argument missing\n");
                s->tag_keys_str = aa;
-         } else if (!strcmp(str, "TagKeys[]")) {
+         } else if (!(aret = strcmp(str, "TagKeys[]")) || aret == '=') {
                TRY(!aa, "TagKeys[] argument missing\n");
                SET_NEXT(s->tag_keys, (aa), pa);
          } else
-	if (!argcmp(str, "TagValues")) {
+	if ((aret = argcmp(str, "TagValues")) == 0 || aret == '=') {
             	 TRY(!aa, "TagValues argument missing\n");
                s->tag_values_str = aa;
-         } else if (!strcmp(str, "TagValues[]")) {
+         } else if (!(aret = strcmp(str, "TagValues[]")) || aret == '=') {
                TRY(!aa, "TagValues[] argument missing\n");
                SET_NEXT(s->tag_values, (aa), pa);
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             	 TRY(!aa, "Tags argument missing\n");
                s->tags_str = aa;
-         } else if (!strcmp(str, "Tags[]")) {
+         } else if (!(aret = strcmp(str, "Tags[]")) || aret == '=') {
                TRY(!aa, "Tags[] argument missing\n");
                SET_NEXT(s->tags, (aa), pa);
          } else
-	if (!argcmp(str, "VmIds")) {
+	if ((aret = argcmp(str, "VmIds")) == 0 || aret == '=') {
             	 TRY(!aa, "VmIds argument missing\n");
                s->vm_ids_str = aa;
-         } else if (!strcmp(str, "VmIds[]")) {
+         } else if (!(aret = strcmp(str, "VmIds[]")) || aret == '=') {
                TRY(!aa, "VmIds[] argument missing\n");
                SET_NEXT(s->vm_ids, (aa), pa);
          } else
@@ -3229,9 +3383,182 @@ int filters_vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	return 0;
 }
 
+int filters_vm_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct filters_vm_group *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "Descriptions")) == 0 || aret == '=') {
+            	 TRY(!aa, "Descriptions argument missing\n");
+               s->descriptions_str = aa;
+         } else if (!(aret = strcmp(str, "Descriptions[]")) || aret == '=') {
+               TRY(!aa, "Descriptions[] argument missing\n");
+               SET_NEXT(s->descriptions, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "SecurityGroupIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "SecurityGroupIds argument missing\n");
+               s->security_group_ids_str = aa;
+         } else if (!(aret = strcmp(str, "SecurityGroupIds[]")) || aret == '=') {
+               TRY(!aa, "SecurityGroupIds[] argument missing\n");
+               SET_NEXT(s->security_group_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "SubnetIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "SubnetIds argument missing\n");
+               s->subnet_ids_str = aa;
+         } else if (!(aret = strcmp(str, "SubnetIds[]")) || aret == '=') {
+               TRY(!aa, "SubnetIds[] argument missing\n");
+               SET_NEXT(s->subnet_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "TagKeys")) == 0 || aret == '=') {
+            	 TRY(!aa, "TagKeys argument missing\n");
+               s->tag_keys_str = aa;
+         } else if (!(aret = strcmp(str, "TagKeys[]")) || aret == '=') {
+               TRY(!aa, "TagKeys[] argument missing\n");
+               SET_NEXT(s->tag_keys, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "TagValues")) == 0 || aret == '=') {
+            	 TRY(!aa, "TagValues argument missing\n");
+               s->tag_values_str = aa;
+         } else if (!(aret = strcmp(str, "TagValues[]")) || aret == '=') {
+               TRY(!aa, "TagValues[] argument missing\n");
+               SET_NEXT(s->tag_values, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
+            	 TRY(!aa, "Tags argument missing\n");
+               s->tags_str = aa;
+         } else if (!(aret = strcmp(str, "Tags[]")) || aret == '=') {
+               TRY(!aa, "Tags[] argument missing\n");
+               SET_NEXT(s->tags, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "VmCounts")) == 0 || aret == '=') {
+            	 TRY(!aa, "VmCounts argument missing\n");
+               s->vm_counts_str = aa;
+         } else if (!(aret = strcmp(str, "VmCounts[]")) || aret == '=') {
+               TRY(!aa, "VmCounts[] argument missing\n");
+               SET_NEXT(s->vm_counts, atoi(aa), pa);
+         } else
+	if ((aret = argcmp(str, "VmGroupIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "VmGroupIds argument missing\n");
+               s->vm_group_ids_str = aa;
+         } else if (!(aret = strcmp(str, "VmGroupIds[]")) || aret == '=') {
+               TRY(!aa, "VmGroupIds[] argument missing\n");
+               SET_NEXT(s->vm_group_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "VmGroupNames")) == 0 || aret == '=') {
+            	 TRY(!aa, "VmGroupNames argument missing\n");
+               s->vm_group_names_str = aa;
+         } else if (!(aret = strcmp(str, "VmGroupNames[]")) || aret == '=') {
+               TRY(!aa, "VmGroupNames[] argument missing\n");
+               SET_NEXT(s->vm_group_names, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "VmTemplateIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "VmTemplateIds argument missing\n");
+               s->vm_template_ids_str = aa;
+         } else if (!(aret = strcmp(str, "VmTemplateIds[]")) || aret == '=') {
+               TRY(!aa, "VmTemplateIds[] argument missing\n");
+               SET_NEXT(s->vm_template_ids, (aa), pa);
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'FiltersVmGroup'\n", str);
+	}
+	return 0;
+}
+
+int filters_vm_template_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct filters_vm_template *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "CpuCores")) == 0 || aret == '=') {
+            	 TRY(!aa, "CpuCores argument missing\n");
+               s->cpu_cores_str = aa;
+         } else if (!(aret = strcmp(str, "CpuCores[]")) || aret == '=') {
+               TRY(!aa, "CpuCores[] argument missing\n");
+               SET_NEXT(s->cpu_cores, atoi(aa), pa);
+         } else
+	if ((aret = argcmp(str, "CpuGenerations")) == 0 || aret == '=') {
+            	 TRY(!aa, "CpuGenerations argument missing\n");
+               s->cpu_generations_str = aa;
+         } else if (!(aret = strcmp(str, "CpuGenerations[]")) || aret == '=') {
+               TRY(!aa, "CpuGenerations[] argument missing\n");
+               SET_NEXT(s->cpu_generations, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "CpuPerformances")) == 0 || aret == '=') {
+            	 TRY(!aa, "CpuPerformances argument missing\n");
+               s->cpu_performances_str = aa;
+         } else if (!(aret = strcmp(str, "CpuPerformances[]")) || aret == '=') {
+               TRY(!aa, "CpuPerformances[] argument missing\n");
+               SET_NEXT(s->cpu_performances, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "Descriptions")) == 0 || aret == '=') {
+            	 TRY(!aa, "Descriptions argument missing\n");
+               s->descriptions_str = aa;
+         } else if (!(aret = strcmp(str, "Descriptions[]")) || aret == '=') {
+               TRY(!aa, "Descriptions[] argument missing\n");
+               SET_NEXT(s->descriptions, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "ImageIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "ImageIds argument missing\n");
+               s->image_ids_str = aa;
+         } else if (!(aret = strcmp(str, "ImageIds[]")) || aret == '=') {
+               TRY(!aa, "ImageIds[] argument missing\n");
+               SET_NEXT(s->image_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "KeypairNames")) == 0 || aret == '=') {
+            	 TRY(!aa, "KeypairNames argument missing\n");
+               s->keypair_names_str = aa;
+         } else if (!(aret = strcmp(str, "KeypairNames[]")) || aret == '=') {
+               TRY(!aa, "KeypairNames[] argument missing\n");
+               SET_NEXT(s->keypair_names, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "Rams")) == 0 || aret == '=') {
+            	 TRY(!aa, "Rams argument missing\n");
+               s->rams_str = aa;
+         } else if (!(aret = strcmp(str, "Rams[]")) || aret == '=') {
+               TRY(!aa, "Rams[] argument missing\n");
+               SET_NEXT(s->rams, atoi(aa), pa);
+         } else
+	if ((aret = argcmp(str, "TagKeys")) == 0 || aret == '=') {
+            	 TRY(!aa, "TagKeys argument missing\n");
+               s->tag_keys_str = aa;
+         } else if (!(aret = strcmp(str, "TagKeys[]")) || aret == '=') {
+               TRY(!aa, "TagKeys[] argument missing\n");
+               SET_NEXT(s->tag_keys, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "TagValues")) == 0 || aret == '=') {
+            	 TRY(!aa, "TagValues argument missing\n");
+               s->tag_values_str = aa;
+         } else if (!(aret = strcmp(str, "TagValues[]")) || aret == '=') {
+               TRY(!aa, "TagValues[] argument missing\n");
+               SET_NEXT(s->tag_values, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
+            	 TRY(!aa, "Tags argument missing\n");
+               s->tags_str = aa;
+         } else if (!(aret = strcmp(str, "Tags[]")) || aret == '=') {
+               TRY(!aa, "Tags[] argument missing\n");
+               SET_NEXT(s->tags, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "VmTemplateIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "VmTemplateIds argument missing\n");
+               s->vm_template_ids_str = aa;
+         } else if (!(aret = strcmp(str, "VmTemplateIds[]")) || aret == '=') {
+               TRY(!aa, "VmTemplateIds[] argument missing\n");
+               SET_NEXT(s->vm_template_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "VmTemplateNames")) == 0 || aret == '=') {
+            	 TRY(!aa, "VmTemplateNames argument missing\n");
+               s->vm_template_names_str = aa;
+         } else if (!(aret = strcmp(str, "VmTemplateNames[]")) || aret == '=') {
+               TRY(!aa, "VmTemplateNames[] argument missing\n");
+               SET_NEXT(s->vm_template_names, (aa), pa);
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'FiltersVmTemplate'\n", str);
+	}
+	return 0;
+}
+
 int filters_vm_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_vm_type *s = v_s;
-	if (!argcmp(str, "BsuOptimized")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "BsuOptimized")) == 0 || aret == '=') {
             s->is_set_bsu_optimized = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->bsu_optimized = 1;
@@ -3241,38 +3568,38 @@ int filters_vm_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
             		BAD_RET("BsuOptimized require true/false\n");
              }
         } else
-	if (!argcmp(str, "MemorySizes")) {
+	if ((aret = argcmp(str, "MemorySizes")) == 0 || aret == '=') {
             	 TRY(!aa, "MemorySizes argument missing\n");
                s->memory_sizes_str = aa;
-         } else if (!strcmp(str, "MemorySizes[]")) {
+         } else if (!(aret = strcmp(str, "MemorySizes[]")) || aret == '=') {
                TRY(!aa, "MemorySizes[] argument missing\n");
                SET_NEXT(s->memory_sizes, atof(aa), pa);
          } else
-	if (!argcmp(str, "VcoreCounts")) {
+	if ((aret = argcmp(str, "VcoreCounts")) == 0 || aret == '=') {
             	 TRY(!aa, "VcoreCounts argument missing\n");
                s->vcore_counts_str = aa;
-         } else if (!strcmp(str, "VcoreCounts[]")) {
+         } else if (!(aret = strcmp(str, "VcoreCounts[]")) || aret == '=') {
                TRY(!aa, "VcoreCounts[] argument missing\n");
                SET_NEXT(s->vcore_counts, atoi(aa), pa);
          } else
-	if (!argcmp(str, "VmTypeNames")) {
+	if ((aret = argcmp(str, "VmTypeNames")) == 0 || aret == '=') {
             	 TRY(!aa, "VmTypeNames argument missing\n");
                s->vm_type_names_str = aa;
-         } else if (!strcmp(str, "VmTypeNames[]")) {
+         } else if (!(aret = strcmp(str, "VmTypeNames[]")) || aret == '=') {
                TRY(!aa, "VmTypeNames[] argument missing\n");
                SET_NEXT(s->vm_type_names, (aa), pa);
          } else
-	if (!argcmp(str, "VolumeCounts")) {
+	if ((aret = argcmp(str, "VolumeCounts")) == 0 || aret == '=') {
             	 TRY(!aa, "VolumeCounts argument missing\n");
                s->volume_counts_str = aa;
-         } else if (!strcmp(str, "VolumeCounts[]")) {
+         } else if (!(aret = strcmp(str, "VolumeCounts[]")) || aret == '=') {
                TRY(!aa, "VolumeCounts[] argument missing\n");
                SET_NEXT(s->volume_counts, atoi(aa), pa);
          } else
-	if (!argcmp(str, "VolumeSizes")) {
+	if ((aret = argcmp(str, "VolumeSizes")) == 0 || aret == '=') {
             	 TRY(!aa, "VolumeSizes argument missing\n");
                s->volume_sizes_str = aa;
-         } else if (!strcmp(str, "VolumeSizes[]")) {
+         } else if (!(aret = strcmp(str, "VolumeSizes[]")) || aret == '=') {
                TRY(!aa, "VolumeSizes[] argument missing\n");
                SET_NEXT(s->volume_sizes, atoi(aa), pa);
          } else
@@ -3284,52 +3611,53 @@ int filters_vm_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
 
 int filters_vms_state_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_vms_state *s = v_s;
-	if (!argcmp(str, "MaintenanceEventCodes")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "MaintenanceEventCodes")) == 0 || aret == '=') {
             	 TRY(!aa, "MaintenanceEventCodes argument missing\n");
                s->maintenance_event_codes_str = aa;
-         } else if (!strcmp(str, "MaintenanceEventCodes[]")) {
+         } else if (!(aret = strcmp(str, "MaintenanceEventCodes[]")) || aret == '=') {
                TRY(!aa, "MaintenanceEventCodes[] argument missing\n");
                SET_NEXT(s->maintenance_event_codes, (aa), pa);
          } else
-	if (!argcmp(str, "MaintenanceEventDescriptions")) {
+	if ((aret = argcmp(str, "MaintenanceEventDescriptions")) == 0 || aret == '=') {
             	 TRY(!aa, "MaintenanceEventDescriptions argument missing\n");
                s->maintenance_event_descriptions_str = aa;
-         } else if (!strcmp(str, "MaintenanceEventDescriptions[]")) {
+         } else if (!(aret = strcmp(str, "MaintenanceEventDescriptions[]")) || aret == '=') {
                TRY(!aa, "MaintenanceEventDescriptions[] argument missing\n");
                SET_NEXT(s->maintenance_event_descriptions, (aa), pa);
          } else
-	if (!argcmp(str, "MaintenanceEventsNotAfter")) {
+	if ((aret = argcmp(str, "MaintenanceEventsNotAfter")) == 0 || aret == '=') {
             	 TRY(!aa, "MaintenanceEventsNotAfter argument missing\n");
                s->maintenance_events_not_after_str = aa;
-         } else if (!strcmp(str, "MaintenanceEventsNotAfter[]")) {
+         } else if (!(aret = strcmp(str, "MaintenanceEventsNotAfter[]")) || aret == '=') {
                TRY(!aa, "MaintenanceEventsNotAfter[] argument missing\n");
                SET_NEXT(s->maintenance_events_not_after, (aa), pa);
          } else
-	if (!argcmp(str, "MaintenanceEventsNotBefore")) {
+	if ((aret = argcmp(str, "MaintenanceEventsNotBefore")) == 0 || aret == '=') {
             	 TRY(!aa, "MaintenanceEventsNotBefore argument missing\n");
                s->maintenance_events_not_before_str = aa;
-         } else if (!strcmp(str, "MaintenanceEventsNotBefore[]")) {
+         } else if (!(aret = strcmp(str, "MaintenanceEventsNotBefore[]")) || aret == '=') {
                TRY(!aa, "MaintenanceEventsNotBefore[] argument missing\n");
                SET_NEXT(s->maintenance_events_not_before, (aa), pa);
          } else
-	if (!argcmp(str, "SubregionNames")) {
+	if ((aret = argcmp(str, "SubregionNames")) == 0 || aret == '=') {
             	 TRY(!aa, "SubregionNames argument missing\n");
                s->subregion_names_str = aa;
-         } else if (!strcmp(str, "SubregionNames[]")) {
+         } else if (!(aret = strcmp(str, "SubregionNames[]")) || aret == '=') {
                TRY(!aa, "SubregionNames[] argument missing\n");
                SET_NEXT(s->subregion_names, (aa), pa);
          } else
-	if (!argcmp(str, "VmIds")) {
+	if ((aret = argcmp(str, "VmIds")) == 0 || aret == '=') {
             	 TRY(!aa, "VmIds argument missing\n");
                s->vm_ids_str = aa;
-         } else if (!strcmp(str, "VmIds[]")) {
+         } else if (!(aret = strcmp(str, "VmIds[]")) || aret == '=') {
                TRY(!aa, "VmIds[] argument missing\n");
                SET_NEXT(s->vm_ids, (aa), pa);
          } else
-	if (!argcmp(str, "VmStates")) {
+	if ((aret = argcmp(str, "VmStates")) == 0 || aret == '=') {
             	 TRY(!aa, "VmStates argument missing\n");
                s->vm_states_str = aa;
-         } else if (!strcmp(str, "VmStates[]")) {
+         } else if (!(aret = strcmp(str, "VmStates[]")) || aret == '=') {
                TRY(!aa, "VmStates[] argument missing\n");
                SET_NEXT(s->vm_states, (aa), pa);
          } else
@@ -3341,14 +3669,15 @@ int filters_vms_state_parser(void *v_s, char *str, char *aa, struct ptr_array *p
 
 int filters_volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_volume *s = v_s;
-	if (!argcmp(str, "CreationDates")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "CreationDates")) == 0 || aret == '=') {
             	 TRY(!aa, "CreationDates argument missing\n");
                s->creation_dates_str = aa;
-         } else if (!strcmp(str, "CreationDates[]")) {
+         } else if (!(aret = strcmp(str, "CreationDates[]")) || aret == '=') {
                TRY(!aa, "CreationDates[] argument missing\n");
                SET_NEXT(s->creation_dates, (aa), pa);
          } else
-	if (!argcmp(str, "LinkVolumeDeleteOnVmDeletion")) {
+	if ((aret = argcmp(str, "LinkVolumeDeleteOnVmDeletion")) == 0 || aret == '=') {
             s->is_set_link_volume_delete_on_vm_deletion = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->link_volume_delete_on_vm_deletion = 1;
@@ -3358,94 +3687,94 @@ int filters_volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             		BAD_RET("LinkVolumeDeleteOnVmDeletion require true/false\n");
              }
         } else
-	if (!argcmp(str, "LinkVolumeDeviceNames")) {
+	if ((aret = argcmp(str, "LinkVolumeDeviceNames")) == 0 || aret == '=') {
             	 TRY(!aa, "LinkVolumeDeviceNames argument missing\n");
                s->link_volume_device_names_str = aa;
-         } else if (!strcmp(str, "LinkVolumeDeviceNames[]")) {
+         } else if (!(aret = strcmp(str, "LinkVolumeDeviceNames[]")) || aret == '=') {
                TRY(!aa, "LinkVolumeDeviceNames[] argument missing\n");
                SET_NEXT(s->link_volume_device_names, (aa), pa);
          } else
-	if (!argcmp(str, "LinkVolumeLinkDates")) {
+	if ((aret = argcmp(str, "LinkVolumeLinkDates")) == 0 || aret == '=') {
             	 TRY(!aa, "LinkVolumeLinkDates argument missing\n");
                s->link_volume_link_dates_str = aa;
-         } else if (!strcmp(str, "LinkVolumeLinkDates[]")) {
+         } else if (!(aret = strcmp(str, "LinkVolumeLinkDates[]")) || aret == '=') {
                TRY(!aa, "LinkVolumeLinkDates[] argument missing\n");
                SET_NEXT(s->link_volume_link_dates, (aa), pa);
          } else
-	if (!argcmp(str, "LinkVolumeLinkStates")) {
+	if ((aret = argcmp(str, "LinkVolumeLinkStates")) == 0 || aret == '=') {
             	 TRY(!aa, "LinkVolumeLinkStates argument missing\n");
                s->link_volume_link_states_str = aa;
-         } else if (!strcmp(str, "LinkVolumeLinkStates[]")) {
+         } else if (!(aret = strcmp(str, "LinkVolumeLinkStates[]")) || aret == '=') {
                TRY(!aa, "LinkVolumeLinkStates[] argument missing\n");
                SET_NEXT(s->link_volume_link_states, (aa), pa);
          } else
-	if (!argcmp(str, "LinkVolumeVmIds")) {
+	if ((aret = argcmp(str, "LinkVolumeVmIds")) == 0 || aret == '=') {
             	 TRY(!aa, "LinkVolumeVmIds argument missing\n");
                s->link_volume_vm_ids_str = aa;
-         } else if (!strcmp(str, "LinkVolumeVmIds[]")) {
+         } else if (!(aret = strcmp(str, "LinkVolumeVmIds[]")) || aret == '=') {
                TRY(!aa, "LinkVolumeVmIds[] argument missing\n");
                SET_NEXT(s->link_volume_vm_ids, (aa), pa);
          } else
-	if (!argcmp(str, "SnapshotIds")) {
+	if ((aret = argcmp(str, "SnapshotIds")) == 0 || aret == '=') {
             	 TRY(!aa, "SnapshotIds argument missing\n");
                s->snapshot_ids_str = aa;
-         } else if (!strcmp(str, "SnapshotIds[]")) {
+         } else if (!(aret = strcmp(str, "SnapshotIds[]")) || aret == '=') {
                TRY(!aa, "SnapshotIds[] argument missing\n");
                SET_NEXT(s->snapshot_ids, (aa), pa);
          } else
-	if (!argcmp(str, "SubregionNames")) {
+	if ((aret = argcmp(str, "SubregionNames")) == 0 || aret == '=') {
             	 TRY(!aa, "SubregionNames argument missing\n");
                s->subregion_names_str = aa;
-         } else if (!strcmp(str, "SubregionNames[]")) {
+         } else if (!(aret = strcmp(str, "SubregionNames[]")) || aret == '=') {
                TRY(!aa, "SubregionNames[] argument missing\n");
                SET_NEXT(s->subregion_names, (aa), pa);
          } else
-	if (!argcmp(str, "TagKeys")) {
+	if ((aret = argcmp(str, "TagKeys")) == 0 || aret == '=') {
             	 TRY(!aa, "TagKeys argument missing\n");
                s->tag_keys_str = aa;
-         } else if (!strcmp(str, "TagKeys[]")) {
+         } else if (!(aret = strcmp(str, "TagKeys[]")) || aret == '=') {
                TRY(!aa, "TagKeys[] argument missing\n");
                SET_NEXT(s->tag_keys, (aa), pa);
          } else
-	if (!argcmp(str, "TagValues")) {
+	if ((aret = argcmp(str, "TagValues")) == 0 || aret == '=') {
             	 TRY(!aa, "TagValues argument missing\n");
                s->tag_values_str = aa;
-         } else if (!strcmp(str, "TagValues[]")) {
+         } else if (!(aret = strcmp(str, "TagValues[]")) || aret == '=') {
                TRY(!aa, "TagValues[] argument missing\n");
                SET_NEXT(s->tag_values, (aa), pa);
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             	 TRY(!aa, "Tags argument missing\n");
                s->tags_str = aa;
-         } else if (!strcmp(str, "Tags[]")) {
+         } else if (!(aret = strcmp(str, "Tags[]")) || aret == '=') {
                TRY(!aa, "Tags[] argument missing\n");
                SET_NEXT(s->tags, (aa), pa);
          } else
-	if (!argcmp(str, "VolumeIds")) {
+	if ((aret = argcmp(str, "VolumeIds")) == 0 || aret == '=') {
             	 TRY(!aa, "VolumeIds argument missing\n");
                s->volume_ids_str = aa;
-         } else if (!strcmp(str, "VolumeIds[]")) {
+         } else if (!(aret = strcmp(str, "VolumeIds[]")) || aret == '=') {
                TRY(!aa, "VolumeIds[] argument missing\n");
                SET_NEXT(s->volume_ids, (aa), pa);
          } else
-	if (!argcmp(str, "VolumeSizes")) {
+	if ((aret = argcmp(str, "VolumeSizes")) == 0 || aret == '=') {
             	 TRY(!aa, "VolumeSizes argument missing\n");
                s->volume_sizes_str = aa;
-         } else if (!strcmp(str, "VolumeSizes[]")) {
+         } else if (!(aret = strcmp(str, "VolumeSizes[]")) || aret == '=') {
                TRY(!aa, "VolumeSizes[] argument missing\n");
                SET_NEXT(s->volume_sizes, atoi(aa), pa);
          } else
-	if (!argcmp(str, "VolumeStates")) {
+	if ((aret = argcmp(str, "VolumeStates")) == 0 || aret == '=') {
             	 TRY(!aa, "VolumeStates argument missing\n");
                s->volume_states_str = aa;
-         } else if (!strcmp(str, "VolumeStates[]")) {
+         } else if (!(aret = strcmp(str, "VolumeStates[]")) || aret == '=') {
                TRY(!aa, "VolumeStates[] argument missing\n");
                SET_NEXT(s->volume_states, (aa), pa);
          } else
-	if (!argcmp(str, "VolumeTypes")) {
+	if ((aret = argcmp(str, "VolumeTypes")) == 0 || aret == '=') {
             	 TRY(!aa, "VolumeTypes argument missing\n");
                s->volume_types_str = aa;
-         } else if (!strcmp(str, "VolumeTypes[]")) {
+         } else if (!(aret = strcmp(str, "VolumeTypes[]")) || aret == '=') {
                TRY(!aa, "VolumeTypes[] argument missing\n");
                SET_NEXT(s->volume_types, (aa), pa);
          } else
@@ -3457,42 +3786,43 @@ int filters_volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 
 int filters_vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_vpn_connection *s = v_s;
-	if (!argcmp(str, "BgpAsns")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "BgpAsns")) == 0 || aret == '=') {
             	 TRY(!aa, "BgpAsns argument missing\n");
                s->bgp_asns_str = aa;
-         } else if (!strcmp(str, "BgpAsns[]")) {
+         } else if (!(aret = strcmp(str, "BgpAsns[]")) || aret == '=') {
                TRY(!aa, "BgpAsns[] argument missing\n");
                SET_NEXT(s->bgp_asns, atoi(aa), pa);
          } else
-	if (!argcmp(str, "ClientGatewayIds")) {
+	if ((aret = argcmp(str, "ClientGatewayIds")) == 0 || aret == '=') {
             	 TRY(!aa, "ClientGatewayIds argument missing\n");
                s->client_gateway_ids_str = aa;
-         } else if (!strcmp(str, "ClientGatewayIds[]")) {
+         } else if (!(aret = strcmp(str, "ClientGatewayIds[]")) || aret == '=') {
                TRY(!aa, "ClientGatewayIds[] argument missing\n");
                SET_NEXT(s->client_gateway_ids, (aa), pa);
          } else
-	if (!argcmp(str, "ConnectionTypes")) {
+	if ((aret = argcmp(str, "ConnectionTypes")) == 0 || aret == '=') {
             	 TRY(!aa, "ConnectionTypes argument missing\n");
                s->connection_types_str = aa;
-         } else if (!strcmp(str, "ConnectionTypes[]")) {
+         } else if (!(aret = strcmp(str, "ConnectionTypes[]")) || aret == '=') {
                TRY(!aa, "ConnectionTypes[] argument missing\n");
                SET_NEXT(s->connection_types, (aa), pa);
          } else
-	if (!argcmp(str, "RouteDestinationIpRanges")) {
+	if ((aret = argcmp(str, "RouteDestinationIpRanges")) == 0 || aret == '=') {
             	 TRY(!aa, "RouteDestinationIpRanges argument missing\n");
                s->route_destination_ip_ranges_str = aa;
-         } else if (!strcmp(str, "RouteDestinationIpRanges[]")) {
+         } else if (!(aret = strcmp(str, "RouteDestinationIpRanges[]")) || aret == '=') {
                TRY(!aa, "RouteDestinationIpRanges[] argument missing\n");
                SET_NEXT(s->route_destination_ip_ranges, (aa), pa);
          } else
-	if (!argcmp(str, "States")) {
+	if ((aret = argcmp(str, "States")) == 0 || aret == '=') {
             	 TRY(!aa, "States argument missing\n");
                s->states_str = aa;
-         } else if (!strcmp(str, "States[]")) {
+         } else if (!(aret = strcmp(str, "States[]")) || aret == '=') {
                TRY(!aa, "States[] argument missing\n");
                SET_NEXT(s->states, (aa), pa);
          } else
-	if (!argcmp(str, "StaticRoutesOnly")) {
+	if ((aret = argcmp(str, "StaticRoutesOnly")) == 0 || aret == '=') {
             s->is_set_static_routes_only = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->static_routes_only = 1;
@@ -3502,38 +3832,38 @@ int filters_vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_arr
             		BAD_RET("StaticRoutesOnly require true/false\n");
              }
         } else
-	if (!argcmp(str, "TagKeys")) {
+	if ((aret = argcmp(str, "TagKeys")) == 0 || aret == '=') {
             	 TRY(!aa, "TagKeys argument missing\n");
                s->tag_keys_str = aa;
-         } else if (!strcmp(str, "TagKeys[]")) {
+         } else if (!(aret = strcmp(str, "TagKeys[]")) || aret == '=') {
                TRY(!aa, "TagKeys[] argument missing\n");
                SET_NEXT(s->tag_keys, (aa), pa);
          } else
-	if (!argcmp(str, "TagValues")) {
+	if ((aret = argcmp(str, "TagValues")) == 0 || aret == '=') {
             	 TRY(!aa, "TagValues argument missing\n");
                s->tag_values_str = aa;
-         } else if (!strcmp(str, "TagValues[]")) {
+         } else if (!(aret = strcmp(str, "TagValues[]")) || aret == '=') {
                TRY(!aa, "TagValues[] argument missing\n");
                SET_NEXT(s->tag_values, (aa), pa);
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             	 TRY(!aa, "Tags argument missing\n");
                s->tags_str = aa;
-         } else if (!strcmp(str, "Tags[]")) {
+         } else if (!(aret = strcmp(str, "Tags[]")) || aret == '=') {
                TRY(!aa, "Tags[] argument missing\n");
                SET_NEXT(s->tags, (aa), pa);
          } else
-	if (!argcmp(str, "VirtualGatewayIds")) {
+	if ((aret = argcmp(str, "VirtualGatewayIds")) == 0 || aret == '=') {
             	 TRY(!aa, "VirtualGatewayIds argument missing\n");
                s->virtual_gateway_ids_str = aa;
-         } else if (!strcmp(str, "VirtualGatewayIds[]")) {
+         } else if (!(aret = strcmp(str, "VirtualGatewayIds[]")) || aret == '=') {
                TRY(!aa, "VirtualGatewayIds[] argument missing\n");
                SET_NEXT(s->virtual_gateway_ids, (aa), pa);
          } else
-	if (!argcmp(str, "VpnConnectionIds")) {
+	if ((aret = argcmp(str, "VpnConnectionIds")) == 0 || aret == '=') {
             	 TRY(!aa, "VpnConnectionIds argument missing\n");
                s->vpn_connection_ids_str = aa;
-         } else if (!strcmp(str, "VpnConnectionIds[]")) {
+         } else if (!(aret = strcmp(str, "VpnConnectionIds[]")) || aret == '=') {
                TRY(!aa, "VpnConnectionIds[] argument missing\n");
                SET_NEXT(s->vpn_connection_ids, (aa), pa);
          } else
@@ -3545,7 +3875,8 @@ int filters_vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_arr
 
 int flexible_gpu_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct flexible_gpu *s = v_s;
-	if (!argcmp(str, "DeleteOnVmDeletion")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "DeleteOnVmDeletion")) == 0 || aret == '=') {
             s->is_set_delete_on_vm_deletion = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->delete_on_vm_deletion = 1;
@@ -3555,32 +3886,32 @@ int flexible_gpu_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("DeleteOnVmDeletion require true/false\n");
              }
         } else
-	if (!argcmp(str, "FlexibleGpuId")) {
+	if ((aret = argcmp(str, "FlexibleGpuId")) == 0 || aret == '=') {
             TRY(!aa, "FlexibleGpuId argument missing\n");
             s->flexible_gpu_id = aa; // string string
 
          } else
-	if (!argcmp(str, "Generation")) {
+	if ((aret = argcmp(str, "Generation")) == 0 || aret == '=') {
             TRY(!aa, "Generation argument missing\n");
             s->generation = aa; // string string
 
          } else
-	if (!argcmp(str, "ModelName")) {
+	if ((aret = argcmp(str, "ModelName")) == 0 || aret == '=') {
             TRY(!aa, "ModelName argument missing\n");
             s->model_name = aa; // string string
 
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "SubregionName")) {
+	if ((aret = argcmp(str, "SubregionName")) == 0 || aret == '=') {
             TRY(!aa, "SubregionName argument missing\n");
             s->subregion_name = aa; // string string
 
          } else
-	if (!argcmp(str, "VmId")) {
+	if ((aret = argcmp(str, "VmId")) == 0 || aret == '=') {
             TRY(!aa, "VmId argument missing\n");
             s->vm_id = aa; // string string
 
@@ -3593,29 +3924,30 @@ int flexible_gpu_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int flexible_gpu_catalog_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct flexible_gpu_catalog *s = v_s;
-	if (!argcmp(str, "Generations")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Generations")) == 0 || aret == '=') {
             	 TRY(!aa, "Generations argument missing\n");
                s->generations_str = aa;
-         } else if (!strcmp(str, "Generations[]")) {
+         } else if (!(aret = strcmp(str, "Generations[]")) || aret == '=') {
                TRY(!aa, "Generations[] argument missing\n");
                SET_NEXT(s->generations, (aa), pa);
          } else
-	if (!argcmp(str, "MaxCpu")) {
+	if ((aret = argcmp(str, "MaxCpu")) == 0 || aret == '=') {
             TRY(!aa, "MaxCpu argument missing\n");
             s->is_set_max_cpu = 1;
             s->max_cpu = atoi(aa);
          } else
-	if (!argcmp(str, "MaxRam")) {
+	if ((aret = argcmp(str, "MaxRam")) == 0 || aret == '=') {
             TRY(!aa, "MaxRam argument missing\n");
             s->is_set_max_ram = 1;
             s->max_ram = atoi(aa);
          } else
-	if (!argcmp(str, "ModelName")) {
+	if ((aret = argcmp(str, "ModelName")) == 0 || aret == '=') {
             TRY(!aa, "ModelName argument missing\n");
             s->model_name = aa; // string string
 
          } else
-	if (!argcmp(str, "VRam")) {
+	if ((aret = argcmp(str, "VRam")) == 0 || aret == '=') {
             TRY(!aa, "VRam argument missing\n");
             s->is_set_vram = 1;
             s->vram = atoi(aa);
@@ -3628,37 +3960,38 @@ int flexible_gpu_catalog_parser(void *v_s, char *str, char *aa, struct ptr_array
 
 int health_check_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct health_check *s = v_s;
-	if (!argcmp(str, "CheckInterval")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "CheckInterval")) == 0 || aret == '=') {
             TRY(!aa, "CheckInterval argument missing\n");
             s->is_set_check_interval = 1;
             s->check_interval = atoi(aa);
          } else
-	if (!argcmp(str, "HealthyThreshold")) {
+	if ((aret = argcmp(str, "HealthyThreshold")) == 0 || aret == '=') {
             TRY(!aa, "HealthyThreshold argument missing\n");
             s->is_set_healthy_threshold = 1;
             s->healthy_threshold = atoi(aa);
          } else
-	if (!argcmp(str, "Path")) {
+	if ((aret = argcmp(str, "Path")) == 0 || aret == '=') {
             TRY(!aa, "Path argument missing\n");
             s->path = aa; // string string
 
          } else
-	if (!argcmp(str, "Port")) {
+	if ((aret = argcmp(str, "Port")) == 0 || aret == '=') {
             TRY(!aa, "Port argument missing\n");
             s->is_set_port = 1;
             s->port = atoi(aa);
          } else
-	if (!argcmp(str, "Protocol")) {
+	if ((aret = argcmp(str, "Protocol")) == 0 || aret == '=') {
             TRY(!aa, "Protocol argument missing\n");
             s->protocol = aa; // string string
 
          } else
-	if (!argcmp(str, "Timeout")) {
+	if ((aret = argcmp(str, "Timeout")) == 0 || aret == '=') {
             TRY(!aa, "Timeout argument missing\n");
             s->is_set_timeout = 1;
             s->timeout = atoi(aa);
          } else
-	if (!argcmp(str, "UnhealthyThreshold")) {
+	if ((aret = argcmp(str, "UnhealthyThreshold")) == 0 || aret == '=') {
             TRY(!aa, "UnhealthyThreshold argument missing\n");
             s->is_set_unhealthy_threshold = 1;
             s->unhealthy_threshold = atoi(aa);
@@ -3671,22 +4004,23 @@ int health_check_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct image *s = v_s;
-	if (!argcmp(str, "AccountAlias")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccountAlias")) == 0 || aret == '=') {
             TRY(!aa, "AccountAlias argument missing\n");
             s->account_alias = aa; // string string
 
          } else
-	if (!argcmp(str, "AccountId")) {
+	if ((aret = argcmp(str, "AccountId")) == 0 || aret == '=') {
             TRY(!aa, "AccountId argument missing\n");
             s->account_id = aa; // string string
 
          } else
-	if (!argcmp(str, "Architecture")) {
+	if ((aret = argcmp(str, "Architecture")) == 0 || aret == '=') {
             TRY(!aa, "Architecture argument missing\n");
             s->architecture = aa; // string string
 
          } else
-	if (!argcmp(str, "BlockDeviceMappings")) {
+	if ((aret = argcmp(str, "BlockDeviceMappings")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -3711,37 +4045,37 @@ int image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->block_device_mappings_str = aa; // array ref BlockDeviceMappingImage ref
             }
          } else
-	if (!argcmp(str, "CreationDate")) {
+	if ((aret = argcmp(str, "CreationDate")) == 0 || aret == '=') {
             TRY(!aa, "CreationDate argument missing\n");
             s->creation_date = aa; // string string
 
          } else
-	if (!argcmp(str, "Description")) {
+	if ((aret = argcmp(str, "Description")) == 0 || aret == '=') {
             TRY(!aa, "Description argument missing\n");
             s->description = aa; // string string
 
          } else
-	if (!argcmp(str, "FileLocation")) {
+	if ((aret = argcmp(str, "FileLocation")) == 0 || aret == '=') {
             TRY(!aa, "FileLocation argument missing\n");
             s->file_location = aa; // string string
 
          } else
-	if (!argcmp(str, "ImageId")) {
+	if ((aret = argcmp(str, "ImageId")) == 0 || aret == '=') {
             TRY(!aa, "ImageId argument missing\n");
             s->image_id = aa; // string string
 
          } else
-	if (!argcmp(str, "ImageName")) {
+	if ((aret = argcmp(str, "ImageName")) == 0 || aret == '=') {
             TRY(!aa, "ImageName argument missing\n");
             s->image_name = aa; // string string
 
          } else
-	if (!argcmp(str, "ImageType")) {
+	if ((aret = argcmp(str, "ImageType")) == 0 || aret == '=') {
             TRY(!aa, "ImageType argument missing\n");
             s->image_type = aa; // string string
 
          } else
-	if (!argcmp(str, "PermissionsToLaunch")) {
+	if ((aret = argcmp(str, "PermissionsToLaunch")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "PermissionsToLaunch argument missing\n");
@@ -3758,29 +4092,29 @@ int image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                    s->permissions_to_launch_str = aa;
              }
          } else
-	if (!argcmp(str, "ProductCodes")) {
+	if ((aret = argcmp(str, "ProductCodes")) == 0 || aret == '=') {
             	 TRY(!aa, "ProductCodes argument missing\n");
                s->product_codes_str = aa;
-         } else if (!strcmp(str, "ProductCodes[]")) {
+         } else if (!(aret = strcmp(str, "ProductCodes[]")) || aret == '=') {
                TRY(!aa, "ProductCodes[] argument missing\n");
                SET_NEXT(s->product_codes, (aa), pa);
          } else
-	if (!argcmp(str, "RootDeviceName")) {
+	if ((aret = argcmp(str, "RootDeviceName")) == 0 || aret == '=') {
             TRY(!aa, "RootDeviceName argument missing\n");
             s->root_device_name = aa; // string string
 
          } else
-	if (!argcmp(str, "RootDeviceType")) {
+	if ((aret = argcmp(str, "RootDeviceType")) == 0 || aret == '=') {
             TRY(!aa, "RootDeviceType argument missing\n");
             s->root_device_type = aa; // string string
 
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "StateComment")) {
+	if ((aret = argcmp(str, "StateComment")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "StateComment argument missing\n");
@@ -3797,7 +4131,7 @@ int image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                    s->state_comment_str = aa;
              }
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -3830,17 +4164,18 @@ int image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int image_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct image_export_task *s = v_s;
-	if (!argcmp(str, "Comment")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Comment")) == 0 || aret == '=') {
             TRY(!aa, "Comment argument missing\n");
             s->comment = aa; // string string
 
          } else
-	if (!argcmp(str, "ImageId")) {
+	if ((aret = argcmp(str, "ImageId")) == 0 || aret == '=') {
             TRY(!aa, "ImageId argument missing\n");
             s->image_id = aa; // string string
 
          } else
-	if (!argcmp(str, "OsuExport")) {
+	if ((aret = argcmp(str, "OsuExport")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "OsuExport argument missing\n");
@@ -3857,17 +4192,17 @@ int image_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array *p
                    s->osu_export_str = aa;
              }
          } else
-	if (!argcmp(str, "Progress")) {
+	if ((aret = argcmp(str, "Progress")) == 0 || aret == '=') {
             TRY(!aa, "Progress argument missing\n");
             s->is_set_progress = 1;
             s->progress = atoi(aa);
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -3892,7 +4227,7 @@ int image_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array *p
             	s->tags_str = aa; // array ref ResourceTag ref
             }
          } else
-	if (!argcmp(str, "TaskId")) {
+	if ((aret = argcmp(str, "TaskId")) == 0 || aret == '=') {
             TRY(!aa, "TaskId argument missing\n");
             s->task_id = aa; // string string
 
@@ -3905,22 +4240,23 @@ int image_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array *p
 
 int internet_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct internet_service *s = v_s;
-	if (!argcmp(str, "InternetServiceId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "InternetServiceId")) == 0 || aret == '=') {
             TRY(!aa, "InternetServiceId argument missing\n");
             s->internet_service_id = aa; // string string
 
          } else
-	if (!argcmp(str, "NetId")) {
+	if ((aret = argcmp(str, "NetId")) == 0 || aret == '=') {
             TRY(!aa, "NetId argument missing\n");
             s->net_id = aa; // string string
 
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -3953,12 +4289,13 @@ int internet_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
 
 int keypair_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct keypair *s = v_s;
-	if (!argcmp(str, "KeypairFingerprint")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "KeypairFingerprint")) == 0 || aret == '=') {
             TRY(!aa, "KeypairFingerprint argument missing\n");
             s->keypair_fingerprint = aa; // string string
 
          } else
-	if (!argcmp(str, "KeypairName")) {
+	if ((aret = argcmp(str, "KeypairName")) == 0 || aret == '=') {
             TRY(!aa, "KeypairName argument missing\n");
             s->keypair_name = aa; // string string
 
@@ -3971,17 +4308,18 @@ int keypair_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int keypair_created_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct keypair_created *s = v_s;
-	if (!argcmp(str, "KeypairFingerprint")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "KeypairFingerprint")) == 0 || aret == '=') {
             TRY(!aa, "KeypairFingerprint argument missing\n");
             s->keypair_fingerprint = aa; // string string
 
          } else
-	if (!argcmp(str, "KeypairName")) {
+	if ((aret = argcmp(str, "KeypairName")) == 0 || aret == '=') {
             TRY(!aa, "KeypairName argument missing\n");
             s->keypair_name = aa; // string string
 
          } else
-	if (!argcmp(str, "PrivateKey")) {
+	if ((aret = argcmp(str, "PrivateKey")) == 0 || aret == '=') {
             TRY(!aa, "PrivateKey argument missing\n");
             s->private_key = aa; // string string
 
@@ -3994,7 +4332,8 @@ int keypair_created_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
 
 int link_nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct link_nic *s = v_s;
-	if (!argcmp(str, "DeleteOnVmDeletion")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "DeleteOnVmDeletion")) == 0 || aret == '=') {
             s->is_set_delete_on_vm_deletion = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->delete_on_vm_deletion = 1;
@@ -4004,27 +4343,27 @@ int link_nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("DeleteOnVmDeletion require true/false\n");
              }
         } else
-	if (!argcmp(str, "DeviceNumber")) {
+	if ((aret = argcmp(str, "DeviceNumber")) == 0 || aret == '=') {
             TRY(!aa, "DeviceNumber argument missing\n");
             s->is_set_device_number = 1;
             s->device_number = atoi(aa);
          } else
-	if (!argcmp(str, "LinkNicId")) {
+	if ((aret = argcmp(str, "LinkNicId")) == 0 || aret == '=') {
             TRY(!aa, "LinkNicId argument missing\n");
             s->link_nic_id = aa; // string string
 
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "VmAccountId")) {
+	if ((aret = argcmp(str, "VmAccountId")) == 0 || aret == '=') {
             TRY(!aa, "VmAccountId argument missing\n");
             s->vm_account_id = aa; // string string
 
          } else
-	if (!argcmp(str, "VmId")) {
+	if ((aret = argcmp(str, "VmId")) == 0 || aret == '=') {
             TRY(!aa, "VmId argument missing\n");
             s->vm_id = aa; // string string
 
@@ -4037,7 +4376,8 @@ int link_nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int link_nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct link_nic_light *s = v_s;
-	if (!argcmp(str, "DeleteOnVmDeletion")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "DeleteOnVmDeletion")) == 0 || aret == '=') {
             s->is_set_delete_on_vm_deletion = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->delete_on_vm_deletion = 1;
@@ -4047,17 +4387,17 @@ int link_nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             		BAD_RET("DeleteOnVmDeletion require true/false\n");
              }
         } else
-	if (!argcmp(str, "DeviceNumber")) {
+	if ((aret = argcmp(str, "DeviceNumber")) == 0 || aret == '=') {
             TRY(!aa, "DeviceNumber argument missing\n");
             s->is_set_device_number = 1;
             s->device_number = atoi(aa);
          } else
-	if (!argcmp(str, "LinkNicId")) {
+	if ((aret = argcmp(str, "LinkNicId")) == 0 || aret == '=') {
             TRY(!aa, "LinkNicId argument missing\n");
             s->link_nic_id = aa; // string string
 
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
@@ -4070,7 +4410,8 @@ int link_nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 
 int link_nic_to_update_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct link_nic_to_update *s = v_s;
-	if (!argcmp(str, "DeleteOnVmDeletion")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "DeleteOnVmDeletion")) == 0 || aret == '=') {
             s->is_set_delete_on_vm_deletion = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->delete_on_vm_deletion = 1;
@@ -4080,7 +4421,7 @@ int link_nic_to_update_parser(void *v_s, char *str, char *aa, struct ptr_array *
             		BAD_RET("DeleteOnVmDeletion require true/false\n");
              }
         } else
-	if (!argcmp(str, "LinkNicId")) {
+	if ((aret = argcmp(str, "LinkNicId")) == 0 || aret == '=') {
             TRY(!aa, "LinkNicId argument missing\n");
             s->link_nic_id = aa; // string string
 
@@ -4093,27 +4434,28 @@ int link_nic_to_update_parser(void *v_s, char *str, char *aa, struct ptr_array *
 
 int link_public_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct link_public_ip *s = v_s;
-	if (!argcmp(str, "LinkPublicIpId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "LinkPublicIpId")) == 0 || aret == '=') {
             TRY(!aa, "LinkPublicIpId argument missing\n");
             s->link_public_ip_id = aa; // string string
 
          } else
-	if (!argcmp(str, "PublicDnsName")) {
+	if ((aret = argcmp(str, "PublicDnsName")) == 0 || aret == '=') {
             TRY(!aa, "PublicDnsName argument missing\n");
             s->public_dns_name = aa; // string string
 
          } else
-	if (!argcmp(str, "PublicIp")) {
+	if ((aret = argcmp(str, "PublicIp")) == 0 || aret == '=') {
             TRY(!aa, "PublicIp argument missing\n");
             s->public_ip = aa; // string string
 
          } else
-	if (!argcmp(str, "PublicIpAccountId")) {
+	if ((aret = argcmp(str, "PublicIpAccountId")) == 0 || aret == '=') {
             TRY(!aa, "PublicIpAccountId argument missing\n");
             s->public_ip_account_id = aa; // string string
 
          } else
-	if (!argcmp(str, "PublicIpId")) {
+	if ((aret = argcmp(str, "PublicIpId")) == 0 || aret == '=') {
             TRY(!aa, "PublicIpId argument missing\n");
             s->public_ip_id = aa; // string string
 
@@ -4126,17 +4468,18 @@ int link_public_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 
 int link_public_ip_light_for_vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct link_public_ip_light_for_vm *s = v_s;
-	if (!argcmp(str, "PublicDnsName")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "PublicDnsName")) == 0 || aret == '=') {
             TRY(!aa, "PublicDnsName argument missing\n");
             s->public_dns_name = aa; // string string
 
          } else
-	if (!argcmp(str, "PublicIp")) {
+	if ((aret = argcmp(str, "PublicIp")) == 0 || aret == '=') {
             TRY(!aa, "PublicIp argument missing\n");
             s->public_ip = aa; // string string
 
          } else
-	if (!argcmp(str, "PublicIpAccountId")) {
+	if ((aret = argcmp(str, "PublicIpAccountId")) == 0 || aret == '=') {
             TRY(!aa, "PublicIpAccountId argument missing\n");
             s->public_ip_account_id = aa; // string string
 
@@ -4149,12 +4492,13 @@ int link_public_ip_light_for_vm_parser(void *v_s, char *str, char *aa, struct pt
 
 int link_route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct link_route_table *s = v_s;
-	if (!argcmp(str, "LinkRouteTableId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "LinkRouteTableId")) == 0 || aret == '=') {
             TRY(!aa, "LinkRouteTableId argument missing\n");
             s->link_route_table_id = aa; // string string
 
          } else
-	if (!argcmp(str, "Main")) {
+	if ((aret = argcmp(str, "Main")) == 0 || aret == '=') {
             s->is_set_main = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->main = 1;
@@ -4164,12 +4508,12 @@ int link_route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
             		BAD_RET("Main require true/false\n");
              }
         } else
-	if (!argcmp(str, "RouteTableId")) {
+	if ((aret = argcmp(str, "RouteTableId")) == 0 || aret == '=') {
             TRY(!aa, "RouteTableId argument missing\n");
             s->route_table_id = aa; // string string
 
          } else
-	if (!argcmp(str, "SubnetId")) {
+	if ((aret = argcmp(str, "SubnetId")) == 0 || aret == '=') {
             TRY(!aa, "SubnetId argument missing\n");
             s->subnet_id = aa; // string string
 
@@ -4182,7 +4526,8 @@ int link_route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
 
 int linked_volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct linked_volume *s = v_s;
-	if (!argcmp(str, "DeleteOnVmDeletion")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "DeleteOnVmDeletion")) == 0 || aret == '=') {
             s->is_set_delete_on_vm_deletion = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->delete_on_vm_deletion = 1;
@@ -4192,22 +4537,22 @@ int linked_volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("DeleteOnVmDeletion require true/false\n");
              }
         } else
-	if (!argcmp(str, "DeviceName")) {
+	if ((aret = argcmp(str, "DeviceName")) == 0 || aret == '=') {
             TRY(!aa, "DeviceName argument missing\n");
             s->device_name = aa; // string string
 
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "VmId")) {
+	if ((aret = argcmp(str, "VmId")) == 0 || aret == '=') {
             TRY(!aa, "VmId argument missing\n");
             s->vm_id = aa; // string string
 
          } else
-	if (!argcmp(str, "VolumeId")) {
+	if ((aret = argcmp(str, "VolumeId")) == 0 || aret == '=') {
             TRY(!aa, "VolumeId argument missing\n");
             s->volume_id = aa; // string string
 
@@ -4220,34 +4565,35 @@ int linked_volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int listener_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct listener *s = v_s;
-	if (!argcmp(str, "BackendPort")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "BackendPort")) == 0 || aret == '=') {
             TRY(!aa, "BackendPort argument missing\n");
             s->is_set_backend_port = 1;
             s->backend_port = atoi(aa);
          } else
-	if (!argcmp(str, "BackendProtocol")) {
+	if ((aret = argcmp(str, "BackendProtocol")) == 0 || aret == '=') {
             TRY(!aa, "BackendProtocol argument missing\n");
             s->backend_protocol = aa; // string string
 
          } else
-	if (!argcmp(str, "LoadBalancerPort")) {
+	if ((aret = argcmp(str, "LoadBalancerPort")) == 0 || aret == '=') {
             TRY(!aa, "LoadBalancerPort argument missing\n");
             s->is_set_load_balancer_port = 1;
             s->load_balancer_port = atoi(aa);
          } else
-	if (!argcmp(str, "LoadBalancerProtocol")) {
+	if ((aret = argcmp(str, "LoadBalancerProtocol")) == 0 || aret == '=') {
             TRY(!aa, "LoadBalancerProtocol argument missing\n");
             s->load_balancer_protocol = aa; // string string
 
          } else
-	if (!argcmp(str, "PolicyNames")) {
+	if ((aret = argcmp(str, "PolicyNames")) == 0 || aret == '=') {
             	 TRY(!aa, "PolicyNames argument missing\n");
                s->policy_names_str = aa;
-         } else if (!strcmp(str, "PolicyNames[]")) {
+         } else if (!(aret = strcmp(str, "PolicyNames[]")) || aret == '=') {
                TRY(!aa, "PolicyNames[] argument missing\n");
                SET_NEXT(s->policy_names, (aa), pa);
          } else
-	if (!argcmp(str, "ServerCertificateId")) {
+	if ((aret = argcmp(str, "ServerCertificateId")) == 0 || aret == '=') {
             TRY(!aa, "ServerCertificateId argument missing\n");
             s->server_certificate_id = aa; // string string
 
@@ -4260,27 +4606,28 @@ int listener_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int listener_for_creation_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct listener_for_creation *s = v_s;
-	if (!argcmp(str, "BackendPort")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "BackendPort")) == 0 || aret == '=') {
             TRY(!aa, "BackendPort argument missing\n");
             s->is_set_backend_port = 1;
             s->backend_port = atoi(aa);
          } else
-	if (!argcmp(str, "BackendProtocol")) {
+	if ((aret = argcmp(str, "BackendProtocol")) == 0 || aret == '=') {
             TRY(!aa, "BackendProtocol argument missing\n");
             s->backend_protocol = aa; // string string
 
          } else
-	if (!argcmp(str, "LoadBalancerPort")) {
+	if ((aret = argcmp(str, "LoadBalancerPort")) == 0 || aret == '=') {
             TRY(!aa, "LoadBalancerPort argument missing\n");
             s->is_set_load_balancer_port = 1;
             s->load_balancer_port = atoi(aa);
          } else
-	if (!argcmp(str, "LoadBalancerProtocol")) {
+	if ((aret = argcmp(str, "LoadBalancerProtocol")) == 0 || aret == '=') {
             TRY(!aa, "LoadBalancerProtocol argument missing\n");
             s->load_balancer_protocol = aa; // string string
 
          } else
-	if (!argcmp(str, "ServerCertificateId")) {
+	if ((aret = argcmp(str, "ServerCertificateId")) == 0 || aret == '=') {
             TRY(!aa, "ServerCertificateId argument missing\n");
             s->server_certificate_id = aa; // string string
 
@@ -4293,45 +4640,46 @@ int listener_for_creation_parser(void *v_s, char *str, char *aa, struct ptr_arra
 
 int listener_rule_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct listener_rule *s = v_s;
-	if (!argcmp(str, "Action")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Action")) == 0 || aret == '=') {
             TRY(!aa, "Action argument missing\n");
             s->action = aa; // string string
 
          } else
-	if (!argcmp(str, "HostNamePattern")) {
+	if ((aret = argcmp(str, "HostNamePattern")) == 0 || aret == '=') {
             TRY(!aa, "HostNamePattern argument missing\n");
             s->host_name_pattern = aa; // string string
 
          } else
-	if (!argcmp(str, "ListenerId")) {
+	if ((aret = argcmp(str, "ListenerId")) == 0 || aret == '=') {
             TRY(!aa, "ListenerId argument missing\n");
             s->is_set_listener_id = 1;
             s->listener_id = atoi(aa);
          } else
-	if (!argcmp(str, "ListenerRuleId")) {
+	if ((aret = argcmp(str, "ListenerRuleId")) == 0 || aret == '=') {
             TRY(!aa, "ListenerRuleId argument missing\n");
             s->is_set_listener_rule_id = 1;
             s->listener_rule_id = atoi(aa);
          } else
-	if (!argcmp(str, "ListenerRuleName")) {
+	if ((aret = argcmp(str, "ListenerRuleName")) == 0 || aret == '=') {
             TRY(!aa, "ListenerRuleName argument missing\n");
             s->listener_rule_name = aa; // string string
 
          } else
-	if (!argcmp(str, "PathPattern")) {
+	if ((aret = argcmp(str, "PathPattern")) == 0 || aret == '=') {
             TRY(!aa, "PathPattern argument missing\n");
             s->path_pattern = aa; // string string
 
          } else
-	if (!argcmp(str, "Priority")) {
+	if ((aret = argcmp(str, "Priority")) == 0 || aret == '=') {
             TRY(!aa, "Priority argument missing\n");
             s->is_set_priority = 1;
             s->priority = atoi(aa);
          } else
-	if (!argcmp(str, "VmIds")) {
+	if ((aret = argcmp(str, "VmIds")) == 0 || aret == '=') {
             	 TRY(!aa, "VmIds argument missing\n");
                s->vm_ids_str = aa;
-         } else if (!strcmp(str, "VmIds[]")) {
+         } else if (!(aret = strcmp(str, "VmIds[]")) || aret == '=') {
                TRY(!aa, "VmIds[] argument missing\n");
                SET_NEXT(s->vm_ids, (aa), pa);
          } else
@@ -4343,27 +4691,28 @@ int listener_rule_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int listener_rule_for_creation_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct listener_rule_for_creation *s = v_s;
-	if (!argcmp(str, "Action")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Action")) == 0 || aret == '=') {
             TRY(!aa, "Action argument missing\n");
             s->action = aa; // string string
 
          } else
-	if (!argcmp(str, "HostNamePattern")) {
+	if ((aret = argcmp(str, "HostNamePattern")) == 0 || aret == '=') {
             TRY(!aa, "HostNamePattern argument missing\n");
             s->host_name_pattern = aa; // string string
 
          } else
-	if (!argcmp(str, "ListenerRuleName")) {
+	if ((aret = argcmp(str, "ListenerRuleName")) == 0 || aret == '=') {
             TRY(!aa, "ListenerRuleName argument missing\n");
             s->listener_rule_name = aa; // string string
 
          } else
-	if (!argcmp(str, "PathPattern")) {
+	if ((aret = argcmp(str, "PathPattern")) == 0 || aret == '=') {
             TRY(!aa, "PathPattern argument missing\n");
             s->path_pattern = aa; // string string
 
          } else
-	if (!argcmp(str, "Priority")) {
+	if ((aret = argcmp(str, "Priority")) == 0 || aret == '=') {
             TRY(!aa, "Priority argument missing\n");
             s->is_set_priority = 1;
             s->priority = atoi(aa);
@@ -4376,7 +4725,8 @@ int listener_rule_for_creation_parser(void *v_s, char *str, char *aa, struct ptr
 
 int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct load_balancer *s = v_s;
-	if (!argcmp(str, "AccessLog")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccessLog")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "AccessLog argument missing\n");
@@ -4393,7 +4743,7 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                    s->access_log_str = aa;
              }
          } else
-	if (!argcmp(str, "ApplicationStickyCookiePolicies")) {
+	if ((aret = argcmp(str, "ApplicationStickyCookiePolicies")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -4418,26 +4768,26 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->application_sticky_cookie_policies_str = aa; // array ref ApplicationStickyCookiePolicy ref
             }
          } else
-	if (!argcmp(str, "BackendIps")) {
+	if ((aret = argcmp(str, "BackendIps")) == 0 || aret == '=') {
             	 TRY(!aa, "BackendIps argument missing\n");
                s->backend_ips_str = aa;
-         } else if (!strcmp(str, "BackendIps[]")) {
+         } else if (!(aret = strcmp(str, "BackendIps[]")) || aret == '=') {
                TRY(!aa, "BackendIps[] argument missing\n");
                SET_NEXT(s->backend_ips, (aa), pa);
          } else
-	if (!argcmp(str, "BackendVmIds")) {
+	if ((aret = argcmp(str, "BackendVmIds")) == 0 || aret == '=') {
             	 TRY(!aa, "BackendVmIds argument missing\n");
                s->backend_vm_ids_str = aa;
-         } else if (!strcmp(str, "BackendVmIds[]")) {
+         } else if (!(aret = strcmp(str, "BackendVmIds[]")) || aret == '=') {
                TRY(!aa, "BackendVmIds[] argument missing\n");
                SET_NEXT(s->backend_vm_ids, (aa), pa);
          } else
-	if (!argcmp(str, "DnsName")) {
+	if ((aret = argcmp(str, "DnsName")) == 0 || aret == '=') {
             TRY(!aa, "DnsName argument missing\n");
             s->dns_name = aa; // string string
 
          } else
-	if (!argcmp(str, "HealthCheck")) {
+	if ((aret = argcmp(str, "HealthCheck")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "HealthCheck argument missing\n");
@@ -4454,7 +4804,7 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                    s->health_check_str = aa;
              }
          } else
-	if (!argcmp(str, "Listeners")) {
+	if ((aret = argcmp(str, "Listeners")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -4479,12 +4829,12 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->listeners_str = aa; // array ref Listener ref
             }
          } else
-	if (!argcmp(str, "LoadBalancerName")) {
+	if ((aret = argcmp(str, "LoadBalancerName")) == 0 || aret == '=') {
             TRY(!aa, "LoadBalancerName argument missing\n");
             s->load_balancer_name = aa; // string string
 
          } else
-	if (!argcmp(str, "LoadBalancerStickyCookiePolicies")) {
+	if ((aret = argcmp(str, "LoadBalancerStickyCookiePolicies")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -4509,22 +4859,22 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->load_balancer_sticky_cookie_policies_str = aa; // array ref LoadBalancerStickyCookiePolicy ref
             }
          } else
-	if (!argcmp(str, "LoadBalancerType")) {
+	if ((aret = argcmp(str, "LoadBalancerType")) == 0 || aret == '=') {
             TRY(!aa, "LoadBalancerType argument missing\n");
             s->load_balancer_type = aa; // string string
 
          } else
-	if (!argcmp(str, "NetId")) {
+	if ((aret = argcmp(str, "NetId")) == 0 || aret == '=') {
             TRY(!aa, "NetId argument missing\n");
             s->net_id = aa; // string string
 
          } else
-	if (!argcmp(str, "PublicIp")) {
+	if ((aret = argcmp(str, "PublicIp")) == 0 || aret == '=') {
             TRY(!aa, "PublicIp argument missing\n");
             s->public_ip = aa; // string string
 
          } else
-	if (!argcmp(str, "SecuredCookies")) {
+	if ((aret = argcmp(str, "SecuredCookies")) == 0 || aret == '=') {
             s->is_set_secured_cookies = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->secured_cookies = 1;
@@ -4534,14 +4884,14 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("SecuredCookies require true/false\n");
              }
         } else
-	if (!argcmp(str, "SecurityGroups")) {
+	if ((aret = argcmp(str, "SecurityGroups")) == 0 || aret == '=') {
             	 TRY(!aa, "SecurityGroups argument missing\n");
                s->security_groups_str = aa;
-         } else if (!strcmp(str, "SecurityGroups[]")) {
+         } else if (!(aret = strcmp(str, "SecurityGroups[]")) || aret == '=') {
                TRY(!aa, "SecurityGroups[] argument missing\n");
                SET_NEXT(s->security_groups, (aa), pa);
          } else
-	if (!argcmp(str, "SourceSecurityGroup")) {
+	if ((aret = argcmp(str, "SourceSecurityGroup")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "SourceSecurityGroup argument missing\n");
@@ -4558,21 +4908,21 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                    s->source_security_group_str = aa;
              }
          } else
-	if (!argcmp(str, "Subnets")) {
+	if ((aret = argcmp(str, "Subnets")) == 0 || aret == '=') {
             	 TRY(!aa, "Subnets argument missing\n");
                s->subnets_str = aa;
-         } else if (!strcmp(str, "Subnets[]")) {
+         } else if (!(aret = strcmp(str, "Subnets[]")) || aret == '=') {
                TRY(!aa, "Subnets[] argument missing\n");
                SET_NEXT(s->subnets, (aa), pa);
          } else
-	if (!argcmp(str, "SubregionNames")) {
+	if ((aret = argcmp(str, "SubregionNames")) == 0 || aret == '=') {
             	 TRY(!aa, "SubregionNames argument missing\n");
                s->subregion_names_str = aa;
-         } else if (!strcmp(str, "SubregionNames[]")) {
+         } else if (!(aret = strcmp(str, "SubregionNames[]")) || aret == '=') {
                TRY(!aa, "SubregionNames[] argument missing\n");
                SET_NEXT(s->subregion_names, (aa), pa);
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -4605,12 +4955,13 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int load_balancer_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct load_balancer_light *s = v_s;
-	if (!argcmp(str, "LoadBalancerName")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "LoadBalancerName")) == 0 || aret == '=') {
             TRY(!aa, "LoadBalancerName argument missing\n");
             s->load_balancer_name = aa; // string string
 
          } else
-	if (!argcmp(str, "LoadBalancerPort")) {
+	if ((aret = argcmp(str, "LoadBalancerPort")) == 0 || aret == '=') {
             TRY(!aa, "LoadBalancerPort argument missing\n");
             s->is_set_load_balancer_port = 1;
             s->load_balancer_port = atoi(aa);
@@ -4623,12 +4974,13 @@ int load_balancer_light_parser(void *v_s, char *str, char *aa, struct ptr_array 
 
 int load_balancer_sticky_cookie_policy_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct load_balancer_sticky_cookie_policy *s = v_s;
-	if (!argcmp(str, "CookieExpirationPeriod")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "CookieExpirationPeriod")) == 0 || aret == '=') {
             TRY(!aa, "CookieExpirationPeriod argument missing\n");
             s->is_set_cookie_expiration_period = 1;
             s->cookie_expiration_period = atoi(aa);
          } else
-	if (!argcmp(str, "PolicyName")) {
+	if ((aret = argcmp(str, "PolicyName")) == 0 || aret == '=') {
             TRY(!aa, "PolicyName argument missing\n");
             s->policy_name = aa; // string string
 
@@ -4641,17 +4993,18 @@ int load_balancer_sticky_cookie_policy_parser(void *v_s, char *str, char *aa, st
 
 int load_balancer_tag_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct load_balancer_tag *s = v_s;
-	if (!argcmp(str, "Key")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Key")) == 0 || aret == '=') {
             TRY(!aa, "Key argument missing\n");
             s->key = aa; // string string
 
          } else
-	if (!argcmp(str, "LoadBalancerName")) {
+	if ((aret = argcmp(str, "LoadBalancerName")) == 0 || aret == '=') {
             TRY(!aa, "LoadBalancerName argument missing\n");
             s->load_balancer_name = aa; // string string
 
          } else
-	if (!argcmp(str, "Value")) {
+	if ((aret = argcmp(str, "Value")) == 0 || aret == '=') {
             TRY(!aa, "Value argument missing\n");
             s->value = aa; // string string
 
@@ -4664,12 +5017,13 @@ int load_balancer_tag_parser(void *v_s, char *str, char *aa, struct ptr_array *p
 
 int location_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct location *s = v_s;
-	if (!argcmp(str, "Code")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Code")) == 0 || aret == '=') {
             TRY(!aa, "Code argument missing\n");
             s->code = aa; // string string
 
          } else
-	if (!argcmp(str, "Name")) {
+	if ((aret = argcmp(str, "Name")) == 0 || aret == '=') {
             TRY(!aa, "Name argument missing\n");
             s->name = aa; // string string
 
@@ -4682,82 +5036,83 @@ int location_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int log_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct log *s = v_s;
-	if (!argcmp(str, "AccountId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccountId")) == 0 || aret == '=') {
             TRY(!aa, "AccountId argument missing\n");
             s->account_id = aa; // string string
 
          } else
-	if (!argcmp(str, "CallDuration")) {
+	if ((aret = argcmp(str, "CallDuration")) == 0 || aret == '=') {
             TRY(!aa, "CallDuration argument missing\n");
             s->is_set_call_duration = 1;
             s->call_duration = atoi(aa);
          } else
-	if (!argcmp(str, "QueryAccessKey")) {
+	if ((aret = argcmp(str, "QueryAccessKey")) == 0 || aret == '=') {
             TRY(!aa, "QueryAccessKey argument missing\n");
             s->query_access_key = aa; // string string
 
          } else
-	if (!argcmp(str, "QueryApiName")) {
+	if ((aret = argcmp(str, "QueryApiName")) == 0 || aret == '=') {
             TRY(!aa, "QueryApiName argument missing\n");
             s->query_api_name = aa; // string string
 
          } else
-	if (!argcmp(str, "QueryApiVersion")) {
+	if ((aret = argcmp(str, "QueryApiVersion")) == 0 || aret == '=') {
             TRY(!aa, "QueryApiVersion argument missing\n");
             s->query_api_version = aa; // string string
 
          } else
-	if (!argcmp(str, "QueryCallName")) {
+	if ((aret = argcmp(str, "QueryCallName")) == 0 || aret == '=') {
             TRY(!aa, "QueryCallName argument missing\n");
             s->query_call_name = aa; // string string
 
          } else
-	if (!argcmp(str, "QueryDate")) {
+	if ((aret = argcmp(str, "QueryDate")) == 0 || aret == '=') {
             TRY(!aa, "QueryDate argument missing\n");
             s->query_date = aa; // string string
 
          } else
-	if (!argcmp(str, "QueryHeaderRaw")) {
+	if ((aret = argcmp(str, "QueryHeaderRaw")) == 0 || aret == '=') {
             TRY(!aa, "QueryHeaderRaw argument missing\n");
             s->query_header_raw = aa; // string string
 
          } else
-	if (!argcmp(str, "QueryHeaderSize")) {
+	if ((aret = argcmp(str, "QueryHeaderSize")) == 0 || aret == '=') {
             TRY(!aa, "QueryHeaderSize argument missing\n");
             s->is_set_query_header_size = 1;
             s->query_header_size = atoi(aa);
          } else
-	if (!argcmp(str, "QueryIpAddress")) {
+	if ((aret = argcmp(str, "QueryIpAddress")) == 0 || aret == '=') {
             TRY(!aa, "QueryIpAddress argument missing\n");
             s->query_ip_address = aa; // string string
 
          } else
-	if (!argcmp(str, "QueryPayloadRaw")) {
+	if ((aret = argcmp(str, "QueryPayloadRaw")) == 0 || aret == '=') {
             TRY(!aa, "QueryPayloadRaw argument missing\n");
             s->query_payload_raw = aa; // string string
 
          } else
-	if (!argcmp(str, "QueryPayloadSize")) {
+	if ((aret = argcmp(str, "QueryPayloadSize")) == 0 || aret == '=') {
             TRY(!aa, "QueryPayloadSize argument missing\n");
             s->is_set_query_payload_size = 1;
             s->query_payload_size = atoi(aa);
          } else
-	if (!argcmp(str, "QueryUserAgent")) {
+	if ((aret = argcmp(str, "QueryUserAgent")) == 0 || aret == '=') {
             TRY(!aa, "QueryUserAgent argument missing\n");
             s->query_user_agent = aa; // string string
 
          } else
-	if (!argcmp(str, "RequestId")) {
+	if ((aret = argcmp(str, "RequestId")) == 0 || aret == '=') {
             TRY(!aa, "RequestId argument missing\n");
             s->request_id = aa; // string string
 
          } else
-	if (!argcmp(str, "ResponseSize")) {
+	if ((aret = argcmp(str, "ResponseSize")) == 0 || aret == '=') {
             TRY(!aa, "ResponseSize argument missing\n");
             s->is_set_response_size = 1;
             s->response_size = atoi(aa);
          } else
-	if (!argcmp(str, "ResponseStatusCode")) {
+	if ((aret = argcmp(str, "ResponseStatusCode")) == 0 || aret == '=') {
             TRY(!aa, "ResponseStatusCode argument missing\n");
             s->is_set_response_status_code = 1;
             s->response_status_code = atoi(aa);
@@ -4770,22 +5125,23 @@ int log_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int maintenance_event_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct maintenance_event *s = v_s;
-	if (!argcmp(str, "Code")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Code")) == 0 || aret == '=') {
             TRY(!aa, "Code argument missing\n");
             s->code = aa; // string string
 
          } else
-	if (!argcmp(str, "Description")) {
+	if ((aret = argcmp(str, "Description")) == 0 || aret == '=') {
             TRY(!aa, "Description argument missing\n");
             s->description = aa; // string string
 
          } else
-	if (!argcmp(str, "NotAfter")) {
+	if ((aret = argcmp(str, "NotAfter")) == 0 || aret == '=') {
             TRY(!aa, "NotAfter argument missing\n");
             s->not_after = aa; // string string
 
          } else
-	if (!argcmp(str, "NotBefore")) {
+	if ((aret = argcmp(str, "NotBefore")) == 0 || aret == '=') {
             TRY(!aa, "NotBefore argument missing\n");
             s->not_before = aa; // string string
 
@@ -4798,17 +5154,18 @@ int maintenance_event_parser(void *v_s, char *str, char *aa, struct ptr_array *p
 
 int nat_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct nat_service *s = v_s;
-	if (!argcmp(str, "NatServiceId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "NatServiceId")) == 0 || aret == '=') {
             TRY(!aa, "NatServiceId argument missing\n");
             s->nat_service_id = aa; // string string
 
          } else
-	if (!argcmp(str, "NetId")) {
+	if ((aret = argcmp(str, "NetId")) == 0 || aret == '=') {
             TRY(!aa, "NetId argument missing\n");
             s->net_id = aa; // string string
 
          } else
-	if (!argcmp(str, "PublicIps")) {
+	if ((aret = argcmp(str, "PublicIps")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -4833,17 +5190,17 @@ int nat_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->public_ips_str = aa; // array ref PublicIpLight ref
             }
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "SubnetId")) {
+	if ((aret = argcmp(str, "SubnetId")) == 0 || aret == '=') {
             TRY(!aa, "SubnetId argument missing\n");
             s->subnet_id = aa; // string string
 
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -4876,27 +5233,28 @@ int nat_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct net *s = v_s;
-	if (!argcmp(str, "DhcpOptionsSetId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "DhcpOptionsSetId")) == 0 || aret == '=') {
             TRY(!aa, "DhcpOptionsSetId argument missing\n");
             s->dhcp_options_set_id = aa; // string string
 
          } else
-	if (!argcmp(str, "IpRange")) {
+	if ((aret = argcmp(str, "IpRange")) == 0 || aret == '=') {
             TRY(!aa, "IpRange argument missing\n");
             s->ip_range = aa; // string string
 
          } else
-	if (!argcmp(str, "NetId")) {
+	if ((aret = argcmp(str, "NetId")) == 0 || aret == '=') {
             TRY(!aa, "NetId argument missing\n");
             s->net_id = aa; // string string
 
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -4921,7 +5279,7 @@ int net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->tags_str = aa; // array ref ResourceTag ref
             }
          } else
-	if (!argcmp(str, "Tenancy")) {
+	if ((aret = argcmp(str, "Tenancy")) == 0 || aret == '=') {
             TRY(!aa, "Tenancy argument missing\n");
             s->tenancy = aa; // string string
 
@@ -4934,34 +5292,35 @@ int net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int net_access_point_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct net_access_point *s = v_s;
-	if (!argcmp(str, "NetAccessPointId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "NetAccessPointId")) == 0 || aret == '=') {
             TRY(!aa, "NetAccessPointId argument missing\n");
             s->net_access_point_id = aa; // string string
 
          } else
-	if (!argcmp(str, "NetId")) {
+	if ((aret = argcmp(str, "NetId")) == 0 || aret == '=') {
             TRY(!aa, "NetId argument missing\n");
             s->net_id = aa; // string string
 
          } else
-	if (!argcmp(str, "RouteTableIds")) {
+	if ((aret = argcmp(str, "RouteTableIds")) == 0 || aret == '=') {
             	 TRY(!aa, "RouteTableIds argument missing\n");
                s->route_table_ids_str = aa;
-         } else if (!strcmp(str, "RouteTableIds[]")) {
+         } else if (!(aret = strcmp(str, "RouteTableIds[]")) || aret == '=') {
                TRY(!aa, "RouteTableIds[] argument missing\n");
                SET_NEXT(s->route_table_ids, (aa), pa);
          } else
-	if (!argcmp(str, "ServiceName")) {
+	if ((aret = argcmp(str, "ServiceName")) == 0 || aret == '=') {
             TRY(!aa, "ServiceName argument missing\n");
             s->service_name = aa; // string string
 
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -4994,7 +5353,8 @@ int net_access_point_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
 
 int net_peering_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct net_peering *s = v_s;
-	if (!argcmp(str, "AccepterNet")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccepterNet")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "AccepterNet argument missing\n");
@@ -5011,12 +5371,12 @@ int net_peering_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                    s->accepter_net_str = aa;
              }
          } else
-	if (!argcmp(str, "NetPeeringId")) {
+	if ((aret = argcmp(str, "NetPeeringId")) == 0 || aret == '=') {
             TRY(!aa, "NetPeeringId argument missing\n");
             s->net_peering_id = aa; // string string
 
          } else
-	if (!argcmp(str, "SourceNet")) {
+	if ((aret = argcmp(str, "SourceNet")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "SourceNet argument missing\n");
@@ -5033,7 +5393,7 @@ int net_peering_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                    s->source_net_str = aa;
              }
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "State argument missing\n");
@@ -5050,7 +5410,7 @@ int net_peering_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                    s->state_str = aa;
              }
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -5083,12 +5443,13 @@ int net_peering_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int net_peering_state_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct net_peering_state *s = v_s;
-	if (!argcmp(str, "Message")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Message")) == 0 || aret == '=') {
             TRY(!aa, "Message argument missing\n");
             s->message = aa; // string string
 
          } else
-	if (!argcmp(str, "Name")) {
+	if ((aret = argcmp(str, "Name")) == 0 || aret == '=') {
             TRY(!aa, "Name argument missing\n");
             s->name = aa; // string string
 
@@ -5101,12 +5462,13 @@ int net_peering_state_parser(void *v_s, char *str, char *aa, struct ptr_array *p
 
 int net_to_virtual_gateway_link_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct net_to_virtual_gateway_link *s = v_s;
-	if (!argcmp(str, "NetId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "NetId")) == 0 || aret == '=') {
             TRY(!aa, "NetId argument missing\n");
             s->net_id = aa; // string string
 
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
@@ -5119,17 +5481,18 @@ int net_to_virtual_gateway_link_parser(void *v_s, char *str, char *aa, struct pt
 
 int nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct nic *s = v_s;
-	if (!argcmp(str, "AccountId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccountId")) == 0 || aret == '=') {
             TRY(!aa, "AccountId argument missing\n");
             s->account_id = aa; // string string
 
          } else
-	if (!argcmp(str, "Description")) {
+	if ((aret = argcmp(str, "Description")) == 0 || aret == '=') {
             TRY(!aa, "Description argument missing\n");
             s->description = aa; // string string
 
          } else
-	if (!argcmp(str, "IsSourceDestChecked")) {
+	if ((aret = argcmp(str, "IsSourceDestChecked")) == 0 || aret == '=') {
             s->is_set_is_source_dest_checked = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->is_source_dest_checked = 1;
@@ -5139,7 +5502,7 @@ int nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("IsSourceDestChecked require true/false\n");
              }
         } else
-	if (!argcmp(str, "LinkNic")) {
+	if ((aret = argcmp(str, "LinkNic")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "LinkNic argument missing\n");
@@ -5156,7 +5519,7 @@ int nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                    s->link_nic_str = aa;
              }
          } else
-	if (!argcmp(str, "LinkPublicIp")) {
+	if ((aret = argcmp(str, "LinkPublicIp")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "LinkPublicIp argument missing\n");
@@ -5173,27 +5536,27 @@ int nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                    s->link_public_ip_str = aa;
              }
          } else
-	if (!argcmp(str, "MacAddress")) {
+	if ((aret = argcmp(str, "MacAddress")) == 0 || aret == '=') {
             TRY(!aa, "MacAddress argument missing\n");
             s->mac_address = aa; // string string
 
          } else
-	if (!argcmp(str, "NetId")) {
+	if ((aret = argcmp(str, "NetId")) == 0 || aret == '=') {
             TRY(!aa, "NetId argument missing\n");
             s->net_id = aa; // string string
 
          } else
-	if (!argcmp(str, "NicId")) {
+	if ((aret = argcmp(str, "NicId")) == 0 || aret == '=') {
             TRY(!aa, "NicId argument missing\n");
             s->nic_id = aa; // string string
 
          } else
-	if (!argcmp(str, "PrivateDnsName")) {
+	if ((aret = argcmp(str, "PrivateDnsName")) == 0 || aret == '=') {
             TRY(!aa, "PrivateDnsName argument missing\n");
             s->private_dns_name = aa; // string string
 
          } else
-	if (!argcmp(str, "PrivateIps")) {
+	if ((aret = argcmp(str, "PrivateIps")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -5218,7 +5581,7 @@ int nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->private_ips_str = aa; // array ref PrivateIp ref
             }
          } else
-	if (!argcmp(str, "SecurityGroups")) {
+	if ((aret = argcmp(str, "SecurityGroups")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -5243,22 +5606,22 @@ int nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->security_groups_str = aa; // array ref SecurityGroupLight ref
             }
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "SubnetId")) {
+	if ((aret = argcmp(str, "SubnetId")) == 0 || aret == '=') {
             TRY(!aa, "SubnetId argument missing\n");
             s->subnet_id = aa; // string string
 
          } else
-	if (!argcmp(str, "SubregionName")) {
+	if ((aret = argcmp(str, "SubregionName")) == 0 || aret == '=') {
             TRY(!aa, "SubregionName argument missing\n");
             s->subregion_name = aa; // string string
 
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -5291,7 +5654,8 @@ int nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int nic_for_vm_creation_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct nic_for_vm_creation *s = v_s;
-	if (!argcmp(str, "DeleteOnVmDeletion")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "DeleteOnVmDeletion")) == 0 || aret == '=') {
             s->is_set_delete_on_vm_deletion = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->delete_on_vm_deletion = 1;
@@ -5301,22 +5665,22 @@ int nic_for_vm_creation_parser(void *v_s, char *str, char *aa, struct ptr_array 
             		BAD_RET("DeleteOnVmDeletion require true/false\n");
              }
         } else
-	if (!argcmp(str, "Description")) {
+	if ((aret = argcmp(str, "Description")) == 0 || aret == '=') {
             TRY(!aa, "Description argument missing\n");
             s->description = aa; // string string
 
          } else
-	if (!argcmp(str, "DeviceNumber")) {
+	if ((aret = argcmp(str, "DeviceNumber")) == 0 || aret == '=') {
             TRY(!aa, "DeviceNumber argument missing\n");
             s->is_set_device_number = 1;
             s->device_number = atoi(aa);
          } else
-	if (!argcmp(str, "NicId")) {
+	if ((aret = argcmp(str, "NicId")) == 0 || aret == '=') {
             TRY(!aa, "NicId argument missing\n");
             s->nic_id = aa; // string string
 
          } else
-	if (!argcmp(str, "PrivateIps")) {
+	if ((aret = argcmp(str, "PrivateIps")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -5341,19 +5705,19 @@ int nic_for_vm_creation_parser(void *v_s, char *str, char *aa, struct ptr_array 
             	s->private_ips_str = aa; // array ref PrivateIpLight ref
             }
          } else
-	if (!argcmp(str, "SecondaryPrivateIpCount")) {
+	if ((aret = argcmp(str, "SecondaryPrivateIpCount")) == 0 || aret == '=') {
             TRY(!aa, "SecondaryPrivateIpCount argument missing\n");
             s->is_set_secondary_private_ip_count = 1;
             s->secondary_private_ip_count = atoi(aa);
          } else
-	if (!argcmp(str, "SecurityGroupIds")) {
+	if ((aret = argcmp(str, "SecurityGroupIds")) == 0 || aret == '=') {
             	 TRY(!aa, "SecurityGroupIds argument missing\n");
                s->security_group_ids_str = aa;
-         } else if (!strcmp(str, "SecurityGroupIds[]")) {
+         } else if (!(aret = strcmp(str, "SecurityGroupIds[]")) || aret == '=') {
                TRY(!aa, "SecurityGroupIds[] argument missing\n");
                SET_NEXT(s->security_group_ids, (aa), pa);
          } else
-	if (!argcmp(str, "SubnetId")) {
+	if ((aret = argcmp(str, "SubnetId")) == 0 || aret == '=') {
             TRY(!aa, "SubnetId argument missing\n");
             s->subnet_id = aa; // string string
 
@@ -5366,17 +5730,18 @@ int nic_for_vm_creation_parser(void *v_s, char *str, char *aa, struct ptr_array 
 
 int nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct nic_light *s = v_s;
-	if (!argcmp(str, "AccountId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccountId")) == 0 || aret == '=') {
             TRY(!aa, "AccountId argument missing\n");
             s->account_id = aa; // string string
 
          } else
-	if (!argcmp(str, "Description")) {
+	if ((aret = argcmp(str, "Description")) == 0 || aret == '=') {
             TRY(!aa, "Description argument missing\n");
             s->description = aa; // string string
 
          } else
-	if (!argcmp(str, "IsSourceDestChecked")) {
+	if ((aret = argcmp(str, "IsSourceDestChecked")) == 0 || aret == '=') {
             s->is_set_is_source_dest_checked = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->is_source_dest_checked = 1;
@@ -5386,7 +5751,7 @@ int nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("IsSourceDestChecked require true/false\n");
              }
         } else
-	if (!argcmp(str, "LinkNic")) {
+	if ((aret = argcmp(str, "LinkNic")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "LinkNic argument missing\n");
@@ -5403,7 +5768,7 @@ int nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                    s->link_nic_str = aa;
              }
          } else
-	if (!argcmp(str, "LinkPublicIp")) {
+	if ((aret = argcmp(str, "LinkPublicIp")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "LinkPublicIp argument missing\n");
@@ -5420,27 +5785,27 @@ int nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                    s->link_public_ip_str = aa;
              }
          } else
-	if (!argcmp(str, "MacAddress")) {
+	if ((aret = argcmp(str, "MacAddress")) == 0 || aret == '=') {
             TRY(!aa, "MacAddress argument missing\n");
             s->mac_address = aa; // string string
 
          } else
-	if (!argcmp(str, "NetId")) {
+	if ((aret = argcmp(str, "NetId")) == 0 || aret == '=') {
             TRY(!aa, "NetId argument missing\n");
             s->net_id = aa; // string string
 
          } else
-	if (!argcmp(str, "NicId")) {
+	if ((aret = argcmp(str, "NicId")) == 0 || aret == '=') {
             TRY(!aa, "NicId argument missing\n");
             s->nic_id = aa; // string string
 
          } else
-	if (!argcmp(str, "PrivateDnsName")) {
+	if ((aret = argcmp(str, "PrivateDnsName")) == 0 || aret == '=') {
             TRY(!aa, "PrivateDnsName argument missing\n");
             s->private_dns_name = aa; // string string
 
          } else
-	if (!argcmp(str, "PrivateIps")) {
+	if ((aret = argcmp(str, "PrivateIps")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -5465,7 +5830,7 @@ int nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->private_ips_str = aa; // array ref PrivateIpLightForVm ref
             }
          } else
-	if (!argcmp(str, "SecurityGroups")) {
+	if ((aret = argcmp(str, "SecurityGroups")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -5490,12 +5855,12 @@ int nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->security_groups_str = aa; // array ref SecurityGroupLight ref
             }
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "SubnetId")) {
+	if ((aret = argcmp(str, "SubnetId")) == 0 || aret == '=') {
             TRY(!aa, "SubnetId argument missing\n");
             s->subnet_id = aa; // string string
 
@@ -5508,12 +5873,13 @@ int nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int osu_api_key_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct osu_api_key *s = v_s;
-	if (!argcmp(str, "ApiKeyId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "ApiKeyId")) == 0 || aret == '=') {
             TRY(!aa, "ApiKeyId argument missing\n");
             s->api_key_id = aa; // string string
 
          } else
-	if (!argcmp(str, "SecretKey")) {
+	if ((aret = argcmp(str, "SecretKey")) == 0 || aret == '=') {
             TRY(!aa, "SecretKey argument missing\n");
             s->secret_key = aa; // string string
 
@@ -5526,22 +5892,23 @@ int osu_api_key_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int osu_export_image_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct osu_export_image_export_task *s = v_s;
-	if (!argcmp(str, "DiskImageFormat")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "DiskImageFormat")) == 0 || aret == '=') {
             TRY(!aa, "DiskImageFormat argument missing\n");
             s->disk_image_format = aa; // string string
 
          } else
-	if (!argcmp(str, "OsuBucket")) {
+	if ((aret = argcmp(str, "OsuBucket")) == 0 || aret == '=') {
             TRY(!aa, "OsuBucket argument missing\n");
             s->osu_bucket = aa; // string string
 
          } else
-	if (!argcmp(str, "OsuManifestUrl")) {
+	if ((aret = argcmp(str, "OsuManifestUrl")) == 0 || aret == '=') {
             TRY(!aa, "OsuManifestUrl argument missing\n");
             s->osu_manifest_url = aa; // string string
 
          } else
-	if (!argcmp(str, "OsuPrefix")) {
+	if ((aret = argcmp(str, "OsuPrefix")) == 0 || aret == '=') {
             TRY(!aa, "OsuPrefix argument missing\n");
             s->osu_prefix = aa; // string string
 
@@ -5554,17 +5921,18 @@ int osu_export_image_export_task_parser(void *v_s, char *str, char *aa, struct p
 
 int osu_export_snapshot_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct osu_export_snapshot_export_task *s = v_s;
-	if (!argcmp(str, "DiskImageFormat")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "DiskImageFormat")) == 0 || aret == '=') {
             TRY(!aa, "DiskImageFormat argument missing\n");
             s->disk_image_format = aa; // string string
 
          } else
-	if (!argcmp(str, "OsuBucket")) {
+	if ((aret = argcmp(str, "OsuBucket")) == 0 || aret == '=') {
             TRY(!aa, "OsuBucket argument missing\n");
             s->osu_bucket = aa; // string string
 
          } else
-	if (!argcmp(str, "OsuPrefix")) {
+	if ((aret = argcmp(str, "OsuPrefix")) == 0 || aret == '=') {
             TRY(!aa, "OsuPrefix argument missing\n");
             s->osu_prefix = aa; // string string
 
@@ -5577,12 +5945,13 @@ int osu_export_snapshot_export_task_parser(void *v_s, char *str, char *aa, struc
 
 int osu_export_to_create_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct osu_export_to_create *s = v_s;
-	if (!argcmp(str, "DiskImageFormat")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "DiskImageFormat")) == 0 || aret == '=') {
             TRY(!aa, "DiskImageFormat argument missing\n");
             s->disk_image_format = aa; // string string
 
          } else
-	if (!argcmp(str, "OsuApiKey")) {
+	if ((aret = argcmp(str, "OsuApiKey")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "OsuApiKey argument missing\n");
@@ -5599,17 +5968,17 @@ int osu_export_to_create_parser(void *v_s, char *str, char *aa, struct ptr_array
                    s->osu_api_key_str = aa;
              }
          } else
-	if (!argcmp(str, "OsuBucket")) {
+	if ((aret = argcmp(str, "OsuBucket")) == 0 || aret == '=') {
             TRY(!aa, "OsuBucket argument missing\n");
             s->osu_bucket = aa; // string string
 
          } else
-	if (!argcmp(str, "OsuManifestUrl")) {
+	if ((aret = argcmp(str, "OsuManifestUrl")) == 0 || aret == '=') {
             TRY(!aa, "OsuManifestUrl argument missing\n");
             s->osu_manifest_url = aa; // string string
 
          } else
-	if (!argcmp(str, "OsuPrefix")) {
+	if ((aret = argcmp(str, "OsuPrefix")) == 0 || aret == '=') {
             TRY(!aa, "OsuPrefix argument missing\n");
             s->osu_prefix = aa; // string string
 
@@ -5622,14 +5991,15 @@ int osu_export_to_create_parser(void *v_s, char *str, char *aa, struct ptr_array
 
 int permissions_on_resource_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct permissions_on_resource *s = v_s;
-	if (!argcmp(str, "AccountIds")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccountIds")) == 0 || aret == '=') {
             	 TRY(!aa, "AccountIds argument missing\n");
                s->account_ids_str = aa;
-         } else if (!strcmp(str, "AccountIds[]")) {
+         } else if (!(aret = strcmp(str, "AccountIds[]")) || aret == '=') {
                TRY(!aa, "AccountIds[] argument missing\n");
                SET_NEXT(s->account_ids, (aa), pa);
          } else
-	if (!argcmp(str, "GlobalPermission")) {
+	if ((aret = argcmp(str, "GlobalPermission")) == 0 || aret == '=') {
             s->is_set_global_permission = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->global_permission = 1;
@@ -5647,7 +6017,8 @@ int permissions_on_resource_parser(void *v_s, char *str, char *aa, struct ptr_ar
 
 int permissions_on_resource_creation_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct permissions_on_resource_creation *s = v_s;
-	if (!argcmp(str, "Additions")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Additions")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "Additions argument missing\n");
@@ -5664,7 +6035,7 @@ int permissions_on_resource_creation_parser(void *v_s, char *str, char *aa, stru
                    s->additions_str = aa;
              }
          } else
-	if (!argcmp(str, "Removals")) {
+	if ((aret = argcmp(str, "Removals")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "Removals argument missing\n");
@@ -5689,55 +6060,56 @@ int permissions_on_resource_creation_parser(void *v_s, char *str, char *aa, stru
 
 int phase1_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct phase1_options *s = v_s;
-	if (!argcmp(str, "DpdTimeoutAction")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "DpdTimeoutAction")) == 0 || aret == '=') {
             TRY(!aa, "DpdTimeoutAction argument missing\n");
             s->dpd_timeout_action = aa; // string string
 
          } else
-	if (!argcmp(str, "DpdTimeoutSeconds")) {
+	if ((aret = argcmp(str, "DpdTimeoutSeconds")) == 0 || aret == '=') {
             TRY(!aa, "DpdTimeoutSeconds argument missing\n");
             s->is_set_dpd_timeout_seconds = 1;
             s->dpd_timeout_seconds = atoi(aa);
          } else
-	if (!argcmp(str, "IkeVersions")) {
+	if ((aret = argcmp(str, "IkeVersions")) == 0 || aret == '=') {
             	 TRY(!aa, "IkeVersions argument missing\n");
                s->ike_versions_str = aa;
-         } else if (!strcmp(str, "IkeVersions[]")) {
+         } else if (!(aret = strcmp(str, "IkeVersions[]")) || aret == '=') {
                TRY(!aa, "IkeVersions[] argument missing\n");
                SET_NEXT(s->ike_versions, (aa), pa);
          } else
-	if (!argcmp(str, "Phase1DhGroupNumbers")) {
+	if ((aret = argcmp(str, "Phase1DhGroupNumbers")) == 0 || aret == '=') {
             	 TRY(!aa, "Phase1DhGroupNumbers argument missing\n");
                s->phase1_dh_group_numbers_str = aa;
-         } else if (!strcmp(str, "Phase1DhGroupNumbers[]")) {
+         } else if (!(aret = strcmp(str, "Phase1DhGroupNumbers[]")) || aret == '=') {
                TRY(!aa, "Phase1DhGroupNumbers[] argument missing\n");
                SET_NEXT(s->phase1_dh_group_numbers, atoi(aa), pa);
          } else
-	if (!argcmp(str, "Phase1EncryptionAlgorithms")) {
+	if ((aret = argcmp(str, "Phase1EncryptionAlgorithms")) == 0 || aret == '=') {
             	 TRY(!aa, "Phase1EncryptionAlgorithms argument missing\n");
                s->phase1_encryption_algorithms_str = aa;
-         } else if (!strcmp(str, "Phase1EncryptionAlgorithms[]")) {
+         } else if (!(aret = strcmp(str, "Phase1EncryptionAlgorithms[]")) || aret == '=') {
                TRY(!aa, "Phase1EncryptionAlgorithms[] argument missing\n");
                SET_NEXT(s->phase1_encryption_algorithms, (aa), pa);
          } else
-	if (!argcmp(str, "Phase1IntegrityAlgorithms")) {
+	if ((aret = argcmp(str, "Phase1IntegrityAlgorithms")) == 0 || aret == '=') {
             	 TRY(!aa, "Phase1IntegrityAlgorithms argument missing\n");
                s->phase1_integrity_algorithms_str = aa;
-         } else if (!strcmp(str, "Phase1IntegrityAlgorithms[]")) {
+         } else if (!(aret = strcmp(str, "Phase1IntegrityAlgorithms[]")) || aret == '=') {
                TRY(!aa, "Phase1IntegrityAlgorithms[] argument missing\n");
                SET_NEXT(s->phase1_integrity_algorithms, (aa), pa);
          } else
-	if (!argcmp(str, "Phase1LifetimeSeconds")) {
+	if ((aret = argcmp(str, "Phase1LifetimeSeconds")) == 0 || aret == '=') {
             TRY(!aa, "Phase1LifetimeSeconds argument missing\n");
             s->is_set_phase1_lifetime_seconds = 1;
             s->phase1_lifetime_seconds = atoi(aa);
          } else
-	if (!argcmp(str, "ReplayWindowSize")) {
+	if ((aret = argcmp(str, "ReplayWindowSize")) == 0 || aret == '=') {
             TRY(!aa, "ReplayWindowSize argument missing\n");
             s->is_set_replay_window_size = 1;
             s->replay_window_size = atoi(aa);
          } else
-	if (!argcmp(str, "StartupAction")) {
+	if ((aret = argcmp(str, "StartupAction")) == 0 || aret == '=') {
             TRY(!aa, "StartupAction argument missing\n");
             s->startup_action = aa; // string string
 
@@ -5750,33 +6122,34 @@ int phase1_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 
 int phase2_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct phase2_options *s = v_s;
-	if (!argcmp(str, "Phase2DhGroupNumbers")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Phase2DhGroupNumbers")) == 0 || aret == '=') {
             	 TRY(!aa, "Phase2DhGroupNumbers argument missing\n");
                s->phase2_dh_group_numbers_str = aa;
-         } else if (!strcmp(str, "Phase2DhGroupNumbers[]")) {
+         } else if (!(aret = strcmp(str, "Phase2DhGroupNumbers[]")) || aret == '=') {
                TRY(!aa, "Phase2DhGroupNumbers[] argument missing\n");
                SET_NEXT(s->phase2_dh_group_numbers, atoi(aa), pa);
          } else
-	if (!argcmp(str, "Phase2EncryptionAlgorithms")) {
+	if ((aret = argcmp(str, "Phase2EncryptionAlgorithms")) == 0 || aret == '=') {
             	 TRY(!aa, "Phase2EncryptionAlgorithms argument missing\n");
                s->phase2_encryption_algorithms_str = aa;
-         } else if (!strcmp(str, "Phase2EncryptionAlgorithms[]")) {
+         } else if (!(aret = strcmp(str, "Phase2EncryptionAlgorithms[]")) || aret == '=') {
                TRY(!aa, "Phase2EncryptionAlgorithms[] argument missing\n");
                SET_NEXT(s->phase2_encryption_algorithms, (aa), pa);
          } else
-	if (!argcmp(str, "Phase2IntegrityAlgorithms")) {
+	if ((aret = argcmp(str, "Phase2IntegrityAlgorithms")) == 0 || aret == '=') {
             	 TRY(!aa, "Phase2IntegrityAlgorithms argument missing\n");
                s->phase2_integrity_algorithms_str = aa;
-         } else if (!strcmp(str, "Phase2IntegrityAlgorithms[]")) {
+         } else if (!(aret = strcmp(str, "Phase2IntegrityAlgorithms[]")) || aret == '=') {
                TRY(!aa, "Phase2IntegrityAlgorithms[] argument missing\n");
                SET_NEXT(s->phase2_integrity_algorithms, (aa), pa);
          } else
-	if (!argcmp(str, "Phase2LifetimeSeconds")) {
+	if ((aret = argcmp(str, "Phase2LifetimeSeconds")) == 0 || aret == '=') {
             TRY(!aa, "Phase2LifetimeSeconds argument missing\n");
             s->is_set_phase2_lifetime_seconds = 1;
             s->phase2_lifetime_seconds = atoi(aa);
          } else
-	if (!argcmp(str, "PreSharedKey")) {
+	if ((aret = argcmp(str, "PreSharedKey")) == 0 || aret == '=') {
             TRY(!aa, "PreSharedKey argument missing\n");
             s->pre_shared_key = aa; // string string
 
@@ -5789,12 +6162,13 @@ int phase2_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 
 int placement_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct placement *s = v_s;
-	if (!argcmp(str, "SubregionName")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "SubregionName")) == 0 || aret == '=') {
             TRY(!aa, "SubregionName argument missing\n");
             s->subregion_name = aa; // string string
 
          } else
-	if (!argcmp(str, "Tenancy")) {
+	if ((aret = argcmp(str, "Tenancy")) == 0 || aret == '=') {
             TRY(!aa, "Tenancy argument missing\n");
             s->tenancy = aa; // string string
 
@@ -5807,7 +6181,8 @@ int placement_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int private_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct private_ip *s = v_s;
-	if (!argcmp(str, "IsPrimary")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "IsPrimary")) == 0 || aret == '=') {
             s->is_set_is_primary = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->is_primary = 1;
@@ -5817,7 +6192,7 @@ int private_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("IsPrimary require true/false\n");
              }
         } else
-	if (!argcmp(str, "LinkPublicIp")) {
+	if ((aret = argcmp(str, "LinkPublicIp")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "LinkPublicIp argument missing\n");
@@ -5834,12 +6209,12 @@ int private_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                    s->link_public_ip_str = aa;
              }
          } else
-	if (!argcmp(str, "PrivateDnsName")) {
+	if ((aret = argcmp(str, "PrivateDnsName")) == 0 || aret == '=') {
             TRY(!aa, "PrivateDnsName argument missing\n");
             s->private_dns_name = aa; // string string
 
          } else
-	if (!argcmp(str, "PrivateIp")) {
+	if ((aret = argcmp(str, "PrivateIp")) == 0 || aret == '=') {
             TRY(!aa, "PrivateIp argument missing\n");
             s->private_ip = aa; // string string
 
@@ -5852,7 +6227,8 @@ int private_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int private_ip_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct private_ip_light *s = v_s;
-	if (!argcmp(str, "IsPrimary")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "IsPrimary")) == 0 || aret == '=') {
             s->is_set_is_primary = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->is_primary = 1;
@@ -5862,7 +6238,7 @@ int private_ip_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
             		BAD_RET("IsPrimary require true/false\n");
              }
         } else
-	if (!argcmp(str, "PrivateIp")) {
+	if ((aret = argcmp(str, "PrivateIp")) == 0 || aret == '=') {
             TRY(!aa, "PrivateIp argument missing\n");
             s->private_ip = aa; // string string
 
@@ -5875,7 +6251,8 @@ int private_ip_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
 
 int private_ip_light_for_vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct private_ip_light_for_vm *s = v_s;
-	if (!argcmp(str, "IsPrimary")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "IsPrimary")) == 0 || aret == '=') {
             s->is_set_is_primary = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->is_primary = 1;
@@ -5885,7 +6262,7 @@ int private_ip_light_for_vm_parser(void *v_s, char *str, char *aa, struct ptr_ar
             		BAD_RET("IsPrimary require true/false\n");
              }
         } else
-	if (!argcmp(str, "LinkPublicIp")) {
+	if ((aret = argcmp(str, "LinkPublicIp")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "LinkPublicIp argument missing\n");
@@ -5902,12 +6279,12 @@ int private_ip_light_for_vm_parser(void *v_s, char *str, char *aa, struct ptr_ar
                    s->link_public_ip_str = aa;
              }
          } else
-	if (!argcmp(str, "PrivateDnsName")) {
+	if ((aret = argcmp(str, "PrivateDnsName")) == 0 || aret == '=') {
             TRY(!aa, "PrivateDnsName argument missing\n");
             s->private_dns_name = aa; // string string
 
          } else
-	if (!argcmp(str, "PrivateIp")) {
+	if ((aret = argcmp(str, "PrivateIp")) == 0 || aret == '=') {
             TRY(!aa, "PrivateIp argument missing\n");
             s->private_ip = aa; // string string
 
@@ -5920,17 +6297,18 @@ int private_ip_light_for_vm_parser(void *v_s, char *str, char *aa, struct ptr_ar
 
 int product_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct product_type *s = v_s;
-	if (!argcmp(str, "Description")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Description")) == 0 || aret == '=') {
             TRY(!aa, "Description argument missing\n");
             s->description = aa; // string string
 
          } else
-	if (!argcmp(str, "ProductTypeId")) {
+	if ((aret = argcmp(str, "ProductTypeId")) == 0 || aret == '=') {
             TRY(!aa, "ProductTypeId argument missing\n");
             s->product_type_id = aa; // string string
 
          } else
-	if (!argcmp(str, "Vendor")) {
+	if ((aret = argcmp(str, "Vendor")) == 0 || aret == '=') {
             TRY(!aa, "Vendor argument missing\n");
             s->vendor = aa; // string string
 
@@ -5943,37 +6321,38 @@ int product_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int public_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct public_ip *s = v_s;
-	if (!argcmp(str, "LinkPublicIpId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "LinkPublicIpId")) == 0 || aret == '=') {
             TRY(!aa, "LinkPublicIpId argument missing\n");
             s->link_public_ip_id = aa; // string string
 
          } else
-	if (!argcmp(str, "NicAccountId")) {
+	if ((aret = argcmp(str, "NicAccountId")) == 0 || aret == '=') {
             TRY(!aa, "NicAccountId argument missing\n");
             s->nic_account_id = aa; // string string
 
          } else
-	if (!argcmp(str, "NicId")) {
+	if ((aret = argcmp(str, "NicId")) == 0 || aret == '=') {
             TRY(!aa, "NicId argument missing\n");
             s->nic_id = aa; // string string
 
          } else
-	if (!argcmp(str, "PrivateIp")) {
+	if ((aret = argcmp(str, "PrivateIp")) == 0 || aret == '=') {
             TRY(!aa, "PrivateIp argument missing\n");
             s->private_ip = aa; // string string
 
          } else
-	if (!argcmp(str, "PublicIp")) {
+	if ((aret = argcmp(str, "PublicIp")) == 0 || aret == '=') {
             TRY(!aa, "PublicIp argument missing\n");
             s->public_ip = aa; // string string
 
          } else
-	if (!argcmp(str, "PublicIpId")) {
+	if ((aret = argcmp(str, "PublicIpId")) == 0 || aret == '=') {
             TRY(!aa, "PublicIpId argument missing\n");
             s->public_ip_id = aa; // string string
 
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -5998,7 +6377,7 @@ int public_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->tags_str = aa; // array ref ResourceTag ref
             }
          } else
-	if (!argcmp(str, "VmId")) {
+	if ((aret = argcmp(str, "VmId")) == 0 || aret == '=') {
             TRY(!aa, "VmId argument missing\n");
             s->vm_id = aa; // string string
 
@@ -6011,12 +6390,13 @@ int public_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int public_ip_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct public_ip_light *s = v_s;
-	if (!argcmp(str, "PublicIp")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "PublicIp")) == 0 || aret == '=') {
             TRY(!aa, "PublicIp argument missing\n");
             s->public_ip = aa; // string string
 
          } else
-	if (!argcmp(str, "PublicIpId")) {
+	if ((aret = argcmp(str, "PublicIpId")) == 0 || aret == '=') {
             TRY(!aa, "PublicIpId argument missing\n");
             s->public_ip_id = aa; // string string
 
@@ -6029,37 +6409,38 @@ int public_ip_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
 
 int quota_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct quota *s = v_s;
-	if (!argcmp(str, "AccountId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccountId")) == 0 || aret == '=') {
             TRY(!aa, "AccountId argument missing\n");
             s->account_id = aa; // string string
 
          } else
-	if (!argcmp(str, "Description")) {
+	if ((aret = argcmp(str, "Description")) == 0 || aret == '=') {
             TRY(!aa, "Description argument missing\n");
             s->description = aa; // string string
 
          } else
-	if (!argcmp(str, "MaxValue")) {
+	if ((aret = argcmp(str, "MaxValue")) == 0 || aret == '=') {
             TRY(!aa, "MaxValue argument missing\n");
             s->is_set_max_value = 1;
             s->max_value = atoi(aa);
          } else
-	if (!argcmp(str, "Name")) {
+	if ((aret = argcmp(str, "Name")) == 0 || aret == '=') {
             TRY(!aa, "Name argument missing\n");
             s->name = aa; // string string
 
          } else
-	if (!argcmp(str, "QuotaCollection")) {
+	if ((aret = argcmp(str, "QuotaCollection")) == 0 || aret == '=') {
             TRY(!aa, "QuotaCollection argument missing\n");
             s->quota_collection = aa; // string string
 
          } else
-	if (!argcmp(str, "ShortDescription")) {
+	if ((aret = argcmp(str, "ShortDescription")) == 0 || aret == '=') {
             TRY(!aa, "ShortDescription argument missing\n");
             s->short_description = aa; // string string
 
          } else
-	if (!argcmp(str, "UsedValue")) {
+	if ((aret = argcmp(str, "UsedValue")) == 0 || aret == '=') {
             TRY(!aa, "UsedValue argument missing\n");
             s->is_set_used_value = 1;
             s->used_value = atoi(aa);
@@ -6072,12 +6453,13 @@ int quota_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int quota_types_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct quota_types *s = v_s;
-	if (!argcmp(str, "QuotaType")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "QuotaType")) == 0 || aret == '=') {
             TRY(!aa, "QuotaType argument missing\n");
             s->quota_type = aa; // string string
 
          } else
-	if (!argcmp(str, "Quotas")) {
+	if ((aret = argcmp(str, "Quotas")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -6110,12 +6492,13 @@ int quota_types_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int region_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct region *s = v_s;
-	if (!argcmp(str, "Endpoint")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Endpoint")) == 0 || aret == '=') {
             TRY(!aa, "Endpoint argument missing\n");
             s->endpoint = aa; // string string
 
          } else
-	if (!argcmp(str, "RegionName")) {
+	if ((aret = argcmp(str, "RegionName")) == 0 || aret == '=') {
             TRY(!aa, "RegionName argument missing\n");
             s->region_name = aa; // string string
 
@@ -6128,7 +6511,8 @@ int region_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int resource_load_balancer_tag_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct resource_load_balancer_tag *s = v_s;
-	if (!argcmp(str, "Key")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Key")) == 0 || aret == '=') {
             TRY(!aa, "Key argument missing\n");
             s->key = aa; // string string
 
@@ -6141,12 +6525,13 @@ int resource_load_balancer_tag_parser(void *v_s, char *str, char *aa, struct ptr
 
 int resource_tag_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct resource_tag *s = v_s;
-	if (!argcmp(str, "Key")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Key")) == 0 || aret == '=') {
             TRY(!aa, "Key argument missing\n");
             s->key = aa; // string string
 
          } else
-	if (!argcmp(str, "Value")) {
+	if ((aret = argcmp(str, "Value")) == 0 || aret == '=') {
             TRY(!aa, "Value argument missing\n");
             s->value = aa; // string string
 
@@ -6159,57 +6544,58 @@ int resource_tag_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int route_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct route *s = v_s;
-	if (!argcmp(str, "CreationMethod")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "CreationMethod")) == 0 || aret == '=') {
             TRY(!aa, "CreationMethod argument missing\n");
             s->creation_method = aa; // string string
 
          } else
-	if (!argcmp(str, "DestinationIpRange")) {
+	if ((aret = argcmp(str, "DestinationIpRange")) == 0 || aret == '=') {
             TRY(!aa, "DestinationIpRange argument missing\n");
             s->destination_ip_range = aa; // string string
 
          } else
-	if (!argcmp(str, "DestinationServiceId")) {
+	if ((aret = argcmp(str, "DestinationServiceId")) == 0 || aret == '=') {
             TRY(!aa, "DestinationServiceId argument missing\n");
             s->destination_service_id = aa; // string string
 
          } else
-	if (!argcmp(str, "GatewayId")) {
+	if ((aret = argcmp(str, "GatewayId")) == 0 || aret == '=') {
             TRY(!aa, "GatewayId argument missing\n");
             s->gateway_id = aa; // string string
 
          } else
-	if (!argcmp(str, "NatServiceId")) {
+	if ((aret = argcmp(str, "NatServiceId")) == 0 || aret == '=') {
             TRY(!aa, "NatServiceId argument missing\n");
             s->nat_service_id = aa; // string string
 
          } else
-	if (!argcmp(str, "NetAccessPointId")) {
+	if ((aret = argcmp(str, "NetAccessPointId")) == 0 || aret == '=') {
             TRY(!aa, "NetAccessPointId argument missing\n");
             s->net_access_point_id = aa; // string string
 
          } else
-	if (!argcmp(str, "NetPeeringId")) {
+	if ((aret = argcmp(str, "NetPeeringId")) == 0 || aret == '=') {
             TRY(!aa, "NetPeeringId argument missing\n");
             s->net_peering_id = aa; // string string
 
          } else
-	if (!argcmp(str, "NicId")) {
+	if ((aret = argcmp(str, "NicId")) == 0 || aret == '=') {
             TRY(!aa, "NicId argument missing\n");
             s->nic_id = aa; // string string
 
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "VmAccountId")) {
+	if ((aret = argcmp(str, "VmAccountId")) == 0 || aret == '=') {
             TRY(!aa, "VmAccountId argument missing\n");
             s->vm_account_id = aa; // string string
 
          } else
-	if (!argcmp(str, "VmId")) {
+	if ((aret = argcmp(str, "VmId")) == 0 || aret == '=') {
             TRY(!aa, "VmId argument missing\n");
             s->vm_id = aa; // string string
 
@@ -6222,17 +6608,18 @@ int route_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int route_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct route_light *s = v_s;
-	if (!argcmp(str, "DestinationIpRange")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "DestinationIpRange")) == 0 || aret == '=') {
             TRY(!aa, "DestinationIpRange argument missing\n");
             s->destination_ip_range = aa; // string string
 
          } else
-	if (!argcmp(str, "RouteType")) {
+	if ((aret = argcmp(str, "RouteType")) == 0 || aret == '=') {
             TRY(!aa, "RouteType argument missing\n");
             s->route_type = aa; // string string
 
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
@@ -6245,7 +6632,8 @@ int route_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int route_propagating_virtual_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct route_propagating_virtual_gateway *s = v_s;
-	if (!argcmp(str, "VirtualGatewayId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "VirtualGatewayId")) == 0 || aret == '=') {
             TRY(!aa, "VirtualGatewayId argument missing\n");
             s->virtual_gateway_id = aa; // string string
 
@@ -6258,7 +6646,8 @@ int route_propagating_virtual_gateway_parser(void *v_s, char *str, char *aa, str
 
 int route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct route_table *s = v_s;
-	if (!argcmp(str, "LinkRouteTables")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "LinkRouteTables")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -6283,12 +6672,12 @@ int route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->link_route_tables_str = aa; // array ref LinkRouteTable ref
             }
          } else
-	if (!argcmp(str, "NetId")) {
+	if ((aret = argcmp(str, "NetId")) == 0 || aret == '=') {
             TRY(!aa, "NetId argument missing\n");
             s->net_id = aa; // string string
 
          } else
-	if (!argcmp(str, "RoutePropagatingVirtualGateways")) {
+	if ((aret = argcmp(str, "RoutePropagatingVirtualGateways")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -6313,12 +6702,12 @@ int route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->route_propagating_virtual_gateways_str = aa; // array ref RoutePropagatingVirtualGateway ref
             }
          } else
-	if (!argcmp(str, "RouteTableId")) {
+	if ((aret = argcmp(str, "RouteTableId")) == 0 || aret == '=') {
             TRY(!aa, "RouteTableId argument missing\n");
             s->route_table_id = aa; // string string
 
          } else
-	if (!argcmp(str, "Routes")) {
+	if ((aret = argcmp(str, "Routes")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -6343,7 +6732,7 @@ int route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->routes_str = aa; // array ref Route ref
             }
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -6376,17 +6765,18 @@ int route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int security_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct security_group *s = v_s;
-	if (!argcmp(str, "AccountId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccountId")) == 0 || aret == '=') {
             TRY(!aa, "AccountId argument missing\n");
             s->account_id = aa; // string string
 
          } else
-	if (!argcmp(str, "Description")) {
+	if ((aret = argcmp(str, "Description")) == 0 || aret == '=') {
             TRY(!aa, "Description argument missing\n");
             s->description = aa; // string string
 
          } else
-	if (!argcmp(str, "InboundRules")) {
+	if ((aret = argcmp(str, "InboundRules")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -6411,12 +6801,12 @@ int security_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             	s->inbound_rules_str = aa; // array ref SecurityGroupRule ref
             }
          } else
-	if (!argcmp(str, "NetId")) {
+	if ((aret = argcmp(str, "NetId")) == 0 || aret == '=') {
             TRY(!aa, "NetId argument missing\n");
             s->net_id = aa; // string string
 
          } else
-	if (!argcmp(str, "OutboundRules")) {
+	if ((aret = argcmp(str, "OutboundRules")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -6441,17 +6831,17 @@ int security_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             	s->outbound_rules_str = aa; // array ref SecurityGroupRule ref
             }
          } else
-	if (!argcmp(str, "SecurityGroupId")) {
+	if ((aret = argcmp(str, "SecurityGroupId")) == 0 || aret == '=') {
             TRY(!aa, "SecurityGroupId argument missing\n");
             s->security_group_id = aa; // string string
 
          } else
-	if (!argcmp(str, "SecurityGroupName")) {
+	if ((aret = argcmp(str, "SecurityGroupName")) == 0 || aret == '=') {
             TRY(!aa, "SecurityGroupName argument missing\n");
             s->security_group_name = aa; // string string
 
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -6484,12 +6874,13 @@ int security_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 
 int security_group_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct security_group_light *s = v_s;
-	if (!argcmp(str, "SecurityGroupId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "SecurityGroupId")) == 0 || aret == '=') {
             TRY(!aa, "SecurityGroupId argument missing\n");
             s->security_group_id = aa; // string string
 
          } else
-	if (!argcmp(str, "SecurityGroupName")) {
+	if ((aret = argcmp(str, "SecurityGroupName")) == 0 || aret == '=') {
             TRY(!aa, "SecurityGroupName argument missing\n");
             s->security_group_name = aa; // string string
 
@@ -6502,24 +6893,25 @@ int security_group_light_parser(void *v_s, char *str, char *aa, struct ptr_array
 
 int security_group_rule_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct security_group_rule *s = v_s;
-	if (!argcmp(str, "FromPortRange")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "FromPortRange")) == 0 || aret == '=') {
             TRY(!aa, "FromPortRange argument missing\n");
             s->is_set_from_port_range = 1;
             s->from_port_range = atoi(aa);
          } else
-	if (!argcmp(str, "IpProtocol")) {
+	if ((aret = argcmp(str, "IpProtocol")) == 0 || aret == '=') {
             TRY(!aa, "IpProtocol argument missing\n");
             s->ip_protocol = aa; // string string
 
          } else
-	if (!argcmp(str, "IpRanges")) {
+	if ((aret = argcmp(str, "IpRanges")) == 0 || aret == '=') {
             	 TRY(!aa, "IpRanges argument missing\n");
                s->ip_ranges_str = aa;
-         } else if (!strcmp(str, "IpRanges[]")) {
+         } else if (!(aret = strcmp(str, "IpRanges[]")) || aret == '=') {
                TRY(!aa, "IpRanges[] argument missing\n");
                SET_NEXT(s->ip_ranges, (aa), pa);
          } else
-	if (!argcmp(str, "SecurityGroupsMembers")) {
+	if ((aret = argcmp(str, "SecurityGroupsMembers")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -6544,14 +6936,14 @@ int security_group_rule_parser(void *v_s, char *str, char *aa, struct ptr_array 
             	s->security_groups_members_str = aa; // array ref SecurityGroupsMember ref
             }
          } else
-	if (!argcmp(str, "ServiceIds")) {
+	if ((aret = argcmp(str, "ServiceIds")) == 0 || aret == '=') {
             	 TRY(!aa, "ServiceIds argument missing\n");
                s->service_ids_str = aa;
-         } else if (!strcmp(str, "ServiceIds[]")) {
+         } else if (!(aret = strcmp(str, "ServiceIds[]")) || aret == '=') {
                TRY(!aa, "ServiceIds[] argument missing\n");
                SET_NEXT(s->service_ids, (aa), pa);
          } else
-	if (!argcmp(str, "ToPortRange")) {
+	if ((aret = argcmp(str, "ToPortRange")) == 0 || aret == '=') {
             TRY(!aa, "ToPortRange argument missing\n");
             s->is_set_to_port_range = 1;
             s->to_port_range = atoi(aa);
@@ -6564,17 +6956,18 @@ int security_group_rule_parser(void *v_s, char *str, char *aa, struct ptr_array 
 
 int security_groups_member_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct security_groups_member *s = v_s;
-	if (!argcmp(str, "AccountId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccountId")) == 0 || aret == '=') {
             TRY(!aa, "AccountId argument missing\n");
             s->account_id = aa; // string string
 
          } else
-	if (!argcmp(str, "SecurityGroupId")) {
+	if ((aret = argcmp(str, "SecurityGroupId")) == 0 || aret == '=') {
             TRY(!aa, "SecurityGroupId argument missing\n");
             s->security_group_id = aa; // string string
 
          } else
-	if (!argcmp(str, "SecurityGroupName")) {
+	if ((aret = argcmp(str, "SecurityGroupName")) == 0 || aret == '=') {
             TRY(!aa, "SecurityGroupName argument missing\n");
             s->security_group_name = aa; // string string
 
@@ -6587,32 +6980,33 @@ int security_groups_member_parser(void *v_s, char *str, char *aa, struct ptr_arr
 
 int server_certificate_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct server_certificate *s = v_s;
-	if (!argcmp(str, "ExpirationDate")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "ExpirationDate")) == 0 || aret == '=') {
             TRY(!aa, "ExpirationDate argument missing\n");
             s->expiration_date = aa; // string string
 
          } else
-	if (!argcmp(str, "Id")) {
+	if ((aret = argcmp(str, "Id")) == 0 || aret == '=') {
             TRY(!aa, "Id argument missing\n");
             s->id = aa; // string string
 
          } else
-	if (!argcmp(str, "Name")) {
+	if ((aret = argcmp(str, "Name")) == 0 || aret == '=') {
             TRY(!aa, "Name argument missing\n");
             s->name = aa; // string string
 
          } else
-	if (!argcmp(str, "Orn")) {
+	if ((aret = argcmp(str, "Orn")) == 0 || aret == '=') {
             TRY(!aa, "Orn argument missing\n");
             s->orn = aa; // string string
 
          } else
-	if (!argcmp(str, "Path")) {
+	if ((aret = argcmp(str, "Path")) == 0 || aret == '=') {
             TRY(!aa, "Path argument missing\n");
             s->path = aa; // string string
 
          } else
-	if (!argcmp(str, "UploadDate")) {
+	if ((aret = argcmp(str, "UploadDate")) == 0 || aret == '=') {
             TRY(!aa, "UploadDate argument missing\n");
             s->upload_date = aa; // string string
 
@@ -6625,19 +7019,20 @@ int server_certificate_parser(void *v_s, char *str, char *aa, struct ptr_array *
 
 int service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct service *s = v_s;
-	if (!argcmp(str, "IpRanges")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "IpRanges")) == 0 || aret == '=') {
             	 TRY(!aa, "IpRanges argument missing\n");
                s->ip_ranges_str = aa;
-         } else if (!strcmp(str, "IpRanges[]")) {
+         } else if (!(aret = strcmp(str, "IpRanges[]")) || aret == '=') {
                TRY(!aa, "IpRanges[] argument missing\n");
                SET_NEXT(s->ip_ranges, (aa), pa);
          } else
-	if (!argcmp(str, "ServiceId")) {
+	if ((aret = argcmp(str, "ServiceId")) == 0 || aret == '=') {
             TRY(!aa, "ServiceId argument missing\n");
             s->service_id = aa; // string string
 
          } else
-	if (!argcmp(str, "ServiceName")) {
+	if ((aret = argcmp(str, "ServiceName")) == 0 || aret == '=') {
             TRY(!aa, "ServiceName argument missing\n");
             s->service_name = aa; // string string
 
@@ -6650,27 +7045,28 @@ int service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int snapshot_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct snapshot *s = v_s;
-	if (!argcmp(str, "AccountAlias")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccountAlias")) == 0 || aret == '=') {
             TRY(!aa, "AccountAlias argument missing\n");
             s->account_alias = aa; // string string
 
          } else
-	if (!argcmp(str, "AccountId")) {
+	if ((aret = argcmp(str, "AccountId")) == 0 || aret == '=') {
             TRY(!aa, "AccountId argument missing\n");
             s->account_id = aa; // string string
 
          } else
-	if (!argcmp(str, "CreationDate")) {
+	if ((aret = argcmp(str, "CreationDate")) == 0 || aret == '=') {
             TRY(!aa, "CreationDate argument missing\n");
             s->creation_date = aa; // string string
 
          } else
-	if (!argcmp(str, "Description")) {
+	if ((aret = argcmp(str, "Description")) == 0 || aret == '=') {
             TRY(!aa, "Description argument missing\n");
             s->description = aa; // string string
 
          } else
-	if (!argcmp(str, "PermissionsToCreateVolume")) {
+	if ((aret = argcmp(str, "PermissionsToCreateVolume")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "PermissionsToCreateVolume argument missing\n");
@@ -6687,22 +7083,22 @@ int snapshot_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                    s->permissions_to_create_volume_str = aa;
              }
          } else
-	if (!argcmp(str, "Progress")) {
+	if ((aret = argcmp(str, "Progress")) == 0 || aret == '=') {
             TRY(!aa, "Progress argument missing\n");
             s->is_set_progress = 1;
             s->progress = atoi(aa);
          } else
-	if (!argcmp(str, "SnapshotId")) {
+	if ((aret = argcmp(str, "SnapshotId")) == 0 || aret == '=') {
             TRY(!aa, "SnapshotId argument missing\n");
             s->snapshot_id = aa; // string string
 
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -6727,12 +7123,12 @@ int snapshot_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->tags_str = aa; // array ref ResourceTag ref
             }
          } else
-	if (!argcmp(str, "VolumeId")) {
+	if ((aret = argcmp(str, "VolumeId")) == 0 || aret == '=') {
             TRY(!aa, "VolumeId argument missing\n");
             s->volume_id = aa; // string string
 
          } else
-	if (!argcmp(str, "VolumeSize")) {
+	if ((aret = argcmp(str, "VolumeSize")) == 0 || aret == '=') {
             TRY(!aa, "VolumeSize argument missing\n");
             s->is_set_volume_size = 1;
             s->volume_size = atoi(aa);
@@ -6745,12 +7141,13 @@ int snapshot_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int snapshot_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct snapshot_export_task *s = v_s;
-	if (!argcmp(str, "Comment")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Comment")) == 0 || aret == '=') {
             TRY(!aa, "Comment argument missing\n");
             s->comment = aa; // string string
 
          } else
-	if (!argcmp(str, "OsuExport")) {
+	if ((aret = argcmp(str, "OsuExport")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "OsuExport argument missing\n");
@@ -6767,22 +7164,22 @@ int snapshot_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array
                    s->osu_export_str = aa;
              }
          } else
-	if (!argcmp(str, "Progress")) {
+	if ((aret = argcmp(str, "Progress")) == 0 || aret == '=') {
             TRY(!aa, "Progress argument missing\n");
             s->is_set_progress = 1;
             s->progress = atoi(aa);
          } else
-	if (!argcmp(str, "SnapshotId")) {
+	if ((aret = argcmp(str, "SnapshotId")) == 0 || aret == '=') {
             TRY(!aa, "SnapshotId argument missing\n");
             s->snapshot_id = aa; // string string
 
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -6807,7 +7204,7 @@ int snapshot_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array
             	s->tags_str = aa; // array ref ResourceTag ref
             }
          } else
-	if (!argcmp(str, "TaskId")) {
+	if ((aret = argcmp(str, "TaskId")) == 0 || aret == '=') {
             TRY(!aa, "TaskId argument missing\n");
             s->task_id = aa; // string string
 
@@ -6820,17 +7217,18 @@ int snapshot_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array
 
 int source_net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct source_net *s = v_s;
-	if (!argcmp(str, "AccountId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccountId")) == 0 || aret == '=') {
             TRY(!aa, "AccountId argument missing\n");
             s->account_id = aa; // string string
 
          } else
-	if (!argcmp(str, "IpRange")) {
+	if ((aret = argcmp(str, "IpRange")) == 0 || aret == '=') {
             TRY(!aa, "IpRange argument missing\n");
             s->ip_range = aa; // string string
 
          } else
-	if (!argcmp(str, "NetId")) {
+	if ((aret = argcmp(str, "NetId")) == 0 || aret == '=') {
             TRY(!aa, "NetId argument missing\n");
             s->net_id = aa; // string string
 
@@ -6843,12 +7241,13 @@ int source_net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int source_security_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct source_security_group *s = v_s;
-	if (!argcmp(str, "SecurityGroupAccountId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "SecurityGroupAccountId")) == 0 || aret == '=') {
             TRY(!aa, "SecurityGroupAccountId argument missing\n");
             s->security_group_account_id = aa; // string string
 
          } else
-	if (!argcmp(str, "SecurityGroupName")) {
+	if ((aret = argcmp(str, "SecurityGroupName")) == 0 || aret == '=') {
             TRY(!aa, "SecurityGroupName argument missing\n");
             s->security_group_name = aa; // string string
 
@@ -6861,12 +7260,13 @@ int source_security_group_parser(void *v_s, char *str, char *aa, struct ptr_arra
 
 int state_comment_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct state_comment *s = v_s;
-	if (!argcmp(str, "StateCode")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "StateCode")) == 0 || aret == '=') {
             TRY(!aa, "StateCode argument missing\n");
             s->state_code = aa; // string string
 
          } else
-	if (!argcmp(str, "StateMessage")) {
+	if ((aret = argcmp(str, "StateMessage")) == 0 || aret == '=') {
             TRY(!aa, "StateMessage argument missing\n");
             s->state_message = aa; // string string
 
@@ -6879,17 +7279,18 @@ int state_comment_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int subnet_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct subnet *s = v_s;
-	if (!argcmp(str, "AvailableIpsCount")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AvailableIpsCount")) == 0 || aret == '=') {
             TRY(!aa, "AvailableIpsCount argument missing\n");
             s->is_set_available_ips_count = 1;
             s->available_ips_count = atoi(aa);
          } else
-	if (!argcmp(str, "IpRange")) {
+	if ((aret = argcmp(str, "IpRange")) == 0 || aret == '=') {
             TRY(!aa, "IpRange argument missing\n");
             s->ip_range = aa; // string string
 
          } else
-	if (!argcmp(str, "MapPublicIpOnLaunch")) {
+	if ((aret = argcmp(str, "MapPublicIpOnLaunch")) == 0 || aret == '=') {
             s->is_set_map_public_ip_on_launch = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->map_public_ip_on_launch = 1;
@@ -6899,27 +7300,27 @@ int subnet_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("MapPublicIpOnLaunch require true/false\n");
              }
         } else
-	if (!argcmp(str, "NetId")) {
+	if ((aret = argcmp(str, "NetId")) == 0 || aret == '=') {
             TRY(!aa, "NetId argument missing\n");
             s->net_id = aa; // string string
 
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "SubnetId")) {
+	if ((aret = argcmp(str, "SubnetId")) == 0 || aret == '=') {
             TRY(!aa, "SubnetId argument missing\n");
             s->subnet_id = aa; // string string
 
          } else
-	if (!argcmp(str, "SubregionName")) {
+	if ((aret = argcmp(str, "SubregionName")) == 0 || aret == '=') {
             TRY(!aa, "SubregionName argument missing\n");
             s->subregion_name = aa; // string string
 
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -6952,22 +7353,23 @@ int subnet_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int subregion_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct subregion *s = v_s;
-	if (!argcmp(str, "LocationCode")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "LocationCode")) == 0 || aret == '=') {
             TRY(!aa, "LocationCode argument missing\n");
             s->location_code = aa; // string string
 
          } else
-	if (!argcmp(str, "RegionName")) {
+	if ((aret = argcmp(str, "RegionName")) == 0 || aret == '=') {
             TRY(!aa, "RegionName argument missing\n");
             s->region_name = aa; // string string
 
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "SubregionName")) {
+	if ((aret = argcmp(str, "SubregionName")) == 0 || aret == '=') {
             TRY(!aa, "SubregionName argument missing\n");
             s->subregion_name = aa; // string string
 
@@ -6980,22 +7382,23 @@ int subregion_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int tag_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct tag *s = v_s;
-	if (!argcmp(str, "Key")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Key")) == 0 || aret == '=') {
             TRY(!aa, "Key argument missing\n");
             s->key = aa; // string string
 
          } else
-	if (!argcmp(str, "ResourceId")) {
+	if ((aret = argcmp(str, "ResourceId")) == 0 || aret == '=') {
             TRY(!aa, "ResourceId argument missing\n");
             s->resource_id = aa; // string string
 
          } else
-	if (!argcmp(str, "ResourceType")) {
+	if ((aret = argcmp(str, "ResourceType")) == 0 || aret == '=') {
             TRY(!aa, "ResourceType argument missing\n");
             s->resource_type = aa; // string string
 
          } else
-	if (!argcmp(str, "Value")) {
+	if ((aret = argcmp(str, "Value")) == 0 || aret == '=') {
             TRY(!aa, "Value argument missing\n");
             s->value = aa; // string string
 
@@ -7008,27 +7411,28 @@ int tag_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int vgw_telemetry_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct vgw_telemetry *s = v_s;
-	if (!argcmp(str, "AcceptedRouteCount")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AcceptedRouteCount")) == 0 || aret == '=') {
             TRY(!aa, "AcceptedRouteCount argument missing\n");
             s->is_set_accepted_route_count = 1;
             s->accepted_route_count = atoi(aa);
          } else
-	if (!argcmp(str, "LastStateChangeDate")) {
+	if ((aret = argcmp(str, "LastStateChangeDate")) == 0 || aret == '=') {
             TRY(!aa, "LastStateChangeDate argument missing\n");
             s->last_state_change_date = aa; // string string
 
          } else
-	if (!argcmp(str, "OutsideIpAddress")) {
+	if ((aret = argcmp(str, "OutsideIpAddress")) == 0 || aret == '=') {
             TRY(!aa, "OutsideIpAddress argument missing\n");
             s->outside_ip_address = aa; // string string
 
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "StateDescription")) {
+	if ((aret = argcmp(str, "StateDescription")) == 0 || aret == '=') {
             TRY(!aa, "StateDescription argument missing\n");
             s->state_description = aa; // string string
 
@@ -7041,12 +7445,13 @@ int vgw_telemetry_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int virtual_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct virtual_gateway *s = v_s;
-	if (!argcmp(str, "ConnectionType")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "ConnectionType")) == 0 || aret == '=') {
             TRY(!aa, "ConnectionType argument missing\n");
             s->connection_type = aa; // string string
 
          } else
-	if (!argcmp(str, "NetToVirtualGatewayLinks")) {
+	if ((aret = argcmp(str, "NetToVirtualGatewayLinks")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -7071,12 +7476,12 @@ int virtual_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
             	s->net_to_virtual_gateway_links_str = aa; // array ref NetToVirtualGatewayLink ref
             }
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -7101,7 +7506,7 @@ int virtual_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
             	s->tags_str = aa; // array ref ResourceTag ref
             }
          } else
-	if (!argcmp(str, "VirtualGatewayId")) {
+	if ((aret = argcmp(str, "VirtualGatewayId")) == 0 || aret == '=') {
             TRY(!aa, "VirtualGatewayId argument missing\n");
             s->virtual_gateway_id = aa; // string string
 
@@ -7114,12 +7519,13 @@ int virtual_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
 
 int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct vm *s = v_s;
-	if (!argcmp(str, "Architecture")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Architecture")) == 0 || aret == '=') {
             TRY(!aa, "Architecture argument missing\n");
             s->architecture = aa; // string string
 
          } else
-	if (!argcmp(str, "BlockDeviceMappings")) {
+	if ((aret = argcmp(str, "BlockDeviceMappings")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -7144,7 +7550,7 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->block_device_mappings_str = aa; // array ref BlockDeviceMappingCreated ref
             }
          } else
-	if (!argcmp(str, "BsuOptimized")) {
+	if ((aret = argcmp(str, "BsuOptimized")) == 0 || aret == '=') {
             s->is_set_bsu_optimized = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->bsu_optimized = 1;
@@ -7154,17 +7560,17 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("BsuOptimized require true/false\n");
              }
         } else
-	if (!argcmp(str, "ClientToken")) {
+	if ((aret = argcmp(str, "ClientToken")) == 0 || aret == '=') {
             TRY(!aa, "ClientToken argument missing\n");
             s->client_token = aa; // string string
 
          } else
-	if (!argcmp(str, "CreationDate")) {
+	if ((aret = argcmp(str, "CreationDate")) == 0 || aret == '=') {
             TRY(!aa, "CreationDate argument missing\n");
             s->creation_date = aa; // string string
 
          } else
-	if (!argcmp(str, "DeletionProtection")) {
+	if ((aret = argcmp(str, "DeletionProtection")) == 0 || aret == '=') {
             s->is_set_deletion_protection = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->deletion_protection = 1;
@@ -7174,17 +7580,17 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("DeletionProtection require true/false\n");
              }
         } else
-	if (!argcmp(str, "Hypervisor")) {
+	if ((aret = argcmp(str, "Hypervisor")) == 0 || aret == '=') {
             TRY(!aa, "Hypervisor argument missing\n");
             s->hypervisor = aa; // string string
 
          } else
-	if (!argcmp(str, "ImageId")) {
+	if ((aret = argcmp(str, "ImageId")) == 0 || aret == '=') {
             TRY(!aa, "ImageId argument missing\n");
             s->image_id = aa; // string string
 
          } else
-	if (!argcmp(str, "IsSourceDestChecked")) {
+	if ((aret = argcmp(str, "IsSourceDestChecked")) == 0 || aret == '=') {
             s->is_set_is_source_dest_checked = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->is_source_dest_checked = 1;
@@ -7194,17 +7600,17 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("IsSourceDestChecked require true/false\n");
              }
         } else
-	if (!argcmp(str, "KeypairName")) {
+	if ((aret = argcmp(str, "KeypairName")) == 0 || aret == '=') {
             TRY(!aa, "KeypairName argument missing\n");
             s->keypair_name = aa; // string string
 
          } else
-	if (!argcmp(str, "LaunchNumber")) {
+	if ((aret = argcmp(str, "LaunchNumber")) == 0 || aret == '=') {
             TRY(!aa, "LaunchNumber argument missing\n");
             s->is_set_launch_number = 1;
             s->launch_number = atoi(aa);
          } else
-	if (!argcmp(str, "NestedVirtualization")) {
+	if ((aret = argcmp(str, "NestedVirtualization")) == 0 || aret == '=') {
             s->is_set_nested_virtualization = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->nested_virtualization = 1;
@@ -7214,12 +7620,12 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("NestedVirtualization require true/false\n");
              }
         } else
-	if (!argcmp(str, "NetId")) {
+	if ((aret = argcmp(str, "NetId")) == 0 || aret == '=') {
             TRY(!aa, "NetId argument missing\n");
             s->net_id = aa; // string string
 
          } else
-	if (!argcmp(str, "Nics")) {
+	if ((aret = argcmp(str, "Nics")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -7244,17 +7650,17 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->nics_str = aa; // array ref NicLight ref
             }
          } else
-	if (!argcmp(str, "OsFamily")) {
+	if ((aret = argcmp(str, "OsFamily")) == 0 || aret == '=') {
             TRY(!aa, "OsFamily argument missing\n");
             s->os_family = aa; // string string
 
          } else
-	if (!argcmp(str, "Performance")) {
+	if ((aret = argcmp(str, "Performance")) == 0 || aret == '=') {
             TRY(!aa, "Performance argument missing\n");
             s->performance = aa; // string string
 
          } else
-	if (!argcmp(str, "Placement")) {
+	if ((aret = argcmp(str, "Placement")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "Placement argument missing\n");
@@ -7271,49 +7677,49 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                    s->placement_str = aa;
              }
          } else
-	if (!argcmp(str, "PrivateDnsName")) {
+	if ((aret = argcmp(str, "PrivateDnsName")) == 0 || aret == '=') {
             TRY(!aa, "PrivateDnsName argument missing\n");
             s->private_dns_name = aa; // string string
 
          } else
-	if (!argcmp(str, "PrivateIp")) {
+	if ((aret = argcmp(str, "PrivateIp")) == 0 || aret == '=') {
             TRY(!aa, "PrivateIp argument missing\n");
             s->private_ip = aa; // string string
 
          } else
-	if (!argcmp(str, "ProductCodes")) {
+	if ((aret = argcmp(str, "ProductCodes")) == 0 || aret == '=') {
             	 TRY(!aa, "ProductCodes argument missing\n");
                s->product_codes_str = aa;
-         } else if (!strcmp(str, "ProductCodes[]")) {
+         } else if (!(aret = strcmp(str, "ProductCodes[]")) || aret == '=') {
                TRY(!aa, "ProductCodes[] argument missing\n");
                SET_NEXT(s->product_codes, (aa), pa);
          } else
-	if (!argcmp(str, "PublicDnsName")) {
+	if ((aret = argcmp(str, "PublicDnsName")) == 0 || aret == '=') {
             TRY(!aa, "PublicDnsName argument missing\n");
             s->public_dns_name = aa; // string string
 
          } else
-	if (!argcmp(str, "PublicIp")) {
+	if ((aret = argcmp(str, "PublicIp")) == 0 || aret == '=') {
             TRY(!aa, "PublicIp argument missing\n");
             s->public_ip = aa; // string string
 
          } else
-	if (!argcmp(str, "ReservationId")) {
+	if ((aret = argcmp(str, "ReservationId")) == 0 || aret == '=') {
             TRY(!aa, "ReservationId argument missing\n");
             s->reservation_id = aa; // string string
 
          } else
-	if (!argcmp(str, "RootDeviceName")) {
+	if ((aret = argcmp(str, "RootDeviceName")) == 0 || aret == '=') {
             TRY(!aa, "RootDeviceName argument missing\n");
             s->root_device_name = aa; // string string
 
          } else
-	if (!argcmp(str, "RootDeviceType")) {
+	if ((aret = argcmp(str, "RootDeviceType")) == 0 || aret == '=') {
             TRY(!aa, "RootDeviceType argument missing\n");
             s->root_device_type = aa; // string string
 
          } else
-	if (!argcmp(str, "SecurityGroups")) {
+	if ((aret = argcmp(str, "SecurityGroups")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -7338,22 +7744,22 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->security_groups_str = aa; // array ref SecurityGroupLight ref
             }
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "StateReason")) {
+	if ((aret = argcmp(str, "StateReason")) == 0 || aret == '=') {
             TRY(!aa, "StateReason argument missing\n");
             s->state_reason = aa; // string string
 
          } else
-	if (!argcmp(str, "SubnetId")) {
+	if ((aret = argcmp(str, "SubnetId")) == 0 || aret == '=') {
             TRY(!aa, "SubnetId argument missing\n");
             s->subnet_id = aa; // string string
 
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -7378,22 +7784,22 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->tags_str = aa; // array ref ResourceTag ref
             }
          } else
-	if (!argcmp(str, "UserData")) {
+	if ((aret = argcmp(str, "UserData")) == 0 || aret == '=') {
             TRY(!aa, "UserData argument missing\n");
             s->user_data = aa; // string string
 
          } else
-	if (!argcmp(str, "VmId")) {
+	if ((aret = argcmp(str, "VmId")) == 0 || aret == '=') {
             TRY(!aa, "VmId argument missing\n");
             s->vm_id = aa; // string string
 
          } else
-	if (!argcmp(str, "VmInitiatedShutdownBehavior")) {
+	if ((aret = argcmp(str, "VmInitiatedShutdownBehavior")) == 0 || aret == '=') {
             TRY(!aa, "VmInitiatedShutdownBehavior argument missing\n");
             s->vm_initiated_shutdown_behavior = aa; // string string
 
          } else
-	if (!argcmp(str, "VmType")) {
+	if ((aret = argcmp(str, "VmType")) == 0 || aret == '=') {
             TRY(!aa, "VmType argument missing\n");
             s->vm_type = aa; // string string
 
@@ -7404,19 +7810,113 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	return 0;
 }
 
+int vm_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct vm_group *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "CreationDate")) == 0 || aret == '=') {
+            TRY(!aa, "CreationDate argument missing\n");
+            s->creation_date = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "Description")) == 0 || aret == '=') {
+            TRY(!aa, "Description argument missing\n");
+            s->description = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "PositioningStrategy")) == 0 || aret == '=') {
+            TRY(!aa, "PositioningStrategy argument missing\n");
+            s->positioning_strategy = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "SecurityGroupIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "SecurityGroupIds argument missing\n");
+               s->security_group_ids_str = aa;
+         } else if (!(aret = strcmp(str, "SecurityGroupIds[]")) || aret == '=') {
+               TRY(!aa, "SecurityGroupIds[] argument missing\n");
+               SET_NEXT(s->security_group_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
+            TRY(!aa, "State argument missing\n");
+            s->state = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "SubnetId")) == 0 || aret == '=') {
+            TRY(!aa, "SubnetId argument missing\n");
+            s->subnet_id = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
+            char *dot_pos = strchr(str, '.');
+
+            if (dot_pos) {
+            	      int pos;
+            	      char *endptr;
+
+            	      ++dot_pos;
+            	      pos = strtoul(dot_pos, &endptr, 0);
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
+            	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
+            	      cascade_struct = &s->tags[pos];
+            	      cascade_parser = resource_tag_parser;
+            	      if (endptr[1] == '.') {
+            		     ++endptr;
+            	      }
+            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+             } else {
+            	TRY(!aa, "Tags argument missing\n");
+            	s->tags_str = aa; // array ref ResourceTag ref
+            }
+         } else
+	if ((aret = argcmp(str, "VmCount")) == 0 || aret == '=') {
+            TRY(!aa, "VmCount argument missing\n");
+            s->is_set_vm_count = 1;
+            s->vm_count = atoi(aa);
+         } else
+	if ((aret = argcmp(str, "VmGroupId")) == 0 || aret == '=') {
+            TRY(!aa, "VmGroupId argument missing\n");
+            s->vm_group_id = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "VmGroupName")) == 0 || aret == '=') {
+            TRY(!aa, "VmGroupName argument missing\n");
+            s->vm_group_name = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "VmIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "VmIds argument missing\n");
+               s->vm_ids_str = aa;
+         } else if (!(aret = strcmp(str, "VmIds[]")) || aret == '=') {
+               TRY(!aa, "VmIds[] argument missing\n");
+               SET_NEXT(s->vm_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "VmTemplateId")) == 0 || aret == '=') {
+            TRY(!aa, "VmTemplateId argument missing\n");
+            s->vm_template_id = aa; // string string
+
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'VmGroup'\n", str);
+	}
+	return 0;
+}
+
 int vm_state_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct vm_state *s = v_s;
-	if (!argcmp(str, "CurrentState")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "CurrentState")) == 0 || aret == '=') {
             TRY(!aa, "CurrentState argument missing\n");
             s->current_state = aa; // string string
 
          } else
-	if (!argcmp(str, "PreviousState")) {
+	if ((aret = argcmp(str, "PreviousState")) == 0 || aret == '=') {
             TRY(!aa, "PreviousState argument missing\n");
             s->previous_state = aa; // string string
 
          } else
-	if (!argcmp(str, "VmId")) {
+	if ((aret = argcmp(str, "VmId")) == 0 || aret == '=') {
             TRY(!aa, "VmId argument missing\n");
             s->vm_id = aa; // string string
 
@@ -7429,7 +7929,8 @@ int vm_state_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int vm_states_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct vm_states *s = v_s;
-	if (!argcmp(str, "MaintenanceEvents")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "MaintenanceEvents")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -7454,17 +7955,17 @@ int vm_states_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->maintenance_events_str = aa; // array ref MaintenanceEvent ref
             }
          } else
-	if (!argcmp(str, "SubregionName")) {
+	if ((aret = argcmp(str, "SubregionName")) == 0 || aret == '=') {
             TRY(!aa, "SubregionName argument missing\n");
             s->subregion_name = aa; // string string
 
          } else
-	if (!argcmp(str, "VmId")) {
+	if ((aret = argcmp(str, "VmId")) == 0 || aret == '=') {
             TRY(!aa, "VmId argument missing\n");
             s->vm_id = aa; // string string
 
          } else
-	if (!argcmp(str, "VmState")) {
+	if ((aret = argcmp(str, "VmState")) == 0 || aret == '=') {
             TRY(!aa, "VmState argument missing\n");
             s->vm_state = aa; // string string
 
@@ -7475,9 +7976,94 @@ int vm_states_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	return 0;
 }
 
+int vm_template_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct vm_template *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "CpuCores")) == 0 || aret == '=') {
+            TRY(!aa, "CpuCores argument missing\n");
+            s->is_set_cpu_cores = 1;
+            s->cpu_cores = atoi(aa);
+         } else
+	if ((aret = argcmp(str, "CpuGeneration")) == 0 || aret == '=') {
+            TRY(!aa, "CpuGeneration argument missing\n");
+            s->cpu_generation = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "CpuPerformance")) == 0 || aret == '=') {
+            TRY(!aa, "CpuPerformance argument missing\n");
+            s->cpu_performance = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "CreationDate")) == 0 || aret == '=') {
+            TRY(!aa, "CreationDate argument missing\n");
+            s->creation_date = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "Description")) == 0 || aret == '=') {
+            TRY(!aa, "Description argument missing\n");
+            s->description = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "ImageId")) == 0 || aret == '=') {
+            TRY(!aa, "ImageId argument missing\n");
+            s->image_id = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "KeypairName")) == 0 || aret == '=') {
+            TRY(!aa, "KeypairName argument missing\n");
+            s->keypair_name = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "Ram")) == 0 || aret == '=') {
+            TRY(!aa, "Ram argument missing\n");
+            s->is_set_ram = 1;
+            s->ram = atoi(aa);
+         } else
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
+            char *dot_pos = strchr(str, '.');
+
+            if (dot_pos) {
+            	      int pos;
+            	      char *endptr;
+
+            	      ++dot_pos;
+            	      pos = strtoul(dot_pos, &endptr, 0);
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
+            	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
+            	      cascade_struct = &s->tags[pos];
+            	      cascade_parser = resource_tag_parser;
+            	      if (endptr[1] == '.') {
+            		     ++endptr;
+            	      }
+            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+             } else {
+            	TRY(!aa, "Tags argument missing\n");
+            	s->tags_str = aa; // array ref ResourceTag ref
+            }
+         } else
+	if ((aret = argcmp(str, "VmTemplateId")) == 0 || aret == '=') {
+            TRY(!aa, "VmTemplateId argument missing\n");
+            s->vm_template_id = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "VmTemplateName")) == 0 || aret == '=') {
+            TRY(!aa, "VmTemplateName argument missing\n");
+            s->vm_template_name = aa; // string string
+
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'VmTemplate'\n", str);
+	}
+	return 0;
+}
+
 int vm_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct vm_type *s = v_s;
-	if (!argcmp(str, "BsuOptimized")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "BsuOptimized")) == 0 || aret == '=') {
             s->is_set_bsu_optimized = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->bsu_optimized = 1;
@@ -7487,32 +8073,32 @@ int vm_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("BsuOptimized require true/false\n");
              }
         } else
-	if (!argcmp(str, "MaxPrivateIps")) {
+	if ((aret = argcmp(str, "MaxPrivateIps")) == 0 || aret == '=') {
             TRY(!aa, "MaxPrivateIps argument missing\n");
             s->is_set_max_private_ips = 1;
             s->max_private_ips = atoi(aa);
          } else
-	if (!argcmp(str, "MemorySize")) {
+	if ((aret = argcmp(str, "MemorySize")) == 0 || aret == '=') {
             TRY(!aa, "MemorySize argument missing\n");
             s->is_set_memory_size = 1;
             s->memory_size = atof(aa);
          } else
-	if (!argcmp(str, "VcoreCount")) {
+	if ((aret = argcmp(str, "VcoreCount")) == 0 || aret == '=') {
             TRY(!aa, "VcoreCount argument missing\n");
             s->is_set_vcore_count = 1;
             s->vcore_count = atoi(aa);
          } else
-	if (!argcmp(str, "VmTypeName")) {
+	if ((aret = argcmp(str, "VmTypeName")) == 0 || aret == '=') {
             TRY(!aa, "VmTypeName argument missing\n");
             s->vm_type_name = aa; // string string
 
          } else
-	if (!argcmp(str, "VolumeCount")) {
+	if ((aret = argcmp(str, "VolumeCount")) == 0 || aret == '=') {
             TRY(!aa, "VolumeCount argument missing\n");
             s->is_set_volume_count = 1;
             s->volume_count = atoi(aa);
          } else
-	if (!argcmp(str, "VolumeSize")) {
+	if ((aret = argcmp(str, "VolumeSize")) == 0 || aret == '=') {
             TRY(!aa, "VolumeSize argument missing\n");
             s->is_set_volume_size = 1;
             s->volume_size = atoi(aa);
@@ -7525,17 +8111,18 @@ int vm_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct volume *s = v_s;
-	if (!argcmp(str, "CreationDate")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "CreationDate")) == 0 || aret == '=') {
             TRY(!aa, "CreationDate argument missing\n");
             s->creation_date = aa; // string string
 
          } else
-	if (!argcmp(str, "Iops")) {
+	if ((aret = argcmp(str, "Iops")) == 0 || aret == '=') {
             TRY(!aa, "Iops argument missing\n");
             s->is_set_iops = 1;
             s->iops = atoi(aa);
          } else
-	if (!argcmp(str, "LinkedVolumes")) {
+	if ((aret = argcmp(str, "LinkedVolumes")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -7560,27 +8147,27 @@ int volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->linked_volumes_str = aa; // array ref LinkedVolume ref
             }
          } else
-	if (!argcmp(str, "Size")) {
+	if ((aret = argcmp(str, "Size")) == 0 || aret == '=') {
             TRY(!aa, "Size argument missing\n");
             s->is_set_size = 1;
             s->size = atoi(aa);
          } else
-	if (!argcmp(str, "SnapshotId")) {
+	if ((aret = argcmp(str, "SnapshotId")) == 0 || aret == '=') {
             TRY(!aa, "SnapshotId argument missing\n");
             s->snapshot_id = aa; // string string
 
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "SubregionName")) {
+	if ((aret = argcmp(str, "SubregionName")) == 0 || aret == '=') {
             TRY(!aa, "SubregionName argument missing\n");
             s->subregion_name = aa; // string string
 
          } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -7605,12 +8192,12 @@ int volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->tags_str = aa; // array ref ResourceTag ref
             }
          } else
-	if (!argcmp(str, "VolumeId")) {
+	if ((aret = argcmp(str, "VolumeId")) == 0 || aret == '=') {
             TRY(!aa, "VolumeId argument missing\n");
             s->volume_id = aa; // string string
 
          } else
-	if (!argcmp(str, "VolumeType")) {
+	if ((aret = argcmp(str, "VolumeType")) == 0 || aret == '=') {
             TRY(!aa, "VolumeType argument missing\n");
             s->volume_type = aa; // string string
 
@@ -7623,22 +8210,23 @@ int volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct vpn_connection *s = v_s;
-	if (!argcmp(str, "ClientGatewayConfiguration")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "ClientGatewayConfiguration")) == 0 || aret == '=') {
             TRY(!aa, "ClientGatewayConfiguration argument missing\n");
             s->client_gateway_configuration = aa; // string string
 
          } else
-	if (!argcmp(str, "ClientGatewayId")) {
+	if ((aret = argcmp(str, "ClientGatewayId")) == 0 || aret == '=') {
             TRY(!aa, "ClientGatewayId argument missing\n");
             s->client_gateway_id = aa; // string string
 
          } else
-	if (!argcmp(str, "ConnectionType")) {
+	if ((aret = argcmp(str, "ConnectionType")) == 0 || aret == '=') {
             TRY(!aa, "ConnectionType argument missing\n");
             s->connection_type = aa; // string string
 
          } else
-	if (!argcmp(str, "Routes")) {
+	if ((aret = argcmp(str, "Routes")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -7663,12 +8251,12 @@ int vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             	s->routes_str = aa; // array ref RouteLight ref
             }
          } else
-	if (!argcmp(str, "State")) {
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
 
          } else
-	if (!argcmp(str, "StaticRoutesOnly")) {
+	if ((aret = argcmp(str, "StaticRoutesOnly")) == 0 || aret == '=') {
             s->is_set_static_routes_only = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->static_routes_only = 1;
@@ -7678,7 +8266,7 @@ int vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             		BAD_RET("StaticRoutesOnly require true/false\n");
              }
         } else
-	if (!argcmp(str, "Tags")) {
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -7703,7 +8291,7 @@ int vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             	s->tags_str = aa; // array ref ResourceTag ref
             }
          } else
-	if (!argcmp(str, "VgwTelemetries")) {
+	if ((aret = argcmp(str, "VgwTelemetries")) == 0 || aret == '=') {
             char *dot_pos = strchr(str, '.');
 
             if (dot_pos) {
@@ -7728,17 +8316,17 @@ int vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             	s->vgw_telemetries_str = aa; // array ref VgwTelemetry ref
             }
          } else
-	if (!argcmp(str, "VirtualGatewayId")) {
+	if ((aret = argcmp(str, "VirtualGatewayId")) == 0 || aret == '=') {
             TRY(!aa, "VirtualGatewayId argument missing\n");
             s->virtual_gateway_id = aa; // string string
 
          } else
-	if (!argcmp(str, "VpnConnectionId")) {
+	if ((aret = argcmp(str, "VpnConnectionId")) == 0 || aret == '=') {
             TRY(!aa, "VpnConnectionId argument missing\n");
             s->vpn_connection_id = aa; // string string
 
          } else
-	if (!argcmp(str, "VpnOptions")) {
+	if ((aret = argcmp(str, "VpnOptions")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "VpnOptions argument missing\n");
@@ -7763,7 +8351,8 @@ int vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 
 int vpn_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct vpn_options *s = v_s;
-	if (!argcmp(str, "Phase1Options")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "Phase1Options")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "Phase1Options argument missing\n");
@@ -7780,7 +8369,7 @@ int vpn_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                    s->phase1_options_str = aa;
              }
          } else
-	if (!argcmp(str, "Phase2Options")) {
+	if ((aret = argcmp(str, "Phase2Options")) == 0 || aret == '=') {
             char *dot_pos;
 
             TRY(!aa, "Phase2Options argument missing\n");
@@ -7797,7 +8386,7 @@ int vpn_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                    s->phase2_options_str = aa;
              }
          } else
-	if (!argcmp(str, "TunnelInsideIpRange")) {
+	if ((aret = argcmp(str, "TunnelInsideIpRange")) == 0 || aret == '=') {
             TRY(!aa, "TunnelInsideIpRange argument missing\n");
             s->tunnel_inside_ip_range = aa; // string string
 
@@ -7810,7 +8399,8 @@ int vpn_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
 int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct with *s = v_s;
-	if (!argcmp(str, "AccountId")) {
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccountId")) == 0 || aret == '=') {
             s->is_set_account_id = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->account_id = 1;
@@ -7820,7 +8410,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("AccountId require true/false\n");
              }
         } else
-	if (!argcmp(str, "CallDuration")) {
+	if ((aret = argcmp(str, "CallDuration")) == 0 || aret == '=') {
             s->is_set_call_duration = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->call_duration = 1;
@@ -7830,7 +8420,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("CallDuration require true/false\n");
              }
         } else
-	if (!argcmp(str, "QueryAccessKey")) {
+	if ((aret = argcmp(str, "QueryAccessKey")) == 0 || aret == '=') {
             s->is_set_query_access_key = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->query_access_key = 1;
@@ -7840,7 +8430,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("QueryAccessKey require true/false\n");
              }
         } else
-	if (!argcmp(str, "QueryApiName")) {
+	if ((aret = argcmp(str, "QueryApiName")) == 0 || aret == '=') {
             s->is_set_query_api_name = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->query_api_name = 1;
@@ -7850,7 +8440,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("QueryApiName require true/false\n");
              }
         } else
-	if (!argcmp(str, "QueryApiVersion")) {
+	if ((aret = argcmp(str, "QueryApiVersion")) == 0 || aret == '=') {
             s->is_set_query_api_version = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->query_api_version = 1;
@@ -7860,7 +8450,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("QueryApiVersion require true/false\n");
              }
         } else
-	if (!argcmp(str, "QueryCallName")) {
+	if ((aret = argcmp(str, "QueryCallName")) == 0 || aret == '=') {
             s->is_set_query_call_name = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->query_call_name = 1;
@@ -7870,7 +8460,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("QueryCallName require true/false\n");
              }
         } else
-	if (!argcmp(str, "QueryDate")) {
+	if ((aret = argcmp(str, "QueryDate")) == 0 || aret == '=') {
             s->is_set_query_date = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->query_date = 1;
@@ -7880,7 +8470,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("QueryDate require true/false\n");
              }
         } else
-	if (!argcmp(str, "QueryHeaderRaw")) {
+	if ((aret = argcmp(str, "QueryHeaderRaw")) == 0 || aret == '=') {
             s->is_set_query_header_raw = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->query_header_raw = 1;
@@ -7890,7 +8480,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("QueryHeaderRaw require true/false\n");
              }
         } else
-	if (!argcmp(str, "QueryHeaderSize")) {
+	if ((aret = argcmp(str, "QueryHeaderSize")) == 0 || aret == '=') {
             s->is_set_query_header_size = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->query_header_size = 1;
@@ -7900,7 +8490,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("QueryHeaderSize require true/false\n");
              }
         } else
-	if (!argcmp(str, "QueryIpAddress")) {
+	if ((aret = argcmp(str, "QueryIpAddress")) == 0 || aret == '=') {
             s->is_set_query_ip_address = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->query_ip_address = 1;
@@ -7910,7 +8500,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("QueryIpAddress require true/false\n");
              }
         } else
-	if (!argcmp(str, "QueryPayloadRaw")) {
+	if ((aret = argcmp(str, "QueryPayloadRaw")) == 0 || aret == '=') {
             s->is_set_query_payload_raw = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->query_payload_raw = 1;
@@ -7920,7 +8510,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("QueryPayloadRaw require true/false\n");
              }
         } else
-	if (!argcmp(str, "QueryPayloadSize")) {
+	if ((aret = argcmp(str, "QueryPayloadSize")) == 0 || aret == '=') {
             s->is_set_query_payload_size = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->query_payload_size = 1;
@@ -7930,7 +8520,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("QueryPayloadSize require true/false\n");
              }
         } else
-	if (!argcmp(str, "QueryUserAgent")) {
+	if ((aret = argcmp(str, "QueryUserAgent")) == 0 || aret == '=') {
             s->is_set_query_user_agent = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->query_user_agent = 1;
@@ -7940,7 +8530,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("QueryUserAgent require true/false\n");
              }
         } else
-	if (!argcmp(str, "RequestId")) {
+	if ((aret = argcmp(str, "RequestId")) == 0 || aret == '=') {
             s->is_set_request_id = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->request_id = 1;
@@ -7950,7 +8540,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("RequestId require true/false\n");
              }
         } else
-	if (!argcmp(str, "ResponseSize")) {
+	if ((aret = argcmp(str, "ResponseSize")) == 0 || aret == '=') {
             s->is_set_response_size = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->response_size = 1;
@@ -7960,7 +8550,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("ResponseSize require true/false\n");
              }
         } else
-	if (!argcmp(str, "ResponseStatusCode")) {
+	if ((aret = argcmp(str, "ResponseStatusCode")) == 0 || aret == '=') {
             s->is_set_response_status_code = 1;
             if (!aa || !strcasecmp(aa, "true")) {
             		s->response_status_code = 1;
@@ -8196,11 +8786,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto update_vpn_connection_arg;
 		      }
 
@@ -8208,18 +8806,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "ClientGatewayId") ) {
+			      if ((aret = argcmp(next_a, "ClientGatewayId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ClientGatewayId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ClientGatewayId argument missing\n");
 				          s->client_gateway_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -8229,17 +8840,35 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "VirtualGatewayId") ) {
+			      if ((aret = argcmp(next_a, "VirtualGatewayId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VirtualGatewayId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VirtualGatewayId argument missing\n");
 				          s->virtual_gateway_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "VpnConnectionId") ) {
+			      if ((aret = argcmp(next_a, "VpnConnectionId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VpnConnectionId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VpnConnectionId argument missing\n");
 				          s->vpn_connection_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "VpnOptions") ) {
+			      if ((aret = argcmp(next_a, "VpnOptions")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VpnOptions argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "VpnOptions argument missing\n");
@@ -8292,11 +8921,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto update_volume_arg;
 		      }
 
@@ -8304,13 +8941,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -8320,22 +8964,46 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Iops") ) {
+			      if ((aret = argcmp(next_a, "Iops")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Iops argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Iops argument missing\n");
 				          s->is_set_iops = 1;
 				          s->iops = atoi(aa);
 				       } else
-			      if (!argcmp(next_a, "Size") ) {
+			      if ((aret = argcmp(next_a, "Size")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Size argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Size argument missing\n");
 				          s->is_set_size = 1;
 				          s->size = atoi(aa);
 				       } else
-			      if (!argcmp(next_a, "VolumeId") ) {
+			      if ((aret = argcmp(next_a, "VolumeId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VolumeId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VolumeId argument missing\n");
 				          s->volume_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "VolumeType") ) {
+			      if ((aret = argcmp(next_a, "VolumeType")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VolumeType argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VolumeType argument missing\n");
 				          s->volume_type = aa; // string string
 
@@ -8348,6 +9016,303 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_volume(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateVolume: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("UpdateVmTemplate", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_update_vm_template_arg a = {0};
+		     struct osc_update_vm_template_arg *s = &a;
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     update_vm_template_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+			   i += incr;
+		       	   goto update_vm_template_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				aa = 0;
+				incr = 1;
+			     }
+			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Description argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "Description argument missing\n");
+				          s->description = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "Tags")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Tags argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          char *dot_pos = strchr(str, '.');
+
+				          if (dot_pos) {
+				          	      int pos;
+				          	      char *endptr;
+
+				          	      ++dot_pos;
+				          	      pos = strtoul(dot_pos, &endptr, 0);
+				          	      if (endptr == dot_pos)
+				          		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+				          	      else if (*endptr != '.')
+				          		      BAD_RET("'Tags' require a .\n");
+				          	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
+				          	      cascade_struct = &s->tags[pos];
+				          	      cascade_parser = resource_tag_parser;
+				          	      if (endptr[1] == '.') {
+				          		     ++endptr;
+				          	      }
+				          	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+				           } else {
+				          	TRY(!aa, "Tags argument missing\n");
+				          	s->tags_str = aa; // array ref ResourceTag ref
+				          }
+				       } else
+			      if ((aret = argcmp(next_a, "VmTemplateId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmTemplateId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "VmTemplateId argument missing\n");
+				          s->vm_template_id = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "VmTemplateName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmTemplateName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "VmTemplateName argument missing\n");
+				          s->vm_template_name = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'UpdateVmTemplate'\n", next_a);
+			    }
+		            i += incr;
+			    goto update_vm_template_arg;
+		     }
+		     cret = osc_update_vm_template(&e, &r, &a);
+            	     TRY(cret, "fail to call UpdateVmTemplate: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("UpdateVmGroup", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_update_vm_group_arg a = {0};
+		     struct osc_update_vm_group_arg *s = &a;
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     update_vm_group_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+			   i += incr;
+		       	   goto update_vm_group_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				aa = 0;
+				incr = 1;
+			     }
+			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Description argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "Description argument missing\n");
+				          s->description = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "Tags")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Tags argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          char *dot_pos = strchr(str, '.');
+
+				          if (dot_pos) {
+				          	      int pos;
+				          	      char *endptr;
+
+				          	      ++dot_pos;
+				          	      pos = strtoul(dot_pos, &endptr, 0);
+				          	      if (endptr == dot_pos)
+				          		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+				          	      else if (*endptr != '.')
+				          		      BAD_RET("'Tags' require a .\n");
+				          	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
+				          	      cascade_struct = &s->tags[pos];
+				          	      cascade_parser = resource_tag_parser;
+				          	      if (endptr[1] == '.') {
+				          		     ++endptr;
+				          	      }
+				          	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+				           } else {
+				          	TRY(!aa, "Tags argument missing\n");
+				          	s->tags_str = aa; // array ref ResourceTag ref
+				          }
+				       } else
+			      if ((aret = argcmp(next_a, "VmGroupId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmGroupId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "VmGroupId argument missing\n");
+				          s->vm_group_id = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "VmGroupName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmGroupName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "VmGroupName argument missing\n");
+				          s->vm_group_name = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "VmTemplateId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmTemplateId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "VmTemplateId argument missing\n");
+				          s->vm_template_id = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'UpdateVmGroup'\n", next_a);
+			    }
+		            i += incr;
+			    goto update_vm_group_arg;
+		     }
+		     cret = osc_update_vm_group(&e, &r, &a);
+            	     TRY(cret, "fail to call UpdateVmGroup: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
@@ -8376,11 +9341,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto update_vm_arg;
 		      }
 
@@ -8388,13 +9361,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "BlockDeviceMappings") ) {
+			      if ((aret = argcmp(next_a, "BlockDeviceMappings")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "BlockDeviceMappings argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos = strchr(str, '.');
 
 				          if (dot_pos) {
@@ -8419,7 +9399,13 @@ int main(int ac, char **av)
 				          	s->block_device_mappings_str = aa; // array ref BlockDeviceMappingVmUpdate ref
 				          }
 				       } else
-			      if (!argcmp(next_a, "BsuOptimized") ) {
+			      if ((aret = argcmp(next_a, "BsuOptimized")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "BsuOptimized argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_bsu_optimized = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->bsu_optimized = 1;
@@ -8429,7 +9415,13 @@ int main(int ac, char **av)
 				          		BAD_RET("BsuOptimized require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "DeletionProtection") ) {
+			      if ((aret = argcmp(next_a, "DeletionProtection")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DeletionProtection argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_deletion_protection = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->deletion_protection = 1;
@@ -8439,7 +9431,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DeletionProtection require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -8449,7 +9447,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "IsSourceDestChecked") ) {
+			      if ((aret = argcmp(next_a, "IsSourceDestChecked")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "IsSourceDestChecked argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_is_source_dest_checked = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->is_source_dest_checked = 1;
@@ -8459,12 +9463,24 @@ int main(int ac, char **av)
 				          		BAD_RET("IsSourceDestChecked require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "KeypairName") ) {
+			      if ((aret = argcmp(next_a, "KeypairName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "KeypairName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "KeypairName argument missing\n");
 				          s->keypair_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "NestedVirtualization") ) {
+			      if ((aret = argcmp(next_a, "NestedVirtualization")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NestedVirtualization argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_nested_virtualization = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->nested_virtualization = 1;
@@ -8474,34 +9490,70 @@ int main(int ac, char **av)
 				          		BAD_RET("NestedVirtualization require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Performance") ) {
+			      if ((aret = argcmp(next_a, "Performance")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Performance argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Performance argument missing\n");
 				          s->performance = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "SecurityGroupIds") ) {
+			      if ((aret = argcmp(next_a, "SecurityGroupIds")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SecurityGroupIds argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "SecurityGroupIds argument missing\n");
 				             s->security_group_ids_str = aa;
-				       } else if (!strcmp(str, "SecurityGroupIds[]")) {
+				       } else if (!(aret = strcmp(str, "SecurityGroupIds[]")) || aret == '=') {
 				             TRY(!aa, "SecurityGroupIds[] argument missing\n");
 				             SET_NEXT(s->security_group_ids, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "UserData") ) {
+			      if ((aret = argcmp(next_a, "UserData")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserData argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "UserData argument missing\n");
 				          s->user_data = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "VmId") ) {
+			      if ((aret = argcmp(next_a, "VmId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VmId argument missing\n");
 				          s->vm_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "VmInitiatedShutdownBehavior") ) {
+			      if ((aret = argcmp(next_a, "VmInitiatedShutdownBehavior")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmInitiatedShutdownBehavior argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VmInitiatedShutdownBehavior argument missing\n");
 				          s->vm_initiated_shutdown_behavior = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "VmType") ) {
+			      if ((aret = argcmp(next_a, "VmType")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmType argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VmType argument missing\n");
 				          s->vm_type = aa; // string string
 
@@ -8542,11 +9594,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto update_subnet_arg;
 		      }
 
@@ -8554,13 +9614,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -8570,7 +9637,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "MapPublicIpOnLaunch") ) {
+			      if ((aret = argcmp(next_a, "MapPublicIpOnLaunch")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "MapPublicIpOnLaunch argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_map_public_ip_on_launch = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->map_public_ip_on_launch = 1;
@@ -8580,7 +9653,13 @@ int main(int ac, char **av)
 				          		BAD_RET("MapPublicIpOnLaunch require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "SubnetId") ) {
+			      if ((aret = argcmp(next_a, "SubnetId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SubnetId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SubnetId argument missing\n");
 				          s->subnet_id = aa; // string string
 
@@ -8621,11 +9700,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto update_snapshot_arg;
 		      }
 
@@ -8633,13 +9720,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -8649,7 +9743,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "PermissionsToCreateVolume") ) {
+			      if ((aret = argcmp(next_a, "PermissionsToCreateVolume")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PermissionsToCreateVolume argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "PermissionsToCreateVolume argument missing\n");
@@ -8666,7 +9766,13 @@ int main(int ac, char **av)
 				                 s->permissions_to_create_volume_str = aa;
 				           }
 				       } else
-			      if (!argcmp(next_a, "SnapshotId") ) {
+			      if ((aret = argcmp(next_a, "SnapshotId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SnapshotId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SnapshotId argument missing\n");
 				          s->snapshot_id = aa; // string string
 
@@ -8707,11 +9813,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto update_server_certificate_arg;
 		      }
 
@@ -8719,13 +9833,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -8735,17 +9856,35 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Name") ) {
+			      if ((aret = argcmp(next_a, "Name")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Name argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Name argument missing\n");
 				          s->name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "NewName") ) {
+			      if ((aret = argcmp(next_a, "NewName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NewName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NewName argument missing\n");
 				          s->new_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "NewPath") ) {
+			      if ((aret = argcmp(next_a, "NewPath")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NewPath argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NewPath argument missing\n");
 				          s->new_path = aa; // string string
 
@@ -8786,11 +9925,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto update_route_propagation_arg;
 		      }
 
@@ -8798,13 +9945,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -8814,7 +9968,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Enable") ) {
+			      if ((aret = argcmp(next_a, "Enable")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Enable argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_enable = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->enable = 1;
@@ -8824,12 +9984,24 @@ int main(int ac, char **av)
 				          		BAD_RET("Enable require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "RouteTableId") ) {
+			      if ((aret = argcmp(next_a, "RouteTableId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "RouteTableId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "RouteTableId argument missing\n");
 				          s->route_table_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "VirtualGatewayId") ) {
+			      if ((aret = argcmp(next_a, "VirtualGatewayId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VirtualGatewayId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VirtualGatewayId argument missing\n");
 				          s->virtual_gateway_id = aa; // string string
 
@@ -8870,11 +10042,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto update_route_arg;
 		      }
 
@@ -8882,18 +10062,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DestinationIpRange") ) {
+			      if ((aret = argcmp(next_a, "DestinationIpRange")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DestinationIpRange argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "DestinationIpRange argument missing\n");
 				          s->destination_ip_range = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -8903,32 +10096,68 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "GatewayId") ) {
+			      if ((aret = argcmp(next_a, "GatewayId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "GatewayId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "GatewayId argument missing\n");
 				          s->gateway_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "NatServiceId") ) {
+			      if ((aret = argcmp(next_a, "NatServiceId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NatServiceId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NatServiceId argument missing\n");
 				          s->nat_service_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "NetPeeringId") ) {
+			      if ((aret = argcmp(next_a, "NetPeeringId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NetPeeringId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NetPeeringId argument missing\n");
 				          s->net_peering_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "NicId") ) {
+			      if ((aret = argcmp(next_a, "NicId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NicId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NicId argument missing\n");
 				          s->nic_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "RouteTableId") ) {
+			      if ((aret = argcmp(next_a, "RouteTableId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "RouteTableId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "RouteTableId argument missing\n");
 				          s->route_table_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "VmId") ) {
+			      if ((aret = argcmp(next_a, "VmId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VmId argument missing\n");
 				          s->vm_id = aa; // string string
 
@@ -8969,11 +10198,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto update_nic_arg;
 		      }
 
@@ -8981,18 +10218,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "Description") ) {
+			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Description argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Description argument missing\n");
 				          s->description = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -9002,7 +10252,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "LinkNic") ) {
+			      if ((aret = argcmp(next_a, "LinkNic")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LinkNic argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "LinkNic argument missing\n");
@@ -9019,15 +10275,27 @@ int main(int ac, char **av)
 				                 s->link_nic_str = aa;
 				           }
 				       } else
-			      if (!argcmp(next_a, "NicId") ) {
+			      if ((aret = argcmp(next_a, "NicId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NicId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NicId argument missing\n");
 				          s->nic_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "SecurityGroupIds") ) {
+			      if ((aret = argcmp(next_a, "SecurityGroupIds")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SecurityGroupIds argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "SecurityGroupIds argument missing\n");
 				             s->security_group_ids_str = aa;
-				       } else if (!strcmp(str, "SecurityGroupIds[]")) {
+				       } else if (!(aret = strcmp(str, "SecurityGroupIds[]")) || aret == '=') {
 				             TRY(!aa, "SecurityGroupIds[] argument missing\n");
 				             SET_NEXT(s->security_group_ids, (aa), pa);
 				       } else
@@ -9067,11 +10335,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto update_net_access_point_arg;
 		      }
 
@@ -9079,20 +10355,33 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "AddRouteTableIds") ) {
+			      if ((aret = argcmp(next_a, "AddRouteTableIds")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "AddRouteTableIds argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "AddRouteTableIds argument missing\n");
 				             s->add_route_table_ids_str = aa;
-				       } else if (!strcmp(str, "AddRouteTableIds[]")) {
+				       } else if (!(aret = strcmp(str, "AddRouteTableIds[]")) || aret == '=') {
 				             TRY(!aa, "AddRouteTableIds[] argument missing\n");
 				             SET_NEXT(s->add_route_table_ids, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -9102,15 +10391,27 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "NetAccessPointId") ) {
+			      if ((aret = argcmp(next_a, "NetAccessPointId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NetAccessPointId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NetAccessPointId argument missing\n");
 				          s->net_access_point_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "RemoveRouteTableIds") ) {
+			      if ((aret = argcmp(next_a, "RemoveRouteTableIds")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "RemoveRouteTableIds argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "RemoveRouteTableIds argument missing\n");
 				             s->remove_route_table_ids_str = aa;
-				       } else if (!strcmp(str, "RemoveRouteTableIds[]")) {
+				       } else if (!(aret = strcmp(str, "RemoveRouteTableIds[]")) || aret == '=') {
 				             TRY(!aa, "RemoveRouteTableIds[] argument missing\n");
 				             SET_NEXT(s->remove_route_table_ids, (aa), pa);
 				       } else
@@ -9150,11 +10451,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto update_net_arg;
 		      }
 
@@ -9162,18 +10471,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DhcpOptionsSetId") ) {
+			      if ((aret = argcmp(next_a, "DhcpOptionsSetId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DhcpOptionsSetId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "DhcpOptionsSetId argument missing\n");
 				          s->dhcp_options_set_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -9183,7 +10505,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "NetId") ) {
+			      if ((aret = argcmp(next_a, "NetId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NetId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NetId argument missing\n");
 				          s->net_id = aa; // string string
 
@@ -9224,11 +10552,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto update_load_balancer_arg;
 		      }
 
@@ -9236,13 +10572,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "AccessLog") ) {
+			      if ((aret = argcmp(next_a, "AccessLog")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "AccessLog argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "AccessLog argument missing\n");
@@ -9259,7 +10602,13 @@ int main(int ac, char **av)
 				                 s->access_log_str = aa;
 				           }
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -9269,7 +10618,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "HealthCheck") ) {
+			      if ((aret = argcmp(next_a, "HealthCheck")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "HealthCheck argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "HealthCheck argument missing\n");
@@ -9286,29 +10641,59 @@ int main(int ac, char **av)
 				                 s->health_check_str = aa;
 				           }
 				       } else
-			      if (!argcmp(next_a, "LoadBalancerName") ) {
+			      if ((aret = argcmp(next_a, "LoadBalancerName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LoadBalancerName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "LoadBalancerName argument missing\n");
 				          s->load_balancer_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "LoadBalancerPort") ) {
+			      if ((aret = argcmp(next_a, "LoadBalancerPort")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LoadBalancerPort argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "LoadBalancerPort argument missing\n");
 				          s->is_set_load_balancer_port = 1;
 				          s->load_balancer_port = atoi(aa);
 				       } else
-			      if (!argcmp(next_a, "PolicyNames") ) {
+			      if ((aret = argcmp(next_a, "PolicyNames")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PolicyNames argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "PolicyNames argument missing\n");
 				             s->policy_names_str = aa;
-				       } else if (!strcmp(str, "PolicyNames[]")) {
+				       } else if (!(aret = strcmp(str, "PolicyNames[]")) || aret == '=') {
 				             TRY(!aa, "PolicyNames[] argument missing\n");
 				             SET_NEXT(s->policy_names, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "PublicIp") ) {
+			      if ((aret = argcmp(next_a, "PublicIp")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PublicIp argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "PublicIp argument missing\n");
 				          s->public_ip = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "SecuredCookies") ) {
+			      if ((aret = argcmp(next_a, "SecuredCookies")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SecuredCookies argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_secured_cookies = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->secured_cookies = 1;
@@ -9318,14 +10703,26 @@ int main(int ac, char **av)
 				          		BAD_RET("SecuredCookies require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "SecurityGroups") ) {
+			      if ((aret = argcmp(next_a, "SecurityGroups")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SecurityGroups argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "SecurityGroups argument missing\n");
 				             s->security_groups_str = aa;
-				       } else if (!strcmp(str, "SecurityGroups[]")) {
+				       } else if (!(aret = strcmp(str, "SecurityGroups[]")) || aret == '=') {
 				             TRY(!aa, "SecurityGroups[] argument missing\n");
 				             SET_NEXT(s->security_groups, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "ServerCertificateId") ) {
+			      if ((aret = argcmp(next_a, "ServerCertificateId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ServerCertificateId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ServerCertificateId argument missing\n");
 				          s->server_certificate_id = aa; // string string
 
@@ -9366,11 +10763,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto update_listener_rule_arg;
 		      }
 
@@ -9378,13 +10783,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -9394,17 +10806,35 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "HostPattern") ) {
+			      if ((aret = argcmp(next_a, "HostPattern")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "HostPattern argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "HostPattern argument missing\n");
 				          s->host_pattern = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "ListenerRuleName") ) {
+			      if ((aret = argcmp(next_a, "ListenerRuleName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ListenerRuleName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ListenerRuleName argument missing\n");
 				          s->listener_rule_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "PathPattern") ) {
+			      if ((aret = argcmp(next_a, "PathPattern")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PathPattern argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "PathPattern argument missing\n");
 				          s->path_pattern = aa; // string string
 
@@ -9445,11 +10875,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto update_image_arg;
 		      }
 
@@ -9457,13 +10895,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -9473,12 +10918,24 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "ImageId") ) {
+			      if ((aret = argcmp(next_a, "ImageId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ImageId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ImageId argument missing\n");
 				          s->image_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "PermissionsToLaunch") ) {
+			      if ((aret = argcmp(next_a, "PermissionsToLaunch")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PermissionsToLaunch argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "PermissionsToLaunch argument missing\n");
@@ -9531,11 +10988,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto update_flexible_gpu_arg;
 		      }
 
@@ -9543,13 +11008,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DeleteOnVmDeletion") ) {
+			      if ((aret = argcmp(next_a, "DeleteOnVmDeletion")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DeleteOnVmDeletion argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_delete_on_vm_deletion = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->delete_on_vm_deletion = 1;
@@ -9559,7 +11031,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DeleteOnVmDeletion require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -9569,7 +11047,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "FlexibleGpuId") ) {
+			      if ((aret = argcmp(next_a, "FlexibleGpuId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "FlexibleGpuId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "FlexibleGpuId argument missing\n");
 				          s->flexible_gpu_id = aa; // string string
 
@@ -9610,11 +11094,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto update_direct_link_interface_arg;
 		      }
 
@@ -9622,18 +11114,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DirectLinkInterfaceId") ) {
+			      if ((aret = argcmp(next_a, "DirectLinkInterfaceId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DirectLinkInterfaceId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "DirectLinkInterfaceId argument missing\n");
 				          s->direct_link_interface_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -9643,7 +11148,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Mtu") ) {
+			      if ((aret = argcmp(next_a, "Mtu")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Mtu argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Mtu argument missing\n");
 				          s->is_set_mtu = 1;
 				          s->mtu = atoi(aa);
@@ -9684,11 +11195,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto update_ca_arg;
 		      }
 
@@ -9696,23 +11215,42 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "CaId") ) {
+			      if ((aret = argcmp(next_a, "CaId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "CaId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "CaId argument missing\n");
 				          s->ca_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "Description") ) {
+			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Description argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Description argument missing\n");
 				          s->description = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -9758,11 +11296,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto update_api_access_rule_arg;
 		      }
 
@@ -9770,37 +11316,68 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "ApiAccessRuleId") ) {
+			      if ((aret = argcmp(next_a, "ApiAccessRuleId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ApiAccessRuleId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ApiAccessRuleId argument missing\n");
 				          s->api_access_rule_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "CaIds") ) {
+			      if ((aret = argcmp(next_a, "CaIds")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "CaIds argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "CaIds argument missing\n");
 				             s->ca_ids_str = aa;
-				       } else if (!strcmp(str, "CaIds[]")) {
+				       } else if (!(aret = strcmp(str, "CaIds[]")) || aret == '=') {
 				             TRY(!aa, "CaIds[] argument missing\n");
 				             SET_NEXT(s->ca_ids, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "Cns") ) {
+			      if ((aret = argcmp(next_a, "Cns")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Cns argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "Cns argument missing\n");
 				             s->cns_str = aa;
-				       } else if (!strcmp(str, "Cns[]")) {
+				       } else if (!(aret = strcmp(str, "Cns[]")) || aret == '=') {
 				             TRY(!aa, "Cns[] argument missing\n");
 				             SET_NEXT(s->cns, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "Description") ) {
+			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Description argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Description argument missing\n");
 				          s->description = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -9810,10 +11387,16 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "IpRanges") ) {
+			      if ((aret = argcmp(next_a, "IpRanges")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "IpRanges argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "IpRanges argument missing\n");
 				             s->ip_ranges_str = aa;
-				       } else if (!strcmp(str, "IpRanges[]")) {
+				       } else if (!(aret = strcmp(str, "IpRanges[]")) || aret == '=') {
 				             TRY(!aa, "IpRanges[] argument missing\n");
 				             SET_NEXT(s->ip_ranges, (aa), pa);
 				       } else
@@ -9853,11 +11436,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto update_api_access_policy_arg;
 		      }
 
@@ -9865,13 +11456,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -9881,12 +11479,24 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "MaxAccessKeyExpirationSeconds") ) {
+			      if ((aret = argcmp(next_a, "MaxAccessKeyExpirationSeconds")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "MaxAccessKeyExpirationSeconds argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "MaxAccessKeyExpirationSeconds argument missing\n");
 				          s->is_set_max_access_key_expiration_seconds = 1;
 				          s->max_access_key_expiration_seconds = atoi(aa);
 				       } else
-			      if (!argcmp(next_a, "RequireTrustedEnv") ) {
+			      if ((aret = argcmp(next_a, "RequireTrustedEnv")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "RequireTrustedEnv argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_require_trusted_env = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->require_trusted_env = 1;
@@ -9932,11 +11542,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto update_account_arg;
 		      }
 
@@ -9944,35 +11562,66 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "AdditionalEmails") ) {
+			      if ((aret = argcmp(next_a, "AdditionalEmails")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "AdditionalEmails argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "AdditionalEmails argument missing\n");
 				             s->additional_emails_str = aa;
-				       } else if (!strcmp(str, "AdditionalEmails[]")) {
+				       } else if (!(aret = strcmp(str, "AdditionalEmails[]")) || aret == '=') {
 				             TRY(!aa, "AdditionalEmails[] argument missing\n");
 				             SET_NEXT(s->additional_emails, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "City") ) {
+			      if ((aret = argcmp(next_a, "City")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "City argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "City argument missing\n");
 				          s->city = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "CompanyName") ) {
+			      if ((aret = argcmp(next_a, "CompanyName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "CompanyName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "CompanyName argument missing\n");
 				          s->company_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "Country") ) {
+			      if ((aret = argcmp(next_a, "Country")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Country argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Country argument missing\n");
 				          s->country = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -9982,47 +11631,101 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Email") ) {
+			      if ((aret = argcmp(next_a, "Email")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Email argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Email argument missing\n");
 				          s->email = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "FirstName") ) {
+			      if ((aret = argcmp(next_a, "FirstName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "FirstName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "FirstName argument missing\n");
 				          s->first_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "JobTitle") ) {
+			      if ((aret = argcmp(next_a, "JobTitle")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "JobTitle argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "JobTitle argument missing\n");
 				          s->job_title = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "LastName") ) {
+			      if ((aret = argcmp(next_a, "LastName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LastName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "LastName argument missing\n");
 				          s->last_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "MobileNumber") ) {
+			      if ((aret = argcmp(next_a, "MobileNumber")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "MobileNumber argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "MobileNumber argument missing\n");
 				          s->mobile_number = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "PhoneNumber") ) {
+			      if ((aret = argcmp(next_a, "PhoneNumber")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PhoneNumber argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "PhoneNumber argument missing\n");
 				          s->phone_number = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "StateProvince") ) {
+			      if ((aret = argcmp(next_a, "StateProvince")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "StateProvince argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "StateProvince argument missing\n");
 				          s->state_province = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "VatNumber") ) {
+			      if ((aret = argcmp(next_a, "VatNumber")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VatNumber argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VatNumber argument missing\n");
 				          s->vat_number = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "ZipCode") ) {
+			      if ((aret = argcmp(next_a, "ZipCode")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ZipCode argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ZipCode argument missing\n");
 				          s->zip_code = aa; // string string
 
@@ -10063,11 +11766,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto update_access_key_arg;
 		      }
 
@@ -10075,18 +11786,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "AccessKeyId") ) {
+			      if ((aret = argcmp(next_a, "AccessKeyId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "AccessKeyId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "AccessKeyId argument missing\n");
 				          s->access_key_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -10096,12 +11820,24 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "ExpirationDate") ) {
+			      if ((aret = argcmp(next_a, "ExpirationDate")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ExpirationDate argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ExpirationDate argument missing\n");
-				          s->expiration_date = aa; // string string
+				          s->expiration_date = aa; // string string string
 
 				       } else
-			      if (!argcmp(next_a, "State") ) {
+			      if ((aret = argcmp(next_a, "State")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "State argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "State argument missing\n");
 				          s->state = aa; // string string
 
@@ -10142,11 +11878,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto unlink_volume_arg;
 		      }
 
@@ -10154,13 +11898,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -10170,7 +11921,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "ForceUnlink") ) {
+			      if ((aret = argcmp(next_a, "ForceUnlink")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ForceUnlink argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_force_unlink = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->force_unlink = 1;
@@ -10180,7 +11937,13 @@ int main(int ac, char **av)
 				          		BAD_RET("ForceUnlink require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "VolumeId") ) {
+			      if ((aret = argcmp(next_a, "VolumeId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VolumeId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VolumeId argument missing\n");
 				          s->volume_id = aa; // string string
 
@@ -10221,11 +11984,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto unlink_virtual_gateway_arg;
 		      }
 
@@ -10233,13 +12004,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -10249,12 +12027,24 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "NetId") ) {
+			      if ((aret = argcmp(next_a, "NetId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NetId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NetId argument missing\n");
 				          s->net_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "VirtualGatewayId") ) {
+			      if ((aret = argcmp(next_a, "VirtualGatewayId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VirtualGatewayId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VirtualGatewayId argument missing\n");
 				          s->virtual_gateway_id = aa; // string string
 
@@ -10295,11 +12085,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto unlink_route_table_arg;
 		      }
 
@@ -10307,13 +12105,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -10323,7 +12128,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "LinkRouteTableId") ) {
+			      if ((aret = argcmp(next_a, "LinkRouteTableId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LinkRouteTableId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "LinkRouteTableId argument missing\n");
 				          s->link_route_table_id = aa; // string string
 
@@ -10364,11 +12175,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto unlink_public_ip_arg;
 		      }
 
@@ -10376,13 +12195,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -10392,12 +12218,24 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "LinkPublicIpId") ) {
+			      if ((aret = argcmp(next_a, "LinkPublicIpId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LinkPublicIpId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "LinkPublicIpId argument missing\n");
 				          s->link_public_ip_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "PublicIp") ) {
+			      if ((aret = argcmp(next_a, "PublicIp")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PublicIp argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "PublicIp argument missing\n");
 				          s->public_ip = aa; // string string
 
@@ -10438,11 +12276,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto unlink_private_ips_arg;
 		      }
 
@@ -10450,13 +12296,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -10466,15 +12319,27 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "NicId") ) {
+			      if ((aret = argcmp(next_a, "NicId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NicId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NicId argument missing\n");
 				          s->nic_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "PrivateIps") ) {
+			      if ((aret = argcmp(next_a, "PrivateIps")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PrivateIps argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "PrivateIps argument missing\n");
 				             s->private_ips_str = aa;
-				       } else if (!strcmp(str, "PrivateIps[]")) {
+				       } else if (!(aret = strcmp(str, "PrivateIps[]")) || aret == '=') {
 				             TRY(!aa, "PrivateIps[] argument missing\n");
 				             SET_NEXT(s->private_ips, (aa), pa);
 				       } else
@@ -10514,11 +12379,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto unlink_nic_arg;
 		      }
 
@@ -10526,13 +12399,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -10542,7 +12422,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "LinkNicId") ) {
+			      if ((aret = argcmp(next_a, "LinkNicId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LinkNicId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "LinkNicId argument missing\n");
 				          s->link_nic_id = aa; // string string
 
@@ -10583,11 +12469,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto unlink_load_balancer_backend_machines_arg;
 		      }
 
@@ -10595,27 +12489,46 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "BackendIps") ) {
+			      if ((aret = argcmp(next_a, "BackendIps")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "BackendIps argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "BackendIps argument missing\n");
 				             s->backend_ips_str = aa;
-				       } else if (!strcmp(str, "BackendIps[]")) {
+				       } else if (!(aret = strcmp(str, "BackendIps[]")) || aret == '=') {
 				             TRY(!aa, "BackendIps[] argument missing\n");
 				             SET_NEXT(s->backend_ips, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "BackendVmIds") ) {
+			      if ((aret = argcmp(next_a, "BackendVmIds")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "BackendVmIds argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "BackendVmIds argument missing\n");
 				             s->backend_vm_ids_str = aa;
-				       } else if (!strcmp(str, "BackendVmIds[]")) {
+				       } else if (!(aret = strcmp(str, "BackendVmIds[]")) || aret == '=') {
 				             TRY(!aa, "BackendVmIds[] argument missing\n");
 				             SET_NEXT(s->backend_vm_ids, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -10625,7 +12538,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "LoadBalancerName") ) {
+			      if ((aret = argcmp(next_a, "LoadBalancerName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LoadBalancerName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "LoadBalancerName argument missing\n");
 				          s->load_balancer_name = aa; // string string
 
@@ -10666,11 +12585,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto unlink_internet_service_arg;
 		      }
 
@@ -10678,13 +12605,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -10694,12 +12628,24 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "InternetServiceId") ) {
+			      if ((aret = argcmp(next_a, "InternetServiceId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "InternetServiceId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "InternetServiceId argument missing\n");
 				          s->internet_service_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "NetId") ) {
+			      if ((aret = argcmp(next_a, "NetId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NetId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NetId argument missing\n");
 				          s->net_id = aa; // string string
 
@@ -10740,11 +12686,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto unlink_flexible_gpu_arg;
 		      }
 
@@ -10752,13 +12706,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -10768,7 +12729,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "FlexibleGpuId") ) {
+			      if ((aret = argcmp(next_a, "FlexibleGpuId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "FlexibleGpuId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "FlexibleGpuId argument missing\n");
 				          s->flexible_gpu_id = aa; // string string
 
@@ -10809,11 +12776,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto stop_vms_arg;
 		      }
 
@@ -10821,13 +12796,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -10837,7 +12819,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "ForceStop") ) {
+			      if ((aret = argcmp(next_a, "ForceStop")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ForceStop argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_force_stop = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->force_stop = 1;
@@ -10847,10 +12835,16 @@ int main(int ac, char **av)
 				          		BAD_RET("ForceStop require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "VmIds") ) {
+			      if ((aret = argcmp(next_a, "VmIds")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmIds argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "VmIds argument missing\n");
 				             s->vm_ids_str = aa;
-				       } else if (!strcmp(str, "VmIds[]")) {
+				       } else if (!(aret = strcmp(str, "VmIds[]")) || aret == '=') {
 				             TRY(!aa, "VmIds[] argument missing\n");
 				             SET_NEXT(s->vm_ids, (aa), pa);
 				       } else
@@ -10890,11 +12884,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto start_vms_arg;
 		      }
 
@@ -10902,13 +12904,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -10918,10 +12927,16 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "VmIds") ) {
+			      if ((aret = argcmp(next_a, "VmIds")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmIds argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "VmIds argument missing\n");
 				             s->vm_ids_str = aa;
-				       } else if (!strcmp(str, "VmIds[]")) {
+				       } else if (!(aret = strcmp(str, "VmIds[]")) || aret == '=') {
 				             TRY(!aa, "VmIds[] argument missing\n");
 				             SET_NEXT(s->vm_ids, (aa), pa);
 				       } else
@@ -10961,11 +12976,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto send_reset_password_email_arg;
 		      }
 
@@ -10973,13 +12996,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -10989,7 +13019,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Email") ) {
+			      if ((aret = argcmp(next_a, "Email")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Email argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Email argument missing\n");
 				          s->email = aa; // string string
 
@@ -11002,6 +13038,208 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_send_reset_password_email(&e, &r, &a);
             	     TRY(cret, "fail to call SendResetPasswordEmail: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("ScaleUpVmGroup", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_scale_up_vm_group_arg a = {0};
+		     struct osc_scale_up_vm_group_arg *s = &a;
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     scale_up_vm_group_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+			   i += incr;
+		       	   goto scale_up_vm_group_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				aa = 0;
+				incr = 1;
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "VmAddition")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmAddition argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "VmAddition argument missing\n");
+				          s->is_set_vm_addition = 1;
+				          s->vm_addition = atoi(aa);
+				       } else
+			      if ((aret = argcmp(next_a, "VmGroupId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmGroupId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "VmGroupId argument missing\n");
+				          s->vm_group_id = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'ScaleUpVmGroup'\n", next_a);
+			    }
+		            i += incr;
+			    goto scale_up_vm_group_arg;
+		     }
+		     cret = osc_scale_up_vm_group(&e, &r, &a);
+            	     TRY(cret, "fail to call ScaleUpVmGroup: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("ScaleDownVmGroup", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_scale_down_vm_group_arg a = {0};
+		     struct osc_scale_down_vm_group_arg *s = &a;
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     scale_down_vm_group_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+			   i += incr;
+		       	   goto scale_down_vm_group_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				aa = 0;
+				incr = 1;
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "VmGroupId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmGroupId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "VmGroupId argument missing\n");
+				          s->vm_group_id = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "VmSubtraction")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmSubtraction argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "VmSubtraction argument missing\n");
+				          s->is_set_vm_subtraction = 1;
+				          s->vm_subtraction = atoi(aa);
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'ScaleDownVmGroup'\n", next_a);
+			    }
+		            i += incr;
+			    goto scale_down_vm_group_arg;
+		     }
+		     cret = osc_scale_down_vm_group(&e, &r, &a);
+            	     TRY(cret, "fail to call ScaleDownVmGroup: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
@@ -11030,11 +13268,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto reset_account_password_arg;
 		      }
 
@@ -11042,13 +13288,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -11058,12 +13311,24 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Password") ) {
+			      if ((aret = argcmp(next_a, "Password")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Password argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Password argument missing\n");
 				          s->password = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "Token") ) {
+			      if ((aret = argcmp(next_a, "Token")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Token argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Token argument missing\n");
 				          s->token = aa; // string string
 
@@ -11104,11 +13369,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto reject_net_peering_arg;
 		      }
 
@@ -11116,13 +13389,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -11132,7 +13412,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "NetPeeringId") ) {
+			      if ((aret = argcmp(next_a, "NetPeeringId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NetPeeringId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NetPeeringId argument missing\n");
 				          s->net_peering_id = aa; // string string
 
@@ -11173,11 +13459,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto register_vms_in_load_balancer_arg;
 		      }
 
@@ -11185,20 +13479,33 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "BackendVmIds") ) {
+			      if ((aret = argcmp(next_a, "BackendVmIds")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "BackendVmIds argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "BackendVmIds argument missing\n");
 				             s->backend_vm_ids_str = aa;
-				       } else if (!strcmp(str, "BackendVmIds[]")) {
+				       } else if (!(aret = strcmp(str, "BackendVmIds[]")) || aret == '=') {
 				             TRY(!aa, "BackendVmIds[] argument missing\n");
 				             SET_NEXT(s->backend_vm_ids, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -11208,7 +13515,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "LoadBalancerName") ) {
+			      if ((aret = argcmp(next_a, "LoadBalancerName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LoadBalancerName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "LoadBalancerName argument missing\n");
 				          s->load_balancer_name = aa; // string string
 
@@ -11249,11 +13562,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto reboot_vms_arg;
 		      }
 
@@ -11261,13 +13582,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -11277,10 +13605,16 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "VmIds") ) {
+			      if ((aret = argcmp(next_a, "VmIds")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmIds argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "VmIds argument missing\n");
 				             s->vm_ids_str = aa;
-				       } else if (!strcmp(str, "VmIds[]")) {
+				       } else if (!(aret = strcmp(str, "VmIds[]")) || aret == '=') {
 				             TRY(!aa, "VmIds[] argument missing\n");
 				             SET_NEXT(s->vm_ids, (aa), pa);
 				       } else
@@ -11320,11 +13654,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_vpn_connections_arg;
 		      }
 
@@ -11332,13 +13674,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -11348,7 +13697,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -11401,11 +13756,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_volumes_arg;
 		      }
 
@@ -11413,13 +13776,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -11429,7 +13799,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -11482,11 +13858,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_vms_state_arg;
 		      }
 
@@ -11494,13 +13878,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "AllVms") ) {
+			      if ((aret = argcmp(next_a, "AllVms")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "AllVms argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_all_vms = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->all_vms = 1;
@@ -11510,7 +13901,13 @@ int main(int ac, char **av)
 				          		BAD_RET("AllVms require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -11520,7 +13917,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -11573,11 +13976,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_vms_health_arg;
 		      }
 
@@ -11585,20 +13996,33 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "BackendVmIds") ) {
+			      if ((aret = argcmp(next_a, "BackendVmIds")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "BackendVmIds argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "BackendVmIds argument missing\n");
 				             s->backend_vm_ids_str = aa;
-				       } else if (!strcmp(str, "BackendVmIds[]")) {
+				       } else if (!(aret = strcmp(str, "BackendVmIds[]")) || aret == '=') {
 				             TRY(!aa, "BackendVmIds[] argument missing\n");
 				             SET_NEXT(s->backend_vm_ids, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -11608,7 +14032,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "LoadBalancerName") ) {
+			      if ((aret = argcmp(next_a, "LoadBalancerName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LoadBalancerName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "LoadBalancerName argument missing\n");
 				          s->load_balancer_name = aa; // string string
 
@@ -11649,11 +14079,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_vms_arg;
 		      }
 
@@ -11661,13 +14099,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -11677,7 +14122,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -11730,11 +14181,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_vm_types_arg;
 		      }
 
@@ -11742,13 +14201,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -11758,7 +14224,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -11795,6 +14267,210 @@ int main(int ac, char **av)
 		      }
 		     osc_deinit_str(&r);
 	      } else
+              if (!strcmp("ReadVmTemplates", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_read_vm_templates_arg a = {0};
+		     struct osc_read_vm_templates_arg *s = &a;
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     read_vm_templates_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+			   i += incr;
+		       	   goto read_vm_templates_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				aa = 0;
+				incr = 1;
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          char *dot_pos;
+
+				          TRY(!aa, "Filters argument missing\n");
+				          dot_pos = strchr(str, '.');
+				          if (dot_pos++) {
+				          	    cascade_struct = &s->filters;
+				          	    cascade_parser = filters_vm_template_parser;
+				          	    if (*dot_pos == '.') {
+				          		++dot_pos;
+				          	    }
+				          	    filters_vm_template_parser(&s->filters, dot_pos, aa, pa);
+				          	    s->is_set_filters = 1;
+				           } else {
+				                 s->filters_str = aa;
+				           }
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'ReadVmTemplates'\n", next_a);
+			    }
+		            i += incr;
+			    goto read_vm_templates_arg;
+		     }
+		     cret = osc_read_vm_templates(&e, &r, &a);
+            	     TRY(cret, "fail to call ReadVmTemplates: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("ReadVmGroups", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_read_vm_groups_arg a = {0};
+		     struct osc_read_vm_groups_arg *s = &a;
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     read_vm_groups_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+			   i += incr;
+		       	   goto read_vm_groups_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				aa = 0;
+				incr = 1;
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          char *dot_pos;
+
+				          TRY(!aa, "Filters argument missing\n");
+				          dot_pos = strchr(str, '.');
+				          if (dot_pos++) {
+				          	    cascade_struct = &s->filters;
+				          	    cascade_parser = filters_vm_group_parser;
+				          	    if (*dot_pos == '.') {
+				          		++dot_pos;
+				          	    }
+				          	    filters_vm_group_parser(&s->filters, dot_pos, aa, pa);
+				          	    s->is_set_filters = 1;
+				           } else {
+				                 s->filters_str = aa;
+				           }
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'ReadVmGroups'\n", next_a);
+			    }
+		            i += incr;
+			    goto read_vm_groups_arg;
+		     }
+		     cret = osc_read_vm_groups(&e, &r, &a);
+            	     TRY(cret, "fail to call ReadVmGroups: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
               if (!strcmp("ReadVirtualGateways", av[i])) {
 		     json_object *jobj;
 		     auto_ptr_array struct ptr_array opa = {0};
@@ -11811,11 +14487,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_virtual_gateways_arg;
 		      }
 
@@ -11823,13 +14507,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -11839,7 +14530,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -11892,11 +14589,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_tags_arg;
 		      }
 
@@ -11904,13 +14609,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -11920,7 +14632,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -11973,11 +14691,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_subregions_arg;
 		      }
 
@@ -11985,13 +14711,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -12001,7 +14734,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -12054,11 +14793,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_subnets_arg;
 		      }
 
@@ -12066,13 +14813,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -12082,7 +14836,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -12135,11 +14895,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_snapshots_arg;
 		      }
 
@@ -12147,13 +14915,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -12163,7 +14938,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -12216,11 +14997,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_snapshot_export_tasks_arg;
 		      }
 
@@ -12228,13 +15017,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -12244,7 +15040,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -12297,11 +15099,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_server_certificates_arg;
 		      }
 
@@ -12309,13 +15119,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -12325,7 +15142,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -12378,11 +15201,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_security_groups_arg;
 		      }
 
@@ -12390,13 +15221,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -12406,7 +15244,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -12459,11 +15303,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_secret_access_key_arg;
 		      }
 
@@ -12471,18 +15323,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "AccessKeyId") ) {
+			      if ((aret = argcmp(next_a, "AccessKeyId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "AccessKeyId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "AccessKeyId argument missing\n");
 				          s->access_key_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -12528,11 +15393,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_route_tables_arg;
 		      }
 
@@ -12540,13 +15413,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -12556,7 +15436,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -12609,11 +15495,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_regions_arg;
 		      }
 
@@ -12621,13 +15515,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -12673,11 +15574,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_quotas_arg;
 		      }
 
@@ -12685,13 +15594,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -12701,7 +15617,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -12754,11 +15676,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_public_ips_arg;
 		      }
 
@@ -12766,13 +15696,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -12782,7 +15719,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -12835,11 +15778,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_public_ip_ranges_arg;
 		      }
 
@@ -12847,13 +15798,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -12899,11 +15857,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_public_catalog_arg;
 		      }
 
@@ -12911,13 +15877,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -12963,11 +15936,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_product_types_arg;
 		      }
 
@@ -12975,13 +15956,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -12991,7 +15979,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -13044,11 +16038,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_nics_arg;
 		      }
 
@@ -13056,13 +16058,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -13072,7 +16081,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -13125,11 +16140,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_nets_arg;
 		      }
 
@@ -13137,13 +16160,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -13153,7 +16183,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -13206,11 +16242,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_net_peerings_arg;
 		      }
 
@@ -13218,13 +16262,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -13234,7 +16285,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -13287,11 +16344,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_net_access_points_arg;
 		      }
 
@@ -13299,13 +16364,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -13315,7 +16387,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -13368,11 +16446,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_net_access_point_services_arg;
 		      }
 
@@ -13380,13 +16466,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -13396,7 +16489,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -13449,11 +16548,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_nat_services_arg;
 		      }
 
@@ -13461,13 +16568,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -13477,7 +16591,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -13530,11 +16650,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_locations_arg;
 		      }
 
@@ -13542,13 +16670,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -13594,11 +16729,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_load_balancers_arg;
 		      }
 
@@ -13606,13 +16749,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -13622,7 +16772,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -13675,11 +16831,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_load_balancer_tags_arg;
 		      }
 
@@ -13687,13 +16851,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -13703,10 +16874,16 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "LoadBalancerNames") ) {
+			      if ((aret = argcmp(next_a, "LoadBalancerNames")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LoadBalancerNames argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "LoadBalancerNames argument missing\n");
 				             s->load_balancer_names_str = aa;
-				       } else if (!strcmp(str, "LoadBalancerNames[]")) {
+				       } else if (!(aret = strcmp(str, "LoadBalancerNames[]")) || aret == '=') {
 				             TRY(!aa, "LoadBalancerNames[] argument missing\n");
 				             SET_NEXT(s->load_balancer_names, (aa), pa);
 				       } else
@@ -13746,11 +16923,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_listener_rules_arg;
 		      }
 
@@ -13758,13 +16943,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -13774,7 +16966,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -13827,11 +17025,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_keypairs_arg;
 		      }
 
@@ -13839,13 +17045,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -13855,7 +17068,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -13908,11 +17127,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_internet_services_arg;
 		      }
 
@@ -13920,13 +17147,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -13936,7 +17170,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -13989,11 +17229,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_images_arg;
 		      }
 
@@ -14001,13 +17249,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -14017,7 +17272,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -14070,11 +17331,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_image_export_tasks_arg;
 		      }
 
@@ -14082,13 +17351,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -14098,7 +17374,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -14151,11 +17433,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_flexible_gpus_arg;
 		      }
 
@@ -14163,13 +17453,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -14179,7 +17476,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -14232,11 +17535,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_flexible_gpu_catalog_arg;
 		      }
 
@@ -14244,13 +17555,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -14296,11 +17614,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_direct_links_arg;
 		      }
 
@@ -14308,13 +17634,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -14324,7 +17657,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -14377,11 +17716,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_direct_link_interfaces_arg;
 		      }
 
@@ -14389,13 +17736,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -14405,7 +17759,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -14458,11 +17818,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_dhcp_options_arg;
 		      }
 
@@ -14470,13 +17838,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -14486,7 +17861,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -14539,11 +17920,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_consumption_account_arg;
 		      }
 
@@ -14551,13 +17940,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -14567,12 +17963,24 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "FromDate") ) {
+			      if ((aret = argcmp(next_a, "FromDate")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "FromDate argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "FromDate argument missing\n");
-				          s->from_date = aa; // string string
+				          s->from_date = aa; // string string string
 
 				       } else
-			      if (!argcmp(next_a, "Overall") ) {
+			      if ((aret = argcmp(next_a, "Overall")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Overall argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_overall = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->overall = 1;
@@ -14582,9 +17990,15 @@ int main(int ac, char **av)
 				          		BAD_RET("Overall require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "ToDate") ) {
+			      if ((aret = argcmp(next_a, "ToDate")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ToDate argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ToDate argument missing\n");
-				          s->to_date = aa; // string string
+				          s->to_date = aa; // string string string
 
 				       } else
 			    {
@@ -14623,11 +18037,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_console_output_arg;
 		      }
 
@@ -14635,13 +18057,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -14651,7 +18080,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "VmId") ) {
+			      if ((aret = argcmp(next_a, "VmId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VmId argument missing\n");
 				          s->vm_id = aa; // string string
 
@@ -14692,11 +18127,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_client_gateways_arg;
 		      }
 
@@ -14704,13 +18147,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -14720,7 +18170,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -14757,6 +18213,108 @@ int main(int ac, char **av)
 		      }
 		     osc_deinit_str(&r);
 	      } else
+              if (!strcmp("ReadCatalogs", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_read_catalogs_arg a = {0};
+		     struct osc_read_catalogs_arg *s = &a;
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     read_catalogs_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+			   i += incr;
+		       	   goto read_catalogs_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				aa = 0;
+				incr = 1;
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          char *dot_pos;
+
+				          TRY(!aa, "Filters argument missing\n");
+				          dot_pos = strchr(str, '.');
+				          if (dot_pos++) {
+				          	    cascade_struct = &s->filters;
+				          	    cascade_parser = filters_catalogs_parser;
+				          	    if (*dot_pos == '.') {
+				          		++dot_pos;
+				          	    }
+				          	    filters_catalogs_parser(&s->filters, dot_pos, aa, pa);
+				          	    s->is_set_filters = 1;
+				           } else {
+				                 s->filters_str = aa;
+				           }
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'ReadCatalogs'\n", next_a);
+			    }
+		            i += incr;
+			    goto read_catalogs_arg;
+		     }
+		     cret = osc_read_catalogs(&e, &r, &a);
+            	     TRY(cret, "fail to call ReadCatalogs: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
               if (!strcmp("ReadCatalog", av[i])) {
 		     json_object *jobj;
 		     auto_ptr_array struct ptr_array opa = {0};
@@ -14773,11 +18331,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_catalog_arg;
 		      }
 
@@ -14785,13 +18351,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -14837,11 +18410,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_cas_arg;
 		      }
 
@@ -14849,13 +18430,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -14865,7 +18453,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -14918,11 +18512,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_api_logs_arg;
 		      }
 
@@ -14930,13 +18532,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -14946,7 +18555,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -14963,17 +18578,35 @@ int main(int ac, char **av)
 				                 s->filters_str = aa;
 				           }
 				       } else
-			      if (!argcmp(next_a, "NextPageToken") ) {
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NextPageToken argument missing\n");
 				          s->next_page_token = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "ResultsPerPage") ) {
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
 				          s->results_per_page = atoi(aa);
 				       } else
-			      if (!argcmp(next_a, "With") ) {
+			      if ((aret = argcmp(next_a, "With")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "With argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "With argument missing\n");
@@ -15026,11 +18659,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_api_access_rules_arg;
 		      }
 
@@ -15038,13 +18679,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -15054,7 +18702,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -15107,11 +18761,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_api_access_policy_arg;
 		      }
 
@@ -15119,13 +18781,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -15171,11 +18840,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_admin_password_arg;
 		      }
 
@@ -15183,13 +18860,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -15199,7 +18883,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "VmId") ) {
+			      if ((aret = argcmp(next_a, "VmId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VmId argument missing\n");
 				          s->vm_id = aa; // string string
 
@@ -15240,11 +18930,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_accounts_arg;
 		      }
 
@@ -15252,13 +18950,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -15304,11 +19009,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto read_access_keys_arg;
 		      }
 
@@ -15316,13 +19029,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -15332,7 +19052,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Filters") ) {
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Filters argument missing\n");
@@ -15385,11 +19111,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto link_volume_arg;
 		      }
 
@@ -15397,18 +19131,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DeviceName") ) {
+			      if ((aret = argcmp(next_a, "DeviceName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DeviceName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "DeviceName argument missing\n");
 				          s->device_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -15418,12 +19165,24 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "VmId") ) {
+			      if ((aret = argcmp(next_a, "VmId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VmId argument missing\n");
 				          s->vm_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "VolumeId") ) {
+			      if ((aret = argcmp(next_a, "VolumeId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VolumeId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VolumeId argument missing\n");
 				          s->volume_id = aa; // string string
 
@@ -15464,11 +19223,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto link_virtual_gateway_arg;
 		      }
 
@@ -15476,13 +19243,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -15492,12 +19266,24 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "NetId") ) {
+			      if ((aret = argcmp(next_a, "NetId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NetId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NetId argument missing\n");
 				          s->net_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "VirtualGatewayId") ) {
+			      if ((aret = argcmp(next_a, "VirtualGatewayId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VirtualGatewayId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VirtualGatewayId argument missing\n");
 				          s->virtual_gateway_id = aa; // string string
 
@@ -15538,11 +19324,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto link_route_table_arg;
 		      }
 
@@ -15550,13 +19344,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -15566,12 +19367,24 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "RouteTableId") ) {
+			      if ((aret = argcmp(next_a, "RouteTableId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "RouteTableId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "RouteTableId argument missing\n");
 				          s->route_table_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "SubnetId") ) {
+			      if ((aret = argcmp(next_a, "SubnetId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SubnetId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SubnetId argument missing\n");
 				          s->subnet_id = aa; // string string
 
@@ -15612,11 +19425,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto link_public_ip_arg;
 		      }
 
@@ -15624,13 +19445,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "AllowRelink") ) {
+			      if ((aret = argcmp(next_a, "AllowRelink")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "AllowRelink argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_allow_relink = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->allow_relink = 1;
@@ -15640,7 +19468,13 @@ int main(int ac, char **av)
 				          		BAD_RET("AllowRelink require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -15650,27 +19484,57 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "NicId") ) {
+			      if ((aret = argcmp(next_a, "NicId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NicId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NicId argument missing\n");
 				          s->nic_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "PrivateIp") ) {
+			      if ((aret = argcmp(next_a, "PrivateIp")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PrivateIp argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "PrivateIp argument missing\n");
 				          s->private_ip = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "PublicIp") ) {
+			      if ((aret = argcmp(next_a, "PublicIp")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PublicIp argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "PublicIp argument missing\n");
 				          s->public_ip = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "PublicIpId") ) {
+			      if ((aret = argcmp(next_a, "PublicIpId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PublicIpId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "PublicIpId argument missing\n");
 				          s->public_ip_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "VmId") ) {
+			      if ((aret = argcmp(next_a, "VmId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VmId argument missing\n");
 				          s->vm_id = aa; // string string
 
@@ -15711,11 +19575,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto link_private_ips_arg;
 		      }
 
@@ -15723,13 +19595,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "AllowRelink") ) {
+			      if ((aret = argcmp(next_a, "AllowRelink")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "AllowRelink argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_allow_relink = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->allow_relink = 1;
@@ -15739,7 +19618,13 @@ int main(int ac, char **av)
 				          		BAD_RET("AllowRelink require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -15749,19 +19634,37 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "NicId") ) {
+			      if ((aret = argcmp(next_a, "NicId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NicId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NicId argument missing\n");
 				          s->nic_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "PrivateIps") ) {
+			      if ((aret = argcmp(next_a, "PrivateIps")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PrivateIps argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "PrivateIps argument missing\n");
 				             s->private_ips_str = aa;
-				       } else if (!strcmp(str, "PrivateIps[]")) {
+				       } else if (!(aret = strcmp(str, "PrivateIps[]")) || aret == '=') {
 				             TRY(!aa, "PrivateIps[] argument missing\n");
 				             SET_NEXT(s->private_ips, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "SecondaryPrivateIpCount") ) {
+			      if ((aret = argcmp(next_a, "SecondaryPrivateIpCount")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SecondaryPrivateIpCount argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SecondaryPrivateIpCount argument missing\n");
 				          s->is_set_secondary_private_ip_count = 1;
 				          s->secondary_private_ip_count = atoi(aa);
@@ -15802,11 +19705,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto link_nic_arg;
 		      }
 
@@ -15814,18 +19725,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DeviceNumber") ) {
+			      if ((aret = argcmp(next_a, "DeviceNumber")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DeviceNumber argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "DeviceNumber argument missing\n");
 				          s->is_set_device_number = 1;
 				          s->device_number = atoi(aa);
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -15835,12 +19759,24 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "NicId") ) {
+			      if ((aret = argcmp(next_a, "NicId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NicId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NicId argument missing\n");
 				          s->nic_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "VmId") ) {
+			      if ((aret = argcmp(next_a, "VmId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VmId argument missing\n");
 				          s->vm_id = aa; // string string
 
@@ -15881,11 +19817,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto link_load_balancer_backend_machines_arg;
 		      }
 
@@ -15893,27 +19837,46 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "BackendIps") ) {
+			      if ((aret = argcmp(next_a, "BackendIps")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "BackendIps argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "BackendIps argument missing\n");
 				             s->backend_ips_str = aa;
-				       } else if (!strcmp(str, "BackendIps[]")) {
+				       } else if (!(aret = strcmp(str, "BackendIps[]")) || aret == '=') {
 				             TRY(!aa, "BackendIps[] argument missing\n");
 				             SET_NEXT(s->backend_ips, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "BackendVmIds") ) {
+			      if ((aret = argcmp(next_a, "BackendVmIds")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "BackendVmIds argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "BackendVmIds argument missing\n");
 				             s->backend_vm_ids_str = aa;
-				       } else if (!strcmp(str, "BackendVmIds[]")) {
+				       } else if (!(aret = strcmp(str, "BackendVmIds[]")) || aret == '=') {
 				             TRY(!aa, "BackendVmIds[] argument missing\n");
 				             SET_NEXT(s->backend_vm_ids, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -15923,7 +19886,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "LoadBalancerName") ) {
+			      if ((aret = argcmp(next_a, "LoadBalancerName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LoadBalancerName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "LoadBalancerName argument missing\n");
 				          s->load_balancer_name = aa; // string string
 
@@ -15964,11 +19933,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto link_internet_service_arg;
 		      }
 
@@ -15976,13 +19953,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -15992,12 +19976,24 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "InternetServiceId") ) {
+			      if ((aret = argcmp(next_a, "InternetServiceId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "InternetServiceId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "InternetServiceId argument missing\n");
 				          s->internet_service_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "NetId") ) {
+			      if ((aret = argcmp(next_a, "NetId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NetId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NetId argument missing\n");
 				          s->net_id = aa; // string string
 
@@ -16038,11 +20034,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto link_flexible_gpu_arg;
 		      }
 
@@ -16050,13 +20054,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -16066,12 +20077,24 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "FlexibleGpuId") ) {
+			      if ((aret = argcmp(next_a, "FlexibleGpuId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "FlexibleGpuId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "FlexibleGpuId argument missing\n");
 				          s->flexible_gpu_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "VmId") ) {
+			      if ((aret = argcmp(next_a, "VmId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VmId argument missing\n");
 				          s->vm_id = aa; // string string
 
@@ -16112,11 +20135,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto deregister_vms_in_load_balancer_arg;
 		      }
 
@@ -16124,20 +20155,33 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "BackendVmIds") ) {
+			      if ((aret = argcmp(next_a, "BackendVmIds")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "BackendVmIds argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "BackendVmIds argument missing\n");
 				             s->backend_vm_ids_str = aa;
-				       } else if (!strcmp(str, "BackendVmIds[]")) {
+				       } else if (!(aret = strcmp(str, "BackendVmIds[]")) || aret == '=') {
 				             TRY(!aa, "BackendVmIds[] argument missing\n");
 				             SET_NEXT(s->backend_vm_ids, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -16147,7 +20191,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "LoadBalancerName") ) {
+			      if ((aret = argcmp(next_a, "LoadBalancerName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LoadBalancerName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "LoadBalancerName argument missing\n");
 				          s->load_balancer_name = aa; // string string
 
@@ -16188,11 +20238,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_vpn_connection_route_arg;
 		      }
 
@@ -16200,18 +20258,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DestinationIpRange") ) {
+			      if ((aret = argcmp(next_a, "DestinationIpRange")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DestinationIpRange argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "DestinationIpRange argument missing\n");
 				          s->destination_ip_range = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -16221,7 +20292,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "VpnConnectionId") ) {
+			      if ((aret = argcmp(next_a, "VpnConnectionId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VpnConnectionId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VpnConnectionId argument missing\n");
 				          s->vpn_connection_id = aa; // string string
 
@@ -16262,11 +20339,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_vpn_connection_arg;
 		      }
 
@@ -16274,13 +20359,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -16290,7 +20382,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "VpnConnectionId") ) {
+			      if ((aret = argcmp(next_a, "VpnConnectionId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VpnConnectionId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VpnConnectionId argument missing\n");
 				          s->vpn_connection_id = aa; // string string
 
@@ -16331,11 +20429,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_volume_arg;
 		      }
 
@@ -16343,13 +20449,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -16359,7 +20472,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "VolumeId") ) {
+			      if ((aret = argcmp(next_a, "VolumeId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VolumeId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VolumeId argument missing\n");
 				          s->volume_id = aa; // string string
 
@@ -16400,11 +20519,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_vms_arg;
 		      }
 
@@ -16412,13 +20539,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -16428,10 +20562,16 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "VmIds") ) {
+			      if ((aret = argcmp(next_a, "VmIds")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmIds argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "VmIds argument missing\n");
 				             s->vm_ids_str = aa;
-				       } else if (!strcmp(str, "VmIds[]")) {
+				       } else if (!(aret = strcmp(str, "VmIds[]")) || aret == '=') {
 				             TRY(!aa, "VmIds[] argument missing\n");
 				             SET_NEXT(s->vm_ids, (aa), pa);
 				       } else
@@ -16443,6 +20583,186 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_vms(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteVms: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("DeleteVmTemplate", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_delete_vm_template_arg a = {0};
+		     struct osc_delete_vm_template_arg *s = &a;
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     delete_vm_template_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+			   i += incr;
+		       	   goto delete_vm_template_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				aa = 0;
+				incr = 1;
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "VmTemplateId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmTemplateId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "VmTemplateId argument missing\n");
+				          s->vm_template_id = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'DeleteVmTemplate'\n", next_a);
+			    }
+		            i += incr;
+			    goto delete_vm_template_arg;
+		     }
+		     cret = osc_delete_vm_template(&e, &r, &a);
+            	     TRY(cret, "fail to call DeleteVmTemplate: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("DeleteVmGroup", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_delete_vm_group_arg a = {0};
+		     struct osc_delete_vm_group_arg *s = &a;
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     delete_vm_group_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+			   i += incr;
+		       	   goto delete_vm_group_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				aa = 0;
+				incr = 1;
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "VmGroupId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmGroupId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "VmGroupId argument missing\n");
+				          s->vm_group_id = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'DeleteVmGroup'\n", next_a);
+			    }
+		            i += incr;
+			    goto delete_vm_group_arg;
+		     }
+		     cret = osc_delete_vm_group(&e, &r, &a);
+            	     TRY(cret, "fail to call DeleteVmGroup: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
@@ -16471,11 +20791,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_virtual_gateway_arg;
 		      }
 
@@ -16483,13 +20811,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -16499,7 +20834,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "VirtualGatewayId") ) {
+			      if ((aret = argcmp(next_a, "VirtualGatewayId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VirtualGatewayId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VirtualGatewayId argument missing\n");
 				          s->virtual_gateway_id = aa; // string string
 
@@ -16540,11 +20881,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_tags_arg;
 		      }
 
@@ -16552,13 +20901,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -16568,14 +20924,26 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "ResourceIds") ) {
+			      if ((aret = argcmp(next_a, "ResourceIds")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResourceIds argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "ResourceIds argument missing\n");
 				             s->resource_ids_str = aa;
-				       } else if (!strcmp(str, "ResourceIds[]")) {
+				       } else if (!(aret = strcmp(str, "ResourceIds[]")) || aret == '=') {
 				             TRY(!aa, "ResourceIds[] argument missing\n");
 				             SET_NEXT(s->resource_ids, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "Tags") ) {
+			      if ((aret = argcmp(next_a, "Tags")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Tags argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos = strchr(str, '.');
 
 				          if (dot_pos) {
@@ -16636,11 +21004,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_subnet_arg;
 		      }
 
@@ -16648,13 +21024,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -16664,7 +21047,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "SubnetId") ) {
+			      if ((aret = argcmp(next_a, "SubnetId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SubnetId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SubnetId argument missing\n");
 				          s->subnet_id = aa; // string string
 
@@ -16705,11 +21094,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_snapshot_arg;
 		      }
 
@@ -16717,13 +21114,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -16733,7 +21137,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "SnapshotId") ) {
+			      if ((aret = argcmp(next_a, "SnapshotId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SnapshotId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SnapshotId argument missing\n");
 				          s->snapshot_id = aa; // string string
 
@@ -16774,11 +21184,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_server_certificate_arg;
 		      }
 
@@ -16786,13 +21204,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -16802,7 +21227,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Name") ) {
+			      if ((aret = argcmp(next_a, "Name")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Name argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Name argument missing\n");
 				          s->name = aa; // string string
 
@@ -16843,11 +21274,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_security_group_rule_arg;
 		      }
 
@@ -16855,13 +21294,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -16871,27 +21317,57 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Flow") ) {
+			      if ((aret = argcmp(next_a, "Flow")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Flow argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Flow argument missing\n");
 				          s->flow = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "FromPortRange") ) {
+			      if ((aret = argcmp(next_a, "FromPortRange")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "FromPortRange argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "FromPortRange argument missing\n");
 				          s->is_set_from_port_range = 1;
 				          s->from_port_range = atoi(aa);
 				       } else
-			      if (!argcmp(next_a, "IpProtocol") ) {
+			      if ((aret = argcmp(next_a, "IpProtocol")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "IpProtocol argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "IpProtocol argument missing\n");
 				          s->ip_protocol = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "IpRange") ) {
+			      if ((aret = argcmp(next_a, "IpRange")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "IpRange argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "IpRange argument missing\n");
 				          s->ip_range = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "Rules") ) {
+			      if ((aret = argcmp(next_a, "Rules")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Rules argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos = strchr(str, '.');
 
 				          if (dot_pos) {
@@ -16916,22 +21392,46 @@ int main(int ac, char **av)
 				          	s->rules_str = aa; // array ref SecurityGroupRule ref
 				          }
 				       } else
-			      if (!argcmp(next_a, "SecurityGroupAccountIdToUnlink") ) {
+			      if ((aret = argcmp(next_a, "SecurityGroupAccountIdToUnlink")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SecurityGroupAccountIdToUnlink argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SecurityGroupAccountIdToUnlink argument missing\n");
 				          s->security_group_account_id_to_unlink = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "SecurityGroupId") ) {
+			      if ((aret = argcmp(next_a, "SecurityGroupId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SecurityGroupId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SecurityGroupId argument missing\n");
 				          s->security_group_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "SecurityGroupNameToUnlink") ) {
+			      if ((aret = argcmp(next_a, "SecurityGroupNameToUnlink")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SecurityGroupNameToUnlink argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SecurityGroupNameToUnlink argument missing\n");
 				          s->security_group_name_to_unlink = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "ToPortRange") ) {
+			      if ((aret = argcmp(next_a, "ToPortRange")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ToPortRange argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ToPortRange argument missing\n");
 				          s->is_set_to_port_range = 1;
 				          s->to_port_range = atoi(aa);
@@ -16972,11 +21472,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_security_group_arg;
 		      }
 
@@ -16984,13 +21492,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -17000,12 +21515,24 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "SecurityGroupId") ) {
+			      if ((aret = argcmp(next_a, "SecurityGroupId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SecurityGroupId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SecurityGroupId argument missing\n");
 				          s->security_group_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "SecurityGroupName") ) {
+			      if ((aret = argcmp(next_a, "SecurityGroupName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SecurityGroupName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SecurityGroupName argument missing\n");
 				          s->security_group_name = aa; // string string
 
@@ -17046,11 +21573,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_route_table_arg;
 		      }
 
@@ -17058,13 +21593,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -17074,7 +21616,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "RouteTableId") ) {
+			      if ((aret = argcmp(next_a, "RouteTableId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "RouteTableId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "RouteTableId argument missing\n");
 				          s->route_table_id = aa; // string string
 
@@ -17115,11 +21663,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_route_arg;
 		      }
 
@@ -17127,18 +21683,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DestinationIpRange") ) {
+			      if ((aret = argcmp(next_a, "DestinationIpRange")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DestinationIpRange argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "DestinationIpRange argument missing\n");
 				          s->destination_ip_range = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -17148,7 +21717,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "RouteTableId") ) {
+			      if ((aret = argcmp(next_a, "RouteTableId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "RouteTableId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "RouteTableId argument missing\n");
 				          s->route_table_id = aa; // string string
 
@@ -17189,11 +21764,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_public_ip_arg;
 		      }
 
@@ -17201,13 +21784,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -17217,12 +21807,24 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "PublicIp") ) {
+			      if ((aret = argcmp(next_a, "PublicIp")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PublicIp argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "PublicIp argument missing\n");
 				          s->public_ip = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "PublicIpId") ) {
+			      if ((aret = argcmp(next_a, "PublicIpId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PublicIpId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "PublicIpId argument missing\n");
 				          s->public_ip_id = aa; // string string
 
@@ -17263,11 +21865,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_nic_arg;
 		      }
 
@@ -17275,13 +21885,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -17291,7 +21908,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "NicId") ) {
+			      if ((aret = argcmp(next_a, "NicId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NicId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NicId argument missing\n");
 				          s->nic_id = aa; // string string
 
@@ -17332,11 +21955,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_net_peering_arg;
 		      }
 
@@ -17344,13 +21975,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -17360,7 +21998,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "NetPeeringId") ) {
+			      if ((aret = argcmp(next_a, "NetPeeringId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NetPeeringId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NetPeeringId argument missing\n");
 				          s->net_peering_id = aa; // string string
 
@@ -17401,11 +22045,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_net_access_point_arg;
 		      }
 
@@ -17413,13 +22065,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -17429,7 +22088,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "NetAccessPointId") ) {
+			      if ((aret = argcmp(next_a, "NetAccessPointId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NetAccessPointId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NetAccessPointId argument missing\n");
 				          s->net_access_point_id = aa; // string string
 
@@ -17470,11 +22135,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_net_arg;
 		      }
 
@@ -17482,13 +22155,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -17498,7 +22178,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "NetId") ) {
+			      if ((aret = argcmp(next_a, "NetId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NetId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NetId argument missing\n");
 				          s->net_id = aa; // string string
 
@@ -17539,11 +22225,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_nat_service_arg;
 		      }
 
@@ -17551,13 +22245,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -17567,7 +22268,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "NatServiceId") ) {
+			      if ((aret = argcmp(next_a, "NatServiceId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NatServiceId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NatServiceId argument missing\n");
 				          s->nat_service_id = aa; // string string
 
@@ -17608,11 +22315,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_load_balancer_tags_arg;
 		      }
 
@@ -17620,13 +22335,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -17636,14 +22358,26 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "LoadBalancerNames") ) {
+			      if ((aret = argcmp(next_a, "LoadBalancerNames")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LoadBalancerNames argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "LoadBalancerNames argument missing\n");
 				             s->load_balancer_names_str = aa;
-				       } else if (!strcmp(str, "LoadBalancerNames[]")) {
+				       } else if (!(aret = strcmp(str, "LoadBalancerNames[]")) || aret == '=') {
 				             TRY(!aa, "LoadBalancerNames[] argument missing\n");
 				             SET_NEXT(s->load_balancer_names, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "Tags") ) {
+			      if ((aret = argcmp(next_a, "Tags")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Tags argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos = strchr(str, '.');
 
 				          if (dot_pos) {
@@ -17704,11 +22438,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_load_balancer_policy_arg;
 		      }
 
@@ -17716,13 +22458,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -17732,12 +22481,24 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "LoadBalancerName") ) {
+			      if ((aret = argcmp(next_a, "LoadBalancerName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LoadBalancerName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "LoadBalancerName argument missing\n");
 				          s->load_balancer_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "PolicyName") ) {
+			      if ((aret = argcmp(next_a, "PolicyName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PolicyName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "PolicyName argument missing\n");
 				          s->policy_name = aa; // string string
 
@@ -17778,11 +22539,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_load_balancer_listeners_arg;
 		      }
 
@@ -17790,13 +22559,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -17806,15 +22582,27 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "LoadBalancerName") ) {
+			      if ((aret = argcmp(next_a, "LoadBalancerName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LoadBalancerName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "LoadBalancerName argument missing\n");
 				          s->load_balancer_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "LoadBalancerPorts") ) {
+			      if ((aret = argcmp(next_a, "LoadBalancerPorts")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LoadBalancerPorts argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "LoadBalancerPorts argument missing\n");
 				             s->load_balancer_ports_str = aa;
-				       } else if (!strcmp(str, "LoadBalancerPorts[]")) {
+				       } else if (!(aret = strcmp(str, "LoadBalancerPorts[]")) || aret == '=') {
 				             TRY(!aa, "LoadBalancerPorts[] argument missing\n");
 				             SET_NEXT(s->load_balancer_ports, atoi(aa), pa);
 				       } else
@@ -17854,11 +22642,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_load_balancer_arg;
 		      }
 
@@ -17866,13 +22662,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -17882,7 +22685,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "LoadBalancerName") ) {
+			      if ((aret = argcmp(next_a, "LoadBalancerName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LoadBalancerName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "LoadBalancerName argument missing\n");
 				          s->load_balancer_name = aa; // string string
 
@@ -17923,11 +22732,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_listener_rule_arg;
 		      }
 
@@ -17935,13 +22752,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -17951,7 +22775,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "ListenerRuleName") ) {
+			      if ((aret = argcmp(next_a, "ListenerRuleName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ListenerRuleName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ListenerRuleName argument missing\n");
 				          s->listener_rule_name = aa; // string string
 
@@ -17992,11 +22822,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_keypair_arg;
 		      }
 
@@ -18004,13 +22842,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -18020,7 +22865,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "KeypairName") ) {
+			      if ((aret = argcmp(next_a, "KeypairName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "KeypairName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "KeypairName argument missing\n");
 				          s->keypair_name = aa; // string string
 
@@ -18061,11 +22912,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_internet_service_arg;
 		      }
 
@@ -18073,13 +22932,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -18089,7 +22955,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "InternetServiceId") ) {
+			      if ((aret = argcmp(next_a, "InternetServiceId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "InternetServiceId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "InternetServiceId argument missing\n");
 				          s->internet_service_id = aa; // string string
 
@@ -18130,11 +23002,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_image_arg;
 		      }
 
@@ -18142,13 +23022,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -18158,7 +23045,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "ImageId") ) {
+			      if ((aret = argcmp(next_a, "ImageId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ImageId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ImageId argument missing\n");
 				          s->image_id = aa; // string string
 
@@ -18199,11 +23092,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_flexible_gpu_arg;
 		      }
 
@@ -18211,13 +23112,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -18227,7 +23135,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "FlexibleGpuId") ) {
+			      if ((aret = argcmp(next_a, "FlexibleGpuId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "FlexibleGpuId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "FlexibleGpuId argument missing\n");
 				          s->flexible_gpu_id = aa; // string string
 
@@ -18268,11 +23182,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_export_task_arg;
 		      }
 
@@ -18280,13 +23202,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -18296,7 +23225,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "ExportTaskId") ) {
+			      if ((aret = argcmp(next_a, "ExportTaskId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ExportTaskId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ExportTaskId argument missing\n");
 				          s->export_task_id = aa; // string string
 
@@ -18337,11 +23272,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_direct_link_interface_arg;
 		      }
 
@@ -18349,18 +23292,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DirectLinkInterfaceId") ) {
+			      if ((aret = argcmp(next_a, "DirectLinkInterfaceId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DirectLinkInterfaceId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "DirectLinkInterfaceId argument missing\n");
 				          s->direct_link_interface_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -18406,11 +23362,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_direct_link_arg;
 		      }
 
@@ -18418,18 +23382,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DirectLinkId") ) {
+			      if ((aret = argcmp(next_a, "DirectLinkId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DirectLinkId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "DirectLinkId argument missing\n");
 				          s->direct_link_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -18475,11 +23452,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_dhcp_options_arg;
 		      }
 
@@ -18487,18 +23472,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DhcpOptionsSetId") ) {
+			      if ((aret = argcmp(next_a, "DhcpOptionsSetId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DhcpOptionsSetId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "DhcpOptionsSetId argument missing\n");
 				          s->dhcp_options_set_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -18544,11 +23542,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_client_gateway_arg;
 		      }
 
@@ -18556,18 +23562,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "ClientGatewayId") ) {
+			      if ((aret = argcmp(next_a, "ClientGatewayId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ClientGatewayId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ClientGatewayId argument missing\n");
 				          s->client_gateway_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -18613,11 +23632,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_ca_arg;
 		      }
 
@@ -18625,18 +23652,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "CaId") ) {
+			      if ((aret = argcmp(next_a, "CaId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "CaId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "CaId argument missing\n");
 				          s->ca_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -18682,11 +23722,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_api_access_rule_arg;
 		      }
 
@@ -18694,18 +23742,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "ApiAccessRuleId") ) {
+			      if ((aret = argcmp(next_a, "ApiAccessRuleId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ApiAccessRuleId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ApiAccessRuleId argument missing\n");
 				          s->api_access_rule_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -18751,11 +23812,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto delete_access_key_arg;
 		      }
 
@@ -18763,18 +23832,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "AccessKeyId") ) {
+			      if ((aret = argcmp(next_a, "AccessKeyId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "AccessKeyId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "AccessKeyId argument missing\n");
 				          s->access_key_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -18820,11 +23902,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_vpn_connection_route_arg;
 		      }
 
@@ -18832,18 +23922,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DestinationIpRange") ) {
+			      if ((aret = argcmp(next_a, "DestinationIpRange")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DestinationIpRange argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "DestinationIpRange argument missing\n");
 				          s->destination_ip_range = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -18853,7 +23956,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "VpnConnectionId") ) {
+			      if ((aret = argcmp(next_a, "VpnConnectionId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VpnConnectionId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VpnConnectionId argument missing\n");
 				          s->vpn_connection_id = aa; // string string
 
@@ -18894,11 +24003,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_vpn_connection_arg;
 		      }
 
@@ -18906,23 +24023,42 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "ClientGatewayId") ) {
+			      if ((aret = argcmp(next_a, "ClientGatewayId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ClientGatewayId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ClientGatewayId argument missing\n");
 				          s->client_gateway_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "ConnectionType") ) {
+			      if ((aret = argcmp(next_a, "ConnectionType")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ConnectionType argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ConnectionType argument missing\n");
 				          s->connection_type = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -18932,7 +24068,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "StaticRoutesOnly") ) {
+			      if ((aret = argcmp(next_a, "StaticRoutesOnly")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "StaticRoutesOnly argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_static_routes_only = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->static_routes_only = 1;
@@ -18942,7 +24084,13 @@ int main(int ac, char **av)
 				          		BAD_RET("StaticRoutesOnly require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "VirtualGatewayId") ) {
+			      if ((aret = argcmp(next_a, "VirtualGatewayId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VirtualGatewayId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VirtualGatewayId argument missing\n");
 				          s->virtual_gateway_id = aa; // string string
 
@@ -18983,11 +24131,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_volume_arg;
 		      }
 
@@ -18995,13 +24151,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -19011,27 +24174,57 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Iops") ) {
+			      if ((aret = argcmp(next_a, "Iops")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Iops argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Iops argument missing\n");
 				          s->is_set_iops = 1;
 				          s->iops = atoi(aa);
 				       } else
-			      if (!argcmp(next_a, "Size") ) {
+			      if ((aret = argcmp(next_a, "Size")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Size argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Size argument missing\n");
 				          s->is_set_size = 1;
 				          s->size = atoi(aa);
 				       } else
-			      if (!argcmp(next_a, "SnapshotId") ) {
+			      if ((aret = argcmp(next_a, "SnapshotId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SnapshotId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SnapshotId argument missing\n");
 				          s->snapshot_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "SubregionName") ) {
+			      if ((aret = argcmp(next_a, "SubregionName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SubregionName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SubregionName argument missing\n");
 				          s->subregion_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "VolumeType") ) {
+			      if ((aret = argcmp(next_a, "VolumeType")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VolumeType argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VolumeType argument missing\n");
 				          s->volume_type = aa; // string string
 
@@ -19072,11 +24265,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_vms_arg;
 		      }
 
@@ -19084,13 +24285,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "BlockDeviceMappings") ) {
+			      if ((aret = argcmp(next_a, "BlockDeviceMappings")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "BlockDeviceMappings argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos = strchr(str, '.');
 
 				          if (dot_pos) {
@@ -19115,7 +24323,13 @@ int main(int ac, char **av)
 				          	s->block_device_mappings_str = aa; // array ref BlockDeviceMappingVmCreation ref
 				          }
 				       } else
-			      if (!argcmp(next_a, "BootOnCreation") ) {
+			      if ((aret = argcmp(next_a, "BootOnCreation")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "BootOnCreation argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_boot_on_creation = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->boot_on_creation = 1;
@@ -19125,7 +24339,13 @@ int main(int ac, char **av)
 				          		BAD_RET("BootOnCreation require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "BsuOptimized") ) {
+			      if ((aret = argcmp(next_a, "BsuOptimized")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "BsuOptimized argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_bsu_optimized = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->bsu_optimized = 1;
@@ -19135,12 +24355,24 @@ int main(int ac, char **av)
 				          		BAD_RET("BsuOptimized require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "ClientToken") ) {
+			      if ((aret = argcmp(next_a, "ClientToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ClientToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ClientToken argument missing\n");
 				          s->client_token = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DeletionProtection") ) {
+			      if ((aret = argcmp(next_a, "DeletionProtection")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DeletionProtection argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_deletion_protection = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->deletion_protection = 1;
@@ -19150,7 +24382,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DeletionProtection require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -19160,27 +24398,57 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "ImageId") ) {
+			      if ((aret = argcmp(next_a, "ImageId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ImageId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ImageId argument missing\n");
 				          s->image_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "KeypairName") ) {
+			      if ((aret = argcmp(next_a, "KeypairName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "KeypairName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "KeypairName argument missing\n");
 				          s->keypair_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "MaxVmsCount") ) {
+			      if ((aret = argcmp(next_a, "MaxVmsCount")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "MaxVmsCount argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "MaxVmsCount argument missing\n");
 				          s->is_set_max_vms_count = 1;
 				          s->max_vms_count = atoi(aa);
 				       } else
-			      if (!argcmp(next_a, "MinVmsCount") ) {
+			      if ((aret = argcmp(next_a, "MinVmsCount")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "MinVmsCount argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "MinVmsCount argument missing\n");
 				          s->is_set_min_vms_count = 1;
 				          s->min_vms_count = atoi(aa);
 				       } else
-			      if (!argcmp(next_a, "NestedVirtualization") ) {
+			      if ((aret = argcmp(next_a, "NestedVirtualization")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NestedVirtualization argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_nested_virtualization = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->nested_virtualization = 1;
@@ -19190,7 +24458,13 @@ int main(int ac, char **av)
 				          		BAD_RET("NestedVirtualization require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Nics") ) {
+			      if ((aret = argcmp(next_a, "Nics")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Nics argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos = strchr(str, '.');
 
 				          if (dot_pos) {
@@ -19215,12 +24489,24 @@ int main(int ac, char **av)
 				          	s->nics_str = aa; // array ref NicForVmCreation ref
 				          }
 				       } else
-			      if (!argcmp(next_a, "Performance") ) {
+			      if ((aret = argcmp(next_a, "Performance")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Performance argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Performance argument missing\n");
 				          s->performance = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "Placement") ) {
+			      if ((aret = argcmp(next_a, "Placement")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Placement argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Placement argument missing\n");
@@ -19237,43 +24523,85 @@ int main(int ac, char **av)
 				                 s->placement_str = aa;
 				           }
 				       } else
-			      if (!argcmp(next_a, "PrivateIps") ) {
+			      if ((aret = argcmp(next_a, "PrivateIps")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PrivateIps argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "PrivateIps argument missing\n");
 				             s->private_ips_str = aa;
-				       } else if (!strcmp(str, "PrivateIps[]")) {
+				       } else if (!(aret = strcmp(str, "PrivateIps[]")) || aret == '=') {
 				             TRY(!aa, "PrivateIps[] argument missing\n");
 				             SET_NEXT(s->private_ips, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "SecurityGroupIds") ) {
+			      if ((aret = argcmp(next_a, "SecurityGroupIds")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SecurityGroupIds argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "SecurityGroupIds argument missing\n");
 				             s->security_group_ids_str = aa;
-				       } else if (!strcmp(str, "SecurityGroupIds[]")) {
+				       } else if (!(aret = strcmp(str, "SecurityGroupIds[]")) || aret == '=') {
 				             TRY(!aa, "SecurityGroupIds[] argument missing\n");
 				             SET_NEXT(s->security_group_ids, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "SecurityGroups") ) {
+			      if ((aret = argcmp(next_a, "SecurityGroups")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SecurityGroups argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "SecurityGroups argument missing\n");
 				             s->security_groups_str = aa;
-				       } else if (!strcmp(str, "SecurityGroups[]")) {
+				       } else if (!(aret = strcmp(str, "SecurityGroups[]")) || aret == '=') {
 				             TRY(!aa, "SecurityGroups[] argument missing\n");
 				             SET_NEXT(s->security_groups, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "SubnetId") ) {
+			      if ((aret = argcmp(next_a, "SubnetId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SubnetId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SubnetId argument missing\n");
 				          s->subnet_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "UserData") ) {
+			      if ((aret = argcmp(next_a, "UserData")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserData argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "UserData argument missing\n");
 				          s->user_data = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "VmInitiatedShutdownBehavior") ) {
+			      if ((aret = argcmp(next_a, "VmInitiatedShutdownBehavior")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmInitiatedShutdownBehavior argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VmInitiatedShutdownBehavior argument missing\n");
 				          s->vm_initiated_shutdown_behavior = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "VmType") ) {
+			      if ((aret = argcmp(next_a, "VmType")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmType argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VmType argument missing\n");
 				          s->vm_type = aa; // string string
 
@@ -19286,6 +24614,393 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_vms(&e, &r, &a);
             	     TRY(cret, "fail to call CreateVms: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("CreateVmTemplate", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_create_vm_template_arg a = {0};
+		     struct osc_create_vm_template_arg *s = &a;
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     create_vm_template_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+			   i += incr;
+		       	   goto create_vm_template_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				aa = 0;
+				incr = 1;
+			     }
+			      if ((aret = argcmp(next_a, "CpuCores")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "CpuCores argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "CpuCores argument missing\n");
+				          s->is_set_cpu_cores = 1;
+				          s->cpu_cores = atoi(aa);
+				       } else
+			      if ((aret = argcmp(next_a, "CpuGeneration")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "CpuGeneration argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "CpuGeneration argument missing\n");
+				          s->cpu_generation = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "CpuPerformance")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "CpuPerformance argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "CpuPerformance argument missing\n");
+				          s->cpu_performance = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Description argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "Description argument missing\n");
+				          s->description = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "ImageId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ImageId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ImageId argument missing\n");
+				          s->image_id = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "KeypairName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "KeypairName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "KeypairName argument missing\n");
+				          s->keypair_name = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "Ram")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Ram argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "Ram argument missing\n");
+				          s->is_set_ram = 1;
+				          s->ram = atoi(aa);
+				       } else
+			      if ((aret = argcmp(next_a, "Tags")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Tags argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          char *dot_pos = strchr(str, '.');
+
+				          if (dot_pos) {
+				          	      int pos;
+				          	      char *endptr;
+
+				          	      ++dot_pos;
+				          	      pos = strtoul(dot_pos, &endptr, 0);
+				          	      if (endptr == dot_pos)
+				          		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+				          	      else if (*endptr != '.')
+				          		      BAD_RET("'Tags' require a .\n");
+				          	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
+				          	      cascade_struct = &s->tags[pos];
+				          	      cascade_parser = resource_tag_parser;
+				          	      if (endptr[1] == '.') {
+				          		     ++endptr;
+				          	      }
+				          	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+				           } else {
+				          	TRY(!aa, "Tags argument missing\n");
+				          	s->tags_str = aa; // array ref ResourceTag ref
+				          }
+				       } else
+			      if ((aret = argcmp(next_a, "VmTemplateName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmTemplateName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "VmTemplateName argument missing\n");
+				          s->vm_template_name = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'CreateVmTemplate'\n", next_a);
+			    }
+		            i += incr;
+			    goto create_vm_template_arg;
+		     }
+		     cret = osc_create_vm_template(&e, &r, &a);
+            	     TRY(cret, "fail to call CreateVmTemplate: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("CreateVmGroup", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_create_vm_group_arg a = {0};
+		     struct osc_create_vm_group_arg *s = &a;
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     create_vm_group_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+			   i += incr;
+		       	   goto create_vm_group_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				aa = 0;
+				incr = 1;
+			     }
+			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Description argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "Description argument missing\n");
+				          s->description = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "PositioningStrategy")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PositioningStrategy argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "PositioningStrategy argument missing\n");
+				          s->positioning_strategy = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "SecurityGroupIds")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SecurityGroupIds argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          	 TRY(!aa, "SecurityGroupIds argument missing\n");
+				             s->security_group_ids_str = aa;
+				       } else if (!(aret = strcmp(str, "SecurityGroupIds[]")) || aret == '=') {
+				             TRY(!aa, "SecurityGroupIds[] argument missing\n");
+				             SET_NEXT(s->security_group_ids, (aa), pa);
+				       } else
+			      if ((aret = argcmp(next_a, "SubnetId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SubnetId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "SubnetId argument missing\n");
+				          s->subnet_id = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "Tags")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Tags argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          char *dot_pos = strchr(str, '.');
+
+				          if (dot_pos) {
+				          	      int pos;
+				          	      char *endptr;
+
+				          	      ++dot_pos;
+				          	      pos = strtoul(dot_pos, &endptr, 0);
+				          	      if (endptr == dot_pos)
+				          		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+				          	      else if (*endptr != '.')
+				          		      BAD_RET("'Tags' require a .\n");
+				          	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
+				          	      cascade_struct = &s->tags[pos];
+				          	      cascade_parser = resource_tag_parser;
+				          	      if (endptr[1] == '.') {
+				          		     ++endptr;
+				          	      }
+				          	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+				           } else {
+				          	TRY(!aa, "Tags argument missing\n");
+				          	s->tags_str = aa; // array ref ResourceTag ref
+				          }
+				       } else
+			      if ((aret = argcmp(next_a, "VmCount")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmCount argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "VmCount argument missing\n");
+				          s->is_set_vm_count = 1;
+				          s->vm_count = atoi(aa);
+				       } else
+			      if ((aret = argcmp(next_a, "VmGroupName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmGroupName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "VmGroupName argument missing\n");
+				          s->vm_group_name = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "VmTemplateId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmTemplateId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "VmTemplateId argument missing\n");
+				          s->vm_template_id = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'CreateVmGroup'\n", next_a);
+			    }
+		            i += incr;
+			    goto create_vm_group_arg;
+		     }
+		     cret = osc_create_vm_group(&e, &r, &a);
+            	     TRY(cret, "fail to call CreateVmGroup: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
@@ -19314,11 +25029,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_virtual_gateway_arg;
 		      }
 
@@ -19326,18 +25049,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "ConnectionType") ) {
+			      if ((aret = argcmp(next_a, "ConnectionType")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ConnectionType argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ConnectionType argument missing\n");
 				          s->connection_type = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -19383,11 +25119,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_tags_arg;
 		      }
 
@@ -19395,13 +25139,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -19411,14 +25162,26 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "ResourceIds") ) {
+			      if ((aret = argcmp(next_a, "ResourceIds")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResourceIds argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "ResourceIds argument missing\n");
 				             s->resource_ids_str = aa;
-				       } else if (!strcmp(str, "ResourceIds[]")) {
+				       } else if (!(aret = strcmp(str, "ResourceIds[]")) || aret == '=') {
 				             TRY(!aa, "ResourceIds[] argument missing\n");
 				             SET_NEXT(s->resource_ids, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "Tags") ) {
+			      if ((aret = argcmp(next_a, "Tags")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Tags argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos = strchr(str, '.');
 
 				          if (dot_pos) {
@@ -19479,11 +25242,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_subnet_arg;
 		      }
 
@@ -19491,13 +25262,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -19507,17 +25285,35 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "IpRange") ) {
+			      if ((aret = argcmp(next_a, "IpRange")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "IpRange argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "IpRange argument missing\n");
 				          s->ip_range = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "NetId") ) {
+			      if ((aret = argcmp(next_a, "NetId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NetId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NetId argument missing\n");
 				          s->net_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "SubregionName") ) {
+			      if ((aret = argcmp(next_a, "SubregionName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SubregionName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SubregionName argument missing\n");
 				          s->subregion_name = aa; // string string
 
@@ -19558,11 +25354,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_snapshot_export_task_arg;
 		      }
 
@@ -19570,13 +25374,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -19586,7 +25397,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "OsuExport") ) {
+			      if ((aret = argcmp(next_a, "OsuExport")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "OsuExport argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "OsuExport argument missing\n");
@@ -19603,7 +25420,13 @@ int main(int ac, char **av)
 				                 s->osu_export_str = aa;
 				           }
 				       } else
-			      if (!argcmp(next_a, "SnapshotId") ) {
+			      if ((aret = argcmp(next_a, "SnapshotId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SnapshotId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SnapshotId argument missing\n");
 				          s->snapshot_id = aa; // string string
 
@@ -19644,11 +25467,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_snapshot_arg;
 		      }
 
@@ -19656,18 +25487,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "Description") ) {
+			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Description argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Description argument missing\n");
 				          s->description = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -19677,27 +25521,57 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "FileLocation") ) {
+			      if ((aret = argcmp(next_a, "FileLocation")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "FileLocation argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "FileLocation argument missing\n");
 				          s->file_location = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "SnapshotSize") ) {
+			      if ((aret = argcmp(next_a, "SnapshotSize")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SnapshotSize argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SnapshotSize argument missing\n");
 				          s->is_set_snapshot_size = 1;
 				          s->snapshot_size = atoi(aa);
 				       } else
-			      if (!argcmp(next_a, "SourceRegionName") ) {
+			      if ((aret = argcmp(next_a, "SourceRegionName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SourceRegionName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SourceRegionName argument missing\n");
 				          s->source_region_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "SourceSnapshotId") ) {
+			      if ((aret = argcmp(next_a, "SourceSnapshotId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SourceSnapshotId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SourceSnapshotId argument missing\n");
 				          s->source_snapshot_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "VolumeId") ) {
+			      if ((aret = argcmp(next_a, "VolumeId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VolumeId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VolumeId argument missing\n");
 				          s->volume_id = aa; // string string
 
@@ -19738,11 +25612,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_server_certificate_arg;
 		      }
 
@@ -19750,23 +25632,42 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "Body") ) {
+			      if ((aret = argcmp(next_a, "Body")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Body argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Body argument missing\n");
 				          s->body = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "Chain") ) {
+			      if ((aret = argcmp(next_a, "Chain")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Chain argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Chain argument missing\n");
 				          s->chain = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -19776,17 +25677,35 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Name") ) {
+			      if ((aret = argcmp(next_a, "Name")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Name argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Name argument missing\n");
 				          s->name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "Path") ) {
+			      if ((aret = argcmp(next_a, "Path")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Path argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Path argument missing\n");
 				          s->path = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "PrivateKey") ) {
+			      if ((aret = argcmp(next_a, "PrivateKey")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PrivateKey argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "PrivateKey argument missing\n");
 				          s->private_key = aa; // string string
 
@@ -19827,11 +25746,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_security_group_rule_arg;
 		      }
 
@@ -19839,13 +25766,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -19855,27 +25789,57 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Flow") ) {
+			      if ((aret = argcmp(next_a, "Flow")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Flow argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Flow argument missing\n");
 				          s->flow = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "FromPortRange") ) {
+			      if ((aret = argcmp(next_a, "FromPortRange")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "FromPortRange argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "FromPortRange argument missing\n");
 				          s->is_set_from_port_range = 1;
 				          s->from_port_range = atoi(aa);
 				       } else
-			      if (!argcmp(next_a, "IpProtocol") ) {
+			      if ((aret = argcmp(next_a, "IpProtocol")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "IpProtocol argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "IpProtocol argument missing\n");
 				          s->ip_protocol = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "IpRange") ) {
+			      if ((aret = argcmp(next_a, "IpRange")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "IpRange argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "IpRange argument missing\n");
 				          s->ip_range = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "Rules") ) {
+			      if ((aret = argcmp(next_a, "Rules")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Rules argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos = strchr(str, '.');
 
 				          if (dot_pos) {
@@ -19900,22 +25864,46 @@ int main(int ac, char **av)
 				          	s->rules_str = aa; // array ref SecurityGroupRule ref
 				          }
 				       } else
-			      if (!argcmp(next_a, "SecurityGroupAccountIdToLink") ) {
+			      if ((aret = argcmp(next_a, "SecurityGroupAccountIdToLink")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SecurityGroupAccountIdToLink argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SecurityGroupAccountIdToLink argument missing\n");
 				          s->security_group_account_id_to_link = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "SecurityGroupId") ) {
+			      if ((aret = argcmp(next_a, "SecurityGroupId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SecurityGroupId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SecurityGroupId argument missing\n");
 				          s->security_group_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "SecurityGroupNameToLink") ) {
+			      if ((aret = argcmp(next_a, "SecurityGroupNameToLink")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SecurityGroupNameToLink argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SecurityGroupNameToLink argument missing\n");
 				          s->security_group_name_to_link = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "ToPortRange") ) {
+			      if ((aret = argcmp(next_a, "ToPortRange")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ToPortRange argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ToPortRange argument missing\n");
 				          s->is_set_to_port_range = 1;
 				          s->to_port_range = atoi(aa);
@@ -19956,11 +25944,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_security_group_arg;
 		      }
 
@@ -19968,18 +25964,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "Description") ) {
+			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Description argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Description argument missing\n");
 				          s->description = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -19989,12 +25998,24 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "NetId") ) {
+			      if ((aret = argcmp(next_a, "NetId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NetId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NetId argument missing\n");
 				          s->net_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "SecurityGroupName") ) {
+			      if ((aret = argcmp(next_a, "SecurityGroupName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SecurityGroupName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SecurityGroupName argument missing\n");
 				          s->security_group_name = aa; // string string
 
@@ -20035,11 +26056,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_route_table_arg;
 		      }
 
@@ -20047,13 +26076,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -20063,7 +26099,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "NetId") ) {
+			      if ((aret = argcmp(next_a, "NetId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NetId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NetId argument missing\n");
 				          s->net_id = aa; // string string
 
@@ -20104,11 +26146,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_route_arg;
 		      }
 
@@ -20116,18 +26166,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DestinationIpRange") ) {
+			      if ((aret = argcmp(next_a, "DestinationIpRange")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DestinationIpRange argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "DestinationIpRange argument missing\n");
 				          s->destination_ip_range = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -20137,32 +26200,68 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "GatewayId") ) {
+			      if ((aret = argcmp(next_a, "GatewayId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "GatewayId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "GatewayId argument missing\n");
 				          s->gateway_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "NatServiceId") ) {
+			      if ((aret = argcmp(next_a, "NatServiceId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NatServiceId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NatServiceId argument missing\n");
 				          s->nat_service_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "NetPeeringId") ) {
+			      if ((aret = argcmp(next_a, "NetPeeringId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NetPeeringId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NetPeeringId argument missing\n");
 				          s->net_peering_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "NicId") ) {
+			      if ((aret = argcmp(next_a, "NicId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NicId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NicId argument missing\n");
 				          s->nic_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "RouteTableId") ) {
+			      if ((aret = argcmp(next_a, "RouteTableId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "RouteTableId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "RouteTableId argument missing\n");
 				          s->route_table_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "VmId") ) {
+			      if ((aret = argcmp(next_a, "VmId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VmId argument missing\n");
 				          s->vm_id = aa; // string string
 
@@ -20203,11 +26302,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_public_ip_arg;
 		      }
 
@@ -20215,13 +26322,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -20267,11 +26381,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_nic_arg;
 		      }
 
@@ -20279,18 +26401,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "Description") ) {
+			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Description argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Description argument missing\n");
 				          s->description = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -20300,7 +26435,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "PrivateIps") ) {
+			      if ((aret = argcmp(next_a, "PrivateIps")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PrivateIps argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos = strchr(str, '.');
 
 				          if (dot_pos) {
@@ -20325,14 +26466,26 @@ int main(int ac, char **av)
 				          	s->private_ips_str = aa; // array ref PrivateIpLight ref
 				          }
 				       } else
-			      if (!argcmp(next_a, "SecurityGroupIds") ) {
+			      if ((aret = argcmp(next_a, "SecurityGroupIds")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SecurityGroupIds argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "SecurityGroupIds argument missing\n");
 				             s->security_group_ids_str = aa;
-				       } else if (!strcmp(str, "SecurityGroupIds[]")) {
+				       } else if (!(aret = strcmp(str, "SecurityGroupIds[]")) || aret == '=') {
 				             TRY(!aa, "SecurityGroupIds[] argument missing\n");
 				             SET_NEXT(s->security_group_ids, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "SubnetId") ) {
+			      if ((aret = argcmp(next_a, "SubnetId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SubnetId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SubnetId argument missing\n");
 				          s->subnet_id = aa; // string string
 
@@ -20373,11 +26526,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_net_peering_arg;
 		      }
 
@@ -20385,18 +26546,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "AccepterNetId") ) {
+			      if ((aret = argcmp(next_a, "AccepterNetId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "AccepterNetId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "AccepterNetId argument missing\n");
 				          s->accepter_net_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -20406,7 +26580,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "SourceNetId") ) {
+			      if ((aret = argcmp(next_a, "SourceNetId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SourceNetId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SourceNetId argument missing\n");
 				          s->source_net_id = aa; // string string
 
@@ -20447,11 +26627,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_net_access_point_arg;
 		      }
 
@@ -20459,13 +26647,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -20475,19 +26670,37 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "NetId") ) {
+			      if ((aret = argcmp(next_a, "NetId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NetId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NetId argument missing\n");
 				          s->net_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "RouteTableIds") ) {
+			      if ((aret = argcmp(next_a, "RouteTableIds")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "RouteTableIds argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "RouteTableIds argument missing\n");
 				             s->route_table_ids_str = aa;
-				       } else if (!strcmp(str, "RouteTableIds[]")) {
+				       } else if (!(aret = strcmp(str, "RouteTableIds[]")) || aret == '=') {
 				             TRY(!aa, "RouteTableIds[] argument missing\n");
 				             SET_NEXT(s->route_table_ids, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "ServiceName") ) {
+			      if ((aret = argcmp(next_a, "ServiceName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ServiceName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ServiceName argument missing\n");
 				          s->service_name = aa; // string string
 
@@ -20528,11 +26741,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_net_arg;
 		      }
 
@@ -20540,13 +26761,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -20556,12 +26784,24 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "IpRange") ) {
+			      if ((aret = argcmp(next_a, "IpRange")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "IpRange argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "IpRange argument missing\n");
 				          s->ip_range = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "Tenancy") ) {
+			      if ((aret = argcmp(next_a, "Tenancy")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Tenancy argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Tenancy argument missing\n");
 				          s->tenancy = aa; // string string
 
@@ -20602,11 +26842,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_nat_service_arg;
 		      }
 
@@ -20614,13 +26862,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -20630,12 +26885,24 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "PublicIpId") ) {
+			      if ((aret = argcmp(next_a, "PublicIpId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PublicIpId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "PublicIpId argument missing\n");
 				          s->public_ip_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "SubnetId") ) {
+			      if ((aret = argcmp(next_a, "SubnetId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SubnetId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SubnetId argument missing\n");
 				          s->subnet_id = aa; // string string
 
@@ -20676,11 +26943,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_load_balancer_tags_arg;
 		      }
 
@@ -20688,13 +26963,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -20704,14 +26986,26 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "LoadBalancerNames") ) {
+			      if ((aret = argcmp(next_a, "LoadBalancerNames")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LoadBalancerNames argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "LoadBalancerNames argument missing\n");
 				             s->load_balancer_names_str = aa;
-				       } else if (!strcmp(str, "LoadBalancerNames[]")) {
+				       } else if (!(aret = strcmp(str, "LoadBalancerNames[]")) || aret == '=') {
 				             TRY(!aa, "LoadBalancerNames[] argument missing\n");
 				             SET_NEXT(s->load_balancer_names, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "Tags") ) {
+			      if ((aret = argcmp(next_a, "Tags")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Tags argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos = strchr(str, '.');
 
 				          if (dot_pos) {
@@ -20772,11 +27066,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_load_balancer_policy_arg;
 		      }
 
@@ -20784,23 +27086,42 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "CookieExpirationPeriod") ) {
+			      if ((aret = argcmp(next_a, "CookieExpirationPeriod")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "CookieExpirationPeriod argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "CookieExpirationPeriod argument missing\n");
 				          s->is_set_cookie_expiration_period = 1;
 				          s->cookie_expiration_period = atoi(aa);
 				       } else
-			      if (!argcmp(next_a, "CookieName") ) {
+			      if ((aret = argcmp(next_a, "CookieName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "CookieName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "CookieName argument missing\n");
 				          s->cookie_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -20810,17 +27131,35 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "LoadBalancerName") ) {
+			      if ((aret = argcmp(next_a, "LoadBalancerName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LoadBalancerName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "LoadBalancerName argument missing\n");
 				          s->load_balancer_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "PolicyName") ) {
+			      if ((aret = argcmp(next_a, "PolicyName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PolicyName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "PolicyName argument missing\n");
 				          s->policy_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "PolicyType") ) {
+			      if ((aret = argcmp(next_a, "PolicyType")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PolicyType argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "PolicyType argument missing\n");
 				          s->policy_type = aa; // string string
 
@@ -20861,11 +27200,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_load_balancer_listeners_arg;
 		      }
 
@@ -20873,13 +27220,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -20889,7 +27243,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Listeners") ) {
+			      if ((aret = argcmp(next_a, "Listeners")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Listeners argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos = strchr(str, '.');
 
 				          if (dot_pos) {
@@ -20914,7 +27274,13 @@ int main(int ac, char **av)
 				          	s->listeners_str = aa; // array ref ListenerForCreation ref
 				          }
 				       } else
-			      if (!argcmp(next_a, "LoadBalancerName") ) {
+			      if ((aret = argcmp(next_a, "LoadBalancerName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LoadBalancerName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "LoadBalancerName argument missing\n");
 				          s->load_balancer_name = aa; // string string
 
@@ -20955,11 +27321,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_load_balancer_arg;
 		      }
 
@@ -20967,13 +27341,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -20983,7 +27364,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Listeners") ) {
+			      if ((aret = argcmp(next_a, "Listeners")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Listeners argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos = strchr(str, '.');
 
 				          if (dot_pos) {
@@ -21008,43 +27395,85 @@ int main(int ac, char **av)
 				          	s->listeners_str = aa; // array ref ListenerForCreation ref
 				          }
 				       } else
-			      if (!argcmp(next_a, "LoadBalancerName") ) {
+			      if ((aret = argcmp(next_a, "LoadBalancerName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LoadBalancerName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "LoadBalancerName argument missing\n");
 				          s->load_balancer_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "LoadBalancerType") ) {
+			      if ((aret = argcmp(next_a, "LoadBalancerType")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LoadBalancerType argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "LoadBalancerType argument missing\n");
 				          s->load_balancer_type = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "PublicIp") ) {
+			      if ((aret = argcmp(next_a, "PublicIp")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PublicIp argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "PublicIp argument missing\n");
 				          s->public_ip = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "SecurityGroups") ) {
+			      if ((aret = argcmp(next_a, "SecurityGroups")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SecurityGroups argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "SecurityGroups argument missing\n");
 				             s->security_groups_str = aa;
-				       } else if (!strcmp(str, "SecurityGroups[]")) {
+				       } else if (!(aret = strcmp(str, "SecurityGroups[]")) || aret == '=') {
 				             TRY(!aa, "SecurityGroups[] argument missing\n");
 				             SET_NEXT(s->security_groups, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "Subnets") ) {
+			      if ((aret = argcmp(next_a, "Subnets")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Subnets argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "Subnets argument missing\n");
 				             s->subnets_str = aa;
-				       } else if (!strcmp(str, "Subnets[]")) {
+				       } else if (!(aret = strcmp(str, "Subnets[]")) || aret == '=') {
 				             TRY(!aa, "Subnets[] argument missing\n");
 				             SET_NEXT(s->subnets, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "SubregionNames") ) {
+			      if ((aret = argcmp(next_a, "SubregionNames")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SubregionNames argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "SubregionNames argument missing\n");
 				             s->subregion_names_str = aa;
-				       } else if (!strcmp(str, "SubregionNames[]")) {
+				       } else if (!(aret = strcmp(str, "SubregionNames[]")) || aret == '=') {
 				             TRY(!aa, "SubregionNames[] argument missing\n");
 				             SET_NEXT(s->subregion_names, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "Tags") ) {
+			      if ((aret = argcmp(next_a, "Tags")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Tags argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos = strchr(str, '.');
 
 				          if (dot_pos) {
@@ -21105,11 +27534,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_listener_rule_arg;
 		      }
 
@@ -21117,13 +27554,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -21133,7 +27577,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Listener") ) {
+			      if ((aret = argcmp(next_a, "Listener")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Listener argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "Listener argument missing\n");
@@ -21150,7 +27600,13 @@ int main(int ac, char **av)
 				                 s->listener_str = aa;
 				           }
 				       } else
-			      if (!argcmp(next_a, "ListenerRule") ) {
+			      if ((aret = argcmp(next_a, "ListenerRule")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ListenerRule argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "ListenerRule argument missing\n");
@@ -21167,10 +27623,16 @@ int main(int ac, char **av)
 				                 s->listener_rule_str = aa;
 				           }
 				       } else
-			      if (!argcmp(next_a, "VmIds") ) {
+			      if ((aret = argcmp(next_a, "VmIds")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmIds argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "VmIds argument missing\n");
 				             s->vm_ids_str = aa;
-				       } else if (!strcmp(str, "VmIds[]")) {
+				       } else if (!(aret = strcmp(str, "VmIds[]")) || aret == '=') {
 				             TRY(!aa, "VmIds[] argument missing\n");
 				             SET_NEXT(s->vm_ids, (aa), pa);
 				       } else
@@ -21210,11 +27672,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_keypair_arg;
 		      }
 
@@ -21222,13 +27692,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -21238,12 +27715,24 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "KeypairName") ) {
+			      if ((aret = argcmp(next_a, "KeypairName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "KeypairName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "KeypairName argument missing\n");
 				          s->keypair_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "PublicKey") ) {
+			      if ((aret = argcmp(next_a, "PublicKey")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PublicKey argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "PublicKey argument missing\n");
 				          s->public_key = aa; // string string
 
@@ -21284,11 +27773,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_internet_service_arg;
 		      }
 
@@ -21296,13 +27793,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -21348,11 +27852,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_image_export_task_arg;
 		      }
 
@@ -21360,13 +27872,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -21376,12 +27895,24 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "ImageId") ) {
+			      if ((aret = argcmp(next_a, "ImageId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ImageId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ImageId argument missing\n");
 				          s->image_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "OsuExport") ) {
+			      if ((aret = argcmp(next_a, "OsuExport")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "OsuExport argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "OsuExport argument missing\n");
@@ -21434,11 +27965,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_image_arg;
 		      }
 
@@ -21446,18 +27985,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "Architecture") ) {
+			      if ((aret = argcmp(next_a, "Architecture")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Architecture argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Architecture argument missing\n");
 				          s->architecture = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "BlockDeviceMappings") ) {
+			      if ((aret = argcmp(next_a, "BlockDeviceMappings")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "BlockDeviceMappings argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos = strchr(str, '.');
 
 				          if (dot_pos) {
@@ -21482,12 +28034,24 @@ int main(int ac, char **av)
 				          	s->block_device_mappings_str = aa; // array ref BlockDeviceMappingImage ref
 				          }
 				       } else
-			      if (!argcmp(next_a, "Description") ) {
+			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Description argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Description argument missing\n");
 				          s->description = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -21497,17 +28061,35 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "FileLocation") ) {
+			      if ((aret = argcmp(next_a, "FileLocation")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "FileLocation argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "FileLocation argument missing\n");
 				          s->file_location = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "ImageName") ) {
+			      if ((aret = argcmp(next_a, "ImageName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ImageName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ImageName argument missing\n");
 				          s->image_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "NoReboot") ) {
+			      if ((aret = argcmp(next_a, "NoReboot")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NoReboot argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_no_reboot = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->no_reboot = 1;
@@ -21517,22 +28099,59 @@ int main(int ac, char **av)
 				          		BAD_RET("NoReboot require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "RootDeviceName") ) {
+			      if ((aret = argcmp(next_a, "ProductCodes")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ProductCodes argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          	 TRY(!aa, "ProductCodes argument missing\n");
+				             s->product_codes_str = aa;
+				       } else if (!(aret = strcmp(str, "ProductCodes[]")) || aret == '=') {
+				             TRY(!aa, "ProductCodes[] argument missing\n");
+				             SET_NEXT(s->product_codes, (aa), pa);
+				       } else
+			      if ((aret = argcmp(next_a, "RootDeviceName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "RootDeviceName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "RootDeviceName argument missing\n");
 				          s->root_device_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "SourceImageId") ) {
+			      if ((aret = argcmp(next_a, "SourceImageId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SourceImageId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SourceImageId argument missing\n");
 				          s->source_image_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "SourceRegionName") ) {
+			      if ((aret = argcmp(next_a, "SourceRegionName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SourceRegionName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SourceRegionName argument missing\n");
 				          s->source_region_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "VmId") ) {
+			      if ((aret = argcmp(next_a, "VmId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VmId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VmId argument missing\n");
 				          s->vm_id = aa; // string string
 
@@ -21573,11 +28192,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_flexible_gpu_arg;
 		      }
 
@@ -21585,13 +28212,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DeleteOnVmDeletion") ) {
+			      if ((aret = argcmp(next_a, "DeleteOnVmDeletion")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DeleteOnVmDeletion argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_delete_on_vm_deletion = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->delete_on_vm_deletion = 1;
@@ -21601,7 +28235,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DeleteOnVmDeletion require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -21611,17 +28251,35 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Generation") ) {
+			      if ((aret = argcmp(next_a, "Generation")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Generation argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Generation argument missing\n");
 				          s->generation = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "ModelName") ) {
+			      if ((aret = argcmp(next_a, "ModelName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ModelName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ModelName argument missing\n");
 				          s->model_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "SubregionName") ) {
+			      if ((aret = argcmp(next_a, "SubregionName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SubregionName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "SubregionName argument missing\n");
 				          s->subregion_name = aa; // string string
 
@@ -21662,11 +28320,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_direct_link_interface_arg;
 		      }
 
@@ -21674,18 +28340,31 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DirectLinkId") ) {
+			      if ((aret = argcmp(next_a, "DirectLinkId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DirectLinkId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "DirectLinkId argument missing\n");
 				          s->direct_link_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DirectLinkInterface") ) {
+			      if ((aret = argcmp(next_a, "DirectLinkInterface")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DirectLinkInterface argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          char *dot_pos;
 
 				          TRY(!aa, "DirectLinkInterface argument missing\n");
@@ -21702,7 +28381,13 @@ int main(int ac, char **av)
 				                 s->direct_link_interface_str = aa;
 				           }
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -21748,11 +28433,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_direct_link_arg;
 		      }
 
@@ -21760,23 +28453,42 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "Bandwidth") ) {
+			      if ((aret = argcmp(next_a, "Bandwidth")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Bandwidth argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Bandwidth argument missing\n");
 				          s->bandwidth = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DirectLinkName") ) {
+			      if ((aret = argcmp(next_a, "DirectLinkName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DirectLinkName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "DirectLinkName argument missing\n");
 				          s->direct_link_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -21786,7 +28498,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Location") ) {
+			      if ((aret = argcmp(next_a, "Location")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Location argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Location argument missing\n");
 				          s->location = aa; // string string
 
@@ -21827,11 +28545,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_dhcp_options_arg;
 		      }
 
@@ -21839,25 +28565,44 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DomainName") ) {
+			      if ((aret = argcmp(next_a, "DomainName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DomainName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "DomainName argument missing\n");
 				          s->domain_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DomainNameServers") ) {
+			      if ((aret = argcmp(next_a, "DomainNameServers")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DomainNameServers argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "DomainNameServers argument missing\n");
 				             s->domain_name_servers_str = aa;
-				       } else if (!strcmp(str, "DomainNameServers[]")) {
+				       } else if (!(aret = strcmp(str, "DomainNameServers[]")) || aret == '=') {
 				             TRY(!aa, "DomainNameServers[] argument missing\n");
 				             SET_NEXT(s->domain_name_servers, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -21867,17 +28612,29 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "LogServers") ) {
+			      if ((aret = argcmp(next_a, "LogServers")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LogServers argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "LogServers argument missing\n");
 				             s->log_servers_str = aa;
-				       } else if (!strcmp(str, "LogServers[]")) {
+				       } else if (!(aret = strcmp(str, "LogServers[]")) || aret == '=') {
 				             TRY(!aa, "LogServers[] argument missing\n");
 				             SET_NEXT(s->log_servers, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "NtpServers") ) {
+			      if ((aret = argcmp(next_a, "NtpServers")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NtpServers argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "NtpServers argument missing\n");
 				             s->ntp_servers_str = aa;
-				       } else if (!strcmp(str, "NtpServers[]")) {
+				       } else if (!(aret = strcmp(str, "NtpServers[]")) || aret == '=') {
 				             TRY(!aa, "NtpServers[] argument missing\n");
 				             SET_NEXT(s->ntp_servers, (aa), pa);
 				       } else
@@ -21917,11 +28674,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_client_gateway_arg;
 		      }
 
@@ -21929,23 +28694,42 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "BgpAsn") ) {
+			      if ((aret = argcmp(next_a, "BgpAsn")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "BgpAsn argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "BgpAsn argument missing\n");
 				          s->is_set_bgp_asn = 1;
 				          s->bgp_asn = atoi(aa);
 				       } else
-			      if (!argcmp(next_a, "ConnectionType") ) {
+			      if ((aret = argcmp(next_a, "ConnectionType")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ConnectionType argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ConnectionType argument missing\n");
 				          s->connection_type = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -21955,7 +28739,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "PublicIp") ) {
+			      if ((aret = argcmp(next_a, "PublicIp")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PublicIp argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "PublicIp argument missing\n");
 				          s->public_ip = aa; // string string
 
@@ -21996,11 +28786,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_ca_arg;
 		      }
 
@@ -22008,23 +28806,42 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "CaPem") ) {
+			      if ((aret = argcmp(next_a, "CaPem")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "CaPem argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "CaPem argument missing\n");
 				          s->ca_pem = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "Description") ) {
+			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Description argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Description argument missing\n");
 				          s->description = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -22070,11 +28887,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_api_access_rule_arg;
 		      }
 
@@ -22082,32 +28907,57 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "CaIds") ) {
+			      if ((aret = argcmp(next_a, "CaIds")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "CaIds argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "CaIds argument missing\n");
 				             s->ca_ids_str = aa;
-				       } else if (!strcmp(str, "CaIds[]")) {
+				       } else if (!(aret = strcmp(str, "CaIds[]")) || aret == '=') {
 				             TRY(!aa, "CaIds[] argument missing\n");
 				             SET_NEXT(s->ca_ids, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "Cns") ) {
+			      if ((aret = argcmp(next_a, "Cns")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Cns argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "Cns argument missing\n");
 				             s->cns_str = aa;
-				       } else if (!strcmp(str, "Cns[]")) {
+				       } else if (!(aret = strcmp(str, "Cns[]")) || aret == '=') {
 				             TRY(!aa, "Cns[] argument missing\n");
 				             SET_NEXT(s->cns, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "Description") ) {
+			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Description argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Description argument missing\n");
 				          s->description = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -22117,10 +28967,16 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "IpRanges") ) {
+			      if ((aret = argcmp(next_a, "IpRanges")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "IpRanges argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "IpRanges argument missing\n");
 				             s->ip_ranges_str = aa;
-				       } else if (!strcmp(str, "IpRanges[]")) {
+				       } else if (!(aret = strcmp(str, "IpRanges[]")) || aret == '=') {
 				             TRY(!aa, "IpRanges[] argument missing\n");
 				             SET_NEXT(s->ip_ranges, (aa), pa);
 				       } else
@@ -22160,11 +29016,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_account_arg;
 		      }
 
@@ -22172,40 +29036,77 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "AdditionalEmails") ) {
+			      if ((aret = argcmp(next_a, "AdditionalEmails")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "AdditionalEmails argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          	 TRY(!aa, "AdditionalEmails argument missing\n");
 				             s->additional_emails_str = aa;
-				       } else if (!strcmp(str, "AdditionalEmails[]")) {
+				       } else if (!(aret = strcmp(str, "AdditionalEmails[]")) || aret == '=') {
 				             TRY(!aa, "AdditionalEmails[] argument missing\n");
 				             SET_NEXT(s->additional_emails, (aa), pa);
 				       } else
-			      if (!argcmp(next_a, "City") ) {
+			      if ((aret = argcmp(next_a, "City")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "City argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "City argument missing\n");
 				          s->city = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "CompanyName") ) {
+			      if ((aret = argcmp(next_a, "CompanyName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "CompanyName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "CompanyName argument missing\n");
 				          s->company_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "Country") ) {
+			      if ((aret = argcmp(next_a, "Country")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Country argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Country argument missing\n");
 				          s->country = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "CustomerId") ) {
+			      if ((aret = argcmp(next_a, "CustomerId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "CustomerId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "CustomerId argument missing\n");
 				          s->customer_id = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -22215,47 +29116,101 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Email") ) {
+			      if ((aret = argcmp(next_a, "Email")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Email argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Email argument missing\n");
 				          s->email = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "FirstName") ) {
+			      if ((aret = argcmp(next_a, "FirstName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "FirstName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "FirstName argument missing\n");
 				          s->first_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "JobTitle") ) {
+			      if ((aret = argcmp(next_a, "JobTitle")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "JobTitle argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "JobTitle argument missing\n");
 				          s->job_title = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "LastName") ) {
+			      if ((aret = argcmp(next_a, "LastName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LastName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "LastName argument missing\n");
 				          s->last_name = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "MobileNumber") ) {
+			      if ((aret = argcmp(next_a, "MobileNumber")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "MobileNumber argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "MobileNumber argument missing\n");
 				          s->mobile_number = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "PhoneNumber") ) {
+			      if ((aret = argcmp(next_a, "PhoneNumber")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PhoneNumber argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "PhoneNumber argument missing\n");
 				          s->phone_number = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "StateProvince") ) {
+			      if ((aret = argcmp(next_a, "StateProvince")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "StateProvince argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "StateProvince argument missing\n");
 				          s->state_province = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "VatNumber") ) {
+			      if ((aret = argcmp(next_a, "VatNumber")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VatNumber argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "VatNumber argument missing\n");
 				          s->vat_number = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "ZipCode") ) {
+			      if ((aret = argcmp(next_a, "ZipCode")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ZipCode argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ZipCode argument missing\n");
 				          s->zip_code = aa; // string string
 
@@ -22296,11 +29251,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto create_access_key_arg;
 		      }
 
@@ -22308,13 +29271,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -22324,9 +29294,15 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "ExpirationDate") ) {
+			      if ((aret = argcmp(next_a, "ExpirationDate")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ExpirationDate argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "ExpirationDate argument missing\n");
-				          s->expiration_date = aa; // string string
+				          s->expiration_date = aa; // string string string
 
 				       } else
 			    {
@@ -22365,11 +29341,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto check_authentication_arg;
 		      }
 
@@ -22377,13 +29361,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -22393,12 +29384,24 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "Login") ) {
+			      if ((aret = argcmp(next_a, "Login")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Login argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Login argument missing\n");
 				          s->login = aa; // string string
 
 				       } else
-			      if (!argcmp(next_a, "Password") ) {
+			      if ((aret = argcmp(next_a, "Password")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Password argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "Password argument missing\n");
 				          s->password = aa; // string string
 
@@ -22439,11 +29442,19 @@ int main(int ac, char **av)
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
 
 	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
 		      	   cascade_parser(cascade_struct, next_a, aa, pa);
-			   i += 2;
+			   i += incr;
 		       	   goto accept_net_peering_arg;
 		      }
 
@@ -22451,13 +29462,20 @@ int main(int ac, char **av)
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				aa = 0;
 				incr = 1;
 			     }
-			      if (!argcmp(next_a, "DryRun") ) {
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          s->is_set_dry_run = 1;
 				          if (!aa || !strcasecmp(aa, "true")) {
 				          		s->dry_run = 1;
@@ -22467,7 +29485,13 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
-			      if (!argcmp(next_a, "NetPeeringId") ) {
+			      if ((aret = argcmp(next_a, "NetPeeringId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NetPeeringId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
 				          TRY(!aa, "NetPeeringId argument missing\n");
 				          s->net_peering_id = aa; // string string
 

@@ -70,7 +70,7 @@ struct osc_str {
 
 #define OSC_ENV_FREE_AK_SK (OSC_ENV_FREE_AK | OSC_ENV_FREE_SK)
 
-#define OSC_API_VERSION "1.25"
+#define OSC_API_VERSION "1.26"
 #define OSC_SDK_VERSION 0xC061AC
 
 enum osc_auth_method {
@@ -364,7 +364,8 @@ struct bsu_created {
         int is_set_delete_on_vm_deletion;
 	int delete_on_vm_deletion; /* bool */
         /*
-         * The time and date of attachment of the volume to the VM.
+         * The date and time of attachment of the volume to the VM, in ISO 8601 
+         * date-time format.
          */
 	char *link_date; /* string */
         /*
@@ -575,6 +576,27 @@ struct catalog_entry {
 	double unit_price; /* double */
 };
 
+struct catalogs {
+        /*
+         * One or more catalog entries.
+         */
+        char *entries_str;
+        int nb_entries;
+	struct catalog_entry *entries; /* array ref CatalogEntry */
+        /*
+         * The beginning of the time period, in ISO 8601 date-time format.
+         */
+	char *from_date; /* string */
+        /*
+         * The state of the catalog (`CURRENT` \\| `OBSOLETE`).
+         */
+	char *state; /* string */
+        /*
+         * The end of the time period, in ISO 8601 date-time format.
+         */
+	char *to_date; /* string */
+};
+
 struct client_gateway {
         /*
          * The Autonomous System Number (ASN) used by the Border Gateway 
@@ -620,7 +642,7 @@ struct consumption_entry {
          */
 	char *category; /* string */
         /*
-         * The beginning of the time period.
+         * The beginning of the time period, in ISO 8601 date-time format.
          */
 	char *from_date; /* string */
         /*
@@ -647,7 +669,7 @@ struct consumption_entry {
          */
 	char *title; /* string */
         /*
-         * The end of the time period.
+         * The end of the time period, in ISO 8601 date-time format.
          */
 	char *to_date; /* string */
         /*
@@ -911,15 +933,17 @@ struct filters_api_log {
         char *query_call_names_str;
 	char **query_call_names; /* array string */
         /*
-         * The date after which you want to retrieve logged calls, in ISO 8601 
-         * format (for example, `2020-06-14`). By default, this date is set to 
-         * 48 hours before the `QueryDateBefore` parameter value.
+         * The date and time, or the date, after which you want to retrieve 
+         * logged calls, in ISO 8601 format (for example, 
+         * `2020-06-14T00:00:00.000Z` or `2020-06-14`). By default, this date is 
+         * set to 48 hours before the `QueryDateBefore` parameter value.
          */
 	char *query_date_after; /* string */
         /*
-         * The date before which you want to retrieve logged calls, in ISO 8601 
-         * format (for example, `2020-06-30`). By default, this date is set to 
-         * now, or 48 hours after the `QueryDateAfter` parameter value.
+         * The date and time, or the date, before which you want to retrieve 
+         * logged calls, in ISO 8601 format (for example, 
+         * `2020-06-30T00:00:00.000Z` or `2020-06-14`). By default, this date is 
+         * set to now, or 48 hours after the `QueryDateAfter` parameter value.
          */
 	char *query_date_before; /* string */
         /*
@@ -960,6 +984,27 @@ struct filters_ca {
          */
         char *descriptions_str;
 	char **descriptions; /* array string */
+};
+
+struct filters_catalogs {
+        /*
+         * By default or if set to true, only returns the current catalog. If 
+         * false, returns the current catalog and past catalogs.
+         */
+        int is_set_current_catalog_only;
+	int current_catalog_only; /* bool */
+        /*
+         * The beginning of the time period, in ISO 8601 date format (for 
+         * example, `2020-06-14`). This date cannot be older than 3 years. You 
+         * must specify the parameters `FromDate` and `ToDate` together.
+         */
+	char *from_date; /* string */
+        /*
+         * The end of the time period, in ISO 8601 date format (for example, 
+         * `2020-06-30`). You must specify the parameters `FromDate` and 
+         * `ToDate` together.
+         */
+	char *to_date; /* string */
 };
 
 struct filters_client_gateway {
@@ -1211,8 +1256,7 @@ struct filters_image {
         int is_set_permissions_to_launch_global_permission;
 	int permissions_to_launch_global_permission; /* bool */
         /*
-         * The product code associated with the OMI (`0001` Linux/Unix \\| 
-         * `0002` Windows \\| `0004` Linux/Oracle \\| `0005` Windows 10).
+         * The product codes associated with the OMI.
          */
         char *product_codes_str;
 	char **product_codes; /* array string */
@@ -2011,6 +2055,11 @@ struct filters_snapshot {
         char *descriptions_str;
 	char **descriptions; /* array string */
         /*
+         * The beginning of the time period, in ISO 8601 date-time format (for 
+         * example, `2020-06-14T00:00:00.000Z`).
+         */
+	char *from_creation_date; /* string */
+        /*
          * The account IDs of one or more users who have permissions to create 
          * volumes.
          */
@@ -2054,6 +2103,11 @@ struct filters_snapshot {
          */
         char *tags_str;
 	char **tags; /* array string */
+        /*
+         * The end of the time period, in ISO 8601 date-time format (for 
+         * example, `2020-06-30T00:00:00.000Z`).
+         */
+	char *to_creation_date; /* string */
         /*
          * The IDs of the volumes used to create the snapshots.
          */
@@ -2232,6 +2286,126 @@ struct filters_vm {
 	char **vm_ids; /* array string */
 };
 
+struct filters_vm_group {
+        /*
+         * The descriptions of the VM groups.
+         */
+        char *descriptions_str;
+	char **descriptions; /* array string */
+        /*
+         * The IDs of the security groups.
+         */
+        char *security_group_ids_str;
+	char **security_group_ids; /* array string */
+        /*
+         * The IDs of the Subnets.
+         */
+        char *subnet_ids_str;
+	char **subnet_ids; /* array string */
+        /*
+         * The keys of the tags associated with the VM groups.
+         */
+        char *tag_keys_str;
+	char **tag_keys; /* array string */
+        /*
+         * The values of the tags associated with the VM groups.
+         */
+        char *tag_values_str;
+	char **tag_values; /* array string */
+        /*
+         * The key/value combination of the tags associated with the VMs, in the 
+         * following format: 
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         */
+        char *tags_str;
+	char **tags; /* array string */
+        /*
+         * The number of VMs in the VM group.
+         */
+        char *vm_counts_str;
+	int *vm_counts; /* array integer */
+        /*
+         * The IDs of the VM groups.
+         */
+        char *vm_group_ids_str;
+	char **vm_group_ids; /* array string */
+        /*
+         * The names of the VM groups.
+         */
+        char *vm_group_names_str;
+	char **vm_group_names; /* array string */
+        /*
+         * The IDs of the VM templates.
+         */
+        char *vm_template_ids_str;
+	char **vm_template_ids; /* array string */
+};
+
+struct filters_vm_template {
+        /*
+         * The number of vCores.
+         */
+        char *cpu_cores_str;
+	int *cpu_cores; /* array integer */
+        /*
+         * The processor generations (for example, `v4`).
+         */
+        char *cpu_generations_str;
+	char **cpu_generations; /* array string */
+        /*
+         * The performances of the VMs.
+         */
+        char *cpu_performances_str;
+	char **cpu_performances; /* array string */
+        /*
+         * The descriptions of the VM templates.
+         */
+        char *descriptions_str;
+	char **descriptions; /* array string */
+        /*
+         * The IDs of the OMIs.
+         */
+        char *image_ids_str;
+	char **image_ids; /* array string */
+        /*
+         * The names of the keypairs.
+         */
+        char *keypair_names_str;
+	char **keypair_names; /* array string */
+        /*
+         * The amount of RAM.
+         */
+        char *rams_str;
+	int *rams; /* array integer */
+        /*
+         * The keys of the tags associated with the VM templates.
+         */
+        char *tag_keys_str;
+	char **tag_keys; /* array string */
+        /*
+         * The values of the tags associated with the VM templates.
+         */
+        char *tag_values_str;
+	char **tag_values; /* array string */
+        /*
+         * The key/value combination of the tags associated with the VM 
+         * templates, in the following format: 
+         * \Filters\:{\Tags\:[\TAGKEY=TAGVALUE\]}.
+         */
+        char *tags_str;
+	char **tags; /* array string */
+        /*
+         * The IDs of the VM templates.
+         */
+        char *vm_template_ids_str;
+	char **vm_template_ids; /* array string */
+        /*
+         * The names of the VM templates.
+         */
+        char *vm_template_names_str;
+	char **vm_template_names; /* array string */
+};
+
 struct filters_vm_type {
         /*
          * This parameter is not available. It is present in our API for the 
@@ -2309,7 +2483,8 @@ struct filters_vms_state {
 
 struct filters_volume {
         /*
-         * The dates and times of creation of the volumes.
+         * The dates and times of creation of the volumes, in ISO 8601 date-time 
+         * format (for example, `2020-06-30T00:00:00.000Z`).
          */
         char *creation_dates_str;
 	char **creation_dates; /* array string */
@@ -2324,7 +2499,8 @@ struct filters_volume {
         char *link_volume_device_names_str;
 	char **link_volume_device_names; /* array string */
         /*
-         * The dates and times of creation of the volumes.
+         * The dates and times of creation of the volumes, in ISO 8601 date-time 
+         * format (for example, `2020-06-30T00:00:00.000Z`).
          */
         char *link_volume_link_dates_str;
 	char **link_volume_link_dates; /* array string */
@@ -2606,7 +2782,8 @@ struct image {
         int nb_block_device_mappings;
 	struct block_device_mapping_image *block_device_mappings; /* array ref BlockDeviceMappingImage */
         /*
-         * The date and time of creation of the OMI.
+         * The date and time of creation of the OMI, in ISO 8601 date-time 
+         * format.
          */
 	char *creation_date; /* string */
         /*
@@ -2636,8 +2813,7 @@ struct image {
         int is_set_permissions_to_launch;
 	struct permissions_on_resource permissions_to_launch; /* ref PermissionsOnResource */
         /*
-         * The product code associated with the OMI (`0001` Linux/Unix \\| 
-         * `0002` Windows \\| `0004` Linux/Oracle \\| `0005` Windows 10).
+         * The product codes associated with the OMI.
          */
         char *product_codes_str;
 	char **product_codes; /* array string */
@@ -3262,7 +3438,7 @@ struct log {
          */
 	char *query_call_name; /* string */
         /*
-         * The date of the logged call, in ISO 8601 format.
+         * The date and time of the logged call, in ISO 8601 date-time format.
          */
 	char *query_date; /* string */
         /*
@@ -4632,9 +4808,7 @@ struct vm {
          */
 	char *private_ip; /* string */
         /*
-         * The product code associated with the OMI used to create the VM 
-         * (`0001` Linux/Unix \\| `0002` Windows \\| `0004` Linux/Oracle \\| 
-         * `0005` Windows 10).
+         * The product codes associated with the OMI used to create the VM.
          */
         char *product_codes_str;
 	char **product_codes; /* array string */
@@ -4704,6 +4878,68 @@ struct vm {
 	char *vm_type; /* string */
 };
 
+struct vm_group {
+        /*
+         * The date and time of creation of the VM group.
+         */
+	char *creation_date; /* string */
+        /*
+         * The description of the VM group.
+         */
+	char *description; /* string */
+        /*
+         * The positioning strategy of the VMs on hypervisors. By default, or if 
+         * set to `no-strategy`, TINA determines the most adequate position for 
+         * the VMs. If set to `attract`, the VMs are deployed on the same 
+         * hypervisor, which improves network performance. If set to `repulse`, 
+         * the VMs are deployed on a different hypervisor, which improves fault 
+         * tolerance.
+         */
+	char *positioning_strategy; /* string */
+        /*
+         * One or more IDs of security groups for the VM group.
+         */
+        char *security_group_ids_str;
+	char **security_group_ids; /* array string */
+        /*
+         * The state of the VM group (`pending` \\| `available` \\| `scaling up` 
+         * \\| `scaling down` \\| `deleting` \\| `deleted`).
+         */
+	char *state; /* string */
+        /*
+         * The ID of the Subnet for the VM group.
+         */
+	char *subnet_id; /* string */
+        /*
+         * One or more tags associated with the VM group.
+         */
+        char *tags_str;
+        int nb_tags;
+	struct resource_tag *tags; /* array ref ResourceTag */
+        /*
+         * The number of VMs in the VM group.
+         */
+        int is_set_vm_count;
+	int vm_count; /* int */
+        /*
+         * The ID of the VM group.
+         */
+	char *vm_group_id; /* string */
+        /*
+         * The name of the VM group.
+         */
+	char *vm_group_name; /* string */
+        /*
+         * The IDs of the VMs in the VM group.
+         */
+        char *vm_ids_str;
+	char **vm_ids; /* array string */
+        /*
+         * The ID of the VM template used by the VM group.
+         */
+	char *vm_template_id; /* string */
+};
+
 struct vm_state {
         /*
          * The current state of the VM (`InService` \\| `OutOfService` \\| 
@@ -4741,6 +4977,57 @@ struct vm_states {
          * `stopped` \\| `shutting-down` \\| `terminated` \\| `quarantine`).
          */
 	char *vm_state; /* string */
+};
+
+struct vm_template {
+        /*
+         * The number of vCores.
+         */
+        int is_set_cpu_cores;
+	int cpu_cores; /* int */
+        /*
+         * The processor generation.
+         */
+	char *cpu_generation; /* string */
+        /*
+         * The performance of the VMs.
+         */
+	char *cpu_performance; /* string */
+        /*
+         * The date and time of creation of the VM template.
+         */
+	char *creation_date; /* string */
+        /*
+         * The description of the VM template.
+         */
+	char *description; /* string */
+        /*
+         * The ID of the OMI.
+         */
+	char *image_id; /* string */
+        /*
+         * The name of the keypair.
+         */
+	char *keypair_name; /* string */
+        /*
+         * The amount of RAM.
+         */
+        int is_set_ram;
+	int ram; /* int */
+        /*
+         * One or more tags associated with the VM template.
+         */
+        char *tags_str;
+        int nb_tags;
+	struct resource_tag *tags; /* array ref ResourceTag */
+        /*
+         * The ID of the VM template.
+         */
+	char *vm_template_id; /* string */
+        /*
+         * The name of the VM template.
+         */
+	char *vm_template_name; /* string */
 };
 
 struct vm_type {
@@ -5067,6 +5354,66 @@ struct osc_update_volume_arg  {
          * `io1` volume, you must also specify the `Iops` parameter.
          */
 	char *volume_type; /* string */
+};
+
+struct osc_update_vm_template_arg  {
+        /* Required: vm_template_id */
+        /*
+         * A new description for the VM template.
+         */
+	char *description; /* string */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * New tags for your VM template.
+         */
+        char *tags_str;
+        int nb_tags;
+	struct resource_tag *tags; /* array ref ResourceTag */
+        /*
+         * The ID of the VM template you want to update.
+         */
+	char *vm_template_id; /* string */
+        /*
+         * A new name for your VM template.
+         */
+	char *vm_template_name; /* string */
+};
+
+struct osc_update_vm_group_arg  {
+        /* Required: vm_group_id */
+        /*
+         * A new description for the VM group.
+         */
+	char *description; /* string */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * New tags for your VM group.
+         */
+        char *tags_str;
+        int nb_tags;
+	struct resource_tag *tags; /* array ref ResourceTag */
+        /*
+         * The ID of the VM group you want to update.
+         */
+	char *vm_group_id; /* string */
+        /*
+         * A new name for your VM group.
+         */
+	char *vm_group_name; /* string */
+        /*
+         * A new VM template ID for your VM group.
+         */
+	char *vm_template_id; /* string */
 };
 
 struct osc_update_vm_arg  {
@@ -5662,11 +6009,12 @@ struct osc_update_access_key_arg  {
         int is_set_dry_run;
 	int dry_run; /* bool */
         /*
-         * The date and time at which you want the access key to expire, in ISO 
-         * 8601 format (for example, `2017-06-14` or `2017-06-14T00:00:00Z`). If 
-         * not specified, the access key is set to not expire.
+         * The date and time, or the date, at which you want the access key to 
+         * expire, in ISO 8601 format (for example, `2020-06-14T00:00:00.000Z` 
+         * or `2020-06-14`). If not specified, the access key is set to not 
+         * expire.
          */
-	char *expiration_date; /* string */
+	char *expiration_date; /* string string */
         /*
          * The new state for the access key (`ACTIVE` \\| `INACTIVE`). When set 
          * to `ACTIVE`, the access key is enabled and can be used to send 
@@ -5886,6 +6234,44 @@ struct osc_send_reset_password_email_arg  {
 	char *email; /* string */
 };
 
+struct osc_scale_up_vm_group_arg  {
+        /* Required: vm_group_id, vm_addition */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * The number of VMs you want to add to the VM group.
+         */
+        int is_set_vm_addition;
+	int vm_addition; /* int */
+        /*
+         * The ID of the VM group you want to scale up.
+         */
+	char *vm_group_id; /* string */
+};
+
+struct osc_scale_down_vm_group_arg  {
+        /* Required: vm_group_id, vm_subtraction */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * The ID of the VM group you want to scale down.
+         */
+	char *vm_group_id; /* string */
+        /*
+         * The number of VMs you want to delete from the VM group.
+         */
+        int is_set_vm_subtraction;
+	int vm_subtraction; /* int */
+};
+
 struct osc_reset_account_password_arg  {
         /* Required: password, token */
         /*
@@ -6056,6 +6442,38 @@ struct osc_read_vm_types_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_vm_type filters; /* ref FiltersVmType */
+};
+
+struct osc_read_vm_templates_arg  {
+        /* Required:none */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * See 'filters' type documentation
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_vm_template filters; /* ref FiltersVmTemplate */
+};
+
+struct osc_read_vm_groups_arg  {
+        /* Required:none */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * ReadVmGroupsRequest_Filters
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_vm_group filters; /* ref FiltersVmGroup */
 };
 
 struct osc_read_virtual_gateways_arg  {
@@ -6594,10 +7012,12 @@ struct osc_read_consumption_account_arg  {
         int is_set_dry_run;
 	int dry_run; /* bool */
         /*
-         * The beginning of the time period, in ISO 8601 date-time format (for 
-         * example, `2017-06-14` or `2017-06-14T00:00:00Z`).
+         * The beginning of the time period, in ISO 8601 date format (for 
+         * example, `2020-06-14`). The date-time format is also accepted, but 
+         * only with a time set to midnight (for example, 
+         * `2020-06-14T00:00:00.000Z`).
          */
-	char *from_date; /* string */
+	char *from_date; /* string string */
         /*
          * By default or if false, returns only the consumption of the specific 
          * account that sends this request. If true, returns either the overall 
@@ -6608,10 +7028,11 @@ struct osc_read_consumption_account_arg  {
         int is_set_overall;
 	int overall; /* bool */
         /*
-         * The end of the time period, in ISO 8601 date-time format (for 
-         * example, `2017-06-30` or `2017-06-30T00:00:00Z`).
+         * The end of the time period, in ISO 8601 date format (for example, 
+         * `2020-06-30`). The date-time format is also accepted, but only with a 
+         * time set to midnight (for example, `2020-06-30T00:00:00.000Z`).
          */
-	char *to_date; /* string */
+	char *to_date; /* string string */
 };
 
 struct osc_read_console_output_arg  {
@@ -6642,6 +7063,22 @@ struct osc_read_client_gateways_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_client_gateway filters; /* ref FiltersClientGateway */
+};
+
+struct osc_read_catalogs_arg  {
+        /* Required:none */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * ReadCatalogsRequest_Filters
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_catalogs filters; /* ref FiltersCatalogs */
 };
 
 struct osc_read_catalog_arg  {
@@ -7072,6 +7509,34 @@ struct osc_delete_vms_arg  {
          */
         char *vm_ids_str;
 	char **vm_ids; /* array string */
+};
+
+struct osc_delete_vm_template_arg  {
+        /* Required: vm_template_id */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * The ID of the VM template you want to delete. 
+         */
+	char *vm_template_id; /* string */
+};
+
+struct osc_delete_vm_group_arg  {
+        /* Required: vm_group_id */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * The ID of the VM group you want to delete.
+         */
+	char *vm_group_id; /* string */
 };
 
 struct osc_delete_virtual_gateway_arg  {
@@ -7827,6 +8292,108 @@ struct osc_create_vms_arg  {
 	char *vm_type; /* string */
 };
 
+struct osc_create_vm_template_arg  {
+        /* Required: cpu_cores, cpu_generation, image_id, ram, vm_template_name */
+        /*
+         * The number of vCores to use for each VM.
+         */
+        int is_set_cpu_cores;
+	int cpu_cores; /* int */
+        /*
+         * The processor generation to use for each VM (for example, `v4`).
+         */
+	char *cpu_generation; /* string */
+        /*
+         * The performance of the VMs (`medium` \\| `high` \\|  `highest`). 
+         */
+	char *cpu_performance; /* string */
+        /*
+         * A description for the VM template.
+         */
+	char *description; /* string */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * The ID of the OMI to use for each VM. You can find a list of OMIs by 
+         * calling the [ReadImages](#readimages) method.
+         */
+	char *image_id; /* string */
+        /*
+         * The name of the keypair to use for each VM.
+         */
+	char *keypair_name; /* string */
+        /*
+         * The amount of RAM to use for each VM.
+         */
+        int is_set_ram;
+	int ram; /* int */
+        /*
+         * One or more tags to add to the VM template.
+         */
+        char *tags_str;
+        int nb_tags;
+	struct resource_tag *tags; /* array ref ResourceTag */
+        /*
+         * The name of the VM template.
+         */
+	char *vm_template_name; /* string */
+};
+
+struct osc_create_vm_group_arg  {
+        /* Required: security_group_ids, subnet_id, vm_group_name, vm_template_id, vm_count */
+        /*
+         * A description for the VM group.
+         */
+	char *description; /* string */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * The positioning strategy of VMs on hypervisors. By default, or if set 
+         * to `no-strategy` our orchestrator determines the most adequate 
+         * position for your VMs. If set to `attract`, your VMs are deployed on 
+         * the same hypervisor, which improves network performance. If set to 
+         * `repulse`, your VMs are deployed on a different hypervisor, which 
+         * improves fault tolerance.
+         */
+	char *positioning_strategy; /* string */
+        /*
+         * One or more IDs of security groups for the VM group.
+         */
+        char *security_group_ids_str;
+	char **security_group_ids; /* array string */
+        /*
+         * The ID of the Subnet in which you want to create the VM group.
+         */
+	char *subnet_id; /* string */
+        /*
+         * One or more tags to add to the VM group.
+         */
+        char *tags_str;
+        int nb_tags;
+	struct resource_tag *tags; /* array ref ResourceTag */
+        /*
+         * The number of VMs deployed in the VM group.
+         */
+        int is_set_vm_count;
+	int vm_count; /* int */
+        /*
+         * The name of the VM group.
+         */
+	char *vm_group_name; /* string */
+        /*
+         * The ID of the VM template used to launch VMs in the VM group.
+         */
+	char *vm_template_id; /* string */
+};
+
 struct osc_create_virtual_gateway_arg  {
         /* Required: connection_type */
         /*
@@ -8523,6 +9090,11 @@ struct osc_create_image_arg  {
         int is_set_no_reboot;
 	int no_reboot; /* bool */
         /*
+         * The product codes associated with the OMI.
+         */
+        char *product_codes_str;
+	char **product_codes; /* array string */
+        /*
          * The name of the root device. You must specify only one of the 
          * following parameters: `FileLocation`, `RootDeviceName`, 
          * `SourceImageId` or `VmId`.
@@ -8819,12 +9391,12 @@ struct osc_create_access_key_arg  {
         int is_set_dry_run;
 	int dry_run; /* bool */
         /*
-         * The date and time at which you want the access key to expire, in ISO 
-         * 8601 format (for example, `2017-06-14` or `2017-06-14T00:00:00Z`). To 
-         * remove an existing expiration date, use the method without specifying 
-         * this parameter.
+         * The date and time, or the date, at which you want the access key to 
+         * expire, in ISO 8601 format (for example, `2020-06-14T00:00:00.000Z`, 
+         * or `2020-06-14`). To remove an existing expiration date, use the 
+         * method without specifying this parameter.
          */
-	char *expiration_date; /* string */
+	char *expiration_date; /* string string */
 };
 
 struct osc_check_authentication_arg  {
@@ -8936,6 +9508,8 @@ const char *osc_find_args_description(const char *call_name);
 
 int osc_update_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc_update_vpn_connection_arg *args);
 int osc_update_volume(struct osc_env *e, struct osc_str *out, struct osc_update_volume_arg *args);
+int osc_update_vm_template(struct osc_env *e, struct osc_str *out, struct osc_update_vm_template_arg *args);
+int osc_update_vm_group(struct osc_env *e, struct osc_str *out, struct osc_update_vm_group_arg *args);
 int osc_update_vm(struct osc_env *e, struct osc_str *out, struct osc_update_vm_arg *args);
 int osc_update_subnet(struct osc_env *e, struct osc_str *out, struct osc_update_subnet_arg *args);
 int osc_update_snapshot(struct osc_env *e, struct osc_str *out, struct osc_update_snapshot_arg *args);
@@ -8967,6 +9541,8 @@ int osc_unlink_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_u
 int osc_stop_vms(struct osc_env *e, struct osc_str *out, struct osc_stop_vms_arg *args);
 int osc_start_vms(struct osc_env *e, struct osc_str *out, struct osc_start_vms_arg *args);
 int osc_send_reset_password_email(struct osc_env *e, struct osc_str *out, struct osc_send_reset_password_email_arg *args);
+int osc_scale_up_vm_group(struct osc_env *e, struct osc_str *out, struct osc_scale_up_vm_group_arg *args);
+int osc_scale_down_vm_group(struct osc_env *e, struct osc_str *out, struct osc_scale_down_vm_group_arg *args);
 int osc_reset_account_password(struct osc_env *e, struct osc_str *out, struct osc_reset_account_password_arg *args);
 int osc_reject_net_peering(struct osc_env *e, struct osc_str *out, struct osc_reject_net_peering_arg *args);
 int osc_register_vms_in_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_register_vms_in_load_balancer_arg *args);
@@ -8977,6 +9553,8 @@ int osc_read_vms_state(struct osc_env *e, struct osc_str *out, struct osc_read_v
 int osc_read_vms_health(struct osc_env *e, struct osc_str *out, struct osc_read_vms_health_arg *args);
 int osc_read_vms(struct osc_env *e, struct osc_str *out, struct osc_read_vms_arg *args);
 int osc_read_vm_types(struct osc_env *e, struct osc_str *out, struct osc_read_vm_types_arg *args);
+int osc_read_vm_templates(struct osc_env *e, struct osc_str *out, struct osc_read_vm_templates_arg *args);
+int osc_read_vm_groups(struct osc_env *e, struct osc_str *out, struct osc_read_vm_groups_arg *args);
 int osc_read_virtual_gateways(struct osc_env *e, struct osc_str *out, struct osc_read_virtual_gateways_arg *args);
 int osc_read_tags(struct osc_env *e, struct osc_str *out, struct osc_read_tags_arg *args);
 int osc_read_subregions(struct osc_env *e, struct osc_str *out, struct osc_read_subregions_arg *args);
@@ -9015,6 +9593,7 @@ int osc_read_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_rea
 int osc_read_consumption_account(struct osc_env *e, struct osc_str *out, struct osc_read_consumption_account_arg *args);
 int osc_read_console_output(struct osc_env *e, struct osc_str *out, struct osc_read_console_output_arg *args);
 int osc_read_client_gateways(struct osc_env *e, struct osc_str *out, struct osc_read_client_gateways_arg *args);
+int osc_read_catalogs(struct osc_env *e, struct osc_str *out, struct osc_read_catalogs_arg *args);
 int osc_read_catalog(struct osc_env *e, struct osc_str *out, struct osc_read_catalog_arg *args);
 int osc_read_cas(struct osc_env *e, struct osc_str *out, struct osc_read_cas_arg *args);
 int osc_read_api_logs(struct osc_env *e, struct osc_str *out, struct osc_read_api_logs_arg *args);
@@ -9037,6 +9616,8 @@ int osc_delete_vpn_connection_route(struct osc_env *e, struct osc_str *out, stru
 int osc_delete_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc_delete_vpn_connection_arg *args);
 int osc_delete_volume(struct osc_env *e, struct osc_str *out, struct osc_delete_volume_arg *args);
 int osc_delete_vms(struct osc_env *e, struct osc_str *out, struct osc_delete_vms_arg *args);
+int osc_delete_vm_template(struct osc_env *e, struct osc_str *out, struct osc_delete_vm_template_arg *args);
+int osc_delete_vm_group(struct osc_env *e, struct osc_str *out, struct osc_delete_vm_group_arg *args);
 int osc_delete_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_delete_virtual_gateway_arg *args);
 int osc_delete_tags(struct osc_env *e, struct osc_str *out, struct osc_delete_tags_arg *args);
 int osc_delete_subnet(struct osc_env *e, struct osc_str *out, struct osc_delete_subnet_arg *args);
@@ -9073,6 +9654,8 @@ int osc_create_vpn_connection_route(struct osc_env *e, struct osc_str *out, stru
 int osc_create_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc_create_vpn_connection_arg *args);
 int osc_create_volume(struct osc_env *e, struct osc_str *out, struct osc_create_volume_arg *args);
 int osc_create_vms(struct osc_env *e, struct osc_str *out, struct osc_create_vms_arg *args);
+int osc_create_vm_template(struct osc_env *e, struct osc_str *out, struct osc_create_vm_template_arg *args);
+int osc_create_vm_group(struct osc_env *e, struct osc_str *out, struct osc_create_vm_group_arg *args);
 int osc_create_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_create_virtual_gateway_arg *args);
 int osc_create_tags(struct osc_env *e, struct osc_str *out, struct osc_create_tags_arg *args);
 int osc_create_subnet(struct osc_env *e, struct osc_str *out, struct osc_create_subnet_arg *args);

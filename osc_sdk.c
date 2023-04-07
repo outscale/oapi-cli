@@ -74,6 +74,8 @@ static inline char* stpcpy(char *dest, const char *src)
 static const char *calls_name[] = {
 	"UpdateVpnConnection",
 	"UpdateVolume",
+	"UpdateVmTemplate",
+	"UpdateVmGroup",
 	"UpdateVm",
 	"UpdateSubnet",
 	"UpdateSnapshot",
@@ -105,6 +107,8 @@ static const char *calls_name[] = {
 	"StopVms",
 	"StartVms",
 	"SendResetPasswordEmail",
+	"ScaleUpVmGroup",
+	"ScaleDownVmGroup",
 	"ResetAccountPassword",
 	"RejectNetPeering",
 	"RegisterVmsInLoadBalancer",
@@ -115,6 +119,8 @@ static const char *calls_name[] = {
 	"ReadVmsHealth",
 	"ReadVms",
 	"ReadVmTypes",
+	"ReadVmTemplates",
+	"ReadVmGroups",
 	"ReadVirtualGateways",
 	"ReadTags",
 	"ReadSubregions",
@@ -153,6 +159,7 @@ static const char *calls_name[] = {
 	"ReadConsumptionAccount",
 	"ReadConsoleOutput",
 	"ReadClientGateways",
+	"ReadCatalogs",
 	"ReadCatalog",
 	"ReadCas",
 	"ReadApiLogs",
@@ -175,6 +182,8 @@ static const char *calls_name[] = {
 	"DeleteVpnConnection",
 	"DeleteVolume",
 	"DeleteVms",
+	"DeleteVmTemplate",
+	"DeleteVmGroup",
 	"DeleteVirtualGateway",
 	"DeleteTags",
 	"DeleteSubnet",
@@ -211,6 +220,8 @@ static const char *calls_name[] = {
 	"CreateVpnConnection",
 	"CreateVolume",
 	"CreateVms",
+	"CreateVmTemplate",
+	"CreateVmGroup",
 	"CreateVirtualGateway",
 	"CreateTags",
 	"CreateSubnet",
@@ -254,6 +265,10 @@ static const char *calls_descriptions[] = {
 	"Usage: oapi-cli UpdateVpnConnection [options]\n" "Modifies the specified attributes of a VPN connection.\n" "\nRequired Argument: VpnConnectionId \n"
 ,
 	"Usage: oapi-cli UpdateVolume [options]\n" "Modifies the specified attributes of a volume.\nCold volumes are volumes that \n" "are attached to stopped or stopping VMs, or that are detached. Hot volumes are \n" "volumes that are attached to running VMs.\n\n**[NOTE]**\nWhen the modification \n" "is not instantaneous, the response displays the previous value. You can use the \n" "[ReadVolumes](#readvolumes) method to see the new value.\n" "\nRequired Argument: VolumeId \n"
+,
+	"Usage: oapi-cli UpdateVmTemplate [options]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nModifies the specified attributes of a template of virtual \n" "machines (VMs).\n" "\nRequired Argument: VmTemplateId \n"
+,
+	"Usage: oapi-cli UpdateVmGroup [options]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nModifies the specified attributes of a group of virtual machines \n" "(VMs).\n" "\nRequired Argument: VmGroupId \n"
 ,
 	"Usage: oapi-cli UpdateVm [options]\n" "Modifies the specified attributes of a virtual machine (VM).\nYou must stop the \n" "VM before modifying the following attributes:\n* `NestedVirtualization`\n* \n" "`Performance`\n* `UserData`\n* `VmType`\n" "\nRequired Argument: VmId \n"
 ,
@@ -317,6 +332,10 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli SendResetPasswordEmail [options]\n" "Sends an email to the email address provided for the account with a token to \n" "reset your password.\nYou need to provide this token when updating the account \n" "password using the ResetAccountPassword method.\n**[NOTE]**\nTo protect against \n" "brute force attacks, the number of requests allowed for this method in a given \n" "time period is limited.\n" "\nRequired Argument: Email \n"
 ,
+	"Usage: oapi-cli ScaleUpVmGroup [options]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nCreates additional virtual machines (VMs) in a VM group.\nThe new \n" "VMs use the current version of the VM template.\n" "\nRequired Argument: VmGroupId, VmAddition \n"
+,
+	"Usage: oapi-cli ScaleDownVmGroup [options]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nDeletes virtual machines (VMs) from a VM group.\nThe oldest VMs \n" "are the first to be deleted.\n" "\nRequired Argument: VmGroupId, VmSubtraction \n"
+,
 	"Usage: oapi-cli ResetAccountPassword [options]\n" "Replaces the account password with the new one you provide.\nYou must also \n" "provide the token you received by email when asking for a password reset using \n" "the SendResetPasswordEmail method.\nPassword strength is tested through \n" "heuristic algorithms. For more information, see the [zxcvbn \n" "GitHub](https://github.com/dropbox/zxcvbn).\n**[NOTE]**\nTo protect against \n" "brute force attacks, the number of requests allowed for this method in a given \n" "time period is limited.\n" "\nRequired Argument: Password, Token \n"
 ,
 	"Usage: oapi-cli RejectNetPeering [options]\n" "Rejects a Net peering request.\nThe Net peering must be in the \n" "`pending-acceptance` state to be rejected. The rejected Net peering is then in \n" "the `rejected` state.\n" "\nRequired Argument: NetPeeringId \n"
@@ -336,6 +355,10 @@ static const char *calls_descriptions[] = {
 	"Usage: oapi-cli ReadVms [options]\n" "Lists one or more of your virtual machines (VMs).\nIf you provide one or more \n" "VM IDs, this action returns a description for all of these VMs. If you do not \n" "provide any VM ID, this action returns a description for all of the VMs that \n" "belong to you. If you provide an invalid VM ID, an error is returned. If you \n" "provide the ID of a VM that does not belong to you, the description of this VM \n" "is not included in the response. The refresh interval for data returned by this \n" "action is one hour, meaning that a terminated VM may appear in the \n" "response.\n\n**[NOTE]**\nIf you exceed the number of identical requests allowed \n" "for a configured time period, the `RequestLimitExceeded` error message is \n" "returned.\n" "\nRequired Argument: none \n"
 ,
 	"Usage: oapi-cli ReadVmTypes [options]\n" "Lists one or more predefined VM types.\n\n**[NOTE]**\nIf you exceed the number \n" "of identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+,
+	"Usage: oapi-cli ReadVmTemplates [options]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nLists one or more virtual machine (VM) templates.\n" "\nRequired Argument: none \n"
+,
+	"Usage: oapi-cli ReadVmGroups [options]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nLists one or more group of virtual machines (VMs).\n" "\nRequired Argument: none \n"
 ,
 	"Usage: oapi-cli ReadVirtualGateways [options]\n" "Lists one or more virtual gateways.\n\n**[NOTE]**\nIf you exceed the number of \n" "identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
 ,
@@ -413,6 +436,8 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli ReadClientGateways [options]\n" "Lists one or more of your client gateways.\n\n**[NOTE]**\nIf you exceed the \n" "number of identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
 ,
+	"Usage: oapi-cli ReadCatalogs [options]\n" "Returns the price list of OUTSCALE products and services for the current Region \n" "within a specific time period.\n" "\nRequired Argument: none \n"
+,
 	"Usage: oapi-cli ReadCatalog [options]\n" "Returns the price list of OUTSCALE products and services for the current Region.\n" "\nRequired Argument: none \n"
 ,
 	"Usage: oapi-cli ReadCas [options]\n" "Gets information about one or more of your Client Certificate Authorities (CAs).\n" "\nRequired Argument: none \n"
@@ -456,6 +481,10 @@ static const char *calls_descriptions[] = {
 	"Usage: oapi-cli DeleteVolume [options]\n" "Deletes a specified Block Storage Unit (BSU) volume.\nYou can delete available \n" "volumes only, that is, volumes that are not attached to a virtual machine (VM).\n" "\nRequired Argument: VolumeId \n"
 ,
 	"Usage: oapi-cli DeleteVms [options]\n" "Terminates one or more virtual machines (VMs).\nThis operation is idempotent, \n" "that means that all calls succeed if you terminate a VM more than once.\n" "\nRequired Argument: VmIds \n"
+,
+	"Usage: oapi-cli DeleteVmTemplate [options]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nDeletes a virtual machine (VM) template.\nYou cannot delete a \n" "template currently used by a VM group.\n" "\nRequired Argument: VmTemplateId \n"
+,
+	"Usage: oapi-cli DeleteVmGroup [options]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nDeletes a specified VM group.\n" "\nRequired Argument: VmGroupId \n"
 ,
 	"Usage: oapi-cli DeleteVirtualGateway [options]\n" "Deletes a specified virtual gateway.\nBefore deleting a virtual gateway, we \n" "recommend to detach it from the Net and delete the VPN connection.\n" "\nRequired Argument: VirtualGatewayId \n"
 ,
@@ -528,6 +557,10 @@ static const char *calls_descriptions[] = {
 	"Usage: oapi-cli CreateVolume [options]\n" "Creates a Block Storage Unit (BSU) volume in a specified Region.\nBSU volumes \n" "can be attached to a virtual machine (VM) in the same Subregion. You can create \n" "an empty volume or restore a volume from an existing snapshot.\nYou can create \n" "the following volume types: Enterprise (`io1`) for provisioned IOPS SSD \n" "volumes, Performance (`gp2`) for general purpose SSD volumes, or Magnetic \n" "(`standard`) volumes.\n" "\nRequired Argument: SubregionName \n"
 ,
 	"Usage: oapi-cli CreateVms [options]\n" "Creates virtual machines (VMs), and then launches them.\nThis action enables \n" "you to create a specified number of VMs using an OUTSCALE machine image (OMI) \n" "that you are allowed to use, and then to automatically launch them.\nThe VMs \n" "remain in the `pending` state until they are created and ready to be used. Once \n" "automatically launched, they are in the `running` state.\nTo check the state of \n" "your VMs, call the [ReadVms](#readvms) method.\nIf not specified, the security \n" "group used by the service is the default one.\nThe metadata server enables you \n" "to get the public key provided when the VM is launched. Official OMIs contain a \n" "script to get this public key and put it inside the VM to provide secure access \n" "without password.\n" "\nRequired Argument: ImageId \n"
+,
+	"Usage: oapi-cli CreateVmTemplate [options]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nCreates a virtual machine (VM) template. You can then use the VM \n" "template to create VM groups.\nYou can create up to 50 VM templates in your \n" "account.\n" "\nRequired Argument: CpuCores, CpuGeneration, ImageId, Ram, VmTemplateName \n"
+,
+	"Usage: oapi-cli CreateVmGroup [options]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nCreates a group of virtual machines (VMs) containing the same \n" "characteristics as a specified VM template, and then launches them.\nYou can \n" "create up to 100 VM groups in your account.\n" "\nRequired Argument: SecurityGroupIds, SubnetId, VmGroupName, VmTemplateId, VmCount \n"
 ,
 	"Usage: oapi-cli CreateVirtualGateway [options]\n" "Creates a virtual gateway.\nA virtual gateway is the access point on the Net \n" "side of a VPN connection.\n" "\nRequired Argument: ConnectionType \n"
 ,
@@ -636,6 +669,32 @@ static const char *calls_args_descriptions[] = {
 	"	(cold volume only) The new type of the volume (`standard` \\| `io1` \n"
 	"	\\| `gp2`). This modification is instantaneous. If you update to an \n"
 	"	`io1` volume, you must also specify the `Iops` parameter.\n"
+,
+	"Description: string\n"
+	"	A new description for the VM template.\n"
+"DryRun: bool\n"
+	"	If true, checks whether you have the required permissions to perform \n"
+	"	the action.\n"
+"Tags: array ref ResourceTag\n"
+	"	New tags for your VM template.\n"
+"VmTemplateId: string\n"
+	"	The ID of the VM template you want to update.\n"
+"VmTemplateName: string\n"
+	"	A new name for your VM template.\n"
+,
+	"Description: string\n"
+	"	A new description for the VM group.\n"
+"DryRun: bool\n"
+	"	If true, checks whether you have the required permissions to perform \n"
+	"	the action.\n"
+"Tags: array ref ResourceTag\n"
+	"	New tags for your VM group.\n"
+"VmGroupId: string\n"
+	"	The ID of the VM group you want to update.\n"
+"VmGroupName: string\n"
+	"	A new name for your VM group.\n"
+"VmTemplateId: string\n"
+	"	A new VM template ID for your VM group.\n"
 ,
 	"BlockDeviceMappings: array ref BlockDeviceMappingVmUpdate\n"
 	"	One or more block device mappings of the VM.\n"
@@ -925,9 +984,10 @@ static const char *calls_args_descriptions[] = {
 	"	If true, checks whether you have the required permissions to perform \n"
 	"	the action.\n"
 "ExpirationDate: string\n"
-	"	The date and time at which you want the access key to expire, in ISO \n"
-	"	8601 format (for example, `2017-06-14` or `2017-06-14T00:00:00Z`). If \n"
-	"	not specified, the access key is set to not expire.\n"
+	"	The date and time, or the date, at which you want the access key to \n"
+	"	expire, in ISO 8601 format (for example, `2020-06-14T00:00:00.000Z` \n"
+	"	or `2020-06-14`). If not specified, the access key is set to not \n"
+	"	expire.\n"
 "State: string\n"
 	"	The new state for the access key (`ACTIVE` \\| `INACTIVE`). When set \n"
 	"	to `ACTIVE`, the access key is enabled and can be used to send \n"
@@ -1028,6 +1088,22 @@ static const char *calls_args_descriptions[] = {
 	"DryRun: bool\n"
 	"	If true, checks whether you have the required permissions to perform \n"
 	"	the action.\n"
+"VmAddition: int\n"
+	"	The number of VMs you want to add to the VM group.\n"
+"VmGroupId: string\n"
+	"	The ID of the VM group you want to scale up.\n"
+,
+	"DryRun: bool\n"
+	"	If true, checks whether you have the required permissions to perform \n"
+	"	the action.\n"
+"VmGroupId: string\n"
+	"	The ID of the VM group you want to scale down.\n"
+"VmSubtraction: int\n"
+	"	The number of VMs you want to delete from the VM group.\n"
+,
+	"DryRun: bool\n"
+	"	If true, checks whether you have the required permissions to perform \n"
+	"	the action.\n"
 "Password: string\n"
 	"	The new password for the account.\n"
 "Token: string\n"
@@ -1094,6 +1170,18 @@ static const char *calls_args_descriptions[] = {
 	"	the action.\n"
 "Filters: ref FiltersVmType\n"
 	"	null\n"
+,
+	"DryRun: bool\n"
+	"	If true, checks whether you have the required permissions to perform \n"
+	"	the action.\n"
+"Filters: ref FiltersVmTemplate\n"
+	"	null\n"
+,
+	"DryRun: bool\n"
+	"	If true, checks whether you have the required permissions to perform \n"
+	"	the action.\n"
+"Filters: ref FiltersVmGroup\n"
+	"	ReadVmGroupsRequest_Filters\n"
 ,
 	"DryRun: bool\n"
 	"	If true, checks whether you have the required permissions to perform \n"
@@ -1299,8 +1387,10 @@ static const char *calls_args_descriptions[] = {
 	"	If true, checks whether you have the required permissions to perform \n"
 	"	the action.\n"
 "FromDate: string\n"
-	"	The beginning of the time period, in ISO 8601 date-time format (for \n"
-	"	example, `2017-06-14` or `2017-06-14T00:00:00Z`).\n"
+	"	The beginning of the time period, in ISO 8601 date format (for \n"
+	"	example, `2020-06-14`). The date-time format is also accepted, but \n"
+	"	only with a time set to midnight (for example, \n"
+	"	`2020-06-14T00:00:00.000Z`).\n"
 "Overall: bool\n"
 	"	By default or if false, returns only the consumption of the specific \n"
 	"	account that sends this request. If true, returns either the overall \n"
@@ -1308,8 +1398,9 @@ static const char *calls_args_descriptions[] = {
 	"	account that sends this request is a paying account) or returns \n"
 	"	nothing (if the account that sends this request is a linked account).\n"
 "ToDate: string\n"
-	"	The end of the time period, in ISO 8601 date-time format (for \n"
-	"	example, `2017-06-30` or `2017-06-30T00:00:00Z`).\n"
+	"	The end of the time period, in ISO 8601 date format (for example, \n"
+	"	`2020-06-30`). The date-time format is also accepted, but only with a \n"
+	"	time set to midnight (for example, `2020-06-30T00:00:00.000Z`).\n"
 ,
 	"DryRun: bool\n"
 	"	If true, checks whether you have the required permissions to perform \n"
@@ -1322,6 +1413,12 @@ static const char *calls_args_descriptions[] = {
 	"	the action.\n"
 "Filters: ref FiltersClientGateway\n"
 	"	null\n"
+,
+	"DryRun: bool\n"
+	"	If true, checks whether you have the required permissions to perform \n"
+	"	the action.\n"
+"Filters: ref FiltersCatalogs\n"
+	"	ReadCatalogsRequest_Filters\n"
 ,
 	"DryRun: bool\n"
 	"	If true, checks whether you have the required permissions to perform \n"
@@ -1516,6 +1613,18 @@ static const char *calls_args_descriptions[] = {
 	"	the action.\n"
 "VmIds: array string\n"
 	"	One or more IDs of VMs.\n"
+,
+	"DryRun: bool\n"
+	"	If true, checks whether you have the required permissions to perform \n"
+	"	the action.\n"
+"VmTemplateId: string\n"
+	"	The ID of the VM template you want to delete. \n"
+,
+	"DryRun: bool\n"
+	"	If true, checks whether you have the required permissions to perform \n"
+	"	the action.\n"
+"VmGroupId: string\n"
+	"	The ID of the VM group you want to delete.\n"
 ,
 	"DryRun: bool\n"
 	"	If true, checks whether you have the required permissions to perform \n"
@@ -1869,6 +1978,54 @@ static const char *calls_args_descriptions[] = {
 	"	parameter. For more information, see [Instance \n"
 	"	Types](https://docs.outscale.com/en/userguide/Instance-Types.html).\n"
 ,
+	"CpuCores: int\n"
+	"	The number of vCores to use for each VM.\n"
+"CpuGeneration: string\n"
+	"	The processor generation to use for each VM (for example, `v4`).\n"
+"CpuPerformance: string\n"
+	"	The performance of the VMs (`medium` \\| `high` \\|  `highest`). \n"
+"Description: string\n"
+	"	A description for the VM template.\n"
+"DryRun: bool\n"
+	"	If true, checks whether you have the required permissions to perform \n"
+	"	the action.\n"
+"ImageId: string\n"
+	"	The ID of the OMI to use for each VM. You can find a list of OMIs by \n"
+	"	calling the [ReadImages](#readimages) method.\n"
+"KeypairName: string\n"
+	"	The name of the keypair to use for each VM.\n"
+"Ram: int\n"
+	"	The amount of RAM to use for each VM.\n"
+"Tags: array ref ResourceTag\n"
+	"	One or more tags to add to the VM template.\n"
+"VmTemplateName: string\n"
+	"	The name of the VM template.\n"
+,
+	"Description: string\n"
+	"	A description for the VM group.\n"
+"DryRun: bool\n"
+	"	If true, checks whether you have the required permissions to perform \n"
+	"	the action.\n"
+"PositioningStrategy: string\n"
+	"	The positioning strategy of VMs on hypervisors. By default, or if set \n"
+	"	to `no-strategy` our orchestrator determines the most adequate \n"
+	"	position for your VMs. If set to `attract`, your VMs are deployed on \n"
+	"	the same hypervisor, which improves network performance. If set to \n"
+	"	`repulse`, your VMs are deployed on a different hypervisor, which \n"
+	"	improves fault tolerance.\n"
+"SecurityGroupIds: array string\n"
+	"	One or more IDs of security groups for the VM group.\n"
+"SubnetId: string\n"
+	"	The ID of the Subnet in which you want to create the VM group.\n"
+"Tags: array ref ResourceTag\n"
+	"	One or more tags to add to the VM group.\n"
+"VmCount: int\n"
+	"	The number of VMs deployed in the VM group.\n"
+"VmGroupName: string\n"
+	"	The name of the VM group.\n"
+"VmTemplateId: string\n"
+	"	The ID of the VM template used to launch VMs in the VM group.\n"
+,
 	"ConnectionType: string\n"
 	"	The type of VPN connection supported by the virtual gateway (only \n"
 	"	`ipsec.1` is supported).\n"
@@ -2214,6 +2371,8 @@ static const char *calls_args_descriptions[] = {
 "NoReboot: bool\n"
 	"	If false, the VM shuts down before creating the OMI and then reboots. \n"
 	"	If true, the VM does not.\n"
+"ProductCodes: array string\n"
+	"	The product codes associated with the OMI.\n"
 "RootDeviceName: string\n"
 	"	The name of the root device. You must specify only one of the \n"
 	"	following parameters: `FileLocation`, `RootDeviceName`, \n"
@@ -2366,10 +2525,10 @@ static const char *calls_args_descriptions[] = {
 	"	If true, checks whether you have the required permissions to perform \n"
 	"	the action.\n"
 "ExpirationDate: string\n"
-	"	The date and time at which you want the access key to expire, in ISO \n"
-	"	8601 format (for example, `2017-06-14` or `2017-06-14T00:00:00Z`). To \n"
-	"	remove an existing expiration date, use the method without specifying \n"
-	"	this parameter.\n"
+	"	The date and time, or the date, at which you want the access key to \n"
+	"	expire, in ISO 8601 format (for example, `2020-06-14T00:00:00.000Z`, \n"
+	"	or `2020-06-14`). To remove an existing expiration date, use the \n"
+	"	method without specifying this parameter.\n"
 ,
 	"DryRun: bool\n"
 	"	If true, checks whether you have the required permissions to perform \n"
@@ -2715,6 +2874,7 @@ static int bsu_to_update_vm_setter(struct bsu_to_update_vm *args, struct osc_str
 static int ca_setter(struct ca *args, struct osc_str *data);
 static int catalog_setter(struct catalog *args, struct osc_str *data);
 static int catalog_entry_setter(struct catalog_entry *args, struct osc_str *data);
+static int catalogs_setter(struct catalogs *args, struct osc_str *data);
 static int client_gateway_setter(struct client_gateway *args, struct osc_str *data);
 static int consumption_entry_setter(struct consumption_entry *args, struct osc_str *data);
 static int dhcp_options_set_setter(struct dhcp_options_set *args, struct osc_str *data);
@@ -2726,6 +2886,7 @@ static int filters_access_keys_setter(struct filters_access_keys *args, struct o
 static int filters_api_access_rule_setter(struct filters_api_access_rule *args, struct osc_str *data);
 static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *data);
 static int filters_ca_setter(struct filters_ca *args, struct osc_str *data);
+static int filters_catalogs_setter(struct filters_catalogs *args, struct osc_str *data);
 static int filters_client_gateway_setter(struct filters_client_gateway *args, struct osc_str *data);
 static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct osc_str *data);
 static int filters_direct_link_setter(struct filters_direct_link *args, struct osc_str *data);
@@ -2755,6 +2916,8 @@ static int filters_subregion_setter(struct filters_subregion *args, struct osc_s
 static int filters_tag_setter(struct filters_tag *args, struct osc_str *data);
 static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, struct osc_str *data);
 static int filters_vm_setter(struct filters_vm *args, struct osc_str *data);
+static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str *data);
+static int filters_vm_template_setter(struct filters_vm_template *args, struct osc_str *data);
 static int filters_vm_type_setter(struct filters_vm_type *args, struct osc_str *data);
 static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_str *data);
 static int filters_volume_setter(struct filters_volume *args, struct osc_str *data);
@@ -2835,8 +2998,10 @@ static int tag_setter(struct tag *args, struct osc_str *data);
 static int vgw_telemetry_setter(struct vgw_telemetry *args, struct osc_str *data);
 static int virtual_gateway_setter(struct virtual_gateway *args, struct osc_str *data);
 static int vm_setter(struct vm *args, struct osc_str *data);
+static int vm_group_setter(struct vm_group *args, struct osc_str *data);
 static int vm_state_setter(struct vm_state *args, struct osc_str *data);
 static int vm_states_setter(struct vm_states *args, struct osc_str *data);
+static int vm_template_setter(struct vm_template *args, struct osc_str *data);
 static int vm_type_setter(struct vm_type *args, struct osc_str *data);
 static int volume_setter(struct volume *args, struct osc_str *data);
 static int vpn_connection_setter(struct vpn_connection *args, struct osc_str *data);
@@ -3673,6 +3838,57 @@ static int catalog_entry_setter(struct catalog_entry *args, struct osc_str *data
 			STRY(osc_str_append_string(data, "," ));
 		STRY(osc_str_append_string(data, "\"UnitPrice\":" ));
                 STRY(osc_str_append_double(data, args->unit_price));
+	   	ret += 1;
+	}
+	return !!ret;
+}
+static int catalogs_setter(struct catalogs *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+        if (args->entries) {
+	       	if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Entries\":[" ));
+		for (int i = 0; i < args->nb_entries; ++i) {
+	       	    struct catalog_entry *p = &args->entries[i];
+		    if (p != args->entries)
+		        STRY(osc_str_append_string(data, "," ));
+		    STRY(osc_str_append_string(data, "{ " ));
+	       	    STRY(catalog_entry_setter(p, data) < 0);
+	       	    STRY(osc_str_append_string(data, "}" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else
+	if (args->entries_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Entries\":" ));
+                STRY(osc_str_append_string(data, args->entries_str));
+		ret += 1;
+	}
+	if (args->from_date) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"FromDate\":\"" ));
+                STRY(osc_str_append_string(data, args->from_date));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->state) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"State\":\"" ));
+                STRY(osc_str_append_string(data, args->state));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->to_date) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"ToDate\":\"" ));
+                STRY(osc_str_append_string(data, args->to_date));
+		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	return !!ret;
@@ -4619,6 +4835,34 @@ static int filters_ca_setter(struct filters_ca *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "\"Descriptions\":" ));
                 STRY(osc_str_append_string(data, args->descriptions_str));
 		ret += 1;
+	}
+	return !!ret;
+}
+static int filters_catalogs_setter(struct filters_catalogs *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->is_set_current_catalog_only) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"CurrentCatalogOnly\":" ));
+                STRY(osc_str_append_bool(data, args->current_catalog_only));
+	   	ret += 1;
+	}
+	if (args->from_date) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"FromDate\":\"" ));
+                STRY(osc_str_append_string(data, args->from_date));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->to_date) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"ToDate\":\"" ));
+                STRY(osc_str_append_string(data, args->to_date));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
 	}
 	return !!ret;
 }
@@ -8639,6 +8883,14 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
                 STRY(osc_str_append_string(data, args->descriptions_str));
 		ret += 1;
 	}
+	if (args->from_creation_date) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"FromCreationDate\":\"" ));
+                STRY(osc_str_append_string(data, args->from_creation_date));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
 	if (args->permissions_to_create_volume_account_ids) {
 		char **as;
 
@@ -8797,6 +9049,14 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
+	}
+	if (args->to_creation_date) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"ToCreationDate\":\"" ));
+                STRY(osc_str_append_string(data, args->to_creation_date));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
 	}
 	if (args->volume_ids) {
 		char **as;
@@ -9433,6 +9693,494 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 			STRY(osc_str_append_string(data, "," ));
 		STRY(osc_str_append_string(data, "\"VmIds\":" ));
                 STRY(osc_str_append_string(data, args->vm_ids_str));
+		ret += 1;
+	}
+	return !!ret;
+}
+static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->descriptions) {
+		char **as;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Descriptions\":[" ));
+		for (as = args->descriptions; *as > 0; ++as) {
+			if (as != args->descriptions)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_string(data, "\"" ));
+			STRY(osc_str_append_string(data, *as));
+			STRY(osc_str_append_string(data, "\"" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->descriptions_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Descriptions\":" ));
+                STRY(osc_str_append_string(data, args->descriptions_str));
+		ret += 1;
+	}
+	if (args->security_group_ids) {
+		char **as;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":[" ));
+		for (as = args->security_group_ids; *as > 0; ++as) {
+			if (as != args->security_group_ids)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_string(data, "\"" ));
+			STRY(osc_str_append_string(data, *as));
+			STRY(osc_str_append_string(data, "\"" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->security_group_ids_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":" ));
+                STRY(osc_str_append_string(data, args->security_group_ids_str));
+		ret += 1;
+	}
+	if (args->subnet_ids) {
+		char **as;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"SubnetIds\":[" ));
+		for (as = args->subnet_ids; *as > 0; ++as) {
+			if (as != args->subnet_ids)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_string(data, "\"" ));
+			STRY(osc_str_append_string(data, *as));
+			STRY(osc_str_append_string(data, "\"" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->subnet_ids_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"SubnetIds\":" ));
+                STRY(osc_str_append_string(data, args->subnet_ids_str));
+		ret += 1;
+	}
+	if (args->tag_keys) {
+		char **as;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
+		for (as = args->tag_keys; *as > 0; ++as) {
+			if (as != args->tag_keys)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_string(data, "\"" ));
+			STRY(osc_str_append_string(data, *as));
+			STRY(osc_str_append_string(data, "\"" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->tag_keys_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
+                STRY(osc_str_append_string(data, args->tag_keys_str));
+		ret += 1;
+	}
+	if (args->tag_values) {
+		char **as;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
+		for (as = args->tag_values; *as > 0; ++as) {
+			if (as != args->tag_values)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_string(data, "\"" ));
+			STRY(osc_str_append_string(data, *as));
+			STRY(osc_str_append_string(data, "\"" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->tag_values_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"TagValues\":" ));
+                STRY(osc_str_append_string(data, args->tag_values_str));
+		ret += 1;
+	}
+	if (args->tags) {
+		char **as;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Tags\":[" ));
+		for (as = args->tags; *as > 0; ++as) {
+			if (as != args->tags)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_string(data, "\"" ));
+			STRY(osc_str_append_string(data, *as));
+			STRY(osc_str_append_string(data, "\"" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->tags_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Tags\":" ));
+                STRY(osc_str_append_string(data, args->tags_str));
+		ret += 1;
+	}
+	if (args->vm_counts) {
+		int *ip;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmCounts\":[" ));
+		for (ip = args->vm_counts; *ip > 0; ++ip) {
+			if (ip != args->vm_counts)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_int(data, *ip));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->vm_counts_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmCounts\":" ));
+                STRY(osc_str_append_string(data, args->vm_counts_str));
+		ret += 1;
+	}
+	if (args->vm_group_ids) {
+		char **as;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmGroupIds\":[" ));
+		for (as = args->vm_group_ids; *as > 0; ++as) {
+			if (as != args->vm_group_ids)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_string(data, "\"" ));
+			STRY(osc_str_append_string(data, *as));
+			STRY(osc_str_append_string(data, "\"" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->vm_group_ids_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmGroupIds\":" ));
+                STRY(osc_str_append_string(data, args->vm_group_ids_str));
+		ret += 1;
+	}
+	if (args->vm_group_names) {
+		char **as;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmGroupNames\":[" ));
+		for (as = args->vm_group_names; *as > 0; ++as) {
+			if (as != args->vm_group_names)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_string(data, "\"" ));
+			STRY(osc_str_append_string(data, *as));
+			STRY(osc_str_append_string(data, "\"" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->vm_group_names_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmGroupNames\":" ));
+                STRY(osc_str_append_string(data, args->vm_group_names_str));
+		ret += 1;
+	}
+	if (args->vm_template_ids) {
+		char **as;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmTemplateIds\":[" ));
+		for (as = args->vm_template_ids; *as > 0; ++as) {
+			if (as != args->vm_template_ids)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_string(data, "\"" ));
+			STRY(osc_str_append_string(data, *as));
+			STRY(osc_str_append_string(data, "\"" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->vm_template_ids_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmTemplateIds\":" ));
+                STRY(osc_str_append_string(data, args->vm_template_ids_str));
+		ret += 1;
+	}
+	return !!ret;
+}
+static int filters_vm_template_setter(struct filters_vm_template *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->cpu_cores) {
+		int *ip;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"CpuCores\":[" ));
+		for (ip = args->cpu_cores; *ip > 0; ++ip) {
+			if (ip != args->cpu_cores)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_int(data, *ip));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->cpu_cores_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"CpuCores\":" ));
+                STRY(osc_str_append_string(data, args->cpu_cores_str));
+		ret += 1;
+	}
+	if (args->cpu_generations) {
+		char **as;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"CpuGenerations\":[" ));
+		for (as = args->cpu_generations; *as > 0; ++as) {
+			if (as != args->cpu_generations)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_string(data, "\"" ));
+			STRY(osc_str_append_string(data, *as));
+			STRY(osc_str_append_string(data, "\"" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->cpu_generations_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"CpuGenerations\":" ));
+                STRY(osc_str_append_string(data, args->cpu_generations_str));
+		ret += 1;
+	}
+	if (args->cpu_performances) {
+		char **as;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"CpuPerformances\":[" ));
+		for (as = args->cpu_performances; *as > 0; ++as) {
+			if (as != args->cpu_performances)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_string(data, "\"" ));
+			STRY(osc_str_append_string(data, *as));
+			STRY(osc_str_append_string(data, "\"" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->cpu_performances_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"CpuPerformances\":" ));
+                STRY(osc_str_append_string(data, args->cpu_performances_str));
+		ret += 1;
+	}
+	if (args->descriptions) {
+		char **as;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Descriptions\":[" ));
+		for (as = args->descriptions; *as > 0; ++as) {
+			if (as != args->descriptions)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_string(data, "\"" ));
+			STRY(osc_str_append_string(data, *as));
+			STRY(osc_str_append_string(data, "\"" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->descriptions_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Descriptions\":" ));
+                STRY(osc_str_append_string(data, args->descriptions_str));
+		ret += 1;
+	}
+	if (args->image_ids) {
+		char **as;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"ImageIds\":[" ));
+		for (as = args->image_ids; *as > 0; ++as) {
+			if (as != args->image_ids)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_string(data, "\"" ));
+			STRY(osc_str_append_string(data, *as));
+			STRY(osc_str_append_string(data, "\"" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->image_ids_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"ImageIds\":" ));
+                STRY(osc_str_append_string(data, args->image_ids_str));
+		ret += 1;
+	}
+	if (args->keypair_names) {
+		char **as;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"KeypairNames\":[" ));
+		for (as = args->keypair_names; *as > 0; ++as) {
+			if (as != args->keypair_names)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_string(data, "\"" ));
+			STRY(osc_str_append_string(data, *as));
+			STRY(osc_str_append_string(data, "\"" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->keypair_names_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"KeypairNames\":" ));
+                STRY(osc_str_append_string(data, args->keypair_names_str));
+		ret += 1;
+	}
+	if (args->rams) {
+		int *ip;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Rams\":[" ));
+		for (ip = args->rams; *ip > 0; ++ip) {
+			if (ip != args->rams)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_int(data, *ip));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->rams_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Rams\":" ));
+                STRY(osc_str_append_string(data, args->rams_str));
+		ret += 1;
+	}
+	if (args->tag_keys) {
+		char **as;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
+		for (as = args->tag_keys; *as > 0; ++as) {
+			if (as != args->tag_keys)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_string(data, "\"" ));
+			STRY(osc_str_append_string(data, *as));
+			STRY(osc_str_append_string(data, "\"" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->tag_keys_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
+                STRY(osc_str_append_string(data, args->tag_keys_str));
+		ret += 1;
+	}
+	if (args->tag_values) {
+		char **as;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
+		for (as = args->tag_values; *as > 0; ++as) {
+			if (as != args->tag_values)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_string(data, "\"" ));
+			STRY(osc_str_append_string(data, *as));
+			STRY(osc_str_append_string(data, "\"" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->tag_values_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"TagValues\":" ));
+                STRY(osc_str_append_string(data, args->tag_values_str));
+		ret += 1;
+	}
+	if (args->tags) {
+		char **as;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Tags\":[" ));
+		for (as = args->tags; *as > 0; ++as) {
+			if (as != args->tags)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_string(data, "\"" ));
+			STRY(osc_str_append_string(data, *as));
+			STRY(osc_str_append_string(data, "\"" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->tags_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Tags\":" ));
+                STRY(osc_str_append_string(data, args->tags_str));
+		ret += 1;
+	}
+	if (args->vm_template_ids) {
+		char **as;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmTemplateIds\":[" ));
+		for (as = args->vm_template_ids; *as > 0; ++as) {
+			if (as != args->vm_template_ids)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_string(data, "\"" ));
+			STRY(osc_str_append_string(data, *as));
+			STRY(osc_str_append_string(data, "\"" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->vm_template_ids_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmTemplateIds\":" ));
+                STRY(osc_str_append_string(data, args->vm_template_ids_str));
+		ret += 1;
+	}
+	if (args->vm_template_names) {
+		char **as;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmTemplateNames\":[" ));
+		for (as = args->vm_template_names; *as > 0; ++as) {
+			if (as != args->vm_template_names)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_string(data, "\"" ));
+			STRY(osc_str_append_string(data, *as));
+			STRY(osc_str_append_string(data, "\"" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->vm_template_names_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmTemplateNames\":" ));
+                STRY(osc_str_append_string(data, args->vm_template_names_str));
 		ret += 1;
 	}
 	return !!ret;
@@ -14913,6 +15661,148 @@ static int vm_setter(struct vm *args, struct osc_str *data) {
 	}
 	return !!ret;
 }
+static int vm_group_setter(struct vm_group *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->creation_date) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"CreationDate\":\"" ));
+                STRY(osc_str_append_string(data, args->creation_date));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->description) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Description\":\"" ));
+                STRY(osc_str_append_string(data, args->description));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->positioning_strategy) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"PositioningStrategy\":\"" ));
+                STRY(osc_str_append_string(data, args->positioning_strategy));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->security_group_ids) {
+		char **as;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":[" ));
+		for (as = args->security_group_ids; *as > 0; ++as) {
+			if (as != args->security_group_ids)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_string(data, "\"" ));
+			STRY(osc_str_append_string(data, *as));
+			STRY(osc_str_append_string(data, "\"" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->security_group_ids_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":" ));
+                STRY(osc_str_append_string(data, args->security_group_ids_str));
+		ret += 1;
+	}
+	if (args->state) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"State\":\"" ));
+                STRY(osc_str_append_string(data, args->state));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->subnet_id) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
+                STRY(osc_str_append_string(data, args->subnet_id));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+        if (args->tags) {
+	       	if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Tags\":[" ));
+		for (int i = 0; i < args->nb_tags; ++i) {
+	       	    struct resource_tag *p = &args->tags[i];
+		    if (p != args->tags)
+		        STRY(osc_str_append_string(data, "," ));
+		    STRY(osc_str_append_string(data, "{ " ));
+	       	    STRY(resource_tag_setter(p, data) < 0);
+	       	    STRY(osc_str_append_string(data, "}" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else
+	if (args->tags_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Tags\":" ));
+                STRY(osc_str_append_string(data, args->tags_str));
+		ret += 1;
+	}
+	if (args->is_set_vm_count || args->vm_count) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmCount\":" ));
+                STRY(osc_str_append_int(data, args->vm_count));
+	   	ret += 1;
+	}
+	if (args->vm_group_id) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmGroupId\":\"" ));
+                STRY(osc_str_append_string(data, args->vm_group_id));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->vm_group_name) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmGroupName\":\"" ));
+                STRY(osc_str_append_string(data, args->vm_group_name));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->vm_ids) {
+		char **as;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
+		for (as = args->vm_ids; *as > 0; ++as) {
+			if (as != args->vm_ids)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_string(data, "\"" ));
+			STRY(osc_str_append_string(data, *as));
+			STRY(osc_str_append_string(data, "\"" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->vm_ids_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmIds\":" ));
+                STRY(osc_str_append_string(data, args->vm_ids_str));
+		ret += 1;
+	}
+	if (args->vm_template_id) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmTemplateId\":\"" ));
+                STRY(osc_str_append_string(data, args->vm_template_id));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	return !!ret;
+}
 static int vm_state_setter(struct vm_state *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
@@ -14988,6 +15878,111 @@ static int vm_states_setter(struct vm_states *args, struct osc_str *data) {
 			STRY(osc_str_append_string(data, "," ));
 		STRY(osc_str_append_string(data, "\"VmState\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_state));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	return !!ret;
+}
+static int vm_template_setter(struct vm_template *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->is_set_cpu_cores || args->cpu_cores) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"CpuCores\":" ));
+                STRY(osc_str_append_int(data, args->cpu_cores));
+	   	ret += 1;
+	}
+	if (args->cpu_generation) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"CpuGeneration\":\"" ));
+                STRY(osc_str_append_string(data, args->cpu_generation));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->cpu_performance) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"CpuPerformance\":\"" ));
+                STRY(osc_str_append_string(data, args->cpu_performance));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->creation_date) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"CreationDate\":\"" ));
+                STRY(osc_str_append_string(data, args->creation_date));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->description) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Description\":\"" ));
+                STRY(osc_str_append_string(data, args->description));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->image_id) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"ImageId\":\"" ));
+                STRY(osc_str_append_string(data, args->image_id));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->keypair_name) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"KeypairName\":\"" ));
+                STRY(osc_str_append_string(data, args->keypair_name));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->is_set_ram || args->ram) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Ram\":" ));
+                STRY(osc_str_append_int(data, args->ram));
+	   	ret += 1;
+	}
+        if (args->tags) {
+	       	if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Tags\":[" ));
+		for (int i = 0; i < args->nb_tags; ++i) {
+	       	    struct resource_tag *p = &args->tags[i];
+		    if (p != args->tags)
+		        STRY(osc_str_append_string(data, "," ));
+		    STRY(osc_str_append_string(data, "{ " ));
+	       	    STRY(resource_tag_setter(p, data) < 0);
+	       	    STRY(osc_str_append_string(data, "}" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else
+	if (args->tags_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Tags\":" ));
+                STRY(osc_str_append_string(data, args->tags_str));
+		ret += 1;
+	}
+	if (args->vm_template_id) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmTemplateId\":\"" ));
+                STRY(osc_str_append_string(data, args->vm_template_id));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->vm_template_name) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmTemplateName\":\"" ));
+                STRY(osc_str_append_string(data, args->vm_template_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
@@ -15606,6 +16601,198 @@ int osc_update_volume(struct osc_env *e, struct osc_str *out, struct osc_update_
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UpdateVolume");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
+static  int update_vm_template_data(struct osc_update_vm_template_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->description) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Description\":\"" ));
+                STRY(osc_str_append_string(data, args->description));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->is_set_dry_run) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"DryRun\":" ));
+                STRY(osc_str_append_bool(data, args->dry_run));
+	   	ret += 1;
+	}
+        if (args->tags) {
+	       	if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Tags\":[" ));
+		for (int i = 0; i < args->nb_tags; ++i) {
+	       	    struct resource_tag *p = &args->tags[i];
+		    if (p != args->tags)
+		        STRY(osc_str_append_string(data, "," ));
+		    STRY(osc_str_append_string(data, "{ " ));
+	       	    STRY(resource_tag_setter(p, data) < 0);
+	       	    STRY(osc_str_append_string(data, "}" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else
+	if (args->tags_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Tags\":" ));
+                STRY(osc_str_append_string(data, args->tags_str));
+		ret += 1;
+	}
+	if (args->vm_template_id) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmTemplateId\":\"" ));
+                STRY(osc_str_append_string(data, args->vm_template_id));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->vm_template_name) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmTemplateName\":\"" ));
+                STRY(osc_str_append_string(data, args->vm_template_name));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_update_vm_template(struct osc_env *e, struct osc_str *out, struct osc_update_vm_template_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = update_vm_template_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/UpdateVmTemplate");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
+static  int update_vm_group_data(struct osc_update_vm_group_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->description) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Description\":\"" ));
+                STRY(osc_str_append_string(data, args->description));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->is_set_dry_run) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"DryRun\":" ));
+                STRY(osc_str_append_bool(data, args->dry_run));
+	   	ret += 1;
+	}
+        if (args->tags) {
+	       	if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Tags\":[" ));
+		for (int i = 0; i < args->nb_tags; ++i) {
+	       	    struct resource_tag *p = &args->tags[i];
+		    if (p != args->tags)
+		        STRY(osc_str_append_string(data, "," ));
+		    STRY(osc_str_append_string(data, "{ " ));
+	       	    STRY(resource_tag_setter(p, data) < 0);
+	       	    STRY(osc_str_append_string(data, "}" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else
+	if (args->tags_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Tags\":" ));
+                STRY(osc_str_append_string(data, args->tags_str));
+		ret += 1;
+	}
+	if (args->vm_group_id) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmGroupId\":\"" ));
+                STRY(osc_str_append_string(data, args->vm_group_id));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->vm_group_name) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmGroupName\":\"" ));
+                STRY(osc_str_append_string(data, args->vm_group_name));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->vm_template_id) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmTemplateId\":\"" ));
+                STRY(osc_str_append_string(data, args->vm_template_id));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_update_vm_group(struct osc_env *e, struct osc_str *out, struct osc_update_vm_group_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = update_vm_group_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/UpdateVmGroup");
 	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
@@ -17268,10 +18455,9 @@ static  int update_access_key_data(struct osc_update_access_key_arg *args, struc
 	if (args->expiration_date) {
 		if (count_args++ > 0)
 			STRY(osc_str_append_string(data, "," ));
-		STRY(osc_str_append_string(data, "\"ExpirationDate\":\"" ));
+		STRY(osc_str_append_string(data, "\"ExpirationDate\":" ));
                 STRY(osc_str_append_string(data, args->expiration_date));
-		STRY(osc_str_append_string(data, "\"" ));
-	   	ret += 1;
+		ret += 1;
 	}
 	if (args->state) {
 		if (count_args++ > 0)
@@ -18092,6 +19278,128 @@ out:
 	osc_deinit_str(&data);
 	return res;
 }
+static  int scale_up_vm_group_data(struct osc_scale_up_vm_group_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"DryRun\":" ));
+                STRY(osc_str_append_bool(data, args->dry_run));
+	   	ret += 1;
+	}
+	if (args->is_set_vm_addition || args->vm_addition) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmAddition\":" ));
+                STRY(osc_str_append_int(data, args->vm_addition));
+	   	ret += 1;
+	}
+	if (args->vm_group_id) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmGroupId\":\"" ));
+                STRY(osc_str_append_string(data, args->vm_group_id));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_scale_up_vm_group(struct osc_env *e, struct osc_str *out, struct osc_scale_up_vm_group_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = scale_up_vm_group_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/ScaleUpVmGroup");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
+static  int scale_down_vm_group_data(struct osc_scale_down_vm_group_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"DryRun\":" ));
+                STRY(osc_str_append_bool(data, args->dry_run));
+	   	ret += 1;
+	}
+	if (args->vm_group_id) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmGroupId\":\"" ));
+                STRY(osc_str_append_string(data, args->vm_group_id));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->is_set_vm_subtraction || args->vm_subtraction) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmSubtraction\":" ));
+                STRY(osc_str_append_int(data, args->vm_subtraction));
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_scale_down_vm_group(struct osc_env *e, struct osc_str *out, struct osc_scale_down_vm_group_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = scale_down_vm_group_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/ScaleDownVmGroup");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
 static  int reset_account_password_data(struct osc_reset_account_password_arg *args, struct osc_str *data)
 {
 	int ret = 0;
@@ -18723,6 +20031,126 @@ int osc_read_vm_types(struct osc_env *e, struct osc_str *out, struct osc_read_vm
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadVmTypes");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
+static  int read_vm_templates_data(struct osc_read_vm_templates_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"DryRun\":" ));
+                STRY(osc_str_append_bool(data, args->dry_run));
+	   	ret += 1;
+	}
+	if (args->filters_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Filters\":" ));
+                STRY(osc_str_append_string(data, args->filters_str));
+		ret += 1;
+	} else if (args->is_set_filters) {
+	       if (count_args++ > 0)
+		       STRY(osc_str_append_string(data, "," ));
+	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
+	       STRY(filters_vm_template_setter(&args->filters, data) < 0);
+	       STRY(osc_str_append_string(data, "}" ));
+	       ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_read_vm_templates(struct osc_env *e, struct osc_str *out, struct osc_read_vm_templates_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = read_vm_templates_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/ReadVmTemplates");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
+static  int read_vm_groups_data(struct osc_read_vm_groups_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"DryRun\":" ));
+                STRY(osc_str_append_bool(data, args->dry_run));
+	   	ret += 1;
+	}
+	if (args->filters_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Filters\":" ));
+                STRY(osc_str_append_string(data, args->filters_str));
+		ret += 1;
+	} else if (args->is_set_filters) {
+	       if (count_args++ > 0)
+		       STRY(osc_str_append_string(data, "," ));
+	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
+	       STRY(filters_vm_group_setter(&args->filters, data) < 0);
+	       STRY(osc_str_append_string(data, "}" ));
+	       ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_read_vm_groups(struct osc_env *e, struct osc_str *out, struct osc_read_vm_groups_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = read_vm_groups_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/ReadVmGroups");
 	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
@@ -20785,10 +22213,9 @@ static  int read_consumption_account_data(struct osc_read_consumption_account_ar
 	if (args->from_date) {
 		if (count_args++ > 0)
 			STRY(osc_str_append_string(data, "," ));
-		STRY(osc_str_append_string(data, "\"FromDate\":\"" ));
+		STRY(osc_str_append_string(data, "\"FromDate\":" ));
                 STRY(osc_str_append_string(data, args->from_date));
-		STRY(osc_str_append_string(data, "\"" ));
-	   	ret += 1;
+		ret += 1;
 	}
 	if (args->is_set_overall) {
 		if (count_args++ > 0)
@@ -20800,10 +22227,9 @@ static  int read_consumption_account_data(struct osc_read_consumption_account_ar
 	if (args->to_date) {
 		if (count_args++ > 0)
 			STRY(osc_str_append_string(data, "," ));
-		STRY(osc_str_append_string(data, "\"ToDate\":\"" ));
+		STRY(osc_str_append_string(data, "\"ToDate\":" ));
                 STRY(osc_str_append_string(data, args->to_date));
-		STRY(osc_str_append_string(data, "\"" ));
-	   	ret += 1;
+		ret += 1;
 	}
 	osc_str_append_string(data, "}");
 	return !!ret;
@@ -20938,6 +22364,66 @@ int osc_read_client_gateways(struct osc_env *e, struct osc_str *out, struct osc_
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadClientGateways");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
+static  int read_catalogs_data(struct osc_read_catalogs_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"DryRun\":" ));
+                STRY(osc_str_append_bool(data, args->dry_run));
+	   	ret += 1;
+	}
+	if (args->filters_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Filters\":" ));
+                STRY(osc_str_append_string(data, args->filters_str));
+		ret += 1;
+	} else if (args->is_set_filters) {
+	       if (count_args++ > 0)
+		       STRY(osc_str_append_string(data, "," ));
+	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
+	       STRY(filters_catalogs_setter(&args->filters, data) < 0);
+	       STRY(osc_str_append_string(data, "}" ));
+	       ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_read_catalogs(struct osc_env *e, struct osc_str *out, struct osc_read_catalogs_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = read_catalogs_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/ReadCatalogs");
 	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
@@ -22381,6 +23867,114 @@ int osc_delete_vms(struct osc_env *e, struct osc_str *out, struct osc_delete_vms
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteVms");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
+static  int delete_vm_template_data(struct osc_delete_vm_template_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"DryRun\":" ));
+                STRY(osc_str_append_bool(data, args->dry_run));
+	   	ret += 1;
+	}
+	if (args->vm_template_id) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmTemplateId\":\"" ));
+                STRY(osc_str_append_string(data, args->vm_template_id));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_delete_vm_template(struct osc_env *e, struct osc_str *out, struct osc_delete_vm_template_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = delete_vm_template_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/DeleteVmTemplate");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
+static  int delete_vm_group_data(struct osc_delete_vm_group_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"DryRun\":" ));
+                STRY(osc_str_append_bool(data, args->dry_run));
+	   	ret += 1;
+	}
+	if (args->vm_group_id) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmGroupId\":\"" ));
+                STRY(osc_str_append_string(data, args->vm_group_id));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_delete_vm_group(struct osc_env *e, struct osc_str *out, struct osc_delete_vm_group_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = delete_vm_group_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/DeleteVmGroup");
 	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
@@ -24820,6 +26414,273 @@ out:
 	osc_deinit_str(&data);
 	return res;
 }
+static  int create_vm_template_data(struct osc_create_vm_template_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_cpu_cores || args->cpu_cores) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"CpuCores\":" ));
+                STRY(osc_str_append_int(data, args->cpu_cores));
+	   	ret += 1;
+	}
+	if (args->cpu_generation) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"CpuGeneration\":\"" ));
+                STRY(osc_str_append_string(data, args->cpu_generation));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->cpu_performance) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"CpuPerformance\":\"" ));
+                STRY(osc_str_append_string(data, args->cpu_performance));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->description) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Description\":\"" ));
+                STRY(osc_str_append_string(data, args->description));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->is_set_dry_run) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"DryRun\":" ));
+                STRY(osc_str_append_bool(data, args->dry_run));
+	   	ret += 1;
+	}
+	if (args->image_id) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"ImageId\":\"" ));
+                STRY(osc_str_append_string(data, args->image_id));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->keypair_name) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"KeypairName\":\"" ));
+                STRY(osc_str_append_string(data, args->keypair_name));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->is_set_ram || args->ram) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Ram\":" ));
+                STRY(osc_str_append_int(data, args->ram));
+	   	ret += 1;
+	}
+        if (args->tags) {
+	       	if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Tags\":[" ));
+		for (int i = 0; i < args->nb_tags; ++i) {
+	       	    struct resource_tag *p = &args->tags[i];
+		    if (p != args->tags)
+		        STRY(osc_str_append_string(data, "," ));
+		    STRY(osc_str_append_string(data, "{ " ));
+	       	    STRY(resource_tag_setter(p, data) < 0);
+	       	    STRY(osc_str_append_string(data, "}" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else
+	if (args->tags_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Tags\":" ));
+                STRY(osc_str_append_string(data, args->tags_str));
+		ret += 1;
+	}
+	if (args->vm_template_name) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmTemplateName\":\"" ));
+                STRY(osc_str_append_string(data, args->vm_template_name));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_create_vm_template(struct osc_env *e, struct osc_str *out, struct osc_create_vm_template_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = create_vm_template_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/CreateVmTemplate");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
+static  int create_vm_group_data(struct osc_create_vm_group_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->description) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Description\":\"" ));
+                STRY(osc_str_append_string(data, args->description));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->is_set_dry_run) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"DryRun\":" ));
+                STRY(osc_str_append_bool(data, args->dry_run));
+	   	ret += 1;
+	}
+	if (args->positioning_strategy) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"PositioningStrategy\":\"" ));
+                STRY(osc_str_append_string(data, args->positioning_strategy));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->security_group_ids) {
+		char **as;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":[" ));
+		for (as = args->security_group_ids; *as > 0; ++as) {
+			if (as != args->security_group_ids)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_string(data, "\"" ));
+			STRY(osc_str_append_string(data, *as));
+			STRY(osc_str_append_string(data, "\"" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->security_group_ids_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":" ));
+                STRY(osc_str_append_string(data, args->security_group_ids_str));
+		ret += 1;
+	}
+	if (args->subnet_id) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
+                STRY(osc_str_append_string(data, args->subnet_id));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+        if (args->tags) {
+	       	if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Tags\":[" ));
+		for (int i = 0; i < args->nb_tags; ++i) {
+	       	    struct resource_tag *p = &args->tags[i];
+		    if (p != args->tags)
+		        STRY(osc_str_append_string(data, "," ));
+		    STRY(osc_str_append_string(data, "{ " ));
+	       	    STRY(resource_tag_setter(p, data) < 0);
+	       	    STRY(osc_str_append_string(data, "}" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else
+	if (args->tags_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Tags\":" ));
+                STRY(osc_str_append_string(data, args->tags_str));
+		ret += 1;
+	}
+	if (args->is_set_vm_count || args->vm_count) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmCount\":" ));
+                STRY(osc_str_append_int(data, args->vm_count));
+	   	ret += 1;
+	}
+	if (args->vm_group_name) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmGroupName\":\"" ));
+                STRY(osc_str_append_string(data, args->vm_group_name));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->vm_template_id) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"VmTemplateId\":\"" ));
+                STRY(osc_str_append_string(data, args->vm_template_id));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_create_vm_group(struct osc_env *e, struct osc_str *out, struct osc_create_vm_group_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = create_vm_group_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/CreateVmGroup");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
 static  int create_virtual_gateway_data(struct osc_create_virtual_gateway_arg *args, struct osc_str *data)
 {
 	int ret = 0;
@@ -26838,6 +28699,28 @@ static  int create_image_data(struct osc_create_image_arg *args, struct osc_str 
                 STRY(osc_str_append_bool(data, args->no_reboot));
 	   	ret += 1;
 	}
+	if (args->product_codes) {
+		char **as;
+
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"ProductCodes\":[" ));
+		for (as = args->product_codes; *as > 0; ++as) {
+			if (as != args->product_codes)
+				STRY(osc_str_append_string(data, "," ));
+			STRY(osc_str_append_string(data, "\"" ));
+			STRY(osc_str_append_string(data, *as));
+			STRY(osc_str_append_string(data, "\"" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->product_codes_str) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"ProductCodes\":" ));
+                STRY(osc_str_append_string(data, args->product_codes_str));
+		ret += 1;
+	}
 	if (args->root_device_name) {
 		if (count_args++ > 0)
 			STRY(osc_str_append_string(data, "," ));
@@ -27677,10 +29560,9 @@ static  int create_access_key_data(struct osc_create_access_key_arg *args, struc
 	if (args->expiration_date) {
 		if (count_args++ > 0)
 			STRY(osc_str_append_string(data, "," ));
-		STRY(osc_str_append_string(data, "\"ExpirationDate\":\"" ));
+		STRY(osc_str_append_string(data, "\"ExpirationDate\":" ));
                 STRY(osc_str_append_string(data, args->expiration_date));
-		STRY(osc_str_append_string(data, "\"" ));
-	   	ret += 1;
+		ret += 1;
 	}
 	osc_str_append_string(data, "}");
 	return !!ret;
