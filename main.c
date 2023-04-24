@@ -8607,6 +8607,13 @@ int main(int ac, char **av)
 		  flag |= OSC_INSECURE_MODE;
 		} else if (!strcmp("--raw-print", av[i])) {
 		  flag |= OAPI_RAW_OUTPUT;
+		} else if (!strcmp("--list-calls", av[i])) {
+			const char **names = osc_calls_name();
+
+			for (const char **n = names; *n; ++n) {
+				printf("%s\n", *n);
+			}
+			return 0;
 		} else if (!strcmp("--help", av[i]) || !strcmp("-h", av[i])) {
 		  auth_m = OSC_NONE_METHOD;
 		} else if (!argcmp2("--auth-method", av[i], '=')) {
@@ -8697,6 +8704,7 @@ int main(int ac, char **av)
                        "\t    --color               try to colorize json if json-c support it\n"
                        "\t    --config=PATH         config file path\n"
                        "\t-h, --help [CallName]     this, can be used with call name, example:\n\t\t\t\t%s --help ReadVms\n"
+                       "\t    --list-calls          list all calls\n"
                        "\t    --insecure            doesn't verify SSL certificats\n"
                        "\t    --login=EMAIL         set email, and authentification as password\n"
                        "\t    --password=PASS       set password, and authentification as password\n"

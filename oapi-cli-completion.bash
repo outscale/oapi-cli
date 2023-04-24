@@ -271,7 +271,7 @@ ReadCas() {
     COMPREPLY=($(compgen -W " --DryRun --Filters.CaFingerprints --Filters.CaIds --Filters.Descriptions" -- ${cur}))
 }
 ReadApiLogs() {
-    COMPREPLY=($(compgen -W " --DryRun --Filters.QueryAccessKeys --Filters.QueryApiNames --Filters.QueryCallNames   --Filters.QueryIpAddresses --Filters.QueryUserAgents --Filters.RequestIds --Filters.ResponseStatusCodes --NextPageToken --ResultsPerPage --With.AccountId --With.CallDuration --With.QueryAccessKey --With.QueryApiName --With.QueryApiVersion --With.QueryCallName --With.QueryDate --With.QueryHeaderRaw --With.QueryHeaderSize --With.QueryIpAddress --With.QueryPayloadRaw --With.QueryPayloadSize --With.QueryUserAgent --With.RequestId --With.ResponseSize --With.ResponseStatusCode" -- ${cur}))
+    COMPREPLY=($(compgen -W " --DryRun --Filters.QueryAccessKeys --Filters.QueryApiNames --Filters.QueryCallNames --Filters.QueryDateAfter --Filters.QueryDateBefore --Filters.QueryIpAddresses --Filters.QueryUserAgents --Filters.RequestIds --Filters.ResponseStatusCodes --NextPageToken --ResultsPerPage --With.AccountId --With.CallDuration --With.QueryAccessKey --With.QueryApiName --With.QueryApiVersion --With.QueryCallName --With.QueryDate --With.QueryHeaderRaw --With.QueryHeaderSize --With.QueryIpAddress --With.QueryPayloadRaw --With.QueryPayloadSize --With.QueryUserAgent --With.RequestId --With.ResponseSize --With.ResponseStatusCode" -- ${cur}))
 }
 ReadApiAccessRules() {
     COMPREPLY=($(compgen -W " --DryRun --Filters.ApiAccessRuleIds --Filters.CaIds --Filters.Cns --Filters.Descriptions --Filters.IpRanges" -- ${cur}))
