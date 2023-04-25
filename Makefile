@@ -27,16 +27,19 @@ main-helper.h:
 main.c: COGNAC/main.c
 	cp COGNAC/main.c .
 
-osc_sdk.h: COGNAC/main.c
-	cp COGNAC/osc_sdk.h .
+osc_sdk.h: osc-sdk-C/osc_sdk.h
+	cp osc-sdk-C/osc_sdk.h .
 
-osc_sdk.c: COGNAC/main.c
-	cp COGNAC/osc_sdk.c .
+osc_sdk.c: osc-sdk-C/osc_sdk.c
+	cp osc-sdk-C/osc_sdk.c .
 
 oapi-cli-completion.bash: COGNAC/main.c
 	cp COGNAC/oapi-cli-completion.bash .
 
 gen: main.c osc_sdk.h osc_sdk.c oapi-cli-completion.bash main-helper.h
+
+osc-sdk-C/:
+	git submodule update --init
 
 COGNAC/:
 	git submodule update --init
