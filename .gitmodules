@@ -1,3 +1,6 @@
 [submodule "COGNAC"]
 	path = COGNAC
 	url = https://github.com/outscale/COGNAC.git
+[submodule "osc-sdk-C"]
+	path = osc-sdk-C
+	url = https://github.com/outscale/osc-sdk-C
