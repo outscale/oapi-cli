@@ -102,7 +102,7 @@ struct osc_env {
 
 static const char *osc_sdk_version_str(void)
 {
-	static char ret[OSC_SDK_VERSON_L];
+	static char ret[OSC_SDK_VERSON_L + 1];
 
 	if (OSC_SDK_VERSION == 0xC061AC)
 		return "unstable";
@@ -114,6 +114,7 @@ static const char *osc_sdk_version_str(void)
 	ret[5] = '.';
 	ret[7] = ((OSC_SDK_VERSION & 0x0F0000) >> 16) + '0';
 	ret[6] = ((OSC_SDK_VERSION & 0xF00000) >> 20) + '0';
+	ret[8] = 0;
 	return ret;
 }
 
