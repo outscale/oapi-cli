@@ -71,7 +71,7 @@ struct osc_str {
 #define OSC_ENV_FREE_AK_SK (OSC_ENV_FREE_AK | OSC_ENV_FREE_SK)
 
 #define OSC_API_VERSION "1.26"
-#define OSC_SDK_VERSION 0xC061AC
+#define OSC_SDK_VERSION 0X000500
 
 enum osc_auth_method {
 	OSC_AKSK_METHOD,

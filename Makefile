@@ -48,6 +48,7 @@ COGNAC/config.mk: COGNAC/
 	cd COGNAC && ./configure --compile-json-c $$COGNAC_CONFIG
 
 COGNAC/main.c: COGNAC/config.mk
+	cp version COGNAC/cli-version
 	make -j -C COGNAC/
 
 clean_all: fclean

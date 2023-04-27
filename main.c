@@ -47,7 +47,9 @@
 
 #define OAPI_RAW_OUTPUT 1
 
-#define OAPI_CLI_UAGENT "oapi-cli/0.1.0; osc-sdk-c/"
+#define OAPI_CLI_VERSION "0.0.0"
+
+#define OAPI_CLI_UAGENT "oapi-cli/"OAPI_CLI_VERSION"; osc-sdk-c/"
 
 #define TRY(f, args...)						\
 	do {							\
@@ -8605,6 +8607,14 @@ int main(int ac, char **av)
 		  flag |= OSC_VERBOSE_MODE;
 		} else if (!strcmp("--insecure", av[i])) {
 		  flag |= OSC_INSECURE_MODE;
+		} else if (!strcmp("--version", av[i])) {
+			printf("oapi-cli version: %s\n"
+			       "osc-sdk-c version: %s\n"
+			       "based on osc-api: %s\n",
+			       OAPI_CLI_VERSION,
+			       osc_sdk_version_str(),
+			       OSC_API_VERSION);
+			return 0;
 		} else if (!strcmp("--raw-print", av[i])) {
 		  flag |= OAPI_RAW_OUTPUT;
 		} else if (!strcmp("--list-calls", av[i])) {
@@ -8710,7 +8720,8 @@ int main(int ac, char **av)
                        "\t    --password=PASS       set password, and authentification as password\n"
                        "\t    --profile=PROFILE     select profile\n"
                        "\t    --raw-print           doesn't format the output\n"
-                       "\t    --verbose             curl backend is now verbose\n%s%s",
+                       "\t    --verbose             curl backend is now verbose\n"
+                       "\t    --version             oapi-cli version info\n%s%s",
 		       program_name, program_name, help_appent ? help_appent : "",
 		       help_appent ? "\n" : "");
 		return 0;
