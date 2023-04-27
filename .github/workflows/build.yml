@@ -23,7 +23,7 @@ jobs:
         sudo apt-get install -y -f -o Acquire::Retries=3 jq libjson-c-dev
     - name: Build release
       run: |
-        echo $(cat sdk_version | cut -d '.' -f 1).$(( $( cat sdk_version | cut -d '.' -f 2  ) + 1 )).$(cat sdk_version | cut -d '.' -f 3) > sdk_version
+        echo $(cat version | cut -d '.' -f 1).$(( $( cat version | cut -d '.' -f 2  ) + 1 )).$(cat version | cut -d '.' -f 3) > version
         .github/scripts/release-make.sh
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
