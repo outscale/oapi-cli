@@ -29,7 +29,7 @@ jobs:
     - shell: msys2 {0}
       run: |
         git submodule update --init
-        .github/script/build-win.sh
+        .github/scripts/build-win.sh
         mkdir oapi-pkg
         LD_LIBRARY_PATH="$PWD" ./cp-lib.sh oapi-cli oapi-pkg/
         cp oapi-cli.exe oapi-pkg/
