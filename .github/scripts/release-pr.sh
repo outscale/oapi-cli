@@ -6,7 +6,7 @@ if [ -e "$root/.auto-release-abort" ]; then
     echo "previous step triggered stop, abort"
     exit 0
 fi
-new_sdk_version=$(cat $root/sdk_version)
+new_sdk_version=$(cat $root/version)
 branch_name="autobuild-$new_sdk_version"
 osc_api_version="$(cat $root/api_version)"
 

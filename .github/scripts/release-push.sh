@@ -11,7 +11,7 @@ github_url="https://api.github.com/repos/outscale/osc-api/releases"
 osc_api_last_release=$(curl -s -H "Authorization: token $GH_TOKEN" $github_url | jq ".[] | select(.prerelease == false) | select(.draft == false) | .tag_name" -r | sort -r --version-sort | head -n 1)
 echo "$osc_api_last_release" > $root/api_version
 
-new_sdk_version=$(cat $root/sdk_version)
+new_sdk_version=$(cat $root/version)
 branch_name="autobuild-$new_sdk_version"
 git branch -m $branch_name
 git config user.name "Outscale Bot"
