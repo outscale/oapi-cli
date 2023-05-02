@@ -9,7 +9,7 @@ on:
 jobs:
   auto-build:
     environment: auto-build
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v2
     - name: apt is for w__p
