@@ -13,9 +13,7 @@ echo "$osc_api_last_release" > $root/api_version
 
 new_sdk_version=$(cat $root/version)
 branch_name="autobuild-$new_sdk_version"
-git stash
 git checkout -B $branch_name
-git stash pop
 git config user.name "Outscale Bot"
 git config user.email "opensource+bot@outscale.com"
 git commit -asm "oapi-cli v$new_sdk_version"
