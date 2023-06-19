@@ -47,7 +47,7 @@
 
 #define OAPI_RAW_OUTPUT 1
 
-#define OAPI_CLI_VERSION "0.1.0"
+#define OAPI_CLI_VERSION "0.2.0"
 
 #define OAPI_CLI_UAGENT "oapi-cli/"OAPI_CLI_VERSION"; osc-sdk-c/"
 
@@ -217,6 +217,7 @@ int state_comment_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int subnet_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int subregion_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int tag_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int user_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int vgw_telemetry_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int virtual_gateway_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int vm_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -7411,6 +7412,30 @@ int tag_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	return 0;
 }
 
+int user_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct user *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "Path")) == 0 || aret == '=') {
+            TRY(!aa, "Path argument missing\n");
+            s->path = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "UserId")) == 0 || aret == '=') {
+            TRY(!aa, "UserId argument missing\n");
+            s->user_id = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "UserName")) == 0 || aret == '=') {
+            TRY(!aa, "UserName argument missing\n");
+            s->user_name = aa; // string string
+
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'User'\n", str);
+	}
+	return 0;
+}
+
 int vgw_telemetry_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct vgw_telemetry *s = v_s;
 	    int aret = 0;
@@ -9585,6 +9610,118 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_vm(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateVm: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("UpdateUser", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_update_user_arg a = {0};
+		     struct osc_update_user_arg *s = &a;
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     update_user_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+			   i += incr;
+		       	   goto update_user_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				aa = 0;
+				incr = 1;
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "NewPath")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NewPath argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NewPath argument missing\n");
+				          s->new_path = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "NewUserName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NewUserName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NewUserName argument missing\n");
+				          s->new_user_name = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserName argument missing\n");
+				          s->user_name = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'UpdateUser'\n", next_a);
+			    }
+		            i += incr;
+			    goto update_user_arg;
+		     }
+		     cret = osc_update_user(&e, &r, &a);
+            	     TRY(cret, "fail to call UpdateUser: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
@@ -11859,6 +11996,17 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "State argument missing\n");
 				          s->state = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserName argument missing\n");
+				          s->user_name = aa; // string string
 
 				       } else
 			    {
@@ -14580,6 +14728,85 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_virtual_gateways(&e, &r, &a);
             	     TRY(cret, "fail to call ReadVirtualGateways: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("ReadUsers", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_read_users_arg a = {0};
+		     struct osc_read_users_arg *s = &a;
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     read_users_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+			   i += incr;
+		       	   goto read_users_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				aa = 0;
+				incr = 1;
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'ReadUsers'\n", next_a);
+			    }
+		            i += incr;
+			    goto read_users_arg;
+		     }
+		     cret = osc_read_users(&e, &r, &a);
+            	     TRY(cret, "fail to call ReadUsers: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
@@ -19094,6 +19321,17 @@ int main(int ac, char **av)
 				                 s->filters_str = aa;
 				           }
 				       } else
+			      if ((aret = argcmp(next_a, "UserName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserName argument missing\n");
+				          s->user_name = aa; // string string
+
+				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadAccessKeys'\n", next_a);
 			    }
@@ -20872,6 +21110,96 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_virtual_gateway(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteVirtualGateway: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("DeleteUser", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_delete_user_arg a = {0};
+		     struct osc_delete_user_arg *s = &a;
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     delete_user_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+			   i += incr;
+		       	   goto delete_user_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				aa = 0;
+				incr = 1;
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "UserName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserName argument missing\n");
+				          s->user_name = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'DeleteUser'\n", next_a);
+			    }
+		            i += incr;
+			    goto delete_user_arg;
+		     }
+		     cret = osc_delete_user(&e, &r, &a);
+            	     TRY(cret, "fail to call DeleteUser: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
@@ -23885,6 +24213,17 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
+			      if ((aret = argcmp(next_a, "UserName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserName argument missing\n");
+				          s->user_name = aa; // string string
+
+				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'DeleteAccessKey'\n", next_a);
 			    }
@@ -25110,6 +25449,107 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_virtual_gateway(&e, &r, &a);
             	     TRY(cret, "fail to call CreateVirtualGateway: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("CreateUser", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_create_user_arg a = {0};
+		     struct osc_create_user_arg *s = &a;
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     create_user_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+			   i += incr;
+		       	   goto create_user_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				aa = 0;
+				incr = 1;
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "Path")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Path argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "Path argument missing\n");
+				          s->path = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserName argument missing\n");
+				          s->user_name = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'CreateUser'\n", next_a);
+			    }
+		            i += incr;
+			    goto create_user_arg;
+		     }
+		     cret = osc_create_user(&e, &r, &a);
+            	     TRY(cret, "fail to call CreateUser: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
@@ -29322,6 +29762,17 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ExpirationDate argument missing\n");
 				          s->expiration_date = aa; // string string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserName argument missing\n");
+				          s->user_name = aa; // string string
 
 				       } else
 			    {
