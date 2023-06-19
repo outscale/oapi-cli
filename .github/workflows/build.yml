@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v2
+    - uses: snickerbockers/submodules-init@v4
     - name: apt is for w__p
       run: |
         wget https://github.com/cosmo-ray/json-search/releases/download/0.2/json-search-x86_64.AppImage
