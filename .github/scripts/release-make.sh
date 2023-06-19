@@ -13,6 +13,8 @@ echo "$osc_api_last_release" > $root/api_version
 
 set -x
 cd $root/osc-sdk-C
+pwd
+ls
 git fetch origin
 git checkout origin/master
 cd -
