@@ -70,8 +70,8 @@ struct osc_str {
 
 #define OSC_ENV_FREE_AK_SK (OSC_ENV_FREE_AK | OSC_ENV_FREE_SK)
 
-#define OSC_API_VERSION "1.26"
-#define OSC_SDK_VERSION 0X000500
+#define OSC_API_VERSION "1.27"
+#define OSC_SDK_VERSION 0X000600
 
 enum osc_auth_method {
 	OSC_AKSK_METHOD,
@@ -5302,6 +5302,21 @@ struct tag {
 	char *value; /* string */
 };
 
+struct user {
+        /*
+         * The path to the EIM user.
+         */
+	char *path; /* string */
+        /*
+         *  The ID of the EIM user.
+         */
+	char *user_id; /* string */
+        /*
+         * The name of the EIM user.
+         */
+	char *user_name; /* string */
+};
+
 struct vgw_telemetry {
         /*
          * The number of routes accepted through BGP (Border Gateway Protocol) 
@@ -6500,6 +6515,28 @@ struct osc_update_vm_arg  {
 	char *vm_type; /* string */
 };
 
+struct osc_update_user_arg  {
+        /* Required: user_name */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * A new path for the EIM user.
+         */
+	char *new_path; /* string */
+        /*
+         * A new name for the EIM user.
+         */
+	char *new_user_name; /* string */
+        /*
+         * The name of the EIM user you want to modify.
+         */
+	char *user_name; /* string */
+};
+
 struct osc_update_subnet_arg  {
         /* Required: subnet_id, map_public_ip_on_launch */
         /*
@@ -7114,6 +7151,13 @@ struct osc_update_access_key_arg  {
          * requests. When set to `INACTIVE`, the access key is disabled.
          */
 	char *state; /* string */
+        /*
+         * The name of the EIM the access key you want to modify is associated 
+         * with. If you do not specify a user name, this action modifies the 
+         * access key of the user who sends the request (which can be the root 
+         * account).
+         */
+	char *user_name; /* string */
 };
 
 struct osc_unlink_volume_arg  {
@@ -7770,6 +7814,16 @@ struct osc_read_virtual_gateways_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_virtual_gateway filters; /* ref FiltersVirtualGateway */
+};
+
+struct osc_read_users_arg  {
+        /* Required:none */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
 };
 
 struct osc_read_tags_arg  {
@@ -9123,6 +9177,11 @@ struct osc_read_access_keys_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_access_keys filters; /* ref FiltersAccessKeys */
+        /*
+         * The name of the EIM user. By default, the user who sends the request 
+         * (which can be the root account).
+         */
+	char *user_name; /* string */
 };
 
 struct osc_link_volume_arg  {
@@ -9470,6 +9529,20 @@ struct osc_delete_virtual_gateway_arg  {
          * The ID of the virtual gateway you want to delete.
          */
 	char *virtual_gateway_id; /* string */
+};
+
+struct osc_delete_user_arg  {
+        /* Required: user_name */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * The name of the EIM user you want to delete.
+         */
+	char *user_name; /* string */
 };
 
 struct osc_delete_tags_arg  {
@@ -10030,6 +10103,12 @@ struct osc_delete_access_key_arg  {
          */
         int is_set_dry_run;
 	int dry_run; /* bool */
+        /*
+         * The name of the EIM user the access key you want to delete is 
+         * associated with. By default, the user who sends the request (which 
+         * can be the root account).
+         */
+	char *user_name; /* string */
 };
 
 struct osc_create_vpn_connection_route_arg  {
@@ -10461,6 +10540,24 @@ struct osc_create_virtual_gateway_arg  {
          */
         int is_set_dry_run;
 	int dry_run; /* bool */
+};
+
+struct osc_create_user_arg  {
+        /* Required: user_name */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * The path to the EIM user you want to create (by default, `/`).
+         */
+	char *path; /* string */
+        /*
+         * The name of the EIM user you want to create.
+         */
+	char *user_name; /* string */
 };
 
 struct osc_create_tags_arg  {
@@ -11654,6 +11751,12 @@ struct osc_create_access_key_arg  {
          * method without specifying this parameter.
          */
 	char *expiration_date; /* string string */
+        /*
+         * The name of the EIM user that owns the key to be created. If you do 
+         * not specify a user name, this action creates an access key for the 
+         * user who sends the request (which can be the root account).
+         */
+	char *user_name; /* string */
 };
 
 struct osc_check_authentication_arg  {
@@ -11771,6 +11874,7 @@ int osc_update_volume(struct osc_env *e, struct osc_str *out, struct osc_update_
 int osc_update_vm_template(struct osc_env *e, struct osc_str *out, struct osc_update_vm_template_arg *args);
 int osc_update_vm_group(struct osc_env *e, struct osc_str *out, struct osc_update_vm_group_arg *args);
 int osc_update_vm(struct osc_env *e, struct osc_str *out, struct osc_update_vm_arg *args);
+int osc_update_user(struct osc_env *e, struct osc_str *out, struct osc_update_user_arg *args);
 int osc_update_subnet(struct osc_env *e, struct osc_str *out, struct osc_update_subnet_arg *args);
 int osc_update_snapshot(struct osc_env *e, struct osc_str *out, struct osc_update_snapshot_arg *args);
 int osc_update_server_certificate(struct osc_env *e, struct osc_str *out, struct osc_update_server_certificate_arg *args);
@@ -11816,6 +11920,7 @@ int osc_read_vm_types(struct osc_env *e, struct osc_str *out, struct osc_read_vm
 int osc_read_vm_templates(struct osc_env *e, struct osc_str *out, struct osc_read_vm_templates_arg *args);
 int osc_read_vm_groups(struct osc_env *e, struct osc_str *out, struct osc_read_vm_groups_arg *args);
 int osc_read_virtual_gateways(struct osc_env *e, struct osc_str *out, struct osc_read_virtual_gateways_arg *args);
+int osc_read_users(struct osc_env *e, struct osc_str *out, struct osc_read_users_arg *args);
 int osc_read_tags(struct osc_env *e, struct osc_str *out, struct osc_read_tags_arg *args);
 int osc_read_subregions(struct osc_env *e, struct osc_str *out, struct osc_read_subregions_arg *args);
 int osc_read_subnets(struct osc_env *e, struct osc_str *out, struct osc_read_subnets_arg *args);
@@ -11879,6 +11984,7 @@ int osc_delete_vms(struct osc_env *e, struct osc_str *out, struct osc_delete_vms
 int osc_delete_vm_template(struct osc_env *e, struct osc_str *out, struct osc_delete_vm_template_arg *args);
 int osc_delete_vm_group(struct osc_env *e, struct osc_str *out, struct osc_delete_vm_group_arg *args);
 int osc_delete_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_delete_virtual_gateway_arg *args);
+int osc_delete_user(struct osc_env *e, struct osc_str *out, struct osc_delete_user_arg *args);
 int osc_delete_tags(struct osc_env *e, struct osc_str *out, struct osc_delete_tags_arg *args);
 int osc_delete_subnet(struct osc_env *e, struct osc_str *out, struct osc_delete_subnet_arg *args);
 int osc_delete_snapshot(struct osc_env *e, struct osc_str *out, struct osc_delete_snapshot_arg *args);
@@ -11917,6 +12023,7 @@ int osc_create_vms(struct osc_env *e, struct osc_str *out, struct osc_create_vms
 int osc_create_vm_template(struct osc_env *e, struct osc_str *out, struct osc_create_vm_template_arg *args);
 int osc_create_vm_group(struct osc_env *e, struct osc_str *out, struct osc_create_vm_group_arg *args);
 int osc_create_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_create_virtual_gateway_arg *args);
+int osc_create_user(struct osc_env *e, struct osc_str *out, struct osc_create_user_arg *args);
 int osc_create_tags(struct osc_env *e, struct osc_str *out, struct osc_create_tags_arg *args);
 int osc_create_subnet(struct osc_env *e, struct osc_str *out, struct osc_create_subnet_arg *args);
 int osc_create_snapshot_export_task(struct osc_env *e, struct osc_str *out, struct osc_create_snapshot_export_task_arg *args);

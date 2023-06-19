@@ -77,6 +77,7 @@ static const char *calls_name[] = {
 	"UpdateVmTemplate",
 	"UpdateVmGroup",
 	"UpdateVm",
+	"UpdateUser",
 	"UpdateSubnet",
 	"UpdateSnapshot",
 	"UpdateServerCertificate",
@@ -122,6 +123,7 @@ static const char *calls_name[] = {
 	"ReadVmTemplates",
 	"ReadVmGroups",
 	"ReadVirtualGateways",
+	"ReadUsers",
 	"ReadTags",
 	"ReadSubregions",
 	"ReadSubnets",
@@ -185,6 +187,7 @@ static const char *calls_name[] = {
 	"DeleteVmTemplate",
 	"DeleteVmGroup",
 	"DeleteVirtualGateway",
+	"DeleteUser",
 	"DeleteTags",
 	"DeleteSubnet",
 	"DeleteSnapshot",
@@ -223,6 +226,7 @@ static const char *calls_name[] = {
 	"CreateVmTemplate",
 	"CreateVmGroup",
 	"CreateVirtualGateway",
+	"CreateUser",
 	"CreateTags",
 	"CreateSubnet",
 	"CreateSnapshotExportTask",
@@ -272,6 +276,8 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli UpdateVm [options]\n" "Modifies the specified attributes of a virtual machine (VM).\nYou must stop the \n" "VM before modifying the following attributes:\n* `NestedVirtualization`\n* \n" "`Performance`\n* `UserData`\n* `VmType`\n" "\nRequired Argument: VmId \n"
 ,
+	"Usage: oapi-cli UpdateUser [options]\n" "Modifies the name and/or the path of a specified EIM user.\n" "\nRequired Argument: UserName \n"
+,
 	"Usage: oapi-cli UpdateSubnet [options]\n" "Modifies the specified attribute of a Subnet.\n" "\nRequired Argument: SubnetId, MapPublicIpOnLaunch \n"
 ,
 	"Usage: oapi-cli UpdateSnapshot [options]\n" "Modifies the permissions for a specified snapshot.\nYou must specify either the \n" "`Additions` or the `Removals` parameter.\nAfter sharing a snapshot with an \n" "account, the other account can create a copy of it that they own. For more \n" "information about copying snapshots, see [CreateSnapshot](#createsnapshot).\n" "\nRequired Argument: SnapshotId, PermissionsToCreateVolume \n"
@@ -306,7 +312,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli UpdateAccount [options]\n" "Updates the account information for the account that sends the request.\n" "\nRequired Argument: none \n"
 ,
-	"Usage: oapi-cli UpdateAccessKey [options]\n" "Modifies the attributes of the specified access key of your \n" "account.\n\n**[NOTE]**\nTo protect against brute force attacks, the number of \n" "requests allowed for this method in a given time period is limited.\n" "\nRequired Argument: AccessKeyId, State \n"
+	"Usage: oapi-cli UpdateAccessKey [options]\n" "Modifies the attributes of the specified access key of either your root account \n" "or an EIM user.\n\n**[NOTE]**\nTo protect against brute force attacks, the \n" "number of requests allowed for this method in a given time period is limited.\n" "\nRequired Argument: AccessKeyId, State \n"
 ,
 	"Usage: oapi-cli UnlinkVolume [options]\n" "Detaches a Block Storage Unit (BSU) volume from a virtual machine (VM).\nTo \n" "detach the root device of a VM, this VM must be stopped.\n" "\nRequired Argument: VolumeId \n"
 ,
@@ -362,6 +368,8 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli ReadVirtualGateways [options]\n" "Lists one or more virtual gateways.\n\n**[NOTE]**\nIf you exceed the number of \n" "identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
 ,
+	"Usage: oapi-cli ReadUsers [options]\n" "Lists all EIM users that have a specified path.\n" "\nRequired Argument: none \n"
+,
 	"Usage: oapi-cli ReadTags [options]\n" "Lists one or more tags for your resources.\n\n**[NOTE]**\nIf you exceed the \n" "number of identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
 ,
 	"Usage: oapi-cli ReadSubregions [options]\n" "Lists one or more of the enabled Subregions that you can access in the current \n" "Region.\n\n**[NOTE]**\n- If you exceed the number of identical requests allowed \n" "for a configured time period, the `RequestLimitExceeded` error message is \n" "returned.\n- You can use this command to get information about Subregions only \n" "in a Region for which you have an account. Otherwise, the `AuthFailure` error \n" "message is returned.\n" "\nRequired Argument: none \n"
@@ -376,7 +384,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli ReadSecurityGroups [options]\n" "Lists one or more security groups.\nYou can specify either the name of the \n" "security groups or their IDs.\n\n**[NOTE]**\nIf you exceed the number of \n" "identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
 ,
-	"Usage: oapi-cli ReadSecretAccessKey [options]\n" "Lists information about the specified access key of your account, including its \n" "secret key.\n" "\nRequired Argument: AccessKeyId \n"
+	"Usage: oapi-cli ReadSecretAccessKey [options]\n" "Lists information about the specified access key of your root account, \n" "including its secret key.\n" "\nRequired Argument: AccessKeyId \n"
 ,
 	"Usage: oapi-cli ReadRouteTables [options]\n" "Lists one or more of your route tables.\nIn your Net, each Subnet must be \n" "associated with a route table. If a Subnet is not explicitly associated with a \n" "route table, it is implicitly associated with the main route table of the \n" "Net.\n\n**[NOTE]**\nIf you exceed the number of identical requests allowed for \n" "a configured time period, the `RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
 ,
@@ -452,7 +460,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli ReadAccounts [options]\n" "Gets information about the account that sent the request.\n" "\nRequired Argument: none \n"
 ,
-	"Usage: oapi-cli ReadAccessKeys [options]\n" "Lists the access key IDs of your account.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadAccessKeys [options]\n" "Lists the access key IDs of either your root account or an EIM user.\n" "\nRequired Argument: none \n"
 ,
 	"Usage: oapi-cli LinkVolume [options]\n" "Attaches a Block Storage Unit (BSU) volume to a virtual machine (VM).\nThe \n" "volume and the VM must be in the same Subregion. The VM can be running or \n" "stopped. The volume is attached to the specified VM device.\n" "\nRequired Argument: DeviceName, VmId, VolumeId \n"
 ,
@@ -487,6 +495,8 @@ static const char *calls_descriptions[] = {
 	"Usage: oapi-cli DeleteVmGroup [options]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nDeletes a specified VM group.\n" "\nRequired Argument: VmGroupId \n"
 ,
 	"Usage: oapi-cli DeleteVirtualGateway [options]\n" "Deletes a specified virtual gateway.\nBefore deleting a virtual gateway, we \n" "recommend to detach it from the Net and delete the VPN connection.\n" "\nRequired Argument: VirtualGatewayId \n"
+,
+	"Usage: oapi-cli DeleteUser [options]\n" "Deletes a specified EIM user. The EIM user must not belong to any group and \n" "have any key, signing certificate or attached policy.\n" "\nRequired Argument: UserName \n"
 ,
 	"Usage: oapi-cli DeleteTags [options]\n" "Deletes one or more tags from the specified resources.\n" "\nRequired Argument: ResourceIds, Tags \n"
 ,
@@ -548,7 +558,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli DeleteApiAccessRule [options]\n" "Deletes a specified API access rule.\n\n**[NOTE]** \nYou cannot delete the last \n" "remaining API access rule. However, if you delete all the API access rules that \n" "allow you to access the APIs, you need to contact the Support team to regain \n" "access. For more information, see [Technical \n" "Support](https://docs.outscale.com/en/userguide/Technical-Support.html).\n" "\nRequired Argument: ApiAccessRuleId \n"
 ,
-	"Usage: oapi-cli DeleteAccessKey [options]\n" "Deletes the specified access key of your account.\n\n**[NOTE]**\nTo protect \n" "against brute force attacks, the number of requests allowed for this method in \n" "a given time period is limited.\n" "\nRequired Argument: AccessKeyId \n"
+	"Usage: oapi-cli DeleteAccessKey [options]\n" "Deletes the specified access key of either your root account or an EIM \n" "user.\n\n**[NOTE]**\nTo protect against brute force attacks, the number of \n" "requests allowed for this method in a given time period is limited.\n" "\nRequired Argument: AccessKeyId \n"
 ,
 	"Usage: oapi-cli CreateVpnConnectionRoute [options]\n" "Creates a static route to a VPN connection.\nThis enables you to select the \n" "network flows sent by the virtual gateway to the target VPN connection.\n" "\nRequired Argument: DestinationIpRange, VpnConnectionId \n"
 ,
@@ -563,6 +573,8 @@ static const char *calls_descriptions[] = {
 	"Usage: oapi-cli CreateVmGroup [options]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nCreates a group of virtual machines (VMs) containing the same \n" "characteristics as a specified VM template, and then launches them.\nYou can \n" "create up to 100 VM groups in your account.\n" "\nRequired Argument: SecurityGroupIds, SubnetId, VmGroupName, VmTemplateId, VmCount \n"
 ,
 	"Usage: oapi-cli CreateVirtualGateway [options]\n" "Creates a virtual gateway.\nA virtual gateway is the access point on the Net \n" "side of a VPN connection.\n" "\nRequired Argument: ConnectionType \n"
+,
+	"Usage: oapi-cli CreateUser [options]\n" "Creates an EIM user for your account.\n" "\nRequired Argument: UserName \n"
 ,
 	"Usage: oapi-cli CreateTags [options]\n" "Adds one or more tags to the specified resources.\nIf a tag with the same key \n" "already exists for the resource, the tag value is replaced.\nYou can tag the \n" "following resources using their IDs:\n\n* Virtual machines (VMs) \n" "(i-xxxxxxxx)\n* OMIs (ami-xxxxxxxx)\n* Volumes (vol-xxxxxxxx)\n* Snapshots \n" "(snap-xxxxxxxx)\n* Public IPs (eipalloc-xxxxxxxx)\n* Security groups \n" "(sg-xxxxxxxx)\n* Route tables (rtb-xxxxxxxx)\n* Network interface cards (NIC) \n" "(eni-xxxxxxxx)\n* Nets (vpc-xxxxxxxx)\n* Subnets (subnet-xxxxxxxx)\n* Net \n" "peerings (vpcx-xxxxxxxx)\n* Net endpoints (vpce-xxxxxxxx)\n* NAT services \n" "(nat-xxxxxxxx)\n* Internet services (igw-xxxxxxxx)\n* Client gateways \n" "(cgw-xxxxxxxx)\n* Virtual gateways (vgw-xxxxxxxx)\n* VPN connections \n" "(vpn-xxxxxxxx)\n* DHCP options (dopt-xxxxxxxx)\n* OMI export tasks \n" "(image-export-xxxxxxxx)\n* Snapshot export tasks (snap-export-xxxxxxxx)\n" "\nRequired Argument: ResourceIds, Tags \n"
 ,
@@ -628,7 +640,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli CreateAccount [options]\n" "Creates an OUTSCALE account.\n\n**[NOTE]**\n* You need OUTSCALE credentials and \n" "the appropriate quotas to create an account via API. To get quotas, you can \n" "send an email to sales@outscale.com.\n* If you want to pass a numeral value as \n" "a string instead of an integer, you must wrap your string in additional quotes \n" "(for example, `'&quot;92000&quot;'`).\n" "\nRequired Argument: City, CompanyName, Country, CustomerId, Email, FirstName, LastName, ZipCode \n"
 ,
-	"Usage: oapi-cli CreateAccessKey [options]\n" "Creates an access key for your account. The new key is automatically set to \n" "`ACTIVE`.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli CreateAccessKey [options]\n" "Creates an access key for either your root account or an EIM user. The new key \n" "is automatically set to `ACTIVE`.\n" "\nRequired Argument: none \n"
 ,
 	"Usage: oapi-cli CheckAuthentication [options]\n" "Validates the authenticity of the account.\n" "\nRequired Argument: Login, Password \n"
 ,
@@ -822,6 +834,16 @@ static const char *calls_args_descriptions[] = {
 "VmType: string\n"
 	"  The type of VM. For more information, see [Instance \n"
 	"  Types](https://docs.outscale.com/en/userguide/Instance-Types.html).\n"
+,
+	"DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform \n"
+	"  the action.\n"
+"NewPath: string\n"
+	"  A new path for the EIM user.\n"
+"NewUserName: string\n"
+	"  A new name for the EIM user.\n"
+"UserName: string\n"
+	"  The name of the EIM user you want to modify.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -1162,6 +1184,11 @@ static const char *calls_args_descriptions[] = {
 	"  The new state for the access key (`ACTIVE` \\| `INACTIVE`). When set to \n"
 	"  `ACTIVE`, the access key is enabled and can be used to send requests. \n"
 	"  When set to `INACTIVE`, the access key is disabled.\n"
+"UserName: string\n"
+	"  The name of the EIM the access key you want to modify is associated \n"
+	"  with. If you do not specify a user name, this action modifies the \n"
+	"  access key of the user who sends the request (which can be the root \n"
+	"  account).\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -1545,6 +1572,10 @@ static const char *calls_args_descriptions[] = {
 	"      t;]}.\n"
 	"    -VirtualGatewayIds: array string\n"
 	"      The IDs of the virtual gateways.\n"
+,
+	"DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform \n"
+	"  the action.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -2464,6 +2495,9 @@ static const char *calls_args_descriptions[] = {
 	"      The IDs of the access keys.\n"
 	"    -States: array string\n"
 	"      The states of the access keys (`ACTIVE` \\| `INACTIVE`).\n"
+"UserName: string\n"
+	"  The name of the EIM user. By default, the user who sends the request \n"
+	"  (which can be the root account).\n"
 ,
 	"DeviceName: string\n"
 	"  The name of the device. For a root device, you must use `/dev/sda1`. \n"
@@ -2625,6 +2659,12 @@ static const char *calls_args_descriptions[] = {
 	"  the action.\n"
 "VirtualGatewayId: string\n"
 	"  The ID of the virtual gateway you want to delete.\n"
+,
+	"DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform \n"
+	"  the action.\n"
+"UserName: string\n"
+	"  The name of the EIM user you want to delete.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -2895,6 +2935,10 @@ static const char *calls_args_descriptions[] = {
 "DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
 	"  the action.\n"
+"UserName: string\n"
+	"  The name of the EIM user the access key you want to delete is \n"
+	"  associated with. By default, the user who sends the request (which can \n"
+	"  be the root account).\n"
 ,
 	"DestinationIpRange: string\n"
 	"  The network prefix of the route, in CIDR notation (for example, \n"
@@ -3157,6 +3201,14 @@ static const char *calls_args_descriptions[] = {
 "DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
 	"  the action.\n"
+,
+	"DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform \n"
+	"  the action.\n"
+"Path: string\n"
+	"  The path to the EIM user you want to create (by default, `/`).\n"
+"UserName: string\n"
+	"  The name of the EIM user you want to create.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -3850,6 +3902,10 @@ static const char *calls_args_descriptions[] = {
 	"  expire, in ISO 8601 format (for example, `2020-06-14T00:00:00.000Z`, or \n"
 	"  `2020-06-14`). To remove an existing expiration date, use the method \n"
 	"  without specifying this parameter.\n"
+"UserName: string\n"
+	"  The name of the EIM user that owns the key to be created. If you do not \n"
+	"  specify a user name, this action creates an access key for the user who \n"
+	"  sends the request (which can be the root account).\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -4321,6 +4377,7 @@ static int state_comment_setter(struct state_comment *args, struct osc_str *data
 static int subnet_setter(struct subnet *args, struct osc_str *data);
 static int subregion_setter(struct subregion *args, struct osc_str *data);
 static int tag_setter(struct tag *args, struct osc_str *data);
+static int user_setter(struct user *args, struct osc_str *data);
 static int vgw_telemetry_setter(struct vgw_telemetry *args, struct osc_str *data);
 static int virtual_gateway_setter(struct virtual_gateway *args, struct osc_str *data);
 static int vm_setter(struct vm *args, struct osc_str *data);
@@ -16522,6 +16579,35 @@ static int tag_setter(struct tag *args, struct osc_str *data) {
 	}
 	return !!ret;
 }
+static int user_setter(struct user *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->path) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Path\":\"" ));
+                STRY(osc_str_append_string(data, args->path));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->user_id) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"UserId\":\"" ));
+                STRY(osc_str_append_string(data, args->user_id));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->user_name) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"UserName\":\"" ));
+                STRY(osc_str_append_string(data, args->user_name));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	return !!ret;
+}
 static int vgw_telemetry_setter(struct vgw_telemetry *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
@@ -18297,6 +18383,76 @@ out:
 	osc_deinit_str(&data);
 	return res;
 }
+static  int update_user_data(struct osc_update_user_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"DryRun\":" ));
+                STRY(osc_str_append_bool(data, args->dry_run));
+	   	ret += 1;
+	}
+	if (args->new_path) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"NewPath\":\"" ));
+                STRY(osc_str_append_string(data, args->new_path));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->new_user_name) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"NewUserName\":\"" ));
+                STRY(osc_str_append_string(data, args->new_user_name));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->user_name) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"UserName\":\"" ));
+                STRY(osc_str_append_string(data, args->user_name));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_update_user(struct osc_env *e, struct osc_str *out, struct osc_update_user_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = update_user_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/UpdateUser");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
 static  int update_subnet_data(struct osc_update_subnet_arg *args, struct osc_str *data)
 {
 	int ret = 0;
@@ -19790,6 +19946,14 @@ static  int update_access_key_data(struct osc_update_access_key_arg *args, struc
 			STRY(osc_str_append_string(data, "," ));
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->user_name) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"UserName\":\"" ));
+                STRY(osc_str_append_string(data, args->user_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
@@ -21537,6 +21701,52 @@ int osc_read_virtual_gateways(struct osc_env *e, struct osc_str *out, struct osc
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadVirtualGateways");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
+static  int read_users_data(struct osc_read_users_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"DryRun\":" ));
+                STRY(osc_str_append_bool(data, args->dry_run));
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_read_users(struct osc_env *e, struct osc_str *out, struct osc_read_users_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = read_users_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/ReadUsers");
 	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
@@ -24192,6 +24402,14 @@ static  int read_access_keys_data(struct osc_read_access_keys_arg *args, struct 
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
+	if (args->user_name) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"UserName\":\"" ));
+                STRY(osc_str_append_string(data, args->user_name));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
 	osc_str_append_string(data, "}");
 	return !!ret;
 }
@@ -25355,6 +25573,60 @@ int osc_delete_virtual_gateway(struct osc_env *e, struct osc_str *out, struct os
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteVirtualGateway");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
+static  int delete_user_data(struct osc_delete_user_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"DryRun\":" ));
+                STRY(osc_str_append_bool(data, args->dry_run));
+	   	ret += 1;
+	}
+	if (args->user_name) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"UserName\":\"" ));
+                STRY(osc_str_append_string(data, args->user_name));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_delete_user(struct osc_env *e, struct osc_str *out, struct osc_delete_user_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = delete_user_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/DeleteUser");
 	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
@@ -27210,6 +27482,14 @@ static  int delete_access_key_data(struct osc_delete_access_key_arg *args, struc
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
+	if (args->user_name) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"UserName\":\"" ));
+                STRY(osc_str_append_string(data, args->user_name));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
 	osc_str_append_string(data, "}");
 	return !!ret;
 }
@@ -28049,6 +28329,68 @@ int osc_create_virtual_gateway(struct osc_env *e, struct osc_str *out, struct os
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CreateVirtualGateway");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
+static  int create_user_data(struct osc_create_user_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"DryRun\":" ));
+                STRY(osc_str_append_bool(data, args->dry_run));
+	   	ret += 1;
+	}
+	if (args->path) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"Path\":\"" ));
+                STRY(osc_str_append_string(data, args->path));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	if (args->user_name) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"UserName\":\"" ));
+                STRY(osc_str_append_string(data, args->user_name));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_create_user(struct osc_env *e, struct osc_str *out, struct osc_create_user_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = create_user_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/CreateUser");
 	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
@@ -30889,6 +31231,14 @@ static  int create_access_key_data(struct osc_create_access_key_arg *args, struc
 		STRY(osc_str_append_string(data, "\"ExpirationDate\":" ));
                 STRY(osc_str_append_string(data, args->expiration_date));
 		ret += 1;
+	}
+	if (args->user_name) {
+		if (count_args++ > 0)
+			STRY(osc_str_append_string(data, "," ));
+		STRY(osc_str_append_string(data, "\"UserName\":\"" ));
+                STRY(osc_str_append_string(data, args->user_name));
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
 	return !!ret;
