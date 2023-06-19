@@ -16,5 +16,8 @@ git fetch origin
 git checkout origin/master
 cd -
 git add $root/osc-sdk-C/
+cp $root/osc-sdk-C/osc_sdk.c $root/
+cp $root/osc-sdk-C/osc_sdk.h $root/
+git add $root/osc_sdk.h $root/osc_sdk.c
 
 COGNAC_CONFIG="--yq-go --target-api=${osc_api_last_release}"  make -C $root/ gen
