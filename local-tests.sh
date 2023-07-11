@@ -18,7 +18,7 @@ cd osc-ricochet-2
 pkill ricochet
 
 cargo build
-cargo run -- ./ricochet.json > /dev/null  &
+cargo run -- ./ricochet-oapi-cli.json > /dev/null  &
 
 sleep 5
 
@@ -54,11 +54,11 @@ OSC_PASSWORD=toto oapi-cli  --config="./local-tests-cfg.json" --authentication_m
 echo "[Test Read vms with user 1 (default) is not empty, with conf Ok]"
 
 trap "echo '[Test Read vms with user 0 (my) is not empty, with conf FAIL]'" ERR
-oapi-cli  --config="./local-tests-cfg.json" --auth-method=password --profile=my ReadVms --Filters.VmIds[] i-00000000 | jq .Vms | grep 'i-00000000' > /dev/null
+oapi-cli  --config="./local-tests-cfg.json" --auth-method=password --profile=my ReadVms --Filters.VmIds[] i-00000003 | jq .Vms | grep 'i-00000003' > /dev/null
 echo "[Test Read vms with user 0 (my) is not empty, with conf Ok]"
 
 trap "echo '[Test Read vms with user 0 (my) is not empty, with conf (separate argument) FAIL]'" ERR
-oapi-cli  --config="./local-tests-cfg.json" --authentication_method password --profile my ReadVms --Filters.VmIds[] i-00000000 | jq .Vms | grep 'i-00000000' > /dev/null
+oapi-cli  --config="./local-tests-cfg.json" --authentication_method password --profile my ReadVms --Filters.VmIds[] i-00000003 | jq .Vms | grep 'i-00000003' > /dev/null
 echo "[Test Read vms with user 0 (my) is not empty, with conf (separate argument) Ok]"
 
 pkill ricochet
