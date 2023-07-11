@@ -104,15 +104,14 @@ export OSC_ENDPOINT_API=XXX
 ## installing on Macos
 
 ```bash
-brew tap outscale-mgo/core
-brew install outscale-mgo/core/oapi-cli  
+brew tap outscale/tap
+brew install oapi-cli  
 ```
 or if you want to clone the homebrew repo:
 
 ```bash
-git clone https://github.com/outscale-mgo/homebrew-core
-cd homebrew-core
-git checkout oapi-cli
+git clone https://github.com/outscale/homebrew-tap
+cd homebrew-tap
 brew install Formula/oapi-cli.rb
 ```
 
