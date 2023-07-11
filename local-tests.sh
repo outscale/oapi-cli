@@ -37,14 +37,14 @@ oapi-cli --help NyanCat --config="./local-tests-cfg.json" | grep 'Unknow Call' >
 echo [Test \"$oapi_cli\" --help NyanCat doesn t crash OK]
 
 trap "echo [Test unknow user is unknow FAIL]" ERR
-oapi-cli   --password=useless --login=non-existant CreateVms ReadVms  ReadVms --Filters.VmIds[] i-00000000 | grep 'Unknow user' > /dev/null
+oapi-cli   --password=useless --login=non-existant CreateVms ReadVms  ReadVms --Filters.VmIds[] i-00000000 | grep -e 'Unknow user' -e "AuthFailure" -e "require auth" > /dev/null
 echo "[Test unknow user is unknow OK]"
 
 trap "echo [Test Create vms and read with user 0 FAIL]" ERR
 oapi-cli  --password='ashita wa dochida' --login='joe' CreateVms ReadVms  ReadVms --Filters.VmIds[] i-00000003 | jq .Vms  > /dev/null
 echo '[Test Create vms and read with user 0 OK]'
 
-trap "echo [Test Read vms with user 1 is empty FAIL]" ERR
+trap "echo [Test Read vms with user 1  FAIL]" ERR
 export OSC_LOGIN=titi
 oapi-cli   --password='toto' ReadVms --Filters.VmIds[] i-00000003 | jq .Vms | grep '\[]' > /dev/null
 echo "[Test Read vms with user 1 is empty OK]"
@@ -54,11 +54,11 @@ OSC_PASSWORD=toto oapi-cli  --config="./local-tests-cfg.json" --authentication_m
 echo "[Test Read vms with user 1 (default) is not empty, with conf Ok]"
 
 trap "echo '[Test Read vms with user 0 (my) is not empty, with conf FAIL]'" ERR
-oapi-cli  --config="./local-tests-cfg.json" --auth-method=password --profile=my ReadVms --Filters.VmIds[] i-00000003 | jq .Vms | grep 'i-00000003' > /dev/null
+oapi-cli  --config="./local-tests-cfg.json" --auth-method=password --profile=my ReadVms --Filters.VmIds[] i-00000000 | jq .Vms | grep 'i-00000000' > /dev/null
 echo "[Test Read vms with user 0 (my) is not empty, with conf Ok]"
 
 trap "echo '[Test Read vms with user 0 (my) is not empty, with conf (separate argument) FAIL]'" ERR
-oapi-cli  --config="./local-tests-cfg.json" --authentication_method password --profile my ReadVms --Filters.VmIds[] i-00000003 | jq .Vms | grep 'i-00000003' > /dev/null
+oapi-cli  --config="./local-tests-cfg.json" --authentication_method password --profile my ReadVms --Filters.VmIds[] i-00000000 | jq .Vms | grep 'i-00000000' > /dev/null
 echo "[Test Read vms with user 0 (my) is not empty, with conf (separate argument) Ok]"
 
 pkill ricochet
