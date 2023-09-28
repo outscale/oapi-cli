@@ -11984,7 +11984,7 @@ int main(int ac, char **av)
 				    incr = 1;
 				 }
 				          TRY(!aa, "ExpirationDate argument missing\n");
-				          s->expiration_date = aa; // string string string
+				          s->expiration_date = aa; // string string
 
 				       } else
 			      if ((aret = argcmp(next_a, "State")) == 0 || aret == '=' ) {
@@ -18217,7 +18217,7 @@ int main(int ac, char **av)
 				    incr = 1;
 				 }
 				          TRY(!aa, "FromDate argument missing\n");
-				          s->from_date = aa; // string string string
+				          s->from_date = aa; // string string
 
 				       } else
 			      if ((aret = argcmp(next_a, "Overall")) == 0 || aret == '=' ) {
@@ -18244,7 +18244,7 @@ int main(int ac, char **av)
 				    incr = 1;
 				 }
 				          TRY(!aa, "ToDate argument missing\n");
-				          s->to_date = aa; // string string string
+				          s->to_date = aa; // string string
 
 				       } else
 			    {
@@ -29761,7 +29761,7 @@ int main(int ac, char **av)
 				    incr = 1;
 				 }
 				          TRY(!aa, "ExpirationDate argument missing\n");
-				          s->expiration_date = aa; // string string string
+				          s->expiration_date = aa; // string string
 
 				       } else
 			      if ((aret = argcmp(next_a, "UserName")) == 0 || aret == '=' ) {

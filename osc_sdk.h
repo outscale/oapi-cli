@@ -7144,7 +7144,7 @@ struct osc_update_access_key_arg  {
          * or `2020-06-14`). If not specified, the access key is set to not 
          * expire.
          */
-	char *expiration_date; /* string string */
+	char *expiration_date; /* string */
         /*
          * The new state for the access key (`ACTIVE` \\| `INACTIVE`). When set 
          * to `ACTIVE`, the access key is enabled and can be used to send 
@@ -8862,7 +8862,7 @@ struct osc_read_consumption_account_arg  {
          * only with a time set to midnight (for example, 
          * `2020-06-14T00:00:00.000Z`).
          */
-	char *from_date; /* string string */
+	char *from_date; /* string */
         /*
          * By default or if false, returns only the consumption of the specific 
          * account that sends this request. If true, returns either the overall 
@@ -8877,7 +8877,7 @@ struct osc_read_consumption_account_arg  {
          * `2020-06-30`). The date-time format is also accepted, but only with a 
          * time set to midnight (for example, `2020-06-30T00:00:00.000Z`).
          */
-	char *to_date; /* string string */
+	char *to_date; /* string */
 };
 
 struct osc_read_console_output_arg  {
@@ -11750,7 +11750,7 @@ struct osc_create_access_key_arg  {
          * or `2020-06-14`). To remove an existing expiration date, use the 
          * method without specifying this parameter.
          */
-	char *expiration_date; /* string string */
+	char *expiration_date; /* string */
         /*
          * The name of the EIM user that owns the key to be created. If you do 
          * not specify a user name, this action creates an access key for the 
