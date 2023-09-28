@@ -38,9 +38,9 @@ trap "echo [$MSG_BASE DeleteTags --Tags.0.Key k0 ..Value v0 --Tags.1.Key k1 ..Va
 echo "[$MSG_BASE --Tags.0.Key k0 ..Value v0 --Tags.1.Key k1 ..Value v1 OK]"
 
 trap "echo [$MSG_BASE Lot of Arguments FAIL]" ERR
-tests-lot-arg.sh
+./tests-lot-arg.sh | grep RequestId > /dev/null
 echo "[$MSG_BASE Lot of Arguments OK]"
 
 trap "echo [$MSG_BASE ReadConsumptionAccount --FromDate $(date -d "yesterday" '+%F') --ToDate $(date "+%F") FAIL]" ERR
-./oapi-cli ReadConsumptionAccount --FromDate $(date -d "yesterday" '+%F') --ToDate $(date "+%F")
+./oapi-cli ReadConsumptionAccount --FromDate $(date -d "yesterday" '+%F') --ToDate $(date "+%F") | grep Operation > /dev/null
 echo "[$MSG_BASE ReadConsumptionAccount --FromDate $(date -d "yesterday" '+%F') --ToDate $(date "+%F") OK]"

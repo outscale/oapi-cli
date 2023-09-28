@@ -10,19 +10,21 @@ fi
 
 alias oapi-cli=$oapi_cli
 
-if [ ! -d "osc-ricochet-2" ]; then
-    git clone https://github.com/outscale-mgo/osc-ricochet-2
+if [ "$#" -lt 2 ]; then
+    if [ ! -d "osc-ricochet-2" ]; then
+	git clone https://github.com/outscale-mgo/osc-ricochet-2
+    fi
+
+    cd osc-ricochet-2
+    pkill ricochet
+
+    cargo build
+    cargo run -- ./ricochet-oapi-cli.json > /dev/null  &
+
+    sleep 5
+
+    cd ..
 fi
-
-cd osc-ricochet-2
-pkill ricochet
-
-cargo build
-cargo run -- ./ricochet-oapi-cli.json > /dev/null  &
-
-sleep 5
-
-cd ..
 
 export OSC_ENDPOINT_API="127.0.0.1:3000"
 
