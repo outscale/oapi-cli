@@ -266,385 +266,385 @@ static const char *calls_name[] = {
 };
 
 static const char *calls_descriptions[] = {
-	"Usage: oapi-cli UpdateVpnConnection [options]\n" "Modifies the specified attributes of a VPN connection.\n" "\nRequired Argument: VpnConnectionId \n"
+	"Usage: oapi-cli UpdateVpnConnection VpnConnectionId [OPTIONS]\n" "Modifies the specified attributes of a VPN connection.\n" "\nRequired Argument: VpnConnectionId \n"
 ,
-	"Usage: oapi-cli UpdateVolume [options]\n" "Modifies the specified attributes of a volume.\nCold volumes are volumes that \n" "are attached to stopped or stopping VMs, or that are detached. Hot volumes are \n" "volumes that are attached to running VMs.\n\n**[NOTE]**\nWhen the modification \n" "is not instantaneous, the response displays the previous value. You can use the \n" "[ReadVolumes](#readvolumes) method to see the new value.\n" "\nRequired Argument: VolumeId \n"
+	"Usage: oapi-cli UpdateVolume VolumeId [OPTIONS]\n" "Modifies the specified attributes of a volume.\nCold volumes are volumes that \n" "are attached to stopped or stopping VMs, or that are detached. Hot volumes are \n" "volumes that are attached to running VMs.\n\n**[NOTE]**\nWhen the modification \n" "is not instantaneous, the response displays the previous value. You can use the \n" "[ReadVolumes](#readvolumes) method to see the new value.\n" "\nRequired Argument: VolumeId \n"
 ,
-	"Usage: oapi-cli UpdateVmTemplate [options]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nModifies the specified attributes of a template of virtual \n" "machines (VMs).\n" "\nRequired Argument: VmTemplateId \n"
+	"Usage: oapi-cli UpdateVmTemplate VmTemplateId [OPTIONS]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nModifies the specified attributes of a template of virtual \n" "machines (VMs).\n" "\nRequired Argument: VmTemplateId \n"
 ,
-	"Usage: oapi-cli UpdateVmGroup [options]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nModifies the specified attributes of a group of virtual machines \n" "(VMs).\n" "\nRequired Argument: VmGroupId \n"
+	"Usage: oapi-cli UpdateVmGroup VmGroupId [OPTIONS]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nModifies the specified attributes of a group of virtual machines \n" "(VMs).\n" "\nRequired Argument: VmGroupId \n"
 ,
-	"Usage: oapi-cli UpdateVm [options]\n" "Modifies the specified attributes of a virtual machine (VM).\nYou must stop the \n" "VM before modifying the following attributes:\n* `NestedVirtualization`\n* \n" "`Performance`\n* `UserData`\n* `VmType`\n" "\nRequired Argument: VmId \n"
+	"Usage: oapi-cli UpdateVm VmId [OPTIONS]\n" "Modifies the specified attributes of a virtual machine (VM).\nYou must stop the \n" "VM before modifying the following attributes:\n* `NestedVirtualization`\n* \n" "`Performance`\n* `UserData`\n* `VmType`\n" "\nRequired Argument: VmId \n"
 ,
-	"Usage: oapi-cli UpdateUser [options]\n" "Modifies the name and/or the path of a specified EIM user.\n" "\nRequired Argument: UserName \n"
+	"Usage: oapi-cli UpdateUser UserName [OPTIONS]\n" "Modifies the name and/or the path of a specified EIM user.\n" "\nRequired Argument: UserName \n"
 ,
-	"Usage: oapi-cli UpdateSubnet [options]\n" "Modifies the specified attribute of a Subnet.\n" "\nRequired Argument: SubnetId, MapPublicIpOnLaunch \n"
+	"Usage: oapi-cli UpdateSubnet SubnetId, MapPublicIpOnLaunch [OPTIONS]\n" "Modifies the specified attribute of a Subnet.\n" "\nRequired Argument: SubnetId, MapPublicIpOnLaunch \n"
 ,
-	"Usage: oapi-cli UpdateSnapshot [options]\n" "Modifies the permissions for a specified snapshot.\nYou must specify either the \n" "`Additions` or the `Removals` parameter.\nAfter sharing a snapshot with an \n" "account, the other account can create a copy of it that they own. For more \n" "information about copying snapshots, see [CreateSnapshot](#createsnapshot).\n" "\nRequired Argument: SnapshotId, PermissionsToCreateVolume \n"
+	"Usage: oapi-cli UpdateSnapshot SnapshotId, PermissionsToCreateVolume [OPTIONS]\n" "Modifies the permissions for a specified snapshot.\nYou must specify either the \n" "`Additions` or the `Removals` parameter.\nAfter sharing a snapshot with an \n" "account, the other account can create a copy of it that they own. For more \n" "information about copying snapshots, see [CreateSnapshot](#createsnapshot).\n" "\nRequired Argument: SnapshotId, PermissionsToCreateVolume \n"
 ,
-	"Usage: oapi-cli UpdateServerCertificate [options]\n" "Modifies the name and/or the path of a specified server certificate.\n" "\nRequired Argument: Name \n"
+	"Usage: oapi-cli UpdateServerCertificate Name [OPTIONS]\n" "Modifies the name and/or the path of a specified server certificate.\n" "\nRequired Argument: Name \n"
 ,
-	"Usage: oapi-cli UpdateRoutePropagation [options]\n" "Configures the propagation of routes to a specified route table of a Net by a \n" "virtual gateway.\n" "\nRequired Argument: Enable, RouteTableId, VirtualGatewayId \n"
+	"Usage: oapi-cli UpdateRoutePropagation Enable, RouteTableId, VirtualGatewayId [OPTIONS]\n" "Configures the propagation of routes to a specified route table of a Net by a \n" "virtual gateway.\n" "\nRequired Argument: Enable, RouteTableId, VirtualGatewayId \n"
 ,
-	"Usage: oapi-cli UpdateRoute [options]\n" "Replaces an existing route within a route table in a Net.\nYou must specify one \n" "of the following elements as the target:\n\n* Net peering\n* NAT virtual \n" "machine (VM)\n* Internet service\n* Virtual gateway\n* NAT service\n* Network \n" "interface card (NIC)\n\nThe routing algorithm is based on the most specific \n" "match.\n" "\nRequired Argument: RouteTableId, DestinationIpRange \n"
+	"Usage: oapi-cli UpdateRoute RouteTableId, DestinationIpRange [OPTIONS]\n" "Replaces an existing route within a route table in a Net.\nYou must specify one \n" "of the following elements as the target:\n\n* Net peering\n* NAT virtual \n" "machine (VM)\n* Internet service\n* Virtual gateway\n* NAT service\n* Network \n" "interface card (NIC)\n\nThe routing algorithm is based on the most specific \n" "match.\n" "\nRequired Argument: RouteTableId, DestinationIpRange \n"
 ,
-	"Usage: oapi-cli UpdateNic [options]\n" "Modifies the specified network interface card (NIC). You can specify only one \n" "attribute at a time.\n" "\nRequired Argument: NicId \n"
+	"Usage: oapi-cli UpdateNic NicId [OPTIONS]\n" "Modifies the specified network interface card (NIC). You can specify only one \n" "attribute at a time.\n" "\nRequired Argument: NicId \n"
 ,
-	"Usage: oapi-cli UpdateNetAccessPoint [options]\n" "Modifies the attributes of a Net access point.\nThis action enables you to add \n" "or remove route tables associated with the specified Net access point.\n" "\nRequired Argument: NetAccessPointId \n"
+	"Usage: oapi-cli UpdateNetAccessPoint NetAccessPointId [OPTIONS]\n" "Modifies the attributes of a Net access point.\nThis action enables you to add \n" "or remove route tables associated with the specified Net access point.\n" "\nRequired Argument: NetAccessPointId \n"
 ,
-	"Usage: oapi-cli UpdateNet [options]\n" "Associates a DHCP options set with a specified Net.\n" "\nRequired Argument: DhcpOptionsSetId, NetId \n"
+	"Usage: oapi-cli UpdateNet DhcpOptionsSetId, NetId [OPTIONS]\n" "Associates a DHCP options set with a specified Net.\n" "\nRequired Argument: DhcpOptionsSetId, NetId \n"
 ,
-	"Usage: oapi-cli UpdateLoadBalancer [options]\n" "Modifies the specified attribute of a load balancer. You can specify only one \n" "attribute at a time.\n\nYou can set a new SSL certificate to an SSL or HTTPS \n" "listener of a load balancer.\nThis certificate replaces any certificate used on \n" "the same load balancer and port.\n\nYou can also replace the currently enabled \n" "policy for the load balancer with another one.\nIf the `PolicyNames` parameter \n" "is empty, the currently enabled policy is disabled.\n" "\nRequired Argument: LoadBalancerName \n"
+	"Usage: oapi-cli UpdateLoadBalancer LoadBalancerName [OPTIONS]\n" "Modifies the specified attribute of a load balancer. You can specify only one \n" "attribute at a time.\n\nYou can set a new SSL certificate to an SSL or HTTPS \n" "listener of a load balancer.\nThis certificate replaces any certificate used on \n" "the same load balancer and port.\n\nYou can also replace the currently enabled \n" "policy for the load balancer with another one.\nIf the `PolicyNames` parameter \n" "is empty, the currently enabled policy is disabled.\n" "\nRequired Argument: LoadBalancerName \n"
 ,
-	"Usage: oapi-cli UpdateListenerRule [options]\n" "Updates the pattern of the listener rule.\nThis call updates the pattern \n" "matching algorithm for incoming traffic.\n" "\nRequired Argument: ListenerRuleName \n"
+	"Usage: oapi-cli UpdateListenerRule ListenerRuleName [OPTIONS]\n" "Updates the pattern of the listener rule.\nThis call updates the pattern \n" "matching algorithm for incoming traffic.\n" "\nRequired Argument: ListenerRuleName \n"
 ,
-	"Usage: oapi-cli UpdateImage [options]\n" "Modifies the access permissions for an OUTSCALE machine image (OMI).\nYou must \n" "specify either the `Additions` or the `Removals` parameter.\nAfter sharing an \n" "OMI with an account, the other account can create a copy of it that they own. \n" "For more information about copying OMIs, see [CreateImage](#createimage).\n" "\nRequired Argument: ImageId, PermissionsToLaunch \n"
+	"Usage: oapi-cli UpdateImage ImageId, PermissionsToLaunch [OPTIONS]\n" "Modifies the access permissions for an OUTSCALE machine image (OMI).\nYou must \n" "specify either the `Additions` or the `Removals` parameter.\nAfter sharing an \n" "OMI with an account, the other account can create a copy of it that they own. \n" "For more information about copying OMIs, see [CreateImage](#createimage).\n" "\nRequired Argument: ImageId, PermissionsToLaunch \n"
 ,
-	"Usage: oapi-cli UpdateFlexibleGpu [options]\n" "Modifies a flexible GPU (fGPU) behavior.\n" "\nRequired Argument: FlexibleGpuId \n"
+	"Usage: oapi-cli UpdateFlexibleGpu FlexibleGpuId [OPTIONS]\n" "Modifies a flexible GPU (fGPU) behavior.\n" "\nRequired Argument: FlexibleGpuId \n"
 ,
-	"Usage: oapi-cli UpdateDirectLinkInterface [options]\n" "Modifies the maximum transmission unit (MTU) of a DirectLink interface.\n" "\nRequired Argument: DirectLinkInterfaceId, Mtu \n"
+	"Usage: oapi-cli UpdateDirectLinkInterface DirectLinkInterfaceId, Mtu [OPTIONS]\n" "Modifies the maximum transmission unit (MTU) of a DirectLink interface.\n" "\nRequired Argument: DirectLinkInterfaceId, Mtu \n"
 ,
-	"Usage: oapi-cli UpdateCa [options]\n" "Modifies the specified attribute of a Client Certificate Authority (CA).\n" "\nRequired Argument: CaId \n"
+	"Usage: oapi-cli UpdateCa CaId [OPTIONS]\n" "Modifies the specified attribute of a Client Certificate Authority (CA).\n" "\nRequired Argument: CaId \n"
 ,
-	"Usage: oapi-cli UpdateApiAccessRule [options]\n" "Modifies a specified API access rule.\n\n**[NOTE]** \n- The new rule you \n" "specify fully replaces the old rule. Therefore, for a parameter that is not \n" "specified, any previously set value is deleted.\n- If, as result of your \n" "modification, you no longer have access to the APIs, you will need to contact \n" "the Support team to regain access. For more information, see [Technical \n" "Support](https://docs.outscale.com/en/userguide/Technical-Support.html).\n" "\nRequired Argument: ApiAccessRuleId \n"
+	"Usage: oapi-cli UpdateApiAccessRule ApiAccessRuleId [OPTIONS]\n" "Modifies a specified API access rule.\n\n**[NOTE]** \n- The new rule you \n" "specify fully replaces the old rule. Therefore, for a parameter that is not \n" "specified, any previously set value is deleted.\n- If, as result of your \n" "modification, you no longer have access to the APIs, you will need to contact \n" "the Support team to regain access. For more information, see [Technical \n" "Support](https://docs.outscale.com/en/userguide/Technical-Support.html).\n" "\nRequired Argument: ApiAccessRuleId \n"
 ,
-	"Usage: oapi-cli UpdateApiAccessPolicy [options]\n" "Updates the API access policy of your account.\n\n**[NOTE]**\nOnly one API \n" "access policy can be associated with your account.\n" "\nRequired Argument: MaxAccessKeyExpirationSeconds, RequireTrustedEnv \n"
+	"Usage: oapi-cli UpdateApiAccessPolicy MaxAccessKeyExpirationSeconds, RequireTrustedEnv [OPTIONS]\n" "Updates the API access policy of your account.\n\n**[NOTE]**\nOnly one API \n" "access policy can be associated with your account.\n" "\nRequired Argument: MaxAccessKeyExpirationSeconds, RequireTrustedEnv \n"
 ,
-	"Usage: oapi-cli UpdateAccount [options]\n" "Updates the account information for the account that sends the request.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli UpdateAccount [OPTIONS]\n" "Updates the account information for the account that sends the request.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli UpdateAccessKey [options]\n" "Modifies the attributes of the specified access key of either your root account \n" "or an EIM user.\n\n**[NOTE]**\nTo protect against brute force attacks, the \n" "number of requests allowed for this method in a given time period is limited.\n" "\nRequired Argument: AccessKeyId, State \n"
+	"Usage: oapi-cli UpdateAccessKey AccessKeyId, State [OPTIONS]\n" "Modifies the attributes of the specified access key of either your root account \n" "or an EIM user.\n\n**[NOTE]**\nTo protect against brute force attacks, the \n" "number of requests allowed for this method in a given time period is limited.\n" "\nRequired Argument: AccessKeyId, State \n"
 ,
-	"Usage: oapi-cli UnlinkVolume [options]\n" "Detaches a Block Storage Unit (BSU) volume from a virtual machine (VM).\nTo \n" "detach the root device of a VM, this VM must be stopped.\n" "\nRequired Argument: VolumeId \n"
+	"Usage: oapi-cli UnlinkVolume VolumeId [OPTIONS]\n" "Detaches a Block Storage Unit (BSU) volume from a virtual machine (VM).\nTo \n" "detach the root device of a VM, this VM must be stopped.\n" "\nRequired Argument: VolumeId \n"
 ,
-	"Usage: oapi-cli UnlinkVirtualGateway [options]\n" "Detaches a virtual gateway from a Net.\nYou must wait until the virtual gateway \n" "is in the detached state before you can attach another Net to it or delete the \n" "Net it was previously attached to.\n" "\nRequired Argument: NetId, VirtualGatewayId \n"
+	"Usage: oapi-cli UnlinkVirtualGateway NetId, VirtualGatewayId [OPTIONS]\n" "Detaches a virtual gateway from a Net.\nYou must wait until the virtual gateway \n" "is in the detached state before you can attach another Net to it or delete the \n" "Net it was previously attached to.\n" "\nRequired Argument: NetId, VirtualGatewayId \n"
 ,
-	"Usage: oapi-cli UnlinkRouteTable [options]\n" "Disassociates a Subnet from a route table.\nAfter disassociation, the Subnet \n" "can no longer use the routes in this route table, but uses the routes in the \n" "main route table of the Net instead.\n" "\nRequired Argument: LinkRouteTableId \n"
+	"Usage: oapi-cli UnlinkRouteTable LinkRouteTableId [OPTIONS]\n" "Disassociates a Subnet from a route table.\nAfter disassociation, the Subnet \n" "can no longer use the routes in this route table, but uses the routes in the \n" "main route table of the Net instead.\n" "\nRequired Argument: LinkRouteTableId \n"
 ,
-	"Usage: oapi-cli UnlinkPublicIp [options]\n" "Disassociates a public IP from the virtual machine (VM) or network interface \n" "card (NIC) it is associated with.\n\n**[NOTE]**\nTo disassociate the public IP \n" "from a NAT service, you need to delete the NAT service. For more information, \n" "see the [DeleteNatService](#deletenatservice) method.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli UnlinkPublicIp [OPTIONS]\n" "Disassociates a public IP from the virtual machine (VM) or network interface \n" "card (NIC) it is associated with.\n\n**[NOTE]**\nTo disassociate the public IP \n" "from a NAT service, you need to delete the NAT service. For more information, \n" "see the [DeleteNatService](#deletenatservice) method.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli UnlinkPrivateIps [options]\n" "Unassigns one or more secondary private IPs from a network interface card (NIC).\n" "\nRequired Argument: NicId, PrivateIps \n"
+	"Usage: oapi-cli UnlinkPrivateIps NicId, PrivateIps [OPTIONS]\n" "Unassigns one or more secondary private IPs from a network interface card (NIC).\n" "\nRequired Argument: NicId, PrivateIps \n"
 ,
-	"Usage: oapi-cli UnlinkNic [options]\n" "Detaches a network interface card (NIC) from a virtual machine (VM).\nThe \n" "primary NIC cannot be detached.\n" "\nRequired Argument: LinkNicId \n"
+	"Usage: oapi-cli UnlinkNic LinkNicId [OPTIONS]\n" "Detaches a network interface card (NIC) from a virtual machine (VM).\nThe \n" "primary NIC cannot be detached.\n" "\nRequired Argument: LinkNicId \n"
 ,
-	"Usage: oapi-cli UnlinkLoadBalancerBackendMachines [options]\n" "Detaches one or more back-end virtual machines (VMs) from a load balancer. You \n" "need to specify at least the `BackendIps` or the `BackendVmIds` parameter.\n" "\nRequired Argument: LoadBalancerName \n"
+	"Usage: oapi-cli UnlinkLoadBalancerBackendMachines LoadBalancerName [OPTIONS]\n" "Detaches one or more back-end virtual machines (VMs) from a load balancer. You \n" "need to specify at least the `BackendIps` or the `BackendVmIds` parameter.\n" "\nRequired Argument: LoadBalancerName \n"
 ,
-	"Usage: oapi-cli UnlinkInternetService [options]\n" "Detaches an Internet service from a Net.\nThis action disables and detaches an \n" "Internet service from a Net. The Net must not contain virtual machines (VMs) \n" "using public IPs nor internet-facing load balancers.\n" "\nRequired Argument: InternetServiceId, NetId \n"
+	"Usage: oapi-cli UnlinkInternetService InternetServiceId, NetId [OPTIONS]\n" "Detaches an Internet service from a Net.\nThis action disables and detaches an \n" "Internet service from a Net. The Net must not contain virtual machines (VMs) \n" "using public IPs nor internet-facing load balancers.\n" "\nRequired Argument: InternetServiceId, NetId \n"
 ,
-	"Usage: oapi-cli UnlinkFlexibleGpu [options]\n" "Detaches a flexible GPU (fGPU) from a virtual machine (VM).\nThe fGPU is in the \n" "`detaching` state until the VM is stopped, after which it becomes available for \n" "allocation again.\n" "\nRequired Argument: FlexibleGpuId \n"
+	"Usage: oapi-cli UnlinkFlexibleGpu FlexibleGpuId [OPTIONS]\n" "Detaches a flexible GPU (fGPU) from a virtual machine (VM).\nThe fGPU is in the \n" "`detaching` state until the VM is stopped, after which it becomes available for \n" "allocation again.\n" "\nRequired Argument: FlexibleGpuId \n"
 ,
-	"Usage: oapi-cli StopVms [options]\n" "Stops one or more running virtual machines (VMs).\nYou can stop only VMs that \n" "are valid and that belong to you. Data stored in the VM RAM is lost.\n" "\nRequired Argument: VmIds \n"
+	"Usage: oapi-cli StopVms VmIds [OPTIONS]\n" "Stops one or more running virtual machines (VMs).\nYou can stop only VMs that \n" "are valid and that belong to you. Data stored in the VM RAM is lost.\n" "\nRequired Argument: VmIds \n"
 ,
-	"Usage: oapi-cli StartVms [options]\n" "Start one or more virtual machines (VMs).\nYou can start only VMs that are \n" "valid and that belong to you.\n" "\nRequired Argument: VmIds \n"
+	"Usage: oapi-cli StartVms VmIds [OPTIONS]\n" "Start one or more virtual machines (VMs).\nYou can start only VMs that are \n" "valid and that belong to you.\n" "\nRequired Argument: VmIds \n"
 ,
-	"Usage: oapi-cli SendResetPasswordEmail [options]\n" "Sends an email to the email address provided for the account with a token to \n" "reset your password.\nYou need to provide this token when updating the account \n" "password using the ResetAccountPassword method.\n**[NOTE]**\nTo protect against \n" "brute force attacks, the number of requests allowed for this method in a given \n" "time period is limited.\n" "\nRequired Argument: Email \n"
+	"Usage: oapi-cli SendResetPasswordEmail Email [OPTIONS]\n" "Sends an email to the email address provided for the account with a token to \n" "reset your password.\nYou need to provide this token when updating the account \n" "password using the ResetAccountPassword method.\n**[NOTE]**\nTo protect against \n" "brute force attacks, the number of requests allowed for this method in a given \n" "time period is limited.\n" "\nRequired Argument: Email \n"
 ,
-	"Usage: oapi-cli ScaleUpVmGroup [options]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nCreates additional virtual machines (VMs) in a VM group.\nThe new \n" "VMs use the current version of the VM template.\n" "\nRequired Argument: VmGroupId, VmAddition \n"
+	"Usage: oapi-cli ScaleUpVmGroup VmGroupId, VmAddition [OPTIONS]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nCreates additional virtual machines (VMs) in a VM group.\nThe new \n" "VMs use the current version of the VM template.\n" "\nRequired Argument: VmGroupId, VmAddition \n"
 ,
-	"Usage: oapi-cli ScaleDownVmGroup [options]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nDeletes virtual machines (VMs) from a VM group.\nThe oldest VMs \n" "are the first to be deleted.\n" "\nRequired Argument: VmGroupId, VmSubtraction \n"
+	"Usage: oapi-cli ScaleDownVmGroup VmGroupId, VmSubtraction [OPTIONS]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nDeletes virtual machines (VMs) from a VM group.\nThe oldest VMs \n" "are the first to be deleted.\n" "\nRequired Argument: VmGroupId, VmSubtraction \n"
 ,
-	"Usage: oapi-cli ResetAccountPassword [options]\n" "Replaces the account password with the new one you provide.\nYou must also \n" "provide the token you received by email when asking for a password reset using \n" "the SendResetPasswordEmail method.\nPassword strength is tested through \n" "heuristic algorithms. For more information, see the [zxcvbn \n" "GitHub](https://github.com/dropbox/zxcvbn).\n**[NOTE]**\nTo protect against \n" "brute force attacks, the number of requests allowed for this method in a given \n" "time period is limited.\n" "\nRequired Argument: Password, Token \n"
+	"Usage: oapi-cli ResetAccountPassword Password, Token [OPTIONS]\n" "Replaces the account password with the new one you provide.\nYou must also \n" "provide the token you received by email when asking for a password reset using \n" "the SendResetPasswordEmail method.\nPassword strength is tested through \n" "heuristic algorithms. For more information, see the [zxcvbn \n" "GitHub](https://github.com/dropbox/zxcvbn).\n**[NOTE]**\nTo protect against \n" "brute force attacks, the number of requests allowed for this method in a given \n" "time period is limited.\n" "\nRequired Argument: Password, Token \n"
 ,
-	"Usage: oapi-cli RejectNetPeering [options]\n" "Rejects a Net peering request.\nThe Net peering must be in the \n" "`pending-acceptance` state to be rejected. The rejected Net peering is then in \n" "the `rejected` state.\n" "\nRequired Argument: NetPeeringId \n"
+	"Usage: oapi-cli RejectNetPeering NetPeeringId [OPTIONS]\n" "Rejects a Net peering request.\nThe Net peering must be in the \n" "`pending-acceptance` state to be rejected. The rejected Net peering is then in \n" "the `rejected` state.\n" "\nRequired Argument: NetPeeringId \n"
 ,
-	"Usage: oapi-cli RegisterVmsInLoadBalancer [options]\n" "Registers one or more virtual machines (VMs) with a specified load \n" "balancer.\nThe VMs can be in different Subnets and different Subregions than \n" "the load balancer, as long as the VMs and load balancers are all in the public \n" "Cloud or all in the same Net. It may take a little time for a VM to be \n" "registered with the load balancer. Once the VM is registered with a load \n" "balancer, it receives traffic and requests from this load balancer and is \n" "called a back-end VM.\n" "\nRequired Argument: BackendVmIds, LoadBalancerName \n"
+	"Usage: oapi-cli RegisterVmsInLoadBalancer BackendVmIds, LoadBalancerName [OPTIONS]\n" "Registers one or more virtual machines (VMs) with a specified load \n" "balancer.\nThe VMs can be in different Subnets and different Subregions than \n" "the load balancer, as long as the VMs and load balancers are all in the public \n" "Cloud or all in the same Net. It may take a little time for a VM to be \n" "registered with the load balancer. Once the VM is registered with a load \n" "balancer, it receives traffic and requests from this load balancer and is \n" "called a back-end VM.\n" "\nRequired Argument: BackendVmIds, LoadBalancerName \n"
 ,
-	"Usage: oapi-cli RebootVms [options]\n" "Reboots one or more virtual machines (VMs).\nThis operation sends a reboot \n" "request to one or more specified VMs. This is an asynchronous action that \n" "queues this reboot request. This action only reboots VMs that are valid and \n" "that belong to you.\n" "\nRequired Argument: VmIds \n"
+	"Usage: oapi-cli RebootVms VmIds [OPTIONS]\n" "Reboots one or more virtual machines (VMs).\nThis operation sends a reboot \n" "request to one or more specified VMs. This is an asynchronous action that \n" "queues this reboot request. This action only reboots VMs that are valid and \n" "that belong to you.\n" "\nRequired Argument: VmIds \n"
 ,
-	"Usage: oapi-cli ReadVpnConnections [options]\n" "Lists one or more VPN connections.\n\n**[NOTE]**\nIf you exceed the number of \n" "identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadVpnConnections [OPTIONS]\n" "Lists one or more VPN connections.\n\n**[NOTE]**\nIf you exceed the number of \n" "identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadVolumes [options]\n" "Lists one or more specified Block Storage Unit (BSU) volumes.\n\n**[NOTE]**\nIf \n" "you exceed the number of identical requests allowed for a configured time \n" "period, the `RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadVolumes [OPTIONS]\n" "Lists one or more specified Block Storage Unit (BSU) volumes.\n\n**[NOTE]**\nIf \n" "you exceed the number of identical requests allowed for a configured time \n" "period, the `RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadVmsState [options]\n" "Lists the status of one or more virtual machines (VMs).\n\n**[NOTE]**\nIf you \n" "exceed the number of identical requests allowed for a configured time period, \n" "the `RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadVmsState [OPTIONS]\n" "Lists the status of one or more virtual machines (VMs).\n\n**[NOTE]**\nIf you \n" "exceed the number of identical requests allowed for a configured time period, \n" "the `RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadVmsHealth [options]\n" "Lists the state of one or more back-end virtual machines (VMs) registered with \n" "a specified load balancer.\n\n**[NOTE]**\nIf you exceed the number of identical \n" "requests allowed for a configured time period, the `Throttling` error message \n" "is returned.\n" "\nRequired Argument: LoadBalancerName \n"
+	"Usage: oapi-cli ReadVmsHealth LoadBalancerName [OPTIONS]\n" "Lists the state of one or more back-end virtual machines (VMs) registered with \n" "a specified load balancer.\n\n**[NOTE]**\nIf you exceed the number of identical \n" "requests allowed for a configured time period, the `Throttling` error message \n" "is returned.\n" "\nRequired Argument: LoadBalancerName \n"
 ,
-	"Usage: oapi-cli ReadVms [options]\n" "Lists one or more of your virtual machines (VMs).\nIf you provide one or more \n" "VM IDs, this action returns a description for all of these VMs. If you do not \n" "provide any VM ID, this action returns a description for all of the VMs that \n" "belong to you. If you provide an invalid VM ID, an error is returned. If you \n" "provide the ID of a VM that does not belong to you, the description of this VM \n" "is not included in the response. The refresh interval for data returned by this \n" "action is one hour, meaning that a terminated VM may appear in the \n" "response.\n\n**[NOTE]**\nIf you exceed the number of identical requests allowed \n" "for a configured time period, the `RequestLimitExceeded` error message is \n" "returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadVms [OPTIONS]\n" "Lists one or more of your virtual machines (VMs).\nIf you provide one or more \n" "VM IDs, this action returns a description for all of these VMs. If you do not \n" "provide any VM ID, this action returns a description for all of the VMs that \n" "belong to you. If you provide an invalid VM ID, an error is returned. If you \n" "provide the ID of a VM that does not belong to you, the description of this VM \n" "is not included in the response. The refresh interval for data returned by this \n" "action is one hour, meaning that a terminated VM may appear in the \n" "response.\n\n**[NOTE]**\nIf you exceed the number of identical requests allowed \n" "for a configured time period, the `RequestLimitExceeded` error message is \n" "returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadVmTypes [options]\n" "Lists one or more predefined VM types.\n\n**[NOTE]**\nIf you exceed the number \n" "of identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadVmTypes [OPTIONS]\n" "Lists one or more predefined VM types.\n\n**[NOTE]**\nIf you exceed the number \n" "of identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadVmTemplates [options]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nLists one or more virtual machine (VM) templates.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadVmTemplates [OPTIONS]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nLists one or more virtual machine (VM) templates.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadVmGroups [options]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nLists one or more group of virtual machines (VMs).\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadVmGroups [OPTIONS]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nLists one or more group of virtual machines (VMs).\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadVirtualGateways [options]\n" "Lists one or more virtual gateways.\n\n**[NOTE]**\nIf you exceed the number of \n" "identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadVirtualGateways [OPTIONS]\n" "Lists one or more virtual gateways.\n\n**[NOTE]**\nIf you exceed the number of \n" "identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadUsers [options]\n" "Lists all EIM users that have a specified path.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadUsers [OPTIONS]\n" "Lists all EIM users that have a specified path.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadTags [options]\n" "Lists one or more tags for your resources.\n\n**[NOTE]**\nIf you exceed the \n" "number of identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadTags [OPTIONS]\n" "Lists one or more tags for your resources.\n\n**[NOTE]**\nIf you exceed the \n" "number of identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadSubregions [options]\n" "Lists one or more of the enabled Subregions that you can access in the current \n" "Region.\n\n**[NOTE]**\n- If you exceed the number of identical requests allowed \n" "for a configured time period, the `RequestLimitExceeded` error message is \n" "returned.\n- You can use this command to get information about Subregions only \n" "in a Region for which you have an account. Otherwise, the `AuthFailure` error \n" "message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadSubregions [OPTIONS]\n" "Lists one or more of the enabled Subregions that you can access in the current \n" "Region.\n\n**[NOTE]**\n- If you exceed the number of identical requests allowed \n" "for a configured time period, the `RequestLimitExceeded` error message is \n" "returned.\n- You can use this command to get information about Subregions only \n" "in a Region for which you have an account. Otherwise, the `AuthFailure` error \n" "message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadSubnets [options]\n" "Lists one or more of your Subnets.\nIf you do not specify any Subnet ID, this \n" "action describes all of your Subnets.\n\n**[NOTE]**\nIf you exceed the number \n" "of identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadSubnets [OPTIONS]\n" "Lists one or more of your Subnets.\nIf you do not specify any Subnet ID, this \n" "action describes all of your Subnets.\n\n**[NOTE]**\nIf you exceed the number \n" "of identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadSnapshots [options]\n" "Lists one or more snapshots that are available to you and the permissions to \n" "create volumes from them.\n\n**[NOTE]**\nIf you exceed the number of identical \n" "requests allowed for a configured time period, the `RequestLimitExceeded` error \n" "message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadSnapshots [OPTIONS]\n" "Lists one or more snapshots that are available to you and the permissions to \n" "create volumes from them.\n\n**[NOTE]**\nIf you exceed the number of identical \n" "requests allowed for a configured time period, the `RequestLimitExceeded` error \n" "message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadSnapshotExportTasks [options]\n" "Lists one or more snapshot export tasks.\n\n**[NOTE]**\nIf you exceed the \n" "number of identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadSnapshotExportTasks [OPTIONS]\n" "Lists one or more snapshot export tasks.\n\n**[NOTE]**\nIf you exceed the \n" "number of identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadServerCertificates [options]\n" "Lists your server certificates.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadServerCertificates [OPTIONS]\n" "Lists your server certificates.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadSecurityGroups [options]\n" "Lists one or more security groups.\nYou can specify either the name of the \n" "security groups or their IDs.\n\n**[NOTE]**\nIf you exceed the number of \n" "identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadSecurityGroups [OPTIONS]\n" "Lists one or more security groups.\nYou can specify either the name of the \n" "security groups or their IDs.\n\n**[NOTE]**\nIf you exceed the number of \n" "identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadSecretAccessKey [options]\n" "Lists information about the specified access key of your root account, \n" "including its secret key.\n" "\nRequired Argument: AccessKeyId \n"
+	"Usage: oapi-cli ReadSecretAccessKey AccessKeyId [OPTIONS]\n" "Lists information about the specified access key of your root account, \n" "including its secret key.\n" "\nRequired Argument: AccessKeyId \n"
 ,
-	"Usage: oapi-cli ReadRouteTables [options]\n" "Lists one or more of your route tables.\nIn your Net, each Subnet must be \n" "associated with a route table. If a Subnet is not explicitly associated with a \n" "route table, it is implicitly associated with the main route table of the \n" "Net.\n\n**[NOTE]**\nIf you exceed the number of identical requests allowed for \n" "a configured time period, the `RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadRouteTables [OPTIONS]\n" "Lists one or more of your route tables.\nIn your Net, each Subnet must be \n" "associated with a route table. If a Subnet is not explicitly associated with a \n" "route table, it is implicitly associated with the main route table of the \n" "Net.\n\n**[NOTE]**\nIf you exceed the number of identical requests allowed for \n" "a configured time period, the `RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadRegions [options]\n" "Lists one or more Regions of the OUTSCALE Cloud.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadRegions [OPTIONS]\n" "Lists one or more Regions of the OUTSCALE Cloud.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadQuotas [options]\n" "Lists one or more of your quotas.\n\n**[NOTE]**\nIf you exceed the number of \n" "identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadQuotas [OPTIONS]\n" "Lists one or more of your quotas.\n\n**[NOTE]**\nIf you exceed the number of \n" "identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadPublicIps [options]\n" "Lists one or more public IPs allocated to your account.\nBy default, this \n" "action returns information about all your public IPs: available or associated \n" "with a virtual machine (VM), a network interface card (NIC) or a NAT \n" "service.\n\n**[NOTE]**\nIf you exceed the number of identical requests allowed \n" "for a configured time period, the `RequestLimitExceeded` error message is \n" "returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadPublicIps [OPTIONS]\n" "Lists one or more public IPs allocated to your account.\nBy default, this \n" "action returns information about all your public IPs: available or associated \n" "with a virtual machine (VM), a network interface card (NIC) or a NAT \n" "service.\n\n**[NOTE]**\nIf you exceed the number of identical requests allowed \n" "for a configured time period, the `RequestLimitExceeded` error message is \n" "returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadPublicIpRanges [options]\n" "Gets the public IPv4 addresses in CIDR notation for the Region specified in the \n" "endpoint of the request. For more information, see [Regions, Endpoints and \n" "Availability Zones \n" "Reference](https://docs.outscale.com/en/userguide/Regions-Endpoints-and-Availabi\n" "lity-Zones-Reference.html).\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadPublicIpRanges [OPTIONS]\n" "Gets the public IPv4 addresses in CIDR notation for the Region specified in the \n" "endpoint of the request. For more information, see [Regions, Endpoints and \n" "Availability Zones \n" "Reference](https://docs.outscale.com/en/userguide/Regions-Endpoints-and-Availabi\n" "lity-Zones-Reference.html).\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadPublicCatalog [options]\n" "Returns the price list of OUTSCALE products and services for the Region \n" "specified in the endpoint of the request. For more information, see [Regions, \n" "Endpoints and Availability Zones \n" "Reference](https://docs.outscale.com/en/userguide/Regions-Endpoints-and-Availabi\n" "lity-Zones-Reference.html).\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadPublicCatalog [OPTIONS]\n" "Returns the price list of OUTSCALE products and services for the Region \n" "specified in the endpoint of the request. For more information, see [Regions, \n" "Endpoints and Availability Zones \n" "Reference](https://docs.outscale.com/en/userguide/Regions-Endpoints-and-Availabi\n" "lity-Zones-Reference.html).\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadProductTypes [options]\n" "Lists one or more product types.\n\n**[NOTE]**\nIf you exceed the number of \n" "identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadProductTypes [OPTIONS]\n" "Lists one or more product types.\n\n**[NOTE]**\nIf you exceed the number of \n" "identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadNics [options]\n" "Lists one or more network interface cards (NICs).\nA NIC is a virtual network \n" "interface that you can attach to a virtual machine (VM) in a \n" "Net.\n\n**[NOTE]**\nIf you exceed the number of identical requests allowed for \n" "a configured time period, the `RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadNics [OPTIONS]\n" "Lists one or more network interface cards (NICs).\nA NIC is a virtual network \n" "interface that you can attach to a virtual machine (VM) in a \n" "Net.\n\n**[NOTE]**\nIf you exceed the number of identical requests allowed for \n" "a configured time period, the `RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadNets [options]\n" "Lists one or more Nets.\n\n**[NOTE]**\nIf you exceed the number of identical \n" "requests allowed for a configured time period, the `RequestLimitExceeded` error \n" "message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadNets [OPTIONS]\n" "Lists one or more Nets.\n\n**[NOTE]**\nIf you exceed the number of identical \n" "requests allowed for a configured time period, the `RequestLimitExceeded` error \n" "message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadNetPeerings [options]\n" "Lists one or more peering connections between two Nets.\n\n**[NOTE]**\nIf you \n" "exceed the number of identical requests allowed for a configured time period, \n" "the `RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadNetPeerings [OPTIONS]\n" "Lists one or more peering connections between two Nets.\n\n**[NOTE]**\nIf you \n" "exceed the number of identical requests allowed for a configured time period, \n" "the `RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadNetAccessPoints [options]\n" "Lists one or more Net access points.\n\n**[NOTE]**\nIf you exceed the number of \n" "identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadNetAccessPoints [OPTIONS]\n" "Lists one or more Net access points.\n\n**[NOTE]**\nIf you exceed the number of \n" "identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadNetAccessPointServices [options]\n" "Lists OUTSCALE services available to create Net access points.\nFor more \n" "information, see \n" "[CreateNetAccessPoint](#createnetaccesspoint).\n\n**[NOTE]**\nIf you exceed the \n" "number of identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadNetAccessPointServices [OPTIONS]\n" "Lists OUTSCALE services available to create Net access points.\nFor more \n" "information, see \n" "[CreateNetAccessPoint](#createnetaccesspoint).\n\n**[NOTE]**\nIf you exceed the \n" "number of identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadNatServices [options]\n" "Lists one or more network address translation (NAT) services.\n\n**[NOTE]**\nIf \n" "you exceed the number of identical requests allowed for a configured time \n" "period, the `RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadNatServices [OPTIONS]\n" "Lists one or more network address translation (NAT) services.\n\n**[NOTE]**\nIf \n" "you exceed the number of identical requests allowed for a configured time \n" "period, the `RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadLocations [options]\n" "Lists the locations, corresponding to datacenters, where you can set up a \n" "DirectLink.\n\n**[NOTE]**\nIf you exceed the number of identical requests \n" "allowed for a configured time period, the `Throttling` error message is \n" "returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadLocations [OPTIONS]\n" "Lists the locations, corresponding to datacenters, where you can set up a \n" "DirectLink.\n\n**[NOTE]**\nIf you exceed the number of identical requests \n" "allowed for a configured time period, the `Throttling` error message is \n" "returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadLoadBalancers [options]\n" "Lists one or more load balancers and their attributes.\n\n**[NOTE]**\nIf you \n" "exceed the number of identical requests allowed for a configured time period, \n" "the `RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadLoadBalancers [OPTIONS]\n" "Lists one or more load balancers and their attributes.\n\n**[NOTE]**\nIf you \n" "exceed the number of identical requests allowed for a configured time period, \n" "the `RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadLoadBalancerTags [options]\n" "Lists the tags associated with one or more specified load \n" "balancers.\n\n**[NOTE]**\nIf you exceed the number of identical requests \n" "allowed for a configured time period, the `Throttling` error message is \n" "returned.\n" "\nRequired Argument: LoadBalancerNames \n"
+	"Usage: oapi-cli ReadLoadBalancerTags LoadBalancerNames [OPTIONS]\n" "Lists the tags associated with one or more specified load \n" "balancers.\n\n**[NOTE]**\nIf you exceed the number of identical requests \n" "allowed for a configured time period, the `Throttling` error message is \n" "returned.\n" "\nRequired Argument: LoadBalancerNames \n"
 ,
-	"Usage: oapi-cli ReadListenerRules [options]\n" "Lists one or more listener rules. By default, this action returns the full list \n" "of listener rules for the account.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadListenerRules [OPTIONS]\n" "Lists one or more listener rules. By default, this action returns the full list \n" "of listener rules for the account.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadKeypairs [options]\n" "Lists one or more of your keypairs.\n\n**[NOTE]**\nIf you exceed the number of \n" "identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadKeypairs [OPTIONS]\n" "Lists one or more of your keypairs.\n\n**[NOTE]**\nIf you exceed the number of \n" "identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadInternetServices [options]\n" "Lists one or more of your Internet services.\nAn Internet service enables your \n" "virtual machines (VMs) launched in a Net to connect to the Internet. By \n" "default, a Net includes an Internet service, and each Subnet is public. Every \n" "VM launched within a default Subnet has a private IP and a public \n" "IP.\n\n**[NOTE]**\nIf you exceed the number of identical requests allowed for a \n" "configured time period, the `RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadInternetServices [OPTIONS]\n" "Lists one or more of your Internet services.\nAn Internet service enables your \n" "virtual machines (VMs) launched in a Net to connect to the Internet. By \n" "default, a Net includes an Internet service, and each Subnet is public. Every \n" "VM launched within a default Subnet has a private IP and a public \n" "IP.\n\n**[NOTE]**\nIf you exceed the number of identical requests allowed for a \n" "configured time period, the `RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadImages [options]\n" "Lists one or more OUTSCALE machine images (OMIs) you can use.\n\n**[NOTE]**\nIf \n" "you exceed the number of identical requests allowed for a configured time \n" "period, the `RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadImages [OPTIONS]\n" "Lists one or more OUTSCALE machine images (OMIs) you can use.\n\n**[NOTE]**\nIf \n" "you exceed the number of identical requests allowed for a configured time \n" "period, the `RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadImageExportTasks [options]\n" "Lists one or more image export tasks.\n\n**[NOTE]**\nIf you exceed the number \n" "of identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadImageExportTasks [OPTIONS]\n" "Lists one or more image export tasks.\n\n**[NOTE]**\nIf you exceed the number \n" "of identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadFlexibleGpus [options]\n" "Lists one or more flexible GPUs (fGPUs) allocated to your \n" "account.\n\n**[NOTE]**\nIf you exceed the number of identical requests allowed \n" "for a configured time period, the `RequestLimitExceeded` error message is \n" "returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadFlexibleGpus [OPTIONS]\n" "Lists one or more flexible GPUs (fGPUs) allocated to your \n" "account.\n\n**[NOTE]**\nIf you exceed the number of identical requests allowed \n" "for a configured time period, the `RequestLimitExceeded` error message is \n" "returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadFlexibleGpuCatalog [options]\n" "Lists all flexible GPUs available in the public catalog.\n\n**[NOTE]**\nIf you \n" "exceed the number of identical requests allowed for a configured time period, \n" "the `RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadFlexibleGpuCatalog [OPTIONS]\n" "Lists all flexible GPUs available in the public catalog.\n\n**[NOTE]**\nIf you \n" "exceed the number of identical requests allowed for a configured time period, \n" "the `RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadDirectLinks [options]\n" "Lists all DirectLinks in the Region.\n\n**[NOTE]**\nIf you exceed the number of \n" "identical requests allowed for a configured time period, the `Throttling` error \n" "message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadDirectLinks [OPTIONS]\n" "Lists all DirectLinks in the Region.\n\n**[NOTE]**\nIf you exceed the number of \n" "identical requests allowed for a configured time period, the `Throttling` error \n" "message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadDirectLinkInterfaces [options]\n" "Lists one or more of your DirectLink interfaces.\n\n**[NOTE]**\nIf you exceed \n" "the number of identical requests allowed for a configured time period, the \n" "`Throttling` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadDirectLinkInterfaces [OPTIONS]\n" "Lists one or more of your DirectLink interfaces.\n\n**[NOTE]**\nIf you exceed \n" "the number of identical requests allowed for a configured time period, the \n" "`Throttling` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadDhcpOptions [options]\n" "Gets information about the content of one or more DHCP options \n" "sets.\n\n**[NOTE]**\nIf you exceed the number of identical requests allowed for \n" "a configured time period, the `RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadDhcpOptions [OPTIONS]\n" "Gets information about the content of one or more DHCP options \n" "sets.\n\n**[NOTE]**\nIf you exceed the number of identical requests allowed for \n" "a configured time period, the `RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadConsumptionAccount [options]\n" "Gets information about the consumption of your account for each billable \n" "resource within the specified time period.\n\n**[NOTE]**\nIf you exceed the \n" "number of identical requests allowed for a configured time period, the \n" "`Throttling` error message is returned.\n" "\nRequired Argument: FromDate, ToDate \n"
+	"Usage: oapi-cli ReadConsumptionAccount FromDate, ToDate [OPTIONS]\n" "Gets information about the consumption of your account for each billable \n" "resource within the specified time period.\n\n**[NOTE]**\nIf you exceed the \n" "number of identical requests allowed for a configured time period, the \n" "`Throttling` error message is returned.\n" "\nRequired Argument: FromDate, ToDate \n"
 ,
-	"Usage: oapi-cli ReadConsoleOutput [options]\n" "Gets the console output for a virtual machine (VM). This console provides the \n" "most recent 64 KiB output.\n\n**[NOTE]**\nOn Windows VMs, the console is \n" "handled only on the first boot. It returns no output after the first boot.\n" "\nRequired Argument: VmId \n"
+	"Usage: oapi-cli ReadConsoleOutput VmId [OPTIONS]\n" "Gets the console output for a virtual machine (VM). This console provides the \n" "most recent 64 KiB output.\n\n**[NOTE]**\nOn Windows VMs, the console is \n" "handled only on the first boot. It returns no output after the first boot.\n" "\nRequired Argument: VmId \n"
 ,
-	"Usage: oapi-cli ReadClientGateways [options]\n" "Lists one or more of your client gateways.\n\n**[NOTE]**\nIf you exceed the \n" "number of identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadClientGateways [OPTIONS]\n" "Lists one or more of your client gateways.\n\n**[NOTE]**\nIf you exceed the \n" "number of identical requests allowed for a configured time period, the \n" "`RequestLimitExceeded` error message is returned.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadCatalogs [options]\n" "Returns the price list of OUTSCALE products and services for the current Region \n" "within a specific time period.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadCatalogs [OPTIONS]\n" "Returns the price list of OUTSCALE products and services for the current Region \n" "within a specific time period.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadCatalog [options]\n" "Returns the price list of OUTSCALE products and services for the current Region.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadCatalog [OPTIONS]\n" "Returns the price list of OUTSCALE products and services for the current Region.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadCas [options]\n" "Gets information about one or more of your Client Certificate Authorities (CAs).\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadCas [OPTIONS]\n" "Gets information about one or more of your Client Certificate Authorities (CAs).\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadApiLogs [options]\n" "Lists the logs of the API calls you have performed with this account. For more \n" "information, see [About OUTSCALE Monitoring Services \n" "(OMS)](https://docs.outscale.com/en/userguide/About-OUTSCALE-Monitoring-Services\n" "-(OMS).html).\n\n**[NOTE]**\nPast logs are accessible for up to 32 days.\nBy \n" "default, the retrieved interval is 48 hours. If neither of the \n" "`QueryDateBefore` nor `QueryDateAfter` parameters are specified, logs from the \n" "past 48 hours are retrieved. If you only specify one of two, logs are retrieved \n" "from a 2-day interval based on the date you provided. To retrieve logs beyond a \n" "2-day interval, specify both parameters.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadApiLogs [OPTIONS]\n" "Lists the logs of the API calls you have performed with this account. For more \n" "information, see [About OUTSCALE Monitoring Services \n" "(OMS)](https://docs.outscale.com/en/userguide/About-OUTSCALE-Monitoring-Services\n" "-(OMS).html).\n\n**[NOTE]**\nPast logs are accessible for up to 32 days.\nBy \n" "default, the retrieved interval is 48 hours. If neither of the \n" "`QueryDateBefore` nor `QueryDateAfter` parameters are specified, logs from the \n" "past 48 hours are retrieved. If you only specify one of two, logs are retrieved \n" "from a 2-day interval based on the date you provided. To retrieve logs beyond a \n" "2-day interval, specify both parameters.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadApiAccessRules [options]\n" "Lists one or more API access rules.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadApiAccessRules [OPTIONS]\n" "Lists one or more API access rules.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadApiAccessPolicy [options]\n" "Gets information about the API access policy of your account.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadApiAccessPolicy [OPTIONS]\n" "Gets information about the API access policy of your account.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadAdminPassword [options]\n" "Gets the administrator password for a Windows running virtual machine \n" "(VM).\nThe administrator password is encrypted using the keypair you specified \n" "when launching the VM.\n\n**[NOTE]**\nThe administrator password is generated \n" "only on the first boot of the Windows VM. It is not returned after the first \n" "boot.\n" "\nRequired Argument: VmId \n"
+	"Usage: oapi-cli ReadAdminPassword VmId [OPTIONS]\n" "Gets the administrator password for a Windows running virtual machine \n" "(VM).\nThe administrator password is encrypted using the keypair you specified \n" "when launching the VM.\n\n**[NOTE]**\nThe administrator password is generated \n" "only on the first boot of the Windows VM. It is not returned after the first \n" "boot.\n" "\nRequired Argument: VmId \n"
 ,
-	"Usage: oapi-cli ReadAccounts [options]\n" "Gets information about the account that sent the request.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadAccounts [OPTIONS]\n" "Gets information about the account that sent the request.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadAccessKeys [options]\n" "Lists the access key IDs of either your root account or an EIM user.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli ReadAccessKeys [OPTIONS]\n" "Lists the access key IDs of either your root account or an EIM user.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli LinkVolume [options]\n" "Attaches a Block Storage Unit (BSU) volume to a virtual machine (VM).\nThe \n" "volume and the VM must be in the same Subregion. The VM can be running or \n" "stopped. The volume is attached to the specified VM device.\n" "\nRequired Argument: DeviceName, VmId, VolumeId \n"
+	"Usage: oapi-cli LinkVolume DeviceName, VmId, VolumeId [OPTIONS]\n" "Attaches a Block Storage Unit (BSU) volume to a virtual machine (VM).\nThe \n" "volume and the VM must be in the same Subregion. The VM can be running or \n" "stopped. The volume is attached to the specified VM device.\n" "\nRequired Argument: DeviceName, VmId, VolumeId \n"
 ,
-	"Usage: oapi-cli LinkVirtualGateway [options]\n" "Attaches a virtual gateway to a Net.\n" "\nRequired Argument: NetId, VirtualGatewayId \n"
+	"Usage: oapi-cli LinkVirtualGateway NetId, VirtualGatewayId [OPTIONS]\n" "Attaches a virtual gateway to a Net.\n" "\nRequired Argument: NetId, VirtualGatewayId \n"
 ,
-	"Usage: oapi-cli LinkRouteTable [options]\n" "Associates a Subnet with a route table.\nThe Subnet and the route table must be \n" "in the same Net. The traffic is routed according to the route table defined \n" "within this Net. You can associate a route table with several Subnets.\n" "\nRequired Argument: RouteTableId, SubnetId \n"
+	"Usage: oapi-cli LinkRouteTable RouteTableId, SubnetId [OPTIONS]\n" "Associates a Subnet with a route table.\nThe Subnet and the route table must be \n" "in the same Net. The traffic is routed according to the route table defined \n" "within this Net. You can associate a route table with several Subnets.\n" "\nRequired Argument: RouteTableId, SubnetId \n"
 ,
-	"Usage: oapi-cli LinkPublicIp [options]\n" "Associates a public IP with a virtual machine (VM) or a network interface card \n" "(NIC), in the public Cloud or in a Net. You can associate a public IP with only \n" "one VM or network interface at a time.\nTo associate a public IP in a Net, \n" "ensure that the Net has an Internet service attached. For more information, see \n" "the [LinkInternetService](#linkinternetservice) method.\nBy default, the public \n" "IP is disassociated every time you stop and start the VM. For a persistent \n" "association, you can add the `osc.fcu.eip.auto-attach` tag to the VM with the \n" "public IP as value. For more information, see the [CreateTags](#createtags) \n" "method.\n\n**[NOTE]**\nYou can associate a public IP with a network address \n" "translation (NAT) service only when creating the NAT service. To modify its \n" "public IP, you need to delete the NAT service and re-create it with the new \n" "public IP. For more information, see the [CreateNatService](#createnatservice) \n" "method.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli LinkPublicIp [OPTIONS]\n" "Associates a public IP with a virtual machine (VM) or a network interface card \n" "(NIC), in the public Cloud or in a Net. You can associate a public IP with only \n" "one VM or network interface at a time.\nTo associate a public IP in a Net, \n" "ensure that the Net has an Internet service attached. For more information, see \n" "the [LinkInternetService](#linkinternetservice) method.\nBy default, the public \n" "IP is disassociated every time you stop and start the VM. For a persistent \n" "association, you can add the `osc.fcu.eip.auto-attach` tag to the VM with the \n" "public IP as value. For more information, see the [CreateTags](#createtags) \n" "method.\n\n**[NOTE]**\nYou can associate a public IP with a network address \n" "translation (NAT) service only when creating the NAT service. To modify its \n" "public IP, you need to delete the NAT service and re-create it with the new \n" "public IP. For more information, see the [CreateNatService](#createnatservice) \n" "method.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli LinkPrivateIps [options]\n" "Assigns one or more secondary private IPs to a specified network interface card \n" "(NIC). This action is only available in a Net. The private IPs to be assigned \n" "can be added individually using the `PrivateIps` parameter, or you can specify \n" "the number of private IPs to be automatically chosen within the Subnet range \n" "using the `SecondaryPrivateIpCount` parameter. You can specify only one of \n" "these two parameters. If none of these parameters are specified, a private IP \n" "is chosen within the Subnet range.\n" "\nRequired Argument: NicId \n"
+	"Usage: oapi-cli LinkPrivateIps NicId [OPTIONS]\n" "Assigns one or more secondary private IPs to a specified network interface card \n" "(NIC). This action is only available in a Net. The private IPs to be assigned \n" "can be added individually using the `PrivateIps` parameter, or you can specify \n" "the number of private IPs to be automatically chosen within the Subnet range \n" "using the `SecondaryPrivateIpCount` parameter. You can specify only one of \n" "these two parameters. If none of these parameters are specified, a private IP \n" "is chosen within the Subnet range.\n" "\nRequired Argument: NicId \n"
 ,
-	"Usage: oapi-cli LinkNic [options]\n" "Attaches a network interface card (NIC) to a virtual machine (VM).\nThe \n" "interface and the VM must be in the same Subregion. The VM can be either \n" "`running` or `stopped`. The NIC must be in the `available` state. For more \n" "information, see [Attaching an FNI to an \n" "Instance](https://docs.outscale.com/en/userguide/Attaching-an-FNI-to-an-Instance\n" ".html).\n" "\nRequired Argument: DeviceNumber, VmId, NicId \n"
+	"Usage: oapi-cli LinkNic DeviceNumber, VmId, NicId [OPTIONS]\n" "Attaches a network interface card (NIC) to a virtual machine (VM).\nThe \n" "interface and the VM must be in the same Subregion. The VM can be either \n" "`running` or `stopped`. The NIC must be in the `available` state. For more \n" "information, see [Attaching an FNI to an \n" "Instance](https://docs.outscale.com/en/userguide/Attaching-an-FNI-to-an-Instance\n" ".html).\n" "\nRequired Argument: DeviceNumber, VmId, NicId \n"
 ,
-	"Usage: oapi-cli LinkLoadBalancerBackendMachines [options]\n" "Attaches one or more virtual machines (VMs) to a specified load balancer. You \n" "need to specify at least the `BackendIps` or the `BackendVmIds` parameter.\nThe \n" "VMs can be in different Subnets and different Subregions than the load \n" "balancer, as long as the VMs and load balancers are all in the public Cloud or \n" "all in the same Net. It may take a little time for a VM to be registered with \n" "the load balancer. Once the VM is registered with a load balancer, it receives \n" "traffic and requests from this load balancer and is called a back-end VM.\n" "\nRequired Argument: LoadBalancerName \n"
+	"Usage: oapi-cli LinkLoadBalancerBackendMachines LoadBalancerName [OPTIONS]\n" "Attaches one or more virtual machines (VMs) to a specified load balancer. You \n" "need to specify at least the `BackendIps` or the `BackendVmIds` parameter.\nThe \n" "VMs can be in different Subnets and different Subregions than the load \n" "balancer, as long as the VMs and load balancers are all in the public Cloud or \n" "all in the same Net. It may take a little time for a VM to be registered with \n" "the load balancer. Once the VM is registered with a load balancer, it receives \n" "traffic and requests from this load balancer and is called a back-end VM.\n" "\nRequired Argument: LoadBalancerName \n"
 ,
-	"Usage: oapi-cli LinkInternetService [options]\n" "Attaches an Internet service to a Net.\nTo enable the connection between the \n" "Internet and a Net, you must attach an Internet service to this Net.\n" "\nRequired Argument: InternetServiceId, NetId \n"
+	"Usage: oapi-cli LinkInternetService InternetServiceId, NetId [OPTIONS]\n" "Attaches an Internet service to a Net.\nTo enable the connection between the \n" "Internet and a Net, you must attach an Internet service to this Net.\n" "\nRequired Argument: InternetServiceId, NetId \n"
 ,
-	"Usage: oapi-cli LinkFlexibleGpu [options]\n" "Attaches one of your allocated flexible GPUs (fGPUs) to one of your virtual \n" "machines (VMs).\nThe fGPU is in the `attaching` state until the VM is stopped, \n" "after which it becomes `attached`.\n" "\nRequired Argument: FlexibleGpuId, VmId \n"
+	"Usage: oapi-cli LinkFlexibleGpu FlexibleGpuId, VmId [OPTIONS]\n" "Attaches one of your allocated flexible GPUs (fGPUs) to one of your virtual \n" "machines (VMs).\nThe fGPU is in the `attaching` state until the VM is stopped, \n" "after which it becomes `attached`.\n" "\nRequired Argument: FlexibleGpuId, VmId \n"
 ,
-	"Usage: oapi-cli DeregisterVmsInLoadBalancer [options]\n" "Deregisters a specified virtual machine (VM) from a load balancer.\n" "\nRequired Argument: BackendVmIds, LoadBalancerName \n"
+	"Usage: oapi-cli DeregisterVmsInLoadBalancer BackendVmIds, LoadBalancerName [OPTIONS]\n" "Deregisters a specified virtual machine (VM) from a load balancer.\n" "\nRequired Argument: BackendVmIds, LoadBalancerName \n"
 ,
-	"Usage: oapi-cli DeleteVpnConnectionRoute [options]\n" "Deletes a static route to a VPN connection previously created using the \n" "CreateVpnConnectionRoute method.\n" "\nRequired Argument: DestinationIpRange, VpnConnectionId \n"
+	"Usage: oapi-cli DeleteVpnConnectionRoute DestinationIpRange, VpnConnectionId [OPTIONS]\n" "Deletes a static route to a VPN connection previously created using the \n" "CreateVpnConnectionRoute method.\n" "\nRequired Argument: DestinationIpRange, VpnConnectionId \n"
 ,
-	"Usage: oapi-cli DeleteVpnConnection [options]\n" "Deletes a specified VPN connection.\nIf you want to delete a Net and all its \n" "dependencies, we recommend to detach the virtual gateway from the Net and \n" "delete the Net before deleting the VPN connection. This enables you to delete \n" "the Net without waiting for the VPN connection to be deleted.\n" "\nRequired Argument: VpnConnectionId \n"
+	"Usage: oapi-cli DeleteVpnConnection VpnConnectionId [OPTIONS]\n" "Deletes a specified VPN connection.\nIf you want to delete a Net and all its \n" "dependencies, we recommend to detach the virtual gateway from the Net and \n" "delete the Net before deleting the VPN connection. This enables you to delete \n" "the Net without waiting for the VPN connection to be deleted.\n" "\nRequired Argument: VpnConnectionId \n"
 ,
-	"Usage: oapi-cli DeleteVolume [options]\n" "Deletes a specified Block Storage Unit (BSU) volume.\nYou can delete available \n" "volumes only, that is, volumes that are not attached to a virtual machine (VM).\n" "\nRequired Argument: VolumeId \n"
+	"Usage: oapi-cli DeleteVolume VolumeId [OPTIONS]\n" "Deletes a specified Block Storage Unit (BSU) volume.\nYou can delete available \n" "volumes only, that is, volumes that are not attached to a virtual machine (VM).\n" "\nRequired Argument: VolumeId \n"
 ,
-	"Usage: oapi-cli DeleteVms [options]\n" "Terminates one or more virtual machines (VMs).\nThis operation is idempotent, \n" "that means that all calls succeed if you terminate a VM more than once.\n" "\nRequired Argument: VmIds \n"
+	"Usage: oapi-cli DeleteVms VmIds [OPTIONS]\n" "Terminates one or more virtual machines (VMs).\nThis operation is idempotent, \n" "that means that all calls succeed if you terminate a VM more than once.\n" "\nRequired Argument: VmIds \n"
 ,
-	"Usage: oapi-cli DeleteVmTemplate [options]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nDeletes a virtual machine (VM) template.\nYou cannot delete a \n" "template currently used by a VM group.\n" "\nRequired Argument: VmTemplateId \n"
+	"Usage: oapi-cli DeleteVmTemplate VmTemplateId [OPTIONS]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nDeletes a virtual machine (VM) template.\nYou cannot delete a \n" "template currently used by a VM group.\n" "\nRequired Argument: VmTemplateId \n"
 ,
-	"Usage: oapi-cli DeleteVmGroup [options]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nDeletes a specified VM group.\n" "\nRequired Argument: VmGroupId \n"
+	"Usage: oapi-cli DeleteVmGroup VmGroupId [OPTIONS]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nDeletes a specified VM group.\n" "\nRequired Argument: VmGroupId \n"
 ,
-	"Usage: oapi-cli DeleteVirtualGateway [options]\n" "Deletes a specified virtual gateway.\nBefore deleting a virtual gateway, we \n" "recommend to detach it from the Net and delete the VPN connection.\n" "\nRequired Argument: VirtualGatewayId \n"
+	"Usage: oapi-cli DeleteVirtualGateway VirtualGatewayId [OPTIONS]\n" "Deletes a specified virtual gateway.\nBefore deleting a virtual gateway, we \n" "recommend to detach it from the Net and delete the VPN connection.\n" "\nRequired Argument: VirtualGatewayId \n"
 ,
-	"Usage: oapi-cli DeleteUser [options]\n" "Deletes a specified EIM user. The EIM user must not belong to any group and \n" "have any key, signing certificate or attached policy.\n" "\nRequired Argument: UserName \n"
+	"Usage: oapi-cli DeleteUser UserName [OPTIONS]\n" "Deletes a specified EIM user. The EIM user must not belong to any group and \n" "have any key, signing certificate or attached policy.\n" "\nRequired Argument: UserName \n"
 ,
-	"Usage: oapi-cli DeleteTags [options]\n" "Deletes one or more tags from the specified resources.\n" "\nRequired Argument: ResourceIds, Tags \n"
+	"Usage: oapi-cli DeleteTags ResourceIds, Tags [OPTIONS]\n" "Deletes one or more tags from the specified resources.\n" "\nRequired Argument: ResourceIds, Tags \n"
 ,
-	"Usage: oapi-cli DeleteSubnet [options]\n" "Deletes a specified Subnet.\nBefore deleting the Subnet, you need to delete all \n" "resources associated with the Subnet:\n\n* Virtual machines (VMs)\n* Network \n" "Interface Cards (NICs)\n* Network Address Translation (NAT) gateways\n* Load \n" "balancers\n" "\nRequired Argument: SubnetId \n"
+	"Usage: oapi-cli DeleteSubnet SubnetId [OPTIONS]\n" "Deletes a specified Subnet.\nBefore deleting the Subnet, you need to delete all \n" "resources associated with the Subnet:\n\n* Virtual machines (VMs)\n* Network \n" "Interface Cards (NICs)\n* Network Address Translation (NAT) gateways\n* Load \n" "balancers\n" "\nRequired Argument: SubnetId \n"
 ,
-	"Usage: oapi-cli DeleteSnapshot [options]\n" "Deletes a specified snapshot.\nYou cannot delete a snapshot that is currently \n" "used by an OUTSCALE machine image (OMI). To do so, you first need to delete the \n" "corresponding OMI. For more information, see the [DeleteImage](#deleteimage) \n" "method.\n" "\nRequired Argument: SnapshotId \n"
+	"Usage: oapi-cli DeleteSnapshot SnapshotId [OPTIONS]\n" "Deletes a specified snapshot.\nYou cannot delete a snapshot that is currently \n" "used by an OUTSCALE machine image (OMI). To do so, you first need to delete the \n" "corresponding OMI. For more information, see the [DeleteImage](#deleteimage) \n" "method.\n" "\nRequired Argument: SnapshotId \n"
 ,
-	"Usage: oapi-cli DeleteServerCertificate [options]\n" "Deletes a specified server certificate.\n" "\nRequired Argument: Name \n"
+	"Usage: oapi-cli DeleteServerCertificate Name [OPTIONS]\n" "Deletes a specified server certificate.\n" "\nRequired Argument: Name \n"
 ,
-	"Usage: oapi-cli DeleteSecurityGroupRule [options]\n" "Deletes one or more inbound or outbound rules from a security group. For the \n" "rule to be deleted, the values specified in the deletion request must exactly \n" "match the value of the existing rule.\nIn case of TCP and UDP protocols, you \n" "have to indicate the destination port or range of ports. In case of ICMP \n" "protocol, you have to specify the ICMP type and code numbers.\nRules (IP \n" "permissions) consist of the protocol, IP range or source security group.\nTo \n" "remove outbound access to a destination security group, we recommend to use a \n" "set of IP permissions. We also recommend to specify the protocol in a set of IP \n" "permissions.\n" "\nRequired Argument: SecurityGroupId, Flow \n"
+	"Usage: oapi-cli DeleteSecurityGroupRule SecurityGroupId, Flow [OPTIONS]\n" "Deletes one or more inbound or outbound rules from a security group. For the \n" "rule to be deleted, the values specified in the deletion request must exactly \n" "match the value of the existing rule.\nIn case of TCP and UDP protocols, you \n" "have to indicate the destination port or range of ports. In case of ICMP \n" "protocol, you have to specify the ICMP type and code numbers.\nRules (IP \n" "permissions) consist of the protocol, IP range or source security group.\nTo \n" "remove outbound access to a destination security group, we recommend to use a \n" "set of IP permissions. We also recommend to specify the protocol in a set of IP \n" "permissions.\n" "\nRequired Argument: SecurityGroupId, Flow \n"
 ,
-	"Usage: oapi-cli DeleteSecurityGroup [options]\n" "Deletes a specified security group.\nYou can specify either the name of the \n" "security group or its ID.\nThis action fails if the specified group is \n" "associated with a virtual machine (VM) or referenced by another security group.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli DeleteSecurityGroup [OPTIONS]\n" "Deletes a specified security group.\nYou can specify either the name of the \n" "security group or its ID.\nThis action fails if the specified group is \n" "associated with a virtual machine (VM) or referenced by another security group.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli DeleteRouteTable [options]\n" "Deletes a specified route table.\nBefore deleting a route table, you must \n" "disassociate it from any Subnet. You cannot delete the main route table.\n" "\nRequired Argument: RouteTableId \n"
+	"Usage: oapi-cli DeleteRouteTable RouteTableId [OPTIONS]\n" "Deletes a specified route table.\nBefore deleting a route table, you must \n" "disassociate it from any Subnet. You cannot delete the main route table.\n" "\nRequired Argument: RouteTableId \n"
 ,
-	"Usage: oapi-cli DeleteRoute [options]\n" "Deletes a route from a specified route table.\n" "\nRequired Argument: RouteTableId, DestinationIpRange \n"
+	"Usage: oapi-cli DeleteRoute RouteTableId, DestinationIpRange [OPTIONS]\n" "Deletes a route from a specified route table.\n" "\nRequired Argument: RouteTableId, DestinationIpRange \n"
 ,
-	"Usage: oapi-cli DeletePublicIp [options]\n" "Releases a public IP.\nYou can release a public IP associated with your \n" "account. This address is released in the public IP pool and can be used by \n" "someone else. Before releasing a public IP, ensure you updated all your \n" "resources communicating with this address.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli DeletePublicIp [OPTIONS]\n" "Releases a public IP.\nYou can release a public IP associated with your \n" "account. This address is released in the public IP pool and can be used by \n" "someone else. Before releasing a public IP, ensure you updated all your \n" "resources communicating with this address.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli DeleteNic [options]\n" "Deletes the specified network interface card (NIC).\nThe network interface must \n" "not be attached to any virtual machine (VM).\n" "\nRequired Argument: NicId \n"
+	"Usage: oapi-cli DeleteNic NicId [OPTIONS]\n" "Deletes the specified network interface card (NIC).\nThe network interface must \n" "not be attached to any virtual machine (VM).\n" "\nRequired Argument: NicId \n"
 ,
-	"Usage: oapi-cli DeleteNetPeering [options]\n" "Deletes a Net peering.\nIf the Net peering is in the `active` state, it can be \n" "deleted either by the owner of the requester Net or the owner of the peer \n" "Net.\nIf it is in the `pending-acceptance` state, it can be deleted only by the \n" "owner of the requester Net.\nIf it is in the `rejected`, `failed`, or `expired` \n" "states, it cannot be deleted.\n" "\nRequired Argument: NetPeeringId \n"
+	"Usage: oapi-cli DeleteNetPeering NetPeeringId [OPTIONS]\n" "Deletes a Net peering.\nIf the Net peering is in the `active` state, it can be \n" "deleted either by the owner of the requester Net or the owner of the peer \n" "Net.\nIf it is in the `pending-acceptance` state, it can be deleted only by the \n" "owner of the requester Net.\nIf it is in the `rejected`, `failed`, or `expired` \n" "states, it cannot be deleted.\n" "\nRequired Argument: NetPeeringId \n"
 ,
-	"Usage: oapi-cli DeleteNetAccessPoint [options]\n" "Deletes a specified Net access point.\nThis action also deletes the \n" "corresponding routes added to the route tables you specified for the Net access \n" "point.\n" "\nRequired Argument: NetAccessPointId \n"
+	"Usage: oapi-cli DeleteNetAccessPoint NetAccessPointId [OPTIONS]\n" "Deletes a specified Net access point.\nThis action also deletes the \n" "corresponding routes added to the route tables you specified for the Net access \n" "point.\n" "\nRequired Argument: NetAccessPointId \n"
 ,
-	"Usage: oapi-cli DeleteNet [options]\n" "Deletes a specified Net.\nBefore deleting the Net, you need to delete or detach \n" "all the resources associated with the Net:\n\n* Virtual machines (VMs)\n* Net \n" "peerings\n* Custom route tables\n* Public IPs allocated to resources in the \n" "Net\n* Network Interface Cards (NICs) created in the Subnets\n* Virtual \n" "gateways, Internet services and NAT services\n* Load balancers\n* Security \n" "groups\n* Subnets\n" "\nRequired Argument: NetId \n"
+	"Usage: oapi-cli DeleteNet NetId [OPTIONS]\n" "Deletes a specified Net.\nBefore deleting the Net, you need to delete or detach \n" "all the resources associated with the Net:\n\n* Virtual machines (VMs)\n* Net \n" "peerings\n* Custom route tables\n* Public IPs allocated to resources in the \n" "Net\n* Network Interface Cards (NICs) created in the Subnets\n* Virtual \n" "gateways, Internet services and NAT services\n* Load balancers\n* Security \n" "groups\n* Subnets\n" "\nRequired Argument: NetId \n"
 ,
-	"Usage: oapi-cli DeleteNatService [options]\n" "Deletes a specified network address translation (NAT) service.\nThis action \n" "disassociates the public IP from the NAT service, but does not release this \n" "public IP from your account. However, it does not delete any NAT service routes \n" "in your route tables.\n" "\nRequired Argument: NatServiceId \n"
+	"Usage: oapi-cli DeleteNatService NatServiceId [OPTIONS]\n" "Deletes a specified network address translation (NAT) service.\nThis action \n" "disassociates the public IP from the NAT service, but does not release this \n" "public IP from your account. However, it does not delete any NAT service routes \n" "in your route tables.\n" "\nRequired Argument: NatServiceId \n"
 ,
-	"Usage: oapi-cli DeleteLoadBalancerTags [options]\n" "Deletes one or more tags from the specified load balancers.\n" "\nRequired Argument: LoadBalancerNames, Tags \n"
+	"Usage: oapi-cli DeleteLoadBalancerTags LoadBalancerNames, Tags [OPTIONS]\n" "Deletes one or more tags from the specified load balancers.\n" "\nRequired Argument: LoadBalancerNames, Tags \n"
 ,
-	"Usage: oapi-cli DeleteLoadBalancerPolicy [options]\n" "Deletes a specified policy from a load balancer.\nIn order to be deleted, the \n" "policy must not be enabled for any listener.\n" "\nRequired Argument: LoadBalancerName, PolicyName \n"
+	"Usage: oapi-cli DeleteLoadBalancerPolicy LoadBalancerName, PolicyName [OPTIONS]\n" "Deletes a specified policy from a load balancer.\nIn order to be deleted, the \n" "policy must not be enabled for any listener.\n" "\nRequired Argument: LoadBalancerName, PolicyName \n"
 ,
-	"Usage: oapi-cli DeleteLoadBalancerListeners [options]\n" "Deletes listeners of a specified load balancer.\n" "\nRequired Argument: LoadBalancerName, LoadBalancerPorts \n"
+	"Usage: oapi-cli DeleteLoadBalancerListeners LoadBalancerName, LoadBalancerPorts [OPTIONS]\n" "Deletes listeners of a specified load balancer.\n" "\nRequired Argument: LoadBalancerName, LoadBalancerPorts \n"
 ,
-	"Usage: oapi-cli DeleteLoadBalancer [options]\n" "Deletes a specified load balancer.\n" "\nRequired Argument: LoadBalancerName \n"
+	"Usage: oapi-cli DeleteLoadBalancer LoadBalancerName [OPTIONS]\n" "Deletes a specified load balancer.\n" "\nRequired Argument: LoadBalancerName \n"
 ,
-	"Usage: oapi-cli DeleteListenerRule [options]\n" "Deletes a listener rule.\nThe previously active rule is disabled after deletion.\n" "\nRequired Argument: ListenerRuleName \n"
+	"Usage: oapi-cli DeleteListenerRule ListenerRuleName [OPTIONS]\n" "Deletes a listener rule.\nThe previously active rule is disabled after deletion.\n" "\nRequired Argument: ListenerRuleName \n"
 ,
-	"Usage: oapi-cli DeleteKeypair [options]\n" "Deletes the specified keypair.\nThis action deletes the public key stored by \n" "3DS OUTSCALE, thus deleting the keypair.\n" "\nRequired Argument: KeypairName \n"
+	"Usage: oapi-cli DeleteKeypair KeypairName [OPTIONS]\n" "Deletes the specified keypair.\nThis action deletes the public key stored by \n" "3DS OUTSCALE, thus deleting the keypair.\n" "\nRequired Argument: KeypairName \n"
 ,
-	"Usage: oapi-cli DeleteInternetService [options]\n" "Deletes an Internet service.\nBefore deleting an Internet service, you must \n" "detach it from any Net it is attached to.\n" "\nRequired Argument: InternetServiceId \n"
+	"Usage: oapi-cli DeleteInternetService InternetServiceId [OPTIONS]\n" "Deletes an Internet service.\nBefore deleting an Internet service, you must \n" "detach it from any Net it is attached to.\n" "\nRequired Argument: InternetServiceId \n"
 ,
-	"Usage: oapi-cli DeleteImage [options]\n" "Deletes an OUTSCALE machine image (OMI) so that you cannot use it anymore to \n" "launch virtual machines (VMs). However, you can still use VMs already launched \n" "from this OMI.\n" "\nRequired Argument: ImageId \n"
+	"Usage: oapi-cli DeleteImage ImageId [OPTIONS]\n" "Deletes an OUTSCALE machine image (OMI) so that you cannot use it anymore to \n" "launch virtual machines (VMs). However, you can still use VMs already launched \n" "from this OMI.\n" "\nRequired Argument: ImageId \n"
 ,
-	"Usage: oapi-cli DeleteFlexibleGpu [options]\n" "Releases a flexible GPU (fGPU) from your account.\nThe fGPU becomes free to be \n" "used by someone else.\n" "\nRequired Argument: FlexibleGpuId \n"
+	"Usage: oapi-cli DeleteFlexibleGpu FlexibleGpuId [OPTIONS]\n" "Releases a flexible GPU (fGPU) from your account.\nThe fGPU becomes free to be \n" "used by someone else.\n" "\nRequired Argument: FlexibleGpuId \n"
 ,
-	"Usage: oapi-cli DeleteExportTask [options]\n" "Deletes an export task.\nIf the export task is not running, the command fails \n" "and an error is returned.\n" "\nRequired Argument: ExportTaskId \n"
+	"Usage: oapi-cli DeleteExportTask ExportTaskId [OPTIONS]\n" "Deletes an export task.\nIf the export task is not running, the command fails \n" "and an error is returned.\n" "\nRequired Argument: ExportTaskId \n"
 ,
-	"Usage: oapi-cli DeleteDirectLinkInterface [options]\n" "Deletes a specified DirectLink interface.\n" "\nRequired Argument: DirectLinkInterfaceId \n"
+	"Usage: oapi-cli DeleteDirectLinkInterface DirectLinkInterfaceId [OPTIONS]\n" "Deletes a specified DirectLink interface.\n" "\nRequired Argument: DirectLinkInterfaceId \n"
 ,
-	"Usage: oapi-cli DeleteDirectLink [options]\n" "Deletes a specified DirectLink.\nBefore deleting a DirectLink, ensure that all \n" "your DirectLink interfaces related to this DirectLink are deleted.\n" "\nRequired Argument: DirectLinkId \n"
+	"Usage: oapi-cli DeleteDirectLink DirectLinkId [OPTIONS]\n" "Deletes a specified DirectLink.\nBefore deleting a DirectLink, ensure that all \n" "your DirectLink interfaces related to this DirectLink are deleted.\n" "\nRequired Argument: DirectLinkId \n"
 ,
-	"Usage: oapi-cli DeleteDhcpOptions [options]\n" "Deletes a specified DHCP options set.\nBefore deleting a DHCP options set, you \n" "must disassociate it from the Nets you associated it with. To do so, you need \n" "to associate with each Net a new set of DHCP options, or the `default` one if \n" "you do not want to associate any DHCP options with the Net.\n\n**[NOTE]**\nYou \n" "cannot delete the `default` set.\n" "\nRequired Argument: DhcpOptionsSetId \n"
+	"Usage: oapi-cli DeleteDhcpOptions DhcpOptionsSetId [OPTIONS]\n" "Deletes a specified DHCP options set.\nBefore deleting a DHCP options set, you \n" "must disassociate it from the Nets you associated it with. To do so, you need \n" "to associate with each Net a new set of DHCP options, or the `default` one if \n" "you do not want to associate any DHCP options with the Net.\n\n**[NOTE]**\nYou \n" "cannot delete the `default` set.\n" "\nRequired Argument: DhcpOptionsSetId \n"
 ,
-	"Usage: oapi-cli DeleteClientGateway [options]\n" "Deletes a client gateway.\nYou must delete the VPN connection before deleting \n" "the client gateway.\n" "\nRequired Argument: ClientGatewayId \n"
+	"Usage: oapi-cli DeleteClientGateway ClientGatewayId [OPTIONS]\n" "Deletes a client gateway.\nYou must delete the VPN connection before deleting \n" "the client gateway.\n" "\nRequired Argument: ClientGatewayId \n"
 ,
-	"Usage: oapi-cli DeleteCa [options]\n" "Deletes a specified Client Certificate Authority (CA).\n" "\nRequired Argument: CaId \n"
+	"Usage: oapi-cli DeleteCa CaId [OPTIONS]\n" "Deletes a specified Client Certificate Authority (CA).\n" "\nRequired Argument: CaId \n"
 ,
-	"Usage: oapi-cli DeleteApiAccessRule [options]\n" "Deletes a specified API access rule.\n\n**[NOTE]** \nYou cannot delete the last \n" "remaining API access rule. However, if you delete all the API access rules that \n" "allow you to access the APIs, you need to contact the Support team to regain \n" "access. For more information, see [Technical \n" "Support](https://docs.outscale.com/en/userguide/Technical-Support.html).\n" "\nRequired Argument: ApiAccessRuleId \n"
+	"Usage: oapi-cli DeleteApiAccessRule ApiAccessRuleId [OPTIONS]\n" "Deletes a specified API access rule.\n\n**[NOTE]** \nYou cannot delete the last \n" "remaining API access rule. However, if you delete all the API access rules that \n" "allow you to access the APIs, you need to contact the Support team to regain \n" "access. For more information, see [Technical \n" "Support](https://docs.outscale.com/en/userguide/Technical-Support.html).\n" "\nRequired Argument: ApiAccessRuleId \n"
 ,
-	"Usage: oapi-cli DeleteAccessKey [options]\n" "Deletes the specified access key of either your root account or an EIM \n" "user.\n\n**[NOTE]**\nTo protect against brute force attacks, the number of \n" "requests allowed for this method in a given time period is limited.\n" "\nRequired Argument: AccessKeyId \n"
+	"Usage: oapi-cli DeleteAccessKey AccessKeyId [OPTIONS]\n" "Deletes the specified access key of either your root account or an EIM \n" "user.\n\n**[NOTE]**\nTo protect against brute force attacks, the number of \n" "requests allowed for this method in a given time period is limited.\n" "\nRequired Argument: AccessKeyId \n"
 ,
-	"Usage: oapi-cli CreateVpnConnectionRoute [options]\n" "Creates a static route to a VPN connection.\nThis enables you to select the \n" "network flows sent by the virtual gateway to the target VPN connection.\n" "\nRequired Argument: DestinationIpRange, VpnConnectionId \n"
+	"Usage: oapi-cli CreateVpnConnectionRoute DestinationIpRange, VpnConnectionId [OPTIONS]\n" "Creates a static route to a VPN connection.\nThis enables you to select the \n" "network flows sent by the virtual gateway to the target VPN connection.\n" "\nRequired Argument: DestinationIpRange, VpnConnectionId \n"
 ,
-	"Usage: oapi-cli CreateVpnConnection [options]\n" "Creates a VPN connection between a specified virtual gateway and a specified \n" "client gateway.\nYou can create only one VPN connection between a virtual \n" "gateway and a client gateway.\n" "\nRequired Argument: ClientGatewayId, ConnectionType, VirtualGatewayId \n"
+	"Usage: oapi-cli CreateVpnConnection ClientGatewayId, ConnectionType, VirtualGatewayId [OPTIONS]\n" "Creates a VPN connection between a specified virtual gateway and a specified \n" "client gateway.\nYou can create only one VPN connection between a virtual \n" "gateway and a client gateway.\n" "\nRequired Argument: ClientGatewayId, ConnectionType, VirtualGatewayId \n"
 ,
-	"Usage: oapi-cli CreateVolume [options]\n" "Creates a Block Storage Unit (BSU) volume in a specified Region.\nBSU volumes \n" "can be attached to a virtual machine (VM) in the same Subregion. You can create \n" "an empty volume or restore a volume from an existing snapshot.\nYou can create \n" "the following volume types: Enterprise (`io1`) for provisioned IOPS SSD \n" "volumes, Performance (`gp2`) for general purpose SSD volumes, or Magnetic \n" "(`standard`) volumes.\n" "\nRequired Argument: SubregionName \n"
+	"Usage: oapi-cli CreateVolume SubregionName [OPTIONS]\n" "Creates a Block Storage Unit (BSU) volume in a specified Region.\nBSU volumes \n" "can be attached to a virtual machine (VM) in the same Subregion. You can create \n" "an empty volume or restore a volume from an existing snapshot.\nYou can create \n" "the following volume types: Enterprise (`io1`) for provisioned IOPS SSD \n" "volumes, Performance (`gp2`) for general purpose SSD volumes, or Magnetic \n" "(`standard`) volumes.\n" "\nRequired Argument: SubregionName \n"
 ,
-	"Usage: oapi-cli CreateVms [options]\n" "Creates virtual machines (VMs), and then launches them.\nThis action enables \n" "you to create a specified number of VMs using an OUTSCALE machine image (OMI) \n" "that you are allowed to use, and then to automatically launch them.\nThe VMs \n" "remain in the `pending` state until they are created and ready to be used. Once \n" "automatically launched, they are in the `running` state.\nTo check the state of \n" "your VMs, call the [ReadVms](#readvms) method.\nIf not specified, the security \n" "group used by the service is the default one.\nThe metadata server enables you \n" "to get the public key provided when the VM is launched. Official OMIs contain a \n" "script to get this public key and put it inside the VM to provide secure access \n" "without password.\n" "\nRequired Argument: ImageId \n"
+	"Usage: oapi-cli CreateVms ImageId [OPTIONS]\n" "Creates virtual machines (VMs), and then launches them.\nThis action enables \n" "you to create a specified number of VMs using an OUTSCALE machine image (OMI) \n" "that you are allowed to use, and then to automatically launch them.\nThe VMs \n" "remain in the `pending` state until they are created and ready to be used. Once \n" "automatically launched, they are in the `running` state.\nTo check the state of \n" "your VMs, call the [ReadVms](#readvms) method.\nIf not specified, the security \n" "group used by the service is the default one.\nThe metadata server enables you \n" "to get the public key provided when the VM is launched. Official OMIs contain a \n" "script to get this public key and put it inside the VM to provide secure access \n" "without password.\n" "\nRequired Argument: ImageId \n"
 ,
-	"Usage: oapi-cli CreateVmTemplate [options]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nCreates a virtual machine (VM) template. You can then use the VM \n" "template to create VM groups.\nYou can create up to 50 VM templates in your \n" "account.\n" "\nRequired Argument: CpuCores, CpuGeneration, ImageId, Ram, VmTemplateName \n"
+	"Usage: oapi-cli CreateVmTemplate CpuCores, CpuGeneration, ImageId, Ram, VmTemplateName [OPTIONS]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nCreates a virtual machine (VM) template. You can then use the VM \n" "template to create VM groups.\nYou can create up to 50 VM templates in your \n" "account.\n" "\nRequired Argument: CpuCores, CpuGeneration, ImageId, Ram, VmTemplateName \n"
 ,
-	"Usage: oapi-cli CreateVmGroup [options]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nCreates a group of virtual machines (VMs) containing the same \n" "characteristics as a specified VM template, and then launches them.\nYou can \n" "create up to 100 VM groups in your account.\n" "\nRequired Argument: SecurityGroupIds, SubnetId, VmGroupName, VmTemplateId, VmCount \n"
+	"Usage: oapi-cli CreateVmGroup SecurityGroupIds, SubnetId, VmGroupName, VmTemplateId, VmCount [OPTIONS]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nCreates a group of virtual machines (VMs) containing the same \n" "characteristics as a specified VM template, and then launches them.\nYou can \n" "create up to 100 VM groups in your account.\n" "\nRequired Argument: SecurityGroupIds, SubnetId, VmGroupName, VmTemplateId, VmCount \n"
 ,
-	"Usage: oapi-cli CreateVirtualGateway [options]\n" "Creates a virtual gateway.\nA virtual gateway is the access point on the Net \n" "side of a VPN connection.\n" "\nRequired Argument: ConnectionType \n"
+	"Usage: oapi-cli CreateVirtualGateway ConnectionType [OPTIONS]\n" "Creates a virtual gateway.\nA virtual gateway is the access point on the Net \n" "side of a VPN connection.\n" "\nRequired Argument: ConnectionType \n"
 ,
-	"Usage: oapi-cli CreateUser [options]\n" "Creates an EIM user for your account.\n" "\nRequired Argument: UserName \n"
+	"Usage: oapi-cli CreateUser UserName [OPTIONS]\n" "Creates an EIM user for your account.\n" "\nRequired Argument: UserName \n"
 ,
-	"Usage: oapi-cli CreateTags [options]\n" "Adds one or more tags to the specified resources.\nIf a tag with the same key \n" "already exists for the resource, the tag value is replaced.\nYou can tag the \n" "following resources using their IDs:\n\n* Virtual machines (VMs) \n" "(i-xxxxxxxx)\n* OMIs (ami-xxxxxxxx)\n* Volumes (vol-xxxxxxxx)\n* Snapshots \n" "(snap-xxxxxxxx)\n* Public IPs (eipalloc-xxxxxxxx)\n* Security groups \n" "(sg-xxxxxxxx)\n* Route tables (rtb-xxxxxxxx)\n* Network interface cards (NIC) \n" "(eni-xxxxxxxx)\n* Nets (vpc-xxxxxxxx)\n* Subnets (subnet-xxxxxxxx)\n* Net \n" "peerings (vpcx-xxxxxxxx)\n* Net endpoints (vpce-xxxxxxxx)\n* NAT services \n" "(nat-xxxxxxxx)\n* Internet services (igw-xxxxxxxx)\n* Client gateways \n" "(cgw-xxxxxxxx)\n* Virtual gateways (vgw-xxxxxxxx)\n* VPN connections \n" "(vpn-xxxxxxxx)\n* DHCP options (dopt-xxxxxxxx)\n* OMI export tasks \n" "(image-export-xxxxxxxx)\n* Snapshot export tasks (snap-export-xxxxxxxx)\n" "\nRequired Argument: ResourceIds, Tags \n"
+	"Usage: oapi-cli CreateTags ResourceIds, Tags [OPTIONS]\n" "Adds one or more tags to the specified resources.\nIf a tag with the same key \n" "already exists for the resource, the tag value is replaced.\nYou can tag the \n" "following resources using their IDs:\n\n* Virtual machines (VMs) \n" "(i-xxxxxxxx)\n* OMIs (ami-xxxxxxxx)\n* Volumes (vol-xxxxxxxx)\n* Snapshots \n" "(snap-xxxxxxxx)\n* Public IPs (eipalloc-xxxxxxxx)\n* Security groups \n" "(sg-xxxxxxxx)\n* Route tables (rtb-xxxxxxxx)\n* Network interface cards (NIC) \n" "(eni-xxxxxxxx)\n* Nets (vpc-xxxxxxxx)\n* Subnets (subnet-xxxxxxxx)\n* Net \n" "peerings (vpcx-xxxxxxxx)\n* Net endpoints (vpce-xxxxxxxx)\n* NAT services \n" "(nat-xxxxxxxx)\n* Internet services (igw-xxxxxxxx)\n* Client gateways \n" "(cgw-xxxxxxxx)\n* Virtual gateways (vgw-xxxxxxxx)\n* VPN connections \n" "(vpn-xxxxxxxx)\n* DHCP options (dopt-xxxxxxxx)\n* OMI export tasks \n" "(image-export-xxxxxxxx)\n* Snapshot export tasks (snap-export-xxxxxxxx)\n" "\nRequired Argument: ResourceIds, Tags \n"
 ,
-	"Usage: oapi-cli CreateSubnet [options]\n" "Creates a Subnet in an existing Net.\nTo create a Subnet in a Net, you have to \n" "provide the ID of the Net and the IP range for the Subnet (its network range). \n" "Once the Subnet is created, you cannot modify its IP range.\n" "\nRequired Argument: IpRange, NetId \n"
+	"Usage: oapi-cli CreateSubnet IpRange, NetId [OPTIONS]\n" "Creates a Subnet in an existing Net.\nTo create a Subnet in a Net, you have to \n" "provide the ID of the Net and the IP range for the Subnet (its network range). \n" "Once the Subnet is created, you cannot modify its IP range.\n" "\nRequired Argument: IpRange, NetId \n"
 ,
-	"Usage: oapi-cli CreateSnapshotExportTask [options]\n" "Exports a snapshot to an OUTSCALE Object Storage (OOS) bucket.\nThis action \n" "enables you to create a backup of your snapshot or to copy it to another \n" "account. You, or other users you send a pre-signed URL to, can then download \n" "this snapshot from the bucket using the [CreateSnapshot](#createsnapshot) \n" "method.\nThis procedure enables you to copy a snapshot between accounts within \n" "the same Region or in different Regions. To copy a snapshot within the same \n" "Region, you can also use the [CreateSnapshot](#createsnapshot) direct method. \n" "The copy of the source snapshot is independent and belongs to you.\n" "\nRequired Argument: OsuExport, SnapshotId \n"
+	"Usage: oapi-cli CreateSnapshotExportTask OsuExport, SnapshotId [OPTIONS]\n" "Exports a snapshot to an OUTSCALE Object Storage (OOS) bucket.\nThis action \n" "enables you to create a backup of your snapshot or to copy it to another \n" "account. You, or other users you send a pre-signed URL to, can then download \n" "this snapshot from the bucket using the [CreateSnapshot](#createsnapshot) \n" "method.\nThis procedure enables you to copy a snapshot between accounts within \n" "the same Region or in different Regions. To copy a snapshot within the same \n" "Region, you can also use the [CreateSnapshot](#createsnapshot) direct method. \n" "The copy of the source snapshot is independent and belongs to you.\n" "\nRequired Argument: OsuExport, SnapshotId \n"
 ,
-	"Usage: oapi-cli CreateSnapshot [options]\n" "Creates a snapshot. Snapshots are point-in-time images of a volume that you can \n" "use to back up your data or to create replicas of this volume.\nYou can use \n" "this method in three different ways:\n* **Creating**: You create a snapshot \n" "from one of your volumes.<br></li>\n* **Copying**: You copy an existing \n" "snapshot. The source snapshot can be one of your own snapshots, or a snapshot \n" "owned by another account that has granted you permission via the \n" "[UpdateSnapshot](#updatesnapshot) method.<br></li>\n* **Importing**: You import \n" "a snapshot located in an OUTSCALE Object Storage (OOS) bucket. First, the owner \n" "of the source snapshot must export it to the bucket by using the \n" "[CreateSnapshotExportTask](#createsnapshotexporttask) method. Then, they must \n" "grant you read permission on the bucket via a pre-signed URL or Access Control \n" "Lists. For more information, see [Managing Access to Your Buckets and \n" "Objects](https://docs.outscale.com/en/userguide/Managing-Access-to-Your-Buckets-\n" "and-Objects.html).\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli CreateSnapshot [OPTIONS]\n" "Creates a snapshot. Snapshots are point-in-time images of a volume that you can \n" "use to back up your data or to create replicas of this volume.\nYou can use \n" "this method in three different ways:\n* **Creating**: You create a snapshot \n" "from one of your volumes.<br></li>\n* **Copying**: You copy an existing \n" "snapshot. The source snapshot can be one of your own snapshots, or a snapshot \n" "owned by another account that has granted you permission via the \n" "[UpdateSnapshot](#updatesnapshot) method.<br></li>\n* **Importing**: You import \n" "a snapshot located in an OUTSCALE Object Storage (OOS) bucket. First, the owner \n" "of the source snapshot must export it to the bucket by using the \n" "[CreateSnapshotExportTask](#createsnapshotexporttask) method. Then, they must \n" "grant you read permission on the bucket via a pre-signed URL or Access Control \n" "Lists. For more information, see [Managing Access to Your Buckets and \n" "Objects](https://docs.outscale.com/en/userguide/Managing-Access-to-Your-Buckets-\n" "and-Objects.html).\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli CreateServerCertificate [options]\n" "Creates a server certificate and its matching private key.\nThese elements can \n" "be used with other services (for example, to configure SSL termination on load \n" "balancers).\nYou can also specify the chain of intermediate certification \n" "authorities if your certificate is not directly signed by a root one. You can \n" "specify multiple intermediate certification authorities in the \n" "`CertificateChain` parameter. To do so, concatenate all certificates in the \n" "correct order (the first certificate must be the authority of your certificate, \n" "the second must the the authority of the first one, and so on).\nThe private \n" "key must be a RSA key in PKCS1 form. To check this, open the PEM file and \n" "ensure its header reads as follows: BEGIN RSA PRIVATE KEY.\n[IMPORTANT]\nThis \n" "private key must not be protected by a password or a passphrase.\n" "\nRequired Argument: Body, PrivateKey, Name \n"
+	"Usage: oapi-cli CreateServerCertificate Body, PrivateKey, Name [OPTIONS]\n" "Creates a server certificate and its matching private key.\nThese elements can \n" "be used with other services (for example, to configure SSL termination on load \n" "balancers).\nYou can also specify the chain of intermediate certification \n" "authorities if your certificate is not directly signed by a root one. You can \n" "specify multiple intermediate certification authorities in the \n" "`CertificateChain` parameter. To do so, concatenate all certificates in the \n" "correct order (the first certificate must be the authority of your certificate, \n" "the second must the the authority of the first one, and so on).\nThe private \n" "key must be a RSA key in PKCS1 form. To check this, open the PEM file and \n" "ensure its header reads as follows: BEGIN RSA PRIVATE KEY.\n[IMPORTANT]\nThis \n" "private key must not be protected by a password or a passphrase.\n" "\nRequired Argument: Body, PrivateKey, Name \n"
 ,
-	"Usage: oapi-cli CreateSecurityGroupRule [options]\n" "Adds one or more rules to a security group.\nUse the `SecurityGroupId` \n" "parameter to specify the security group for which you want to create a \n" "rule.\nUse the `Flow` parameter to specify if you want an inbound rule or an \n" "outbound rule.\nAn inbound rule allows the security group to receive \n" "traffic:\n* Either from a specific IP range (`IpRange` parameter) on a specific \n" "port range (`FromPortRange` and `ToPortRange` parameters) and specific protocol \n" "(`IpProtocol` parameter).\n* Or from another specific security group \n" "(`SecurityGroupAccountIdToLink` and `SecurityGroupNameToLink` \n" "parameters).\n\n(Net only) An outbound rule works similarly but allows the \n" "security group to send traffic rather than receive traffic.\n\nAlternatively, \n" "you can use the `Rules` parameter to add several rules at the same \n" "time.\n\n**[NOTE]**\n* The modifications are effective as quickly as possible, \n" "but a small delay may occur.\n* By default, traffic between two security groups \n" "is allowed through both public and private IPs. To restrict traffic to private \n" "IPs only, contact our Support team at support@outscale.com.\n" "\nRequired Argument: SecurityGroupId, Flow \n"
+	"Usage: oapi-cli CreateSecurityGroupRule SecurityGroupId, Flow [OPTIONS]\n" "Adds one or more rules to a security group.\nUse the `SecurityGroupId` \n" "parameter to specify the security group for which you want to create a \n" "rule.\nUse the `Flow` parameter to specify if you want an inbound rule or an \n" "outbound rule.\nAn inbound rule allows the security group to receive \n" "traffic:\n* Either from a specific IP range (`IpRange` parameter) on a specific \n" "port range (`FromPortRange` and `ToPortRange` parameters) and specific protocol \n" "(`IpProtocol` parameter).\n* Or from another specific security group \n" "(`SecurityGroupAccountIdToLink` and `SecurityGroupNameToLink` \n" "parameters).\n\n(Net only) An outbound rule works similarly but allows the \n" "security group to send traffic rather than receive traffic.\n\nAlternatively, \n" "you can use the `Rules` parameter to add several rules at the same \n" "time.\n\n**[NOTE]**\n* The modifications are effective as quickly as possible, \n" "but a small delay may occur.\n* By default, traffic between two security groups \n" "is allowed through both public and private IPs. To restrict traffic to private \n" "IPs only, contact our Support team at support@outscale.com.\n" "\nRequired Argument: SecurityGroupId, Flow \n"
 ,
-	"Usage: oapi-cli CreateSecurityGroup [options]\n" "Creates a security group.\nThis action creates a security group either in the \n" "public Cloud or in a specified Net. By default, a default security group for \n" "use in the public Cloud and a default security group for use in a Net are \n" "created.\nWhen launching a virtual machine (VM), if no security group is \n" "explicitly specified, the appropriate default security group is assigned to the \n" "VM. Default security groups include a default rule granting VMs network access \n" "to each other.\nWhen creating a security group, you specify a name. Two \n" "security groups for use in the public Cloud or for use in a Net cannot have the \n" "same name.\nYou can have up to 500 security groups in the public Cloud. You can \n" "create up to 500 security groups per Net.\nTo add or remove rules, use the \n" "[CreateSecurityGroupRule](#createsecuritygrouprule) method.\n" "\nRequired Argument: Description, SecurityGroupName \n"
+	"Usage: oapi-cli CreateSecurityGroup Description, SecurityGroupName [OPTIONS]\n" "Creates a security group.\nThis action creates a security group either in the \n" "public Cloud or in a specified Net. By default, a default security group for \n" "use in the public Cloud and a default security group for use in a Net are \n" "created.\nWhen launching a virtual machine (VM), if no security group is \n" "explicitly specified, the appropriate default security group is assigned to the \n" "VM. Default security groups include a default rule granting VMs network access \n" "to each other.\nWhen creating a security group, you specify a name. Two \n" "security groups for use in the public Cloud or for use in a Net cannot have the \n" "same name.\nYou can have up to 500 security groups in the public Cloud. You can \n" "create up to 500 security groups per Net.\nTo add or remove rules, use the \n" "[CreateSecurityGroupRule](#createsecuritygrouprule) method.\n" "\nRequired Argument: Description, SecurityGroupName \n"
 ,
-	"Usage: oapi-cli CreateRouteTable [options]\n" "Creates a route table for a specified Net.\nYou can then add routes and \n" "associate this route table with a Subnet.\n" "\nRequired Argument: NetId \n"
+	"Usage: oapi-cli CreateRouteTable NetId [OPTIONS]\n" "Creates a route table for a specified Net.\nYou can then add routes and \n" "associate this route table with a Subnet.\n" "\nRequired Argument: NetId \n"
 ,
-	"Usage: oapi-cli CreateRoute [options]\n" "Creates a route in a specified route table within a specified Net.\nYou must \n" "specify one of the following elements as the target:\n\n* Net peering\n* NAT \n" "VM\n* Internet service\n* Virtual gateway\n* NAT service\n* Network interface \n" "card (NIC)\n\nThe routing algorithm is based on the most specific match.\n" "\nRequired Argument: DestinationIpRange, RouteTableId \n"
+	"Usage: oapi-cli CreateRoute DestinationIpRange, RouteTableId [OPTIONS]\n" "Creates a route in a specified route table within a specified Net.\nYou must \n" "specify one of the following elements as the target:\n\n* Net peering\n* NAT \n" "VM\n* Internet service\n* Virtual gateway\n* NAT service\n* Network interface \n" "card (NIC)\n\nThe routing algorithm is based on the most specific match.\n" "\nRequired Argument: DestinationIpRange, RouteTableId \n"
 ,
-	"Usage: oapi-cli CreatePublicIp [options]\n" "Acquires a public IP for your account.\nA public IP is a static IP designed for \n" "dynamic Cloud computing. It can be associated with a virtual machine (VM) in \n" "the public Cloud or in a Net, a network interface card (NIC), a NAT service.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli CreatePublicIp [OPTIONS]\n" "Acquires a public IP for your account.\nA public IP is a static IP designed for \n" "dynamic Cloud computing. It can be associated with a virtual machine (VM) in \n" "the public Cloud or in a Net, a network interface card (NIC), a NAT service.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli CreateNic [options]\n" "Creates a network interface card (NIC) in the specified Subnet.\n" "\nRequired Argument: SubnetId \n"
+	"Usage: oapi-cli CreateNic SubnetId [OPTIONS]\n" "Creates a network interface card (NIC) in the specified Subnet.\n" "\nRequired Argument: SubnetId \n"
 ,
-	"Usage: oapi-cli CreateNetPeering [options]\n" "Requests a Net peering between a Net you own and a peer Net that belongs to you \n" "or another account.\nThis action creates a Net peering that remains in the \n" "`pending-acceptance` state until it is accepted by the owner of the peer Net. \n" "If the owner of the peer Net does not accept the request within 7 days, the \n" "state of the Net peering becomes `expired`. For more information, see \n" "[AcceptNetPeering](#acceptnetpeering).\n\n**[NOTE]**\n* Peered Nets must \n" "contain at least one virtual machine (VM) each before the creation of the Net \n" "peering.\n* The two Nets must not have overlapping IP ranges. Otherwise, the \n" "Net peering is in the `failed` state.\n* A peering connection between two Nets \n" "works both ways. Therefore, you do not need to create a B-to-A connection if an \n" "A-to-B connection is created and accepted.\n" "\nRequired Argument: AccepterNetId, SourceNetId \n"
+	"Usage: oapi-cli CreateNetPeering AccepterNetId, SourceNetId [OPTIONS]\n" "Requests a Net peering between a Net you own and a peer Net that belongs to you \n" "or another account.\nThis action creates a Net peering that remains in the \n" "`pending-acceptance` state until it is accepted by the owner of the peer Net. \n" "If the owner of the peer Net does not accept the request within 7 days, the \n" "state of the Net peering becomes `expired`. For more information, see \n" "[AcceptNetPeering](#acceptnetpeering).\n\n**[NOTE]**\n* Peered Nets must \n" "contain at least one virtual machine (VM) each before the creation of the Net \n" "peering.\n* The two Nets must not have overlapping IP ranges. Otherwise, the \n" "Net peering is in the `failed` state.\n* A peering connection between two Nets \n" "works both ways. Therefore, you do not need to create a B-to-A connection if an \n" "A-to-B connection is created and accepted.\n" "\nRequired Argument: AccepterNetId, SourceNetId \n"
 ,
-	"Usage: oapi-cli CreateNetAccessPoint [options]\n" "Creates a Net access point to access an OUTSCALE service from this Net without \n" "using the Internet and public IPs.\nYou specify the service using its name. For \n" "more information about the available services, see \n" "[ReadNetAccessPointServices](#readnetaccesspointservices).\nTo control the \n" "routing of traffic between the Net and the specified service, you can specify \n" "one or more route tables. Virtual machines placed in Subnets associated with \n" "the specified route table thus use the Net access point to access the service. \n" "When you specify a route table, a route is automatically added to it with the \n" "destination set to the prefix list ID of the service, and the target set to the \n" "ID of the access point.\n" "\nRequired Argument: ServiceName, NetId \n"
+	"Usage: oapi-cli CreateNetAccessPoint ServiceName, NetId [OPTIONS]\n" "Creates a Net access point to access an OUTSCALE service from this Net without \n" "using the Internet and public IPs.\nYou specify the service using its name. For \n" "more information about the available services, see \n" "[ReadNetAccessPointServices](#readnetaccesspointservices).\nTo control the \n" "routing of traffic between the Net and the specified service, you can specify \n" "one or more route tables. Virtual machines placed in Subnets associated with \n" "the specified route table thus use the Net access point to access the service. \n" "When you specify a route table, a route is automatically added to it with the \n" "destination set to the prefix list ID of the service, and the target set to the \n" "ID of the access point.\n" "\nRequired Argument: ServiceName, NetId \n"
 ,
-	"Usage: oapi-cli CreateNet [options]\n" "Creates a Net with a specified IP range.\nThe IP range (network range) of your \n" "Net must be between a /28 netmask (16 IPs) and a /16 netmask (65536 IPs).\n" "\nRequired Argument: IpRange \n"
+	"Usage: oapi-cli CreateNet IpRange [OPTIONS]\n" "Creates a Net with a specified IP range.\nThe IP range (network range) of your \n" "Net must be between a /28 netmask (16 IPs) and a /16 netmask (65536 IPs).\n" "\nRequired Argument: IpRange \n"
 ,
-	"Usage: oapi-cli CreateNatService [options]\n" "Creates a network address translation (NAT) service in the specified public \n" "Subnet of a Net.\nA NAT service enables virtual machines (VMs) placed in the \n" "private Subnet of this Net to connect to the Internet, without being accessible \n" "from the Internet.\nWhen creating a NAT service, you specify the allocation ID \n" "of the public IP you want to use as public IP for the NAT service. Once the NAT \n" "service is created, you need to create a route in the route table of the \n" "private Subnet, with 0.0.0.0/0 as destination and the ID of the NAT service as \n" "target. For more information, see [LinkPublicIP](#linkpublicip) and \n" "[CreateRoute](#createroute).\nThis action also enables you to create multiple \n" "NAT services in the same Net (one per public Subnet).\n\n**[NOTE]**\nYou cannot \n" "modify the public IP associated with a NAT service after its creation. To do \n" "so, you need to delete the NAT service and create a new one with another public \n" "IP.\n" "\nRequired Argument: PublicIpId, SubnetId \n"
+	"Usage: oapi-cli CreateNatService PublicIpId, SubnetId [OPTIONS]\n" "Creates a network address translation (NAT) service in the specified public \n" "Subnet of a Net.\nA NAT service enables virtual machines (VMs) placed in the \n" "private Subnet of this Net to connect to the Internet, without being accessible \n" "from the Internet.\nWhen creating a NAT service, you specify the allocation ID \n" "of the public IP you want to use as public IP for the NAT service. Once the NAT \n" "service is created, you need to create a route in the route table of the \n" "private Subnet, with 0.0.0.0/0 as destination and the ID of the NAT service as \n" "target. For more information, see [LinkPublicIP](#linkpublicip) and \n" "[CreateRoute](#createroute).\nThis action also enables you to create multiple \n" "NAT services in the same Net (one per public Subnet).\n\n**[NOTE]**\nYou cannot \n" "modify the public IP associated with a NAT service after its creation. To do \n" "so, you need to delete the NAT service and create a new one with another public \n" "IP.\n" "\nRequired Argument: PublicIpId, SubnetId \n"
 ,
-	"Usage: oapi-cli CreateLoadBalancerTags [options]\n" "Adds one or more tags to the specified load balancers.\nIf a tag with the same \n" "key already exists for the load balancer, the tag value is replaced.\n" "\nRequired Argument: LoadBalancerNames, Tags \n"
+	"Usage: oapi-cli CreateLoadBalancerTags LoadBalancerNames, Tags [OPTIONS]\n" "Adds one or more tags to the specified load balancers.\nIf a tag with the same \n" "key already exists for the load balancer, the tag value is replaced.\n" "\nRequired Argument: LoadBalancerNames, Tags \n"
 ,
-	"Usage: oapi-cli CreateLoadBalancerPolicy [options]\n" "Creates a stickiness policy with sticky session lifetimes defined by the \n" "browser lifetime.\nThe created policy can be used with HTTP or HTTPS listeners \n" "only.\nIf this policy is implemented by a load balancer, this load balancer \n" "uses this cookie in all incoming requests to direct them to the specified \n" "back-end server virtual machine (VM). If this cookie is not present, the load \n" "balancer sends the request to any other server according to its load-balancing \n" "algorithm.\n\nYou can also create a stickiness policy with sticky session \n" "lifetimes following the lifetime of an application-generated cookie.\nUnlike \n" "the other type of stickiness policy, the lifetime of the special Load Balancer \n" "Unit (LBU) cookie follows the lifetime of the application-generated cookie \n" "specified in the policy configuration. The load balancer inserts a new \n" "stickiness cookie only when the application response includes a new application \n" "cookie.\nThe session stops being sticky if the application cookie is removed or \n" "expires, until a new application cookie is issued.\n" "\nRequired Argument: PolicyType, LoadBalancerName, PolicyName \n"
+	"Usage: oapi-cli CreateLoadBalancerPolicy PolicyType, LoadBalancerName, PolicyName [OPTIONS]\n" "Creates a stickiness policy with sticky session lifetimes defined by the \n" "browser lifetime.\nThe created policy can be used with HTTP or HTTPS listeners \n" "only.\nIf this policy is implemented by a load balancer, this load balancer \n" "uses this cookie in all incoming requests to direct them to the specified \n" "back-end server virtual machine (VM). If this cookie is not present, the load \n" "balancer sends the request to any other server according to its load-balancing \n" "algorithm.\n\nYou can also create a stickiness policy with sticky session \n" "lifetimes following the lifetime of an application-generated cookie.\nUnlike \n" "the other type of stickiness policy, the lifetime of the special Load Balancer \n" "Unit (LBU) cookie follows the lifetime of the application-generated cookie \n" "specified in the policy configuration. The load balancer inserts a new \n" "stickiness cookie only when the application response includes a new application \n" "cookie.\nThe session stops being sticky if the application cookie is removed or \n" "expires, until a new application cookie is issued.\n" "\nRequired Argument: PolicyType, LoadBalancerName, PolicyName \n"
 ,
-	"Usage: oapi-cli CreateLoadBalancerListeners [options]\n" "Creates one or more listeners for a specified load balancer.\n" "\nRequired Argument: Listeners, LoadBalancerName \n"
+	"Usage: oapi-cli CreateLoadBalancerListeners Listeners, LoadBalancerName [OPTIONS]\n" "Creates one or more listeners for a specified load balancer.\n" "\nRequired Argument: Listeners, LoadBalancerName \n"
 ,
-	"Usage: oapi-cli CreateLoadBalancer [options]\n" "Creates a load balancer.\nThe load balancer is created with a unique Domain \n" "Name Service (DNS) name. It receives the incoming traffic and routes it to its \n" "registered virtual machines (VMs).\nBy default, this action creates an \n" "Internet-facing load balancer, resolving to public IPs. To create an internal \n" "load balancer in a Net, resolving to private IPs, use the `LoadBalancerType` \n" "parameter.\nYou must specify either the `Subnets` or the `SubregionNames` \n" "parameters.\n" "\nRequired Argument: Listeners, LoadBalancerName \n"
+	"Usage: oapi-cli CreateLoadBalancer Listeners, LoadBalancerName [OPTIONS]\n" "Creates a load balancer.\nThe load balancer is created with a unique Domain \n" "Name Service (DNS) name. It receives the incoming traffic and routes it to its \n" "registered virtual machines (VMs).\nBy default, this action creates an \n" "Internet-facing load balancer, resolving to public IPs. To create an internal \n" "load balancer in a Net, resolving to private IPs, use the `LoadBalancerType` \n" "parameter.\nYou must specify either the `Subnets` or the `SubregionNames` \n" "parameters.\n" "\nRequired Argument: Listeners, LoadBalancerName \n"
 ,
-	"Usage: oapi-cli CreateListenerRule [options]\n" "Creates a rule for traffic redirection for the specified listener. Each rule \n" "must have either the `HostNamePattern` or `PathPattern` parameter specified. \n" "Rules are treated in priority order, from the highest value to the lowest \n" "value.\nOnce the rule is created, you need to register backend VMs with it. For \n" "more information, see the \n" "[RegisterVmsInLoadBalancer](#registervmsinloadbalancer) method.\n" "\nRequired Argument: VmIds, Listener, ListenerRule \n"
+	"Usage: oapi-cli CreateListenerRule VmIds, Listener, ListenerRule [OPTIONS]\n" "Creates a rule for traffic redirection for the specified listener. Each rule \n" "must have either the `HostNamePattern` or `PathPattern` parameter specified. \n" "Rules are treated in priority order, from the highest value to the lowest \n" "value.\nOnce the rule is created, you need to register backend VMs with it. For \n" "more information, see the \n" "[RegisterVmsInLoadBalancer](#registervmsinloadbalancer) method.\n" "\nRequired Argument: VmIds, Listener, ListenerRule \n"
 ,
-	"Usage: oapi-cli CreateKeypair [options]\n" "Creates a 2048-bit RSA keypair with a specified name.\nThis action returns the \n" "private key that you need to save. The public key is stored by 3DS \n" "OUTSCALE.\n\nYou can also import a public key. The following types of key can \n" "be imported: RSA (minimum 2048 bits, recommended 4096 bits), ECDSA (minimum and \n" "recommended 256 bits), and Ed25519. The following formats can be used: PEM, \n" "PKCS8, RFC4716, and OpenSSH.\nThis action imports the public key of a keypair \n" "created by a third-party tool and uses it to create a keypair. The private key \n" "is never provided to 3DS OUTSCALE.\n" "\nRequired Argument: KeypairName \n"
+	"Usage: oapi-cli CreateKeypair KeypairName [OPTIONS]\n" "Creates a 2048-bit RSA keypair with a specified name.\nThis action returns the \n" "private key that you need to save. The public key is stored by 3DS \n" "OUTSCALE.\n\nYou can also import a public key. The following types of key can \n" "be imported: RSA (minimum 2048 bits, recommended 4096 bits), ECDSA (minimum and \n" "recommended 256 bits), and Ed25519. The following formats can be used: PEM, \n" "PKCS8, RFC4716, and OpenSSH.\nThis action imports the public key of a keypair \n" "created by a third-party tool and uses it to create a keypair. The private key \n" "is never provided to 3DS OUTSCALE.\n" "\nRequired Argument: KeypairName \n"
 ,
-	"Usage: oapi-cli CreateInternetService [options]\n" "Creates an Internet service you can use with a Net.\nAn Internet service \n" "enables your virtual machines (VMs) launched in a Net to connect to the \n" "Internet. By default, a Net includes an Internet service, and each Subnet is \n" "public. Every VM launched within a default Subnet has a private IP and a public \n" "IP.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli CreateInternetService [OPTIONS]\n" "Creates an Internet service you can use with a Net.\nAn Internet service \n" "enables your virtual machines (VMs) launched in a Net to connect to the \n" "Internet. By default, a Net includes an Internet service, and each Subnet is \n" "public. Every VM launched within a default Subnet has a private IP and a public \n" "IP.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli CreateImageExportTask [options]\n" "Exports an Outscale machine image (OMI) to an OUTSCALE Object Storage (OOS) \n" "bucket.\nThis action enables you to copy an OMI between accounts in different \n" "Regions. To copy an OMI in the same Region, you can also use the \n" "[CreateImage](#createimage) method.\nThe copy of the OMI belongs to you and is \n" "independent from the source OMI.\n\n**[NOTE]**\nYou cannot export a shared or \n" "public OMI, as they do not belong to you. To do so, you must first copy it to \n" "your account. The copy then belongs to you and you can export it.\n" "\nRequired Argument: OsuExport, ImageId \n"
+	"Usage: oapi-cli CreateImageExportTask OsuExport, ImageId [OPTIONS]\n" "Exports an Outscale machine image (OMI) to an OUTSCALE Object Storage (OOS) \n" "bucket.\nThis action enables you to copy an OMI between accounts in different \n" "Regions. To copy an OMI in the same Region, you can also use the \n" "[CreateImage](#createimage) method.\nThe copy of the OMI belongs to you and is \n" "independent from the source OMI.\n\n**[NOTE]**\nYou cannot export a shared or \n" "public OMI, as they do not belong to you. To do so, you must first copy it to \n" "your account. The copy then belongs to you and you can export it.\n" "\nRequired Argument: OsuExport, ImageId \n"
 ,
-	"Usage: oapi-cli CreateImage [options]\n" "Creates an OUTSCALE machine image (OMI) from an existing virtual machine (VM) \n" "which is either running or stopped.\nThis action also creates a snapshot of the \n" "root volume of the VM, as well as a snapshot of each Block Storage Unit (BSU) \n" "volume attached to the VM. For more information, see [About \n" "OMIs](https://docs.outscale.com/en/userguide/About-OMIs.html).\n\nYou can also \n" "use this method to copy an OMI to your account, from an account in the same \n" "Region. To do so, the owner of the source OMI must share it with your account. \n" "For more information about how to share an OMI with another account in the same \n" "Region, see [UpdateImage](#updateimage).\nTo copy an OMI between accounts in \n" "different Regions, the owner of the source OMI must first export it to an \n" "OUTSCALE Object Storage (OOS) bucket using the \n" "[CreateImageExportTask](#createimageexporttask) method, and then you need to \n" "create a copy of the image in your account.\nThe copy of the source OMI is \n" "independent and belongs to you.\n\nYou can also use this method to register an \n" "OMI to finalize its creation process.\nYou can register an OMI from a snapshot \n" "of a root device to create an OMI based on this snapshot. You can also register \n" "an OMI that has been exported to an S3-compatible bucket to create a copy of it \n" "in your account. For more information about OMI export to an OOS bucket, see \n" "[CreateImageExportTask](#createimageexporttask).\nYou can register an OMI using \n" "a pre-signed URL of the manifest file of the OMI. You do not need any \n" "permission for this OMI, or the bucket in which it is contained. The manifest \n" "file is obsolete seven days after a completed export as it contains pre-signed \n" "URLs to the appropriate snapshots (pre-signed URLs are valid for only seven \n" "days).\nOnce the OMI is registered, you can launch a VM from this OMI. The copy \n" "of the source OMI is independent and belongs to you.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli CreateImage [OPTIONS]\n" "Creates an OUTSCALE machine image (OMI) from an existing virtual machine (VM) \n" "which is either running or stopped.\nThis action also creates a snapshot of the \n" "root volume of the VM, as well as a snapshot of each Block Storage Unit (BSU) \n" "volume attached to the VM. For more information, see [About \n" "OMIs](https://docs.outscale.com/en/userguide/About-OMIs.html).\n\nYou can also \n" "use this method to copy an OMI to your account, from an account in the same \n" "Region. To do so, the owner of the source OMI must share it with your account. \n" "For more information about how to share an OMI with another account in the same \n" "Region, see [UpdateImage](#updateimage).\nTo copy an OMI between accounts in \n" "different Regions, the owner of the source OMI must first export it to an \n" "OUTSCALE Object Storage (OOS) bucket using the \n" "[CreateImageExportTask](#createimageexporttask) method, and then you need to \n" "create a copy of the image in your account.\nThe copy of the source OMI is \n" "independent and belongs to you.\n\nYou can also use this method to register an \n" "OMI to finalize its creation process.\nYou can register an OMI from a snapshot \n" "of a root device to create an OMI based on this snapshot. You can also register \n" "an OMI that has been exported to an S3-compatible bucket to create a copy of it \n" "in your account. For more information about OMI export to an OOS bucket, see \n" "[CreateImageExportTask](#createimageexporttask).\nYou can register an OMI using \n" "a pre-signed URL of the manifest file of the OMI. You do not need any \n" "permission for this OMI, or the bucket in which it is contained. The manifest \n" "file is obsolete seven days after a completed export as it contains pre-signed \n" "URLs to the appropriate snapshots (pre-signed URLs are valid for only seven \n" "days).\nOnce the OMI is registered, you can launch a VM from this OMI. The copy \n" "of the source OMI is independent and belongs to you.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli CreateFlexibleGpu [options]\n" "Allocates a flexible GPU (fGPU) to your account.\nYou can then attach this fGPU \n" "to a virtual machine (VM).\n" "\nRequired Argument: ModelName, SubregionName \n"
+	"Usage: oapi-cli CreateFlexibleGpu ModelName, SubregionName [OPTIONS]\n" "Allocates a flexible GPU (fGPU) to your account.\nYou can then attach this fGPU \n" "to a virtual machine (VM).\n" "\nRequired Argument: ModelName, SubregionName \n"
 ,
-	"Usage: oapi-cli CreateDirectLinkInterface [options]\n" "Creates a DirectLink interface.\nDirectLink interfaces enable you to reach one \n" "of your Nets through a virtual gateway.\n" "\nRequired Argument: DirectLinkId, DirectLinkInterface \n"
+	"Usage: oapi-cli CreateDirectLinkInterface DirectLinkId, DirectLinkInterface [OPTIONS]\n" "Creates a DirectLink interface.\nDirectLink interfaces enable you to reach one \n" "of your Nets through a virtual gateway.\n" "\nRequired Argument: DirectLinkId, DirectLinkInterface \n"
 ,
-	"Usage: oapi-cli CreateDirectLink [options]\n" "Creates a DirectLink between a customer network and a specified DirectLink \n" "location.\n" "\nRequired Argument: Bandwidth, DirectLinkName, Location \n"
+	"Usage: oapi-cli CreateDirectLink Bandwidth, DirectLinkName, Location [OPTIONS]\n" "Creates a DirectLink between a customer network and a specified DirectLink \n" "location.\n" "\nRequired Argument: Bandwidth, DirectLinkName, Location \n"
 ,
-	"Usage: oapi-cli CreateDhcpOptions [options]\n" "Creates a set of DHCP options, that you can then associate with a Net using the \n" "[UpdateNet](#updatenet) method.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli CreateDhcpOptions [OPTIONS]\n" "Creates a set of DHCP options, that you can then associate with a Net using the \n" "[UpdateNet](#updatenet) method.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli CreateClientGateway [options]\n" "Provides information about your client gateway.\nThis action registers \n" "information to identify the client gateway that you deployed in your \n" "network.\nTo open a tunnel to the client gateway, you must provide the \n" "communication protocol type, the fixed public IP of the gateway, and an \n" "Autonomous System Number (ASN).\n" "\nRequired Argument: BgpAsn, PublicIp, ConnectionType \n"
+	"Usage: oapi-cli CreateClientGateway BgpAsn, PublicIp, ConnectionType [OPTIONS]\n" "Provides information about your client gateway.\nThis action registers \n" "information to identify the client gateway that you deployed in your \n" "network.\nTo open a tunnel to the client gateway, you must provide the \n" "communication protocol type, the fixed public IP of the gateway, and an \n" "Autonomous System Number (ASN).\n" "\nRequired Argument: BgpAsn, PublicIp, ConnectionType \n"
 ,
-	"Usage: oapi-cli CreateCa [options]\n" "Creates a Client Certificate Authority (CA).\n" "\nRequired Argument: CaPem \n"
+	"Usage: oapi-cli CreateCa CaPem [OPTIONS]\n" "Creates a Client Certificate Authority (CA).\n" "\nRequired Argument: CaPem \n"
 ,
-	"Usage: oapi-cli CreateApiAccessRule [options]\n" "Creates a rule to allow access to the API from your account.\nYou need to \n" "specify at least the `CaIds` or the `IpRanges` parameter.\n\n**[NOTE]**\nBy \n" "default, your account has a set of rules allowing global access that you can \n" "delete. For more information, see [About API Access \n" "Rules](https://docs.outscale.com/en/userguide/About-API-Access-Rules.html).\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli CreateApiAccessRule [OPTIONS]\n" "Creates a rule to allow access to the API from your account.\nYou need to \n" "specify at least the `CaIds` or the `IpRanges` parameter.\n\n**[NOTE]**\nBy \n" "default, your account has a set of rules allowing global access that you can \n" "delete. For more information, see [About API Access \n" "Rules](https://docs.outscale.com/en/userguide/About-API-Access-Rules.html).\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli CreateAccount [options]\n" "Creates an OUTSCALE account.\n\n**[NOTE]**\n* You need OUTSCALE credentials and \n" "the appropriate quotas to create an account via API. To get quotas, you can \n" "send an email to sales@outscale.com.\n* If you want to pass a numeral value as \n" "a string instead of an integer, you must wrap your string in additional quotes \n" "(for example, `'&quot;92000&quot;'`).\n" "\nRequired Argument: City, CompanyName, Country, CustomerId, Email, FirstName, LastName, ZipCode \n"
+	"Usage: oapi-cli CreateAccount City, CompanyName, Country, CustomerId, Email, FirstName, LastName, ZipCode [OPTIONS]\n" "Creates an OUTSCALE account.\n\n**[NOTE]**\n* You need OUTSCALE credentials and \n" "the appropriate quotas to create an account via API. To get quotas, you can \n" "send an email to sales@outscale.com.\n* If you want to pass a numeral value as \n" "a string instead of an integer, you must wrap your string in additional quotes \n" "(for example, `'&quot;92000&quot;'`).\n" "\nRequired Argument: City, CompanyName, Country, CustomerId, Email, FirstName, LastName, ZipCode \n"
 ,
-	"Usage: oapi-cli CreateAccessKey [options]\n" "Creates an access key for either your root account or an EIM user. The new key \n" "is automatically set to `ACTIVE`.\n" "\nRequired Argument: none \n"
+	"Usage: oapi-cli CreateAccessKey [OPTIONS]\n" "Creates an access key for either your root account or an EIM user. The new key \n" "is automatically set to `ACTIVE`.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli CheckAuthentication [options]\n" "Validates the authenticity of the account.\n" "\nRequired Argument: Login, Password \n"
+	"Usage: oapi-cli CheckAuthentication Login, Password [OPTIONS]\n" "Validates the authenticity of the account.\n" "\nRequired Argument: Login, Password \n"
 ,
-	"Usage: oapi-cli AcceptNetPeering [options]\n" "Accepts a Net peering request.\nTo accept this request, you must be the owner \n" "of the peer Net. If you do not accept the request within 7 days, the state of \n" "the Net peering becomes `expired`.\n**[NOTE]**\nA peering connection between \n" "two Nets works both ways. Therefore, when an A-to-B peering connection is \n" "accepted, any pending B-to-A peering connection is automatically rejected as \n" "redundant.\n" "\nRequired Argument: NetPeeringId \n"
+	"Usage: oapi-cli AcceptNetPeering NetPeeringId [OPTIONS]\n" "Accepts a Net peering request.\nTo accept this request, you must be the owner \n" "of the peer Net. If you do not accept the request within 7 days, the state of \n" "the Net peering becomes `expired`.\n**[NOTE]**\nA peering connection between \n" "two Nets works both ways. Therefore, when an A-to-B peering connection is \n" "accepted, any pending B-to-A peering connection is automatically rejected as \n" "redundant.\n" "\nRequired Argument: NetPeeringId \n"
 ,
 	NULL
 };
@@ -4063,6 +4063,10 @@ static char *osc_strdup(const char *str) {
 #define STRY(test,  ...)					\
 	if (test) return -1
 
+#define TRY_APPEND_COL(count_args, data)			\
+	if (count_args++ > 0)					\
+		STRY(osc_str_append_string(data, "," ));
+
 #define LOAD_CFG_GET_HOME(buf)						\
 	{								\
 		const char *dest = CFG_FILE;				\
@@ -4394,24 +4398,21 @@ static int accepter_net_setter(struct accepter_net *args, struct osc_str *data) 
        int count_args = 0;
        int ret = 0;
 	if (args->account_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
                 STRY(osc_str_append_string(data, args->account_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->ip_range) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRange\":\"" ));
                 STRY(osc_str_append_string(data, args->ip_range));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -4423,40 +4424,35 @@ static int access_key_setter(struct access_key *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->access_key_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccessKeyId\":\"" ));
                 STRY(osc_str_append_string(data, args->access_key_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->creation_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CreationDate\":\"" ));
                 STRY(osc_str_append_string(data, args->creation_date));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->expiration_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ExpirationDate\":\"" ));
                 STRY(osc_str_append_string(data, args->expiration_date));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->last_modification_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LastModificationDate\":\"" ));
                 STRY(osc_str_append_string(data, args->last_modification_date));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -4468,48 +4464,42 @@ static int access_key_secret_key_setter(struct access_key_secret_key *args, stru
        int count_args = 0;
        int ret = 0;
 	if (args->access_key_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccessKeyId\":\"" ));
                 STRY(osc_str_append_string(data, args->access_key_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->creation_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CreationDate\":\"" ));
                 STRY(osc_str_append_string(data, args->creation_date));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->expiration_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ExpirationDate\":\"" ));
                 STRY(osc_str_append_string(data, args->expiration_date));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->last_modification_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LastModificationDate\":\"" ));
                 STRY(osc_str_append_string(data, args->last_modification_date));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->secret_key) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecretKey\":\"" ));
                 STRY(osc_str_append_string(data, args->secret_key));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -4521,31 +4511,27 @@ static int access_log_setter(struct access_log *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_is_enabled) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IsEnabled\":" ));
                 STRY(osc_str_append_bool(data, args->is_enabled));
 	   	ret += 1;
 	}
 	if (args->osu_bucket_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OsuBucketName\":\"" ));
                 STRY(osc_str_append_string(data, args->osu_bucket_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->osu_bucket_prefix) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OsuBucketPrefix\":\"" ));
                 STRY(osc_str_append_string(data, args->osu_bucket_prefix));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_publication_interval || args->publication_interval) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicationInterval\":" ));
                 STRY(osc_str_append_int(data, args->publication_interval));
 	   	ret += 1;
@@ -4556,8 +4542,7 @@ static int account_setter(struct account *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->account_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
                 STRY(osc_str_append_string(data, args->account_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -4566,8 +4551,7 @@ static int account_setter(struct account *args, struct osc_str *data) {
 	if (args->additional_emails) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AdditionalEmails\":[" ));
 		for (as = args->additional_emails; *as > 0; ++as) {
 			if (as != args->additional_emails)
@@ -4579,111 +4563,97 @@ static int account_setter(struct account *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->additional_emails_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AdditionalEmails\":" ));
                 STRY(osc_str_append_string(data, args->additional_emails_str));
 		ret += 1;
 	}
 	if (args->city) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"City\":\"" ));
                 STRY(osc_str_append_string(data, args->city));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->company_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CompanyName\":\"" ));
                 STRY(osc_str_append_string(data, args->company_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->country) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Country\":\"" ));
                 STRY(osc_str_append_string(data, args->country));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->customer_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CustomerId\":\"" ));
                 STRY(osc_str_append_string(data, args->customer_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->email) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Email\":\"" ));
                 STRY(osc_str_append_string(data, args->email));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->first_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"FirstName\":\"" ));
                 STRY(osc_str_append_string(data, args->first_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->job_title) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"JobTitle\":\"" ));
                 STRY(osc_str_append_string(data, args->job_title));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->last_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LastName\":\"" ));
                 STRY(osc_str_append_string(data, args->last_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->mobile_number) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MobileNumber\":\"" ));
                 STRY(osc_str_append_string(data, args->mobile_number));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->phone_number) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PhoneNumber\":\"" ));
                 STRY(osc_str_append_string(data, args->phone_number));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state_province) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"StateProvince\":\"" ));
                 STRY(osc_str_append_string(data, args->state_province));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vat_number) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VatNumber\":\"" ));
                 STRY(osc_str_append_string(data, args->vat_number));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->zip_code) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ZipCode\":\"" ));
                 STRY(osc_str_append_string(data, args->zip_code));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -4695,15 +4665,13 @@ static int api_access_policy_setter(struct api_access_policy *args, struct osc_s
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_max_access_key_expiration_seconds || args->max_access_key_expiration_seconds) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MaxAccessKeyExpirationSeconds\":" ));
                 STRY(osc_str_append_int(data, args->max_access_key_expiration_seconds));
 	   	ret += 1;
 	}
 	if (args->is_set_require_trusted_env) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RequireTrustedEnv\":" ));
                 STRY(osc_str_append_bool(data, args->require_trusted_env));
 	   	ret += 1;
@@ -4714,8 +4682,7 @@ static int api_access_rule_setter(struct api_access_rule *args, struct osc_str *
        int count_args = 0;
        int ret = 0;
 	if (args->api_access_rule_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ApiAccessRuleId\":\"" ));
                 STRY(osc_str_append_string(data, args->api_access_rule_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -4724,8 +4691,7 @@ static int api_access_rule_setter(struct api_access_rule *args, struct osc_str *
 	if (args->ca_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CaIds\":[" ));
 		for (as = args->ca_ids; *as > 0; ++as) {
 			if (as != args->ca_ids)
@@ -4737,8 +4703,7 @@ static int api_access_rule_setter(struct api_access_rule *args, struct osc_str *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ca_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CaIds\":" ));
                 STRY(osc_str_append_string(data, args->ca_ids_str));
 		ret += 1;
@@ -4746,8 +4711,7 @@ static int api_access_rule_setter(struct api_access_rule *args, struct osc_str *
 	if (args->cns) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Cns\":[" ));
 		for (as = args->cns; *as > 0; ++as) {
 			if (as != args->cns)
@@ -4759,15 +4723,13 @@ static int api_access_rule_setter(struct api_access_rule *args, struct osc_str *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->cns_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Cns\":" ));
                 STRY(osc_str_append_string(data, args->cns_str));
 		ret += 1;
 	}
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -4776,8 +4738,7 @@ static int api_access_rule_setter(struct api_access_rule *args, struct osc_str *
 	if (args->ip_ranges) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRanges\":[" ));
 		for (as = args->ip_ranges; *as > 0; ++as) {
 			if (as != args->ip_ranges)
@@ -4789,8 +4750,7 @@ static int api_access_rule_setter(struct api_access_rule *args, struct osc_str *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ip_ranges_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRanges\":" ));
                 STRY(osc_str_append_string(data, args->ip_ranges_str));
 		ret += 1;
@@ -4801,16 +4761,14 @@ static int application_sticky_cookie_policy_setter(struct application_sticky_coo
        int count_args = 0;
        int ret = 0;
 	if (args->cookie_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CookieName\":\"" ));
                 STRY(osc_str_append_string(data, args->cookie_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->policy_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PolicyName\":\"" ));
                 STRY(osc_str_append_string(data, args->policy_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -4822,32 +4780,28 @@ static int backend_vm_health_setter(struct backend_vm_health *args, struct osc_s
        int count_args = 0;
        int ret = 0;
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state_reason) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"StateReason\":\"" ));
                 STRY(osc_str_append_string(data, args->state_reason));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -4859,22 +4813,19 @@ static int block_device_mapping_created_setter(struct block_device_mapping_creat
        int count_args = 0;
        int ret = 0;
 	if (args->bsu_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Bsu\":" ));
                 STRY(osc_str_append_string(data, args->bsu_str));
 		ret += 1;
 	} else if (args->is_set_bsu) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Bsu\": { " ));
 	       STRY(bsu_created_setter(&args->bsu, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->device_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeviceName\":\"" ));
                 STRY(osc_str_append_string(data, args->device_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -4886,30 +4837,26 @@ static int block_device_mapping_image_setter(struct block_device_mapping_image *
        int count_args = 0;
        int ret = 0;
 	if (args->bsu_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Bsu\":" ));
                 STRY(osc_str_append_string(data, args->bsu_str));
 		ret += 1;
 	} else if (args->is_set_bsu) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Bsu\": { " ));
 	       STRY(bsu_to_create_setter(&args->bsu, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->device_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeviceName\":\"" ));
                 STRY(osc_str_append_string(data, args->device_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->virtual_device_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VirtualDeviceName\":\"" ));
                 STRY(osc_str_append_string(data, args->virtual_device_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -4921,38 +4868,33 @@ static int block_device_mapping_vm_creation_setter(struct block_device_mapping_v
        int count_args = 0;
        int ret = 0;
 	if (args->bsu_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Bsu\":" ));
                 STRY(osc_str_append_string(data, args->bsu_str));
 		ret += 1;
 	} else if (args->is_set_bsu) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Bsu\": { " ));
 	       STRY(bsu_to_create_setter(&args->bsu, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->device_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeviceName\":\"" ));
                 STRY(osc_str_append_string(data, args->device_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->no_device) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NoDevice\":\"" ));
                 STRY(osc_str_append_string(data, args->no_device));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->virtual_device_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VirtualDeviceName\":\"" ));
                 STRY(osc_str_append_string(data, args->virtual_device_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -4964,38 +4906,33 @@ static int block_device_mapping_vm_update_setter(struct block_device_mapping_vm_
        int count_args = 0;
        int ret = 0;
 	if (args->bsu_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Bsu\":" ));
                 STRY(osc_str_append_string(data, args->bsu_str));
 		ret += 1;
 	} else if (args->is_set_bsu) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Bsu\": { " ));
 	       STRY(bsu_to_update_vm_setter(&args->bsu, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->device_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeviceName\":\"" ));
                 STRY(osc_str_append_string(data, args->device_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->no_device) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NoDevice\":\"" ));
                 STRY(osc_str_append_string(data, args->no_device));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->virtual_device_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VirtualDeviceName\":\"" ));
                 STRY(osc_str_append_string(data, args->virtual_device_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -5007,31 +4944,27 @@ static int bsu_created_setter(struct bsu_created *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_delete_on_vm_deletion) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeleteOnVmDeletion\":" ));
                 STRY(osc_str_append_bool(data, args->delete_on_vm_deletion));
 	   	ret += 1;
 	}
 	if (args->link_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkDate\":\"" ));
                 STRY(osc_str_append_string(data, args->link_date));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->volume_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeId\":\"" ));
                 STRY(osc_str_append_string(data, args->volume_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -5043,37 +4976,32 @@ static int bsu_to_create_setter(struct bsu_to_create *args, struct osc_str *data
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_delete_on_vm_deletion) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeleteOnVmDeletion\":" ));
                 STRY(osc_str_append_bool(data, args->delete_on_vm_deletion));
 	   	ret += 1;
 	}
 	if (args->is_set_iops || args->iops) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Iops\":" ));
                 STRY(osc_str_append_int(data, args->iops));
 	   	ret += 1;
 	}
 	if (args->snapshot_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SnapshotId\":\"" ));
                 STRY(osc_str_append_string(data, args->snapshot_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_volume_size || args->volume_size) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeSize\":" ));
                 STRY(osc_str_append_int(data, args->volume_size));
 	   	ret += 1;
 	}
 	if (args->volume_type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeType\":\"" ));
                 STRY(osc_str_append_string(data, args->volume_type));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -5085,15 +5013,13 @@ static int bsu_to_update_vm_setter(struct bsu_to_update_vm *args, struct osc_str
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_delete_on_vm_deletion) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeleteOnVmDeletion\":" ));
                 STRY(osc_str_append_bool(data, args->delete_on_vm_deletion));
 	   	ret += 1;
 	}
 	if (args->volume_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeId\":\"" ));
                 STRY(osc_str_append_string(data, args->volume_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -5105,24 +5031,21 @@ static int ca_setter(struct ca *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->ca_fingerprint) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CaFingerprint\":\"" ));
                 STRY(osc_str_append_string(data, args->ca_fingerprint));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->ca_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CaId\":\"" ));
                 STRY(osc_str_append_string(data, args->ca_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -5134,8 +5057,7 @@ static int catalog_setter(struct catalog *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
         if (args->entries) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Entries\":[" ));
 		for (int i = 0; i < args->nb_entries; ++i) {
 	       	    struct catalog_entry *p = &args->entries[i];
@@ -5149,8 +5071,7 @@ static int catalog_setter(struct catalog *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->entries_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Entries\":" ));
                 STRY(osc_str_append_string(data, args->entries_str));
 		ret += 1;
@@ -5161,64 +5082,56 @@ static int catalog_entry_setter(struct catalog_entry *args, struct osc_str *data
        int count_args = 0;
        int ret = 0;
 	if (args->category) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Category\":\"" ));
                 STRY(osc_str_append_string(data, args->category));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->flags) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Flags\":\"" ));
                 STRY(osc_str_append_string(data, args->flags));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->operation) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Operation\":\"" ));
                 STRY(osc_str_append_string(data, args->operation));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->service) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Service\":\"" ));
                 STRY(osc_str_append_string(data, args->service));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->subregion_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionName\":\"" ));
                 STRY(osc_str_append_string(data, args->subregion_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->title) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Title\":\"" ));
                 STRY(osc_str_append_string(data, args->title));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Type\":\"" ));
                 STRY(osc_str_append_string(data, args->type));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_unit_price || args->unit_price) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"UnitPrice\":" ));
                 STRY(osc_str_append_double(data, args->unit_price));
 	   	ret += 1;
@@ -5229,8 +5142,7 @@ static int catalogs_setter(struct catalogs *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
         if (args->entries) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Entries\":[" ));
 		for (int i = 0; i < args->nb_entries; ++i) {
 	       	    struct catalog_entry *p = &args->entries[i];
@@ -5244,31 +5156,27 @@ static int catalogs_setter(struct catalogs *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->entries_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Entries\":" ));
                 STRY(osc_str_append_string(data, args->entries_str));
 		ret += 1;
 	}
 	if (args->from_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"FromDate\":\"" ));
                 STRY(osc_str_append_string(data, args->from_date));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->to_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ToDate\":\"" ));
                 STRY(osc_str_append_string(data, args->to_date));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -5280,47 +5188,41 @@ static int client_gateway_setter(struct client_gateway *args, struct osc_str *da
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_bgp_asn || args->bgp_asn) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BgpAsn\":" ));
                 STRY(osc_str_append_int(data, args->bgp_asn));
 	   	ret += 1;
 	}
 	if (args->client_gateway_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ClientGatewayId\":\"" ));
                 STRY(osc_str_append_string(data, args->client_gateway_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->connection_type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ConnectionType\":\"" ));
                 STRY(osc_str_append_string(data, args->connection_type));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->public_ip) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
                 STRY(osc_str_append_string(data, args->public_ip));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -5334,8 +5236,7 @@ static int client_gateway_setter(struct client_gateway *args, struct osc_str *da
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -5346,88 +5247,77 @@ static int consumption_entry_setter(struct consumption_entry *args, struct osc_s
        int count_args = 0;
        int ret = 0;
 	if (args->account_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
                 STRY(osc_str_append_string(data, args->account_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->category) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Category\":\"" ));
                 STRY(osc_str_append_string(data, args->category));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->from_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"FromDate\":\"" ));
                 STRY(osc_str_append_string(data, args->from_date));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->operation) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Operation\":\"" ));
                 STRY(osc_str_append_string(data, args->operation));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->paying_account_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PayingAccountId\":\"" ));
                 STRY(osc_str_append_string(data, args->paying_account_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->service) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Service\":\"" ));
                 STRY(osc_str_append_string(data, args->service));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->subregion_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionName\":\"" ));
                 STRY(osc_str_append_string(data, args->subregion_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->title) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Title\":\"" ));
                 STRY(osc_str_append_string(data, args->title));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->to_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ToDate\":\"" ));
                 STRY(osc_str_append_string(data, args->to_date));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Type\":\"" ));
                 STRY(osc_str_append_string(data, args->type));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_value || args->value) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Value\":" ));
                 STRY(osc_str_append_double(data, args->value));
 	   	ret += 1;
@@ -5438,23 +5328,20 @@ static int dhcp_options_set_setter(struct dhcp_options_set *args, struct osc_str
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_default_arg) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Default\":" ));
                 STRY(osc_str_append_bool(data, args->default_arg));
 	   	ret += 1;
 	}
 	if (args->dhcp_options_set_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DhcpOptionsSetId\":\"" ));
                 STRY(osc_str_append_string(data, args->dhcp_options_set_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->domain_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DomainName\":\"" ));
                 STRY(osc_str_append_string(data, args->domain_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -5463,8 +5350,7 @@ static int dhcp_options_set_setter(struct dhcp_options_set *args, struct osc_str
 	if (args->domain_name_servers) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DomainNameServers\":[" ));
 		for (as = args->domain_name_servers; *as > 0; ++as) {
 			if (as != args->domain_name_servers)
@@ -5476,8 +5362,7 @@ static int dhcp_options_set_setter(struct dhcp_options_set *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->domain_name_servers_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DomainNameServers\":" ));
                 STRY(osc_str_append_string(data, args->domain_name_servers_str));
 		ret += 1;
@@ -5485,8 +5370,7 @@ static int dhcp_options_set_setter(struct dhcp_options_set *args, struct osc_str
 	if (args->log_servers) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LogServers\":[" ));
 		for (as = args->log_servers; *as > 0; ++as) {
 			if (as != args->log_servers)
@@ -5498,8 +5382,7 @@ static int dhcp_options_set_setter(struct dhcp_options_set *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->log_servers_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LogServers\":" ));
                 STRY(osc_str_append_string(data, args->log_servers_str));
 		ret += 1;
@@ -5507,8 +5390,7 @@ static int dhcp_options_set_setter(struct dhcp_options_set *args, struct osc_str
 	if (args->ntp_servers) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NtpServers\":[" ));
 		for (as = args->ntp_servers; *as > 0; ++as) {
 			if (as != args->ntp_servers)
@@ -5520,15 +5402,13 @@ static int dhcp_options_set_setter(struct dhcp_options_set *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ntp_servers_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NtpServers\":" ));
                 STRY(osc_str_append_string(data, args->ntp_servers_str));
 		ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -5542,8 +5422,7 @@ static int dhcp_options_set_setter(struct dhcp_options_set *args, struct osc_str
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -5554,56 +5433,49 @@ static int direct_link_setter(struct direct_link *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->account_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
                 STRY(osc_str_append_string(data, args->account_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->bandwidth) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Bandwidth\":\"" ));
                 STRY(osc_str_append_string(data, args->bandwidth));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->direct_link_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DirectLinkId\":\"" ));
                 STRY(osc_str_append_string(data, args->direct_link_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->direct_link_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DirectLinkName\":\"" ));
                 STRY(osc_str_append_string(data, args->direct_link_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->location) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Location\":\"" ));
                 STRY(osc_str_append_string(data, args->location));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->region_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RegionName\":\"" ));
                 STRY(osc_str_append_string(data, args->region_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -5615,55 +5487,48 @@ static int direct_link_interface_setter(struct direct_link_interface *args, stru
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_bgp_asn || args->bgp_asn) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BgpAsn\":" ));
                 STRY(osc_str_append_int(data, args->bgp_asn));
 	   	ret += 1;
 	}
 	if (args->bgp_key) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BgpKey\":\"" ));
                 STRY(osc_str_append_string(data, args->bgp_key));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->client_private_ip) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ClientPrivateIp\":\"" ));
                 STRY(osc_str_append_string(data, args->client_private_ip));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->direct_link_interface_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DirectLinkInterfaceName\":\"" ));
                 STRY(osc_str_append_string(data, args->direct_link_interface_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->outscale_private_ip) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OutscalePrivateIp\":\"" ));
                 STRY(osc_str_append_string(data, args->outscale_private_ip));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->virtual_gateway_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VirtualGatewayId\":\"" ));
                 STRY(osc_str_append_string(data, args->virtual_gateway_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_vlan || args->vlan) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Vlan\":" ));
                 STRY(osc_str_append_int(data, args->vlan));
 	   	ret += 1;
@@ -5674,110 +5539,96 @@ static int direct_link_interfaces_setter(struct direct_link_interfaces *args, st
        int count_args = 0;
        int ret = 0;
 	if (args->account_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
                 STRY(osc_str_append_string(data, args->account_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_bgp_asn || args->bgp_asn) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BgpAsn\":" ));
                 STRY(osc_str_append_int(data, args->bgp_asn));
 	   	ret += 1;
 	}
 	if (args->bgp_key) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BgpKey\":\"" ));
                 STRY(osc_str_append_string(data, args->bgp_key));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->client_private_ip) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ClientPrivateIp\":\"" ));
                 STRY(osc_str_append_string(data, args->client_private_ip));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->direct_link_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DirectLinkId\":\"" ));
                 STRY(osc_str_append_string(data, args->direct_link_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->direct_link_interface_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DirectLinkInterfaceId\":\"" ));
                 STRY(osc_str_append_string(data, args->direct_link_interface_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->direct_link_interface_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DirectLinkInterfaceName\":\"" ));
                 STRY(osc_str_append_string(data, args->direct_link_interface_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->interface_type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InterfaceType\":\"" ));
                 STRY(osc_str_append_string(data, args->interface_type));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->location) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Location\":\"" ));
                 STRY(osc_str_append_string(data, args->location));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_mtu || args->mtu) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Mtu\":" ));
                 STRY(osc_str_append_int(data, args->mtu));
 	   	ret += 1;
 	}
 	if (args->outscale_private_ip) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OutscalePrivateIp\":\"" ));
                 STRY(osc_str_append_string(data, args->outscale_private_ip));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->virtual_gateway_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VirtualGatewayId\":\"" ));
                 STRY(osc_str_append_string(data, args->virtual_gateway_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_vlan || args->vlan) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Vlan\":" ));
                 STRY(osc_str_append_int(data, args->vlan));
 	   	ret += 1;
@@ -5788,24 +5639,21 @@ static int errors_setter(struct errors *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->code) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Code\":\"" ));
                 STRY(osc_str_append_string(data, args->code));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->details) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Details\":\"" ));
                 STRY(osc_str_append_string(data, args->details));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Type\":\"" ));
                 STRY(osc_str_append_string(data, args->type));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -5819,8 +5667,7 @@ static int filters_access_keys_setter(struct filters_access_keys *args, struct o
 	if (args->access_key_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccessKeyIds\":[" ));
 		for (as = args->access_key_ids; *as > 0; ++as) {
 			if (as != args->access_key_ids)
@@ -5832,8 +5679,7 @@ static int filters_access_keys_setter(struct filters_access_keys *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->access_key_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccessKeyIds\":" ));
                 STRY(osc_str_append_string(data, args->access_key_ids_str));
 		ret += 1;
@@ -5841,8 +5687,7 @@ static int filters_access_keys_setter(struct filters_access_keys *args, struct o
 	if (args->states) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
 		for (as = args->states; *as > 0; ++as) {
 			if (as != args->states)
@@ -5854,8 +5699,7 @@ static int filters_access_keys_setter(struct filters_access_keys *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->states_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":" ));
                 STRY(osc_str_append_string(data, args->states_str));
 		ret += 1;
@@ -5868,8 +5712,7 @@ static int filters_api_access_rule_setter(struct filters_api_access_rule *args, 
 	if (args->api_access_rule_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ApiAccessRuleIds\":[" ));
 		for (as = args->api_access_rule_ids; *as > 0; ++as) {
 			if (as != args->api_access_rule_ids)
@@ -5881,8 +5724,7 @@ static int filters_api_access_rule_setter(struct filters_api_access_rule *args, 
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->api_access_rule_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ApiAccessRuleIds\":" ));
                 STRY(osc_str_append_string(data, args->api_access_rule_ids_str));
 		ret += 1;
@@ -5890,8 +5732,7 @@ static int filters_api_access_rule_setter(struct filters_api_access_rule *args, 
 	if (args->ca_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CaIds\":[" ));
 		for (as = args->ca_ids; *as > 0; ++as) {
 			if (as != args->ca_ids)
@@ -5903,8 +5744,7 @@ static int filters_api_access_rule_setter(struct filters_api_access_rule *args, 
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ca_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CaIds\":" ));
                 STRY(osc_str_append_string(data, args->ca_ids_str));
 		ret += 1;
@@ -5912,8 +5752,7 @@ static int filters_api_access_rule_setter(struct filters_api_access_rule *args, 
 	if (args->cns) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Cns\":[" ));
 		for (as = args->cns; *as > 0; ++as) {
 			if (as != args->cns)
@@ -5925,8 +5764,7 @@ static int filters_api_access_rule_setter(struct filters_api_access_rule *args, 
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->cns_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Cns\":" ));
                 STRY(osc_str_append_string(data, args->cns_str));
 		ret += 1;
@@ -5934,8 +5772,7 @@ static int filters_api_access_rule_setter(struct filters_api_access_rule *args, 
 	if (args->descriptions) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Descriptions\":[" ));
 		for (as = args->descriptions; *as > 0; ++as) {
 			if (as != args->descriptions)
@@ -5947,8 +5784,7 @@ static int filters_api_access_rule_setter(struct filters_api_access_rule *args, 
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->descriptions_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Descriptions\":" ));
                 STRY(osc_str_append_string(data, args->descriptions_str));
 		ret += 1;
@@ -5956,8 +5792,7 @@ static int filters_api_access_rule_setter(struct filters_api_access_rule *args, 
 	if (args->ip_ranges) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRanges\":[" ));
 		for (as = args->ip_ranges; *as > 0; ++as) {
 			if (as != args->ip_ranges)
@@ -5969,8 +5804,7 @@ static int filters_api_access_rule_setter(struct filters_api_access_rule *args, 
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ip_ranges_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRanges\":" ));
                 STRY(osc_str_append_string(data, args->ip_ranges_str));
 		ret += 1;
@@ -5983,8 +5817,7 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 	if (args->query_access_keys) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryAccessKeys\":[" ));
 		for (as = args->query_access_keys; *as > 0; ++as) {
 			if (as != args->query_access_keys)
@@ -5996,8 +5829,7 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->query_access_keys_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryAccessKeys\":" ));
                 STRY(osc_str_append_string(data, args->query_access_keys_str));
 		ret += 1;
@@ -6005,8 +5837,7 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 	if (args->query_api_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryApiNames\":[" ));
 		for (as = args->query_api_names; *as > 0; ++as) {
 			if (as != args->query_api_names)
@@ -6018,8 +5849,7 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->query_api_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryApiNames\":" ));
                 STRY(osc_str_append_string(data, args->query_api_names_str));
 		ret += 1;
@@ -6027,8 +5857,7 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 	if (args->query_call_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryCallNames\":[" ));
 		for (as = args->query_call_names; *as > 0; ++as) {
 			if (as != args->query_call_names)
@@ -6040,23 +5869,20 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->query_call_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryCallNames\":" ));
                 STRY(osc_str_append_string(data, args->query_call_names_str));
 		ret += 1;
 	}
 	if (args->query_date_after) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryDateAfter\":\"" ));
                 STRY(osc_str_append_string(data, args->query_date_after));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->query_date_before) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryDateBefore\":\"" ));
                 STRY(osc_str_append_string(data, args->query_date_before));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -6065,8 +5891,7 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 	if (args->query_ip_addresses) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryIpAddresses\":[" ));
 		for (as = args->query_ip_addresses; *as > 0; ++as) {
 			if (as != args->query_ip_addresses)
@@ -6078,8 +5903,7 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->query_ip_addresses_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryIpAddresses\":" ));
                 STRY(osc_str_append_string(data, args->query_ip_addresses_str));
 		ret += 1;
@@ -6087,8 +5911,7 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 	if (args->query_user_agents) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryUserAgents\":[" ));
 		for (as = args->query_user_agents; *as > 0; ++as) {
 			if (as != args->query_user_agents)
@@ -6100,8 +5923,7 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->query_user_agents_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryUserAgents\":" ));
                 STRY(osc_str_append_string(data, args->query_user_agents_str));
 		ret += 1;
@@ -6109,8 +5931,7 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 	if (args->request_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RequestIds\":[" ));
 		for (as = args->request_ids; *as > 0; ++as) {
 			if (as != args->request_ids)
@@ -6122,8 +5943,7 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->request_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RequestIds\":" ));
                 STRY(osc_str_append_string(data, args->request_ids_str));
 		ret += 1;
@@ -6131,8 +5951,7 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 	if (args->response_status_codes) {
 		int *ip;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ResponseStatusCodes\":[" ));
 		for (ip = args->response_status_codes; *ip > 0; ++ip) {
 			if (ip != args->response_status_codes)
@@ -6142,8 +5961,7 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->response_status_codes_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ResponseStatusCodes\":" ));
                 STRY(osc_str_append_string(data, args->response_status_codes_str));
 		ret += 1;
@@ -6156,8 +5974,7 @@ static int filters_ca_setter(struct filters_ca *args, struct osc_str *data) {
 	if (args->ca_fingerprints) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CaFingerprints\":[" ));
 		for (as = args->ca_fingerprints; *as > 0; ++as) {
 			if (as != args->ca_fingerprints)
@@ -6169,8 +5986,7 @@ static int filters_ca_setter(struct filters_ca *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ca_fingerprints_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CaFingerprints\":" ));
                 STRY(osc_str_append_string(data, args->ca_fingerprints_str));
 		ret += 1;
@@ -6178,8 +5994,7 @@ static int filters_ca_setter(struct filters_ca *args, struct osc_str *data) {
 	if (args->ca_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CaIds\":[" ));
 		for (as = args->ca_ids; *as > 0; ++as) {
 			if (as != args->ca_ids)
@@ -6191,8 +6006,7 @@ static int filters_ca_setter(struct filters_ca *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ca_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CaIds\":" ));
                 STRY(osc_str_append_string(data, args->ca_ids_str));
 		ret += 1;
@@ -6200,8 +6014,7 @@ static int filters_ca_setter(struct filters_ca *args, struct osc_str *data) {
 	if (args->descriptions) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Descriptions\":[" ));
 		for (as = args->descriptions; *as > 0; ++as) {
 			if (as != args->descriptions)
@@ -6213,8 +6026,7 @@ static int filters_ca_setter(struct filters_ca *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->descriptions_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Descriptions\":" ));
                 STRY(osc_str_append_string(data, args->descriptions_str));
 		ret += 1;
@@ -6225,23 +6037,20 @@ static int filters_catalogs_setter(struct filters_catalogs *args, struct osc_str
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_current_catalog_only) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CurrentCatalogOnly\":" ));
                 STRY(osc_str_append_bool(data, args->current_catalog_only));
 	   	ret += 1;
 	}
 	if (args->from_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"FromDate\":\"" ));
                 STRY(osc_str_append_string(data, args->from_date));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->to_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ToDate\":\"" ));
                 STRY(osc_str_append_string(data, args->to_date));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -6255,8 +6064,7 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 	if (args->bgp_asns) {
 		int *ip;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BgpAsns\":[" ));
 		for (ip = args->bgp_asns; *ip > 0; ++ip) {
 			if (ip != args->bgp_asns)
@@ -6266,8 +6074,7 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->bgp_asns_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BgpAsns\":" ));
                 STRY(osc_str_append_string(data, args->bgp_asns_str));
 		ret += 1;
@@ -6275,8 +6082,7 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 	if (args->client_gateway_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ClientGatewayIds\":[" ));
 		for (as = args->client_gateway_ids; *as > 0; ++as) {
 			if (as != args->client_gateway_ids)
@@ -6288,8 +6094,7 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->client_gateway_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ClientGatewayIds\":" ));
                 STRY(osc_str_append_string(data, args->client_gateway_ids_str));
 		ret += 1;
@@ -6297,8 +6102,7 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 	if (args->connection_types) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ConnectionTypes\":[" ));
 		for (as = args->connection_types; *as > 0; ++as) {
 			if (as != args->connection_types)
@@ -6310,8 +6114,7 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->connection_types_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ConnectionTypes\":" ));
                 STRY(osc_str_append_string(data, args->connection_types_str));
 		ret += 1;
@@ -6319,8 +6122,7 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 	if (args->public_ips) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIps\":[" ));
 		for (as = args->public_ips; *as > 0; ++as) {
 			if (as != args->public_ips)
@@ -6332,8 +6134,7 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->public_ips_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIps\":" ));
                 STRY(osc_str_append_string(data, args->public_ips_str));
 		ret += 1;
@@ -6341,8 +6142,7 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 	if (args->states) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
 		for (as = args->states; *as > 0; ++as) {
 			if (as != args->states)
@@ -6354,8 +6154,7 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->states_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":" ));
                 STRY(osc_str_append_string(data, args->states_str));
 		ret += 1;
@@ -6363,8 +6162,7 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 	if (args->tag_keys) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
@@ -6376,8 +6174,7 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
                 STRY(osc_str_append_string(data, args->tag_keys_str));
 		ret += 1;
@@ -6385,8 +6182,7 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 	if (args->tag_values) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
@@ -6398,8 +6194,7 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":" ));
                 STRY(osc_str_append_string(data, args->tag_values_str));
 		ret += 1;
@@ -6407,8 +6202,7 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 	if (args->tags) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
@@ -6420,8 +6214,7 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -6432,8 +6225,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_default_arg) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Default\":" ));
                 STRY(osc_str_append_bool(data, args->default_arg));
 	   	ret += 1;
@@ -6441,8 +6233,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 	if (args->dhcp_options_set_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DhcpOptionsSetIds\":[" ));
 		for (as = args->dhcp_options_set_ids; *as > 0; ++as) {
 			if (as != args->dhcp_options_set_ids)
@@ -6454,8 +6245,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->dhcp_options_set_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DhcpOptionsSetIds\":" ));
                 STRY(osc_str_append_string(data, args->dhcp_options_set_ids_str));
 		ret += 1;
@@ -6463,8 +6253,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 	if (args->domain_name_servers) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DomainNameServers\":[" ));
 		for (as = args->domain_name_servers; *as > 0; ++as) {
 			if (as != args->domain_name_servers)
@@ -6476,8 +6265,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->domain_name_servers_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DomainNameServers\":" ));
                 STRY(osc_str_append_string(data, args->domain_name_servers_str));
 		ret += 1;
@@ -6485,8 +6273,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 	if (args->domain_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DomainNames\":[" ));
 		for (as = args->domain_names; *as > 0; ++as) {
 			if (as != args->domain_names)
@@ -6498,8 +6285,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->domain_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DomainNames\":" ));
                 STRY(osc_str_append_string(data, args->domain_names_str));
 		ret += 1;
@@ -6507,8 +6293,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 	if (args->log_servers) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LogServers\":[" ));
 		for (as = args->log_servers; *as > 0; ++as) {
 			if (as != args->log_servers)
@@ -6520,8 +6305,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->log_servers_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LogServers\":" ));
                 STRY(osc_str_append_string(data, args->log_servers_str));
 		ret += 1;
@@ -6529,8 +6313,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 	if (args->ntp_servers) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NtpServers\":[" ));
 		for (as = args->ntp_servers; *as > 0; ++as) {
 			if (as != args->ntp_servers)
@@ -6542,8 +6325,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ntp_servers_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NtpServers\":" ));
                 STRY(osc_str_append_string(data, args->ntp_servers_str));
 		ret += 1;
@@ -6551,8 +6333,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 	if (args->tag_keys) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
@@ -6564,8 +6345,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
                 STRY(osc_str_append_string(data, args->tag_keys_str));
 		ret += 1;
@@ -6573,8 +6353,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 	if (args->tag_values) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
@@ -6586,8 +6365,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":" ));
                 STRY(osc_str_append_string(data, args->tag_values_str));
 		ret += 1;
@@ -6595,8 +6373,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 	if (args->tags) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
@@ -6608,8 +6385,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -6622,8 +6398,7 @@ static int filters_direct_link_setter(struct filters_direct_link *args, struct o
 	if (args->direct_link_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DirectLinkIds\":[" ));
 		for (as = args->direct_link_ids; *as > 0; ++as) {
 			if (as != args->direct_link_ids)
@@ -6635,8 +6410,7 @@ static int filters_direct_link_setter(struct filters_direct_link *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->direct_link_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DirectLinkIds\":" ));
                 STRY(osc_str_append_string(data, args->direct_link_ids_str));
 		ret += 1;
@@ -6649,8 +6423,7 @@ static int filters_direct_link_interface_setter(struct filters_direct_link_inter
 	if (args->direct_link_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DirectLinkIds\":[" ));
 		for (as = args->direct_link_ids; *as > 0; ++as) {
 			if (as != args->direct_link_ids)
@@ -6662,8 +6435,7 @@ static int filters_direct_link_interface_setter(struct filters_direct_link_inter
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->direct_link_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DirectLinkIds\":" ));
                 STRY(osc_str_append_string(data, args->direct_link_ids_str));
 		ret += 1;
@@ -6671,8 +6443,7 @@ static int filters_direct_link_interface_setter(struct filters_direct_link_inter
 	if (args->direct_link_interface_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DirectLinkInterfaceIds\":[" ));
 		for (as = args->direct_link_interface_ids; *as > 0; ++as) {
 			if (as != args->direct_link_interface_ids)
@@ -6684,8 +6455,7 @@ static int filters_direct_link_interface_setter(struct filters_direct_link_inter
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->direct_link_interface_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DirectLinkInterfaceIds\":" ));
                 STRY(osc_str_append_string(data, args->direct_link_interface_ids_str));
 		ret += 1;
@@ -6698,8 +6468,7 @@ static int filters_export_task_setter(struct filters_export_task *args, struct o
 	if (args->task_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TaskIds\":[" ));
 		for (as = args->task_ids; *as > 0; ++as) {
 			if (as != args->task_ids)
@@ -6711,8 +6480,7 @@ static int filters_export_task_setter(struct filters_export_task *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->task_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TaskIds\":" ));
                 STRY(osc_str_append_string(data, args->task_ids_str));
 		ret += 1;
@@ -6723,8 +6491,7 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_delete_on_vm_deletion) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeleteOnVmDeletion\":" ));
                 STRY(osc_str_append_bool(data, args->delete_on_vm_deletion));
 	   	ret += 1;
@@ -6732,8 +6499,7 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 	if (args->flexible_gpu_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"FlexibleGpuIds\":[" ));
 		for (as = args->flexible_gpu_ids; *as > 0; ++as) {
 			if (as != args->flexible_gpu_ids)
@@ -6745,8 +6511,7 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->flexible_gpu_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"FlexibleGpuIds\":" ));
                 STRY(osc_str_append_string(data, args->flexible_gpu_ids_str));
 		ret += 1;
@@ -6754,8 +6519,7 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 	if (args->generations) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Generations\":[" ));
 		for (as = args->generations; *as > 0; ++as) {
 			if (as != args->generations)
@@ -6767,8 +6531,7 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->generations_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Generations\":" ));
                 STRY(osc_str_append_string(data, args->generations_str));
 		ret += 1;
@@ -6776,8 +6539,7 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 	if (args->model_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ModelNames\":[" ));
 		for (as = args->model_names; *as > 0; ++as) {
 			if (as != args->model_names)
@@ -6789,8 +6551,7 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->model_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ModelNames\":" ));
                 STRY(osc_str_append_string(data, args->model_names_str));
 		ret += 1;
@@ -6798,8 +6559,7 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 	if (args->states) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
 		for (as = args->states; *as > 0; ++as) {
 			if (as != args->states)
@@ -6811,8 +6571,7 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->states_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":" ));
                 STRY(osc_str_append_string(data, args->states_str));
 		ret += 1;
@@ -6820,8 +6579,7 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 	if (args->subregion_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":[" ));
 		for (as = args->subregion_names; *as > 0; ++as) {
 			if (as != args->subregion_names)
@@ -6833,8 +6591,7 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subregion_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":" ));
                 STRY(osc_str_append_string(data, args->subregion_names_str));
 		ret += 1;
@@ -6842,8 +6599,7 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 	if (args->vm_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
 		for (as = args->vm_ids; *as > 0; ++as) {
 			if (as != args->vm_ids)
@@ -6855,8 +6611,7 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":" ));
                 STRY(osc_str_append_string(data, args->vm_ids_str));
 		ret += 1;
@@ -6869,8 +6624,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 	if (args->account_aliases) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountAliases\":[" ));
 		for (as = args->account_aliases; *as > 0; ++as) {
 			if (as != args->account_aliases)
@@ -6882,8 +6636,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->account_aliases_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountAliases\":" ));
                 STRY(osc_str_append_string(data, args->account_aliases_str));
 		ret += 1;
@@ -6891,8 +6644,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 	if (args->account_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountIds\":[" ));
 		for (as = args->account_ids; *as > 0; ++as) {
 			if (as != args->account_ids)
@@ -6904,8 +6656,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->account_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountIds\":" ));
                 STRY(osc_str_append_string(data, args->account_ids_str));
 		ret += 1;
@@ -6913,8 +6664,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 	if (args->architectures) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Architectures\":[" ));
 		for (as = args->architectures; *as > 0; ++as) {
 			if (as != args->architectures)
@@ -6926,15 +6676,13 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->architectures_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Architectures\":" ));
                 STRY(osc_str_append_string(data, args->architectures_str));
 		ret += 1;
 	}
 	if (args->is_set_block_device_mapping_delete_on_vm_deletion) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappingDeleteOnVmDeletion\":" ));
                 STRY(osc_str_append_bool(data, args->block_device_mapping_delete_on_vm_deletion));
 	   	ret += 1;
@@ -6942,8 +6690,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 	if (args->block_device_mapping_device_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappingDeviceNames\":[" ));
 		for (as = args->block_device_mapping_device_names; *as > 0; ++as) {
 			if (as != args->block_device_mapping_device_names)
@@ -6955,8 +6702,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->block_device_mapping_device_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappingDeviceNames\":" ));
                 STRY(osc_str_append_string(data, args->block_device_mapping_device_names_str));
 		ret += 1;
@@ -6964,8 +6710,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 	if (args->block_device_mapping_snapshot_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappingSnapshotIds\":[" ));
 		for (as = args->block_device_mapping_snapshot_ids; *as > 0; ++as) {
 			if (as != args->block_device_mapping_snapshot_ids)
@@ -6977,8 +6722,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->block_device_mapping_snapshot_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappingSnapshotIds\":" ));
                 STRY(osc_str_append_string(data, args->block_device_mapping_snapshot_ids_str));
 		ret += 1;
@@ -6986,8 +6730,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 	if (args->block_device_mapping_volume_sizes) {
 		int *ip;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappingVolumeSizes\":[" ));
 		for (ip = args->block_device_mapping_volume_sizes; *ip > 0; ++ip) {
 			if (ip != args->block_device_mapping_volume_sizes)
@@ -6997,8 +6740,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->block_device_mapping_volume_sizes_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappingVolumeSizes\":" ));
                 STRY(osc_str_append_string(data, args->block_device_mapping_volume_sizes_str));
 		ret += 1;
@@ -7006,8 +6748,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 	if (args->block_device_mapping_volume_types) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappingVolumeTypes\":[" ));
 		for (as = args->block_device_mapping_volume_types; *as > 0; ++as) {
 			if (as != args->block_device_mapping_volume_types)
@@ -7019,8 +6760,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->block_device_mapping_volume_types_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappingVolumeTypes\":" ));
                 STRY(osc_str_append_string(data, args->block_device_mapping_volume_types_str));
 		ret += 1;
@@ -7028,8 +6768,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 	if (args->descriptions) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Descriptions\":[" ));
 		for (as = args->descriptions; *as > 0; ++as) {
 			if (as != args->descriptions)
@@ -7041,8 +6780,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->descriptions_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Descriptions\":" ));
                 STRY(osc_str_append_string(data, args->descriptions_str));
 		ret += 1;
@@ -7050,8 +6788,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 	if (args->file_locations) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"FileLocations\":[" ));
 		for (as = args->file_locations; *as > 0; ++as) {
 			if (as != args->file_locations)
@@ -7063,8 +6800,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->file_locations_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"FileLocations\":" ));
                 STRY(osc_str_append_string(data, args->file_locations_str));
 		ret += 1;
@@ -7072,8 +6808,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 	if (args->hypervisors) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Hypervisors\":[" ));
 		for (as = args->hypervisors; *as > 0; ++as) {
 			if (as != args->hypervisors)
@@ -7085,8 +6820,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->hypervisors_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Hypervisors\":" ));
                 STRY(osc_str_append_string(data, args->hypervisors_str));
 		ret += 1;
@@ -7094,8 +6828,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 	if (args->image_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ImageIds\":[" ));
 		for (as = args->image_ids; *as > 0; ++as) {
 			if (as != args->image_ids)
@@ -7107,8 +6840,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->image_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ImageIds\":" ));
                 STRY(osc_str_append_string(data, args->image_ids_str));
 		ret += 1;
@@ -7116,8 +6848,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 	if (args->image_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ImageNames\":[" ));
 		for (as = args->image_names; *as > 0; ++as) {
 			if (as != args->image_names)
@@ -7129,8 +6860,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->image_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ImageNames\":" ));
                 STRY(osc_str_append_string(data, args->image_names_str));
 		ret += 1;
@@ -7138,8 +6868,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 	if (args->permissions_to_launch_account_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PermissionsToLaunchAccountIds\":[" ));
 		for (as = args->permissions_to_launch_account_ids; *as > 0; ++as) {
 			if (as != args->permissions_to_launch_account_ids)
@@ -7151,15 +6880,13 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->permissions_to_launch_account_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PermissionsToLaunchAccountIds\":" ));
                 STRY(osc_str_append_string(data, args->permissions_to_launch_account_ids_str));
 		ret += 1;
 	}
 	if (args->is_set_permissions_to_launch_global_permission) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PermissionsToLaunchGlobalPermission\":" ));
                 STRY(osc_str_append_bool(data, args->permissions_to_launch_global_permission));
 	   	ret += 1;
@@ -7167,8 +6894,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 	if (args->product_codes) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ProductCodes\":[" ));
 		for (as = args->product_codes; *as > 0; ++as) {
 			if (as != args->product_codes)
@@ -7180,8 +6906,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->product_codes_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ProductCodes\":" ));
                 STRY(osc_str_append_string(data, args->product_codes_str));
 		ret += 1;
@@ -7189,8 +6914,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 	if (args->root_device_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RootDeviceNames\":[" ));
 		for (as = args->root_device_names; *as > 0; ++as) {
 			if (as != args->root_device_names)
@@ -7202,8 +6926,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->root_device_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RootDeviceNames\":" ));
                 STRY(osc_str_append_string(data, args->root_device_names_str));
 		ret += 1;
@@ -7211,8 +6934,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 	if (args->root_device_types) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RootDeviceTypes\":[" ));
 		for (as = args->root_device_types; *as > 0; ++as) {
 			if (as != args->root_device_types)
@@ -7224,8 +6946,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->root_device_types_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RootDeviceTypes\":" ));
                 STRY(osc_str_append_string(data, args->root_device_types_str));
 		ret += 1;
@@ -7233,8 +6954,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 	if (args->states) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
 		for (as = args->states; *as > 0; ++as) {
 			if (as != args->states)
@@ -7246,8 +6966,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->states_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":" ));
                 STRY(osc_str_append_string(data, args->states_str));
 		ret += 1;
@@ -7255,8 +6974,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 	if (args->tag_keys) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
@@ -7268,8 +6986,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
                 STRY(osc_str_append_string(data, args->tag_keys_str));
 		ret += 1;
@@ -7277,8 +6994,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 	if (args->tag_values) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
@@ -7290,8 +7006,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":" ));
                 STRY(osc_str_append_string(data, args->tag_values_str));
 		ret += 1;
@@ -7299,8 +7014,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 	if (args->tags) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
@@ -7312,8 +7026,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -7321,8 +7034,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 	if (args->virtualization_types) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VirtualizationTypes\":[" ));
 		for (as = args->virtualization_types; *as > 0; ++as) {
 			if (as != args->virtualization_types)
@@ -7334,8 +7046,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->virtualization_types_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VirtualizationTypes\":" ));
                 STRY(osc_str_append_string(data, args->virtualization_types_str));
 		ret += 1;
@@ -7348,8 +7059,7 @@ static int filters_internet_service_setter(struct filters_internet_service *args
 	if (args->internet_service_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InternetServiceIds\":[" ));
 		for (as = args->internet_service_ids; *as > 0; ++as) {
 			if (as != args->internet_service_ids)
@@ -7361,8 +7071,7 @@ static int filters_internet_service_setter(struct filters_internet_service *args
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->internet_service_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InternetServiceIds\":" ));
                 STRY(osc_str_append_string(data, args->internet_service_ids_str));
 		ret += 1;
@@ -7370,8 +7079,7 @@ static int filters_internet_service_setter(struct filters_internet_service *args
 	if (args->link_net_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNetIds\":[" ));
 		for (as = args->link_net_ids; *as > 0; ++as) {
 			if (as != args->link_net_ids)
@@ -7383,8 +7091,7 @@ static int filters_internet_service_setter(struct filters_internet_service *args
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_net_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNetIds\":" ));
                 STRY(osc_str_append_string(data, args->link_net_ids_str));
 		ret += 1;
@@ -7392,8 +7099,7 @@ static int filters_internet_service_setter(struct filters_internet_service *args
 	if (args->link_states) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkStates\":[" ));
 		for (as = args->link_states; *as > 0; ++as) {
 			if (as != args->link_states)
@@ -7405,8 +7111,7 @@ static int filters_internet_service_setter(struct filters_internet_service *args
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_states_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkStates\":" ));
                 STRY(osc_str_append_string(data, args->link_states_str));
 		ret += 1;
@@ -7414,8 +7119,7 @@ static int filters_internet_service_setter(struct filters_internet_service *args
 	if (args->tag_keys) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
@@ -7427,8 +7131,7 @@ static int filters_internet_service_setter(struct filters_internet_service *args
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
                 STRY(osc_str_append_string(data, args->tag_keys_str));
 		ret += 1;
@@ -7436,8 +7139,7 @@ static int filters_internet_service_setter(struct filters_internet_service *args
 	if (args->tag_values) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
@@ -7449,8 +7151,7 @@ static int filters_internet_service_setter(struct filters_internet_service *args
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":" ));
                 STRY(osc_str_append_string(data, args->tag_values_str));
 		ret += 1;
@@ -7458,8 +7159,7 @@ static int filters_internet_service_setter(struct filters_internet_service *args
 	if (args->tags) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
@@ -7471,8 +7171,7 @@ static int filters_internet_service_setter(struct filters_internet_service *args
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -7485,8 +7184,7 @@ static int filters_keypair_setter(struct filters_keypair *args, struct osc_str *
 	if (args->keypair_fingerprints) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"KeypairFingerprints\":[" ));
 		for (as = args->keypair_fingerprints; *as > 0; ++as) {
 			if (as != args->keypair_fingerprints)
@@ -7498,8 +7196,7 @@ static int filters_keypair_setter(struct filters_keypair *args, struct osc_str *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->keypair_fingerprints_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"KeypairFingerprints\":" ));
                 STRY(osc_str_append_string(data, args->keypair_fingerprints_str));
 		ret += 1;
@@ -7507,8 +7204,7 @@ static int filters_keypair_setter(struct filters_keypair *args, struct osc_str *
 	if (args->keypair_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"KeypairNames\":[" ));
 		for (as = args->keypair_names; *as > 0; ++as) {
 			if (as != args->keypair_names)
@@ -7520,8 +7216,7 @@ static int filters_keypair_setter(struct filters_keypair *args, struct osc_str *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->keypair_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"KeypairNames\":" ));
                 STRY(osc_str_append_string(data, args->keypair_names_str));
 		ret += 1;
@@ -7534,8 +7229,7 @@ static int filters_listener_rule_setter(struct filters_listener_rule *args, stru
 	if (args->listener_rule_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ListenerRuleNames\":[" ));
 		for (as = args->listener_rule_names; *as > 0; ++as) {
 			if (as != args->listener_rule_names)
@@ -7547,8 +7241,7 @@ static int filters_listener_rule_setter(struct filters_listener_rule *args, stru
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->listener_rule_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ListenerRuleNames\":" ));
                 STRY(osc_str_append_string(data, args->listener_rule_names_str));
 		ret += 1;
@@ -7561,8 +7254,7 @@ static int filters_load_balancer_setter(struct filters_load_balancer *args, stru
 	if (args->load_balancer_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerNames\":[" ));
 		for (as = args->load_balancer_names; *as > 0; ++as) {
 			if (as != args->load_balancer_names)
@@ -7574,8 +7266,7 @@ static int filters_load_balancer_setter(struct filters_load_balancer *args, stru
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->load_balancer_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerNames\":" ));
                 STRY(osc_str_append_string(data, args->load_balancer_names_str));
 		ret += 1;
@@ -7588,8 +7279,7 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 	if (args->nat_service_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NatServiceIds\":[" ));
 		for (as = args->nat_service_ids; *as > 0; ++as) {
 			if (as != args->nat_service_ids)
@@ -7601,8 +7291,7 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->nat_service_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NatServiceIds\":" ));
                 STRY(osc_str_append_string(data, args->nat_service_ids_str));
 		ret += 1;
@@ -7610,8 +7299,7 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 	if (args->net_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetIds\":[" ));
 		for (as = args->net_ids; *as > 0; ++as) {
 			if (as != args->net_ids)
@@ -7623,8 +7311,7 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->net_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetIds\":" ));
                 STRY(osc_str_append_string(data, args->net_ids_str));
 		ret += 1;
@@ -7632,8 +7319,7 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 	if (args->states) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
 		for (as = args->states; *as > 0; ++as) {
 			if (as != args->states)
@@ -7645,8 +7331,7 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->states_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":" ));
                 STRY(osc_str_append_string(data, args->states_str));
 		ret += 1;
@@ -7654,8 +7339,7 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 	if (args->subnet_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetIds\":[" ));
 		for (as = args->subnet_ids; *as > 0; ++as) {
 			if (as != args->subnet_ids)
@@ -7667,8 +7351,7 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subnet_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetIds\":" ));
                 STRY(osc_str_append_string(data, args->subnet_ids_str));
 		ret += 1;
@@ -7676,8 +7359,7 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 	if (args->tag_keys) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
@@ -7689,8 +7371,7 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
                 STRY(osc_str_append_string(data, args->tag_keys_str));
 		ret += 1;
@@ -7698,8 +7379,7 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 	if (args->tag_values) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
@@ -7711,8 +7391,7 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":" ));
                 STRY(osc_str_append_string(data, args->tag_values_str));
 		ret += 1;
@@ -7720,8 +7399,7 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 	if (args->tags) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
@@ -7733,8 +7411,7 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -7747,8 +7424,7 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 	if (args->dhcp_options_set_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DhcpOptionsSetIds\":[" ));
 		for (as = args->dhcp_options_set_ids; *as > 0; ++as) {
 			if (as != args->dhcp_options_set_ids)
@@ -7760,8 +7436,7 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->dhcp_options_set_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DhcpOptionsSetIds\":" ));
                 STRY(osc_str_append_string(data, args->dhcp_options_set_ids_str));
 		ret += 1;
@@ -7769,8 +7444,7 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 	if (args->ip_ranges) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRanges\":[" ));
 		for (as = args->ip_ranges; *as > 0; ++as) {
 			if (as != args->ip_ranges)
@@ -7782,15 +7456,13 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ip_ranges_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRanges\":" ));
                 STRY(osc_str_append_string(data, args->ip_ranges_str));
 		ret += 1;
 	}
 	if (args->is_set_is_default_arg) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IsDefault\":" ));
                 STRY(osc_str_append_bool(data, args->is_default_arg));
 	   	ret += 1;
@@ -7798,8 +7470,7 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 	if (args->net_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetIds\":[" ));
 		for (as = args->net_ids; *as > 0; ++as) {
 			if (as != args->net_ids)
@@ -7811,8 +7482,7 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->net_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetIds\":" ));
                 STRY(osc_str_append_string(data, args->net_ids_str));
 		ret += 1;
@@ -7820,8 +7490,7 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 	if (args->states) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
 		for (as = args->states; *as > 0; ++as) {
 			if (as != args->states)
@@ -7833,8 +7502,7 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->states_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":" ));
                 STRY(osc_str_append_string(data, args->states_str));
 		ret += 1;
@@ -7842,8 +7510,7 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 	if (args->tag_keys) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
@@ -7855,8 +7522,7 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
                 STRY(osc_str_append_string(data, args->tag_keys_str));
 		ret += 1;
@@ -7864,8 +7530,7 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 	if (args->tag_values) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
@@ -7877,8 +7542,7 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":" ));
                 STRY(osc_str_append_string(data, args->tag_values_str));
 		ret += 1;
@@ -7886,8 +7550,7 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 	if (args->tags) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
@@ -7899,8 +7562,7 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -7913,8 +7575,7 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 	if (args->net_access_point_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetAccessPointIds\":[" ));
 		for (as = args->net_access_point_ids; *as > 0; ++as) {
 			if (as != args->net_access_point_ids)
@@ -7926,8 +7587,7 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->net_access_point_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetAccessPointIds\":" ));
                 STRY(osc_str_append_string(data, args->net_access_point_ids_str));
 		ret += 1;
@@ -7935,8 +7595,7 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 	if (args->net_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetIds\":[" ));
 		for (as = args->net_ids; *as > 0; ++as) {
 			if (as != args->net_ids)
@@ -7948,8 +7607,7 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->net_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetIds\":" ));
                 STRY(osc_str_append_string(data, args->net_ids_str));
 		ret += 1;
@@ -7957,8 +7615,7 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 	if (args->service_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ServiceNames\":[" ));
 		for (as = args->service_names; *as > 0; ++as) {
 			if (as != args->service_names)
@@ -7970,8 +7627,7 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->service_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ServiceNames\":" ));
                 STRY(osc_str_append_string(data, args->service_names_str));
 		ret += 1;
@@ -7979,8 +7635,7 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 	if (args->states) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
 		for (as = args->states; *as > 0; ++as) {
 			if (as != args->states)
@@ -7992,8 +7647,7 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->states_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":" ));
                 STRY(osc_str_append_string(data, args->states_str));
 		ret += 1;
@@ -8001,8 +7655,7 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 	if (args->tag_keys) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
@@ -8014,8 +7667,7 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
                 STRY(osc_str_append_string(data, args->tag_keys_str));
 		ret += 1;
@@ -8023,8 +7675,7 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 	if (args->tag_values) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
@@ -8036,8 +7687,7 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":" ));
                 STRY(osc_str_append_string(data, args->tag_values_str));
 		ret += 1;
@@ -8045,8 +7695,7 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 	if (args->tags) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
@@ -8058,8 +7707,7 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -8072,8 +7720,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 	if (args->accepter_net_account_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccepterNetAccountIds\":[" ));
 		for (as = args->accepter_net_account_ids; *as > 0; ++as) {
 			if (as != args->accepter_net_account_ids)
@@ -8085,8 +7732,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->accepter_net_account_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccepterNetAccountIds\":" ));
                 STRY(osc_str_append_string(data, args->accepter_net_account_ids_str));
 		ret += 1;
@@ -8094,8 +7740,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 	if (args->accepter_net_ip_ranges) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccepterNetIpRanges\":[" ));
 		for (as = args->accepter_net_ip_ranges; *as > 0; ++as) {
 			if (as != args->accepter_net_ip_ranges)
@@ -8107,8 +7752,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->accepter_net_ip_ranges_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccepterNetIpRanges\":" ));
                 STRY(osc_str_append_string(data, args->accepter_net_ip_ranges_str));
 		ret += 1;
@@ -8116,8 +7760,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 	if (args->accepter_net_net_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccepterNetNetIds\":[" ));
 		for (as = args->accepter_net_net_ids; *as > 0; ++as) {
 			if (as != args->accepter_net_net_ids)
@@ -8129,8 +7772,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->accepter_net_net_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccepterNetNetIds\":" ));
                 STRY(osc_str_append_string(data, args->accepter_net_net_ids_str));
 		ret += 1;
@@ -8138,8 +7780,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 	if (args->net_peering_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetPeeringIds\":[" ));
 		for (as = args->net_peering_ids; *as > 0; ++as) {
 			if (as != args->net_peering_ids)
@@ -8151,8 +7792,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->net_peering_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetPeeringIds\":" ));
                 STRY(osc_str_append_string(data, args->net_peering_ids_str));
 		ret += 1;
@@ -8160,8 +7800,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 	if (args->source_net_account_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SourceNetAccountIds\":[" ));
 		for (as = args->source_net_account_ids; *as > 0; ++as) {
 			if (as != args->source_net_account_ids)
@@ -8173,8 +7812,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->source_net_account_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SourceNetAccountIds\":" ));
                 STRY(osc_str_append_string(data, args->source_net_account_ids_str));
 		ret += 1;
@@ -8182,8 +7820,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 	if (args->source_net_ip_ranges) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SourceNetIpRanges\":[" ));
 		for (as = args->source_net_ip_ranges; *as > 0; ++as) {
 			if (as != args->source_net_ip_ranges)
@@ -8195,8 +7832,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->source_net_ip_ranges_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SourceNetIpRanges\":" ));
                 STRY(osc_str_append_string(data, args->source_net_ip_ranges_str));
 		ret += 1;
@@ -8204,8 +7840,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 	if (args->source_net_net_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SourceNetNetIds\":[" ));
 		for (as = args->source_net_net_ids; *as > 0; ++as) {
 			if (as != args->source_net_net_ids)
@@ -8217,8 +7852,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->source_net_net_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SourceNetNetIds\":" ));
                 STRY(osc_str_append_string(data, args->source_net_net_ids_str));
 		ret += 1;
@@ -8226,8 +7860,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 	if (args->state_messages) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"StateMessages\":[" ));
 		for (as = args->state_messages; *as > 0; ++as) {
 			if (as != args->state_messages)
@@ -8239,8 +7872,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->state_messages_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"StateMessages\":" ));
                 STRY(osc_str_append_string(data, args->state_messages_str));
 		ret += 1;
@@ -8248,8 +7880,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 	if (args->state_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"StateNames\":[" ));
 		for (as = args->state_names; *as > 0; ++as) {
 			if (as != args->state_names)
@@ -8261,8 +7892,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->state_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"StateNames\":" ));
                 STRY(osc_str_append_string(data, args->state_names_str));
 		ret += 1;
@@ -8270,8 +7900,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 	if (args->tag_keys) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
@@ -8283,8 +7912,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
                 STRY(osc_str_append_string(data, args->tag_keys_str));
 		ret += 1;
@@ -8292,8 +7920,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 	if (args->tag_values) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
@@ -8305,8 +7932,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":" ));
                 STRY(osc_str_append_string(data, args->tag_values_str));
 		ret += 1;
@@ -8314,8 +7940,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 	if (args->tags) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
@@ -8327,8 +7952,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -8341,8 +7965,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->descriptions) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Descriptions\":[" ));
 		for (as = args->descriptions; *as > 0; ++as) {
 			if (as != args->descriptions)
@@ -8354,22 +7977,19 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->descriptions_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Descriptions\":" ));
                 STRY(osc_str_append_string(data, args->descriptions_str));
 		ret += 1;
 	}
 	if (args->is_set_is_source_dest_check) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IsSourceDestCheck\":" ));
                 STRY(osc_str_append_bool(data, args->is_source_dest_check));
 	   	ret += 1;
 	}
 	if (args->is_set_link_nic_delete_on_vm_deletion) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNicDeleteOnVmDeletion\":" ));
                 STRY(osc_str_append_bool(data, args->link_nic_delete_on_vm_deletion));
 	   	ret += 1;
@@ -8377,8 +7997,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->link_nic_device_numbers) {
 		int *ip;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNicDeviceNumbers\":[" ));
 		for (ip = args->link_nic_device_numbers; *ip > 0; ++ip) {
 			if (ip != args->link_nic_device_numbers)
@@ -8388,8 +8007,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_nic_device_numbers_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNicDeviceNumbers\":" ));
                 STRY(osc_str_append_string(data, args->link_nic_device_numbers_str));
 		ret += 1;
@@ -8397,8 +8015,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->link_nic_link_nic_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNicLinkNicIds\":[" ));
 		for (as = args->link_nic_link_nic_ids; *as > 0; ++as) {
 			if (as != args->link_nic_link_nic_ids)
@@ -8410,8 +8027,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_nic_link_nic_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNicLinkNicIds\":" ));
                 STRY(osc_str_append_string(data, args->link_nic_link_nic_ids_str));
 		ret += 1;
@@ -8419,8 +8035,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->link_nic_states) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNicStates\":[" ));
 		for (as = args->link_nic_states; *as > 0; ++as) {
 			if (as != args->link_nic_states)
@@ -8432,8 +8047,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_nic_states_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNicStates\":" ));
                 STRY(osc_str_append_string(data, args->link_nic_states_str));
 		ret += 1;
@@ -8441,8 +8055,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->link_nic_vm_account_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNicVmAccountIds\":[" ));
 		for (as = args->link_nic_vm_account_ids; *as > 0; ++as) {
 			if (as != args->link_nic_vm_account_ids)
@@ -8454,8 +8067,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_nic_vm_account_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNicVmAccountIds\":" ));
                 STRY(osc_str_append_string(data, args->link_nic_vm_account_ids_str));
 		ret += 1;
@@ -8463,8 +8075,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->link_nic_vm_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNicVmIds\":[" ));
 		for (as = args->link_nic_vm_ids; *as > 0; ++as) {
 			if (as != args->link_nic_vm_ids)
@@ -8476,8 +8087,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_nic_vm_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNicVmIds\":" ));
                 STRY(osc_str_append_string(data, args->link_nic_vm_ids_str));
 		ret += 1;
@@ -8485,8 +8095,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->link_public_ip_account_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkPublicIpAccountIds\":[" ));
 		for (as = args->link_public_ip_account_ids; *as > 0; ++as) {
 			if (as != args->link_public_ip_account_ids)
@@ -8498,8 +8107,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_public_ip_account_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkPublicIpAccountIds\":" ));
                 STRY(osc_str_append_string(data, args->link_public_ip_account_ids_str));
 		ret += 1;
@@ -8507,8 +8115,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->link_public_ip_link_public_ip_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkPublicIpLinkPublicIpIds\":[" ));
 		for (as = args->link_public_ip_link_public_ip_ids; *as > 0; ++as) {
 			if (as != args->link_public_ip_link_public_ip_ids)
@@ -8520,8 +8127,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_public_ip_link_public_ip_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkPublicIpLinkPublicIpIds\":" ));
                 STRY(osc_str_append_string(data, args->link_public_ip_link_public_ip_ids_str));
 		ret += 1;
@@ -8529,8 +8135,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->link_public_ip_public_ip_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkPublicIpPublicIpIds\":[" ));
 		for (as = args->link_public_ip_public_ip_ids; *as > 0; ++as) {
 			if (as != args->link_public_ip_public_ip_ids)
@@ -8542,8 +8147,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_public_ip_public_ip_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkPublicIpPublicIpIds\":" ));
                 STRY(osc_str_append_string(data, args->link_public_ip_public_ip_ids_str));
 		ret += 1;
@@ -8551,8 +8155,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->link_public_ip_public_ips) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkPublicIpPublicIps\":[" ));
 		for (as = args->link_public_ip_public_ips; *as > 0; ++as) {
 			if (as != args->link_public_ip_public_ips)
@@ -8564,8 +8167,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_public_ip_public_ips_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkPublicIpPublicIps\":" ));
                 STRY(osc_str_append_string(data, args->link_public_ip_public_ips_str));
 		ret += 1;
@@ -8573,8 +8175,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->mac_addresses) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MacAddresses\":[" ));
 		for (as = args->mac_addresses; *as > 0; ++as) {
 			if (as != args->mac_addresses)
@@ -8586,8 +8187,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->mac_addresses_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MacAddresses\":" ));
                 STRY(osc_str_append_string(data, args->mac_addresses_str));
 		ret += 1;
@@ -8595,8 +8195,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->net_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetIds\":[" ));
 		for (as = args->net_ids; *as > 0; ++as) {
 			if (as != args->net_ids)
@@ -8608,8 +8207,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->net_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetIds\":" ));
                 STRY(osc_str_append_string(data, args->net_ids_str));
 		ret += 1;
@@ -8617,8 +8215,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->nic_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicIds\":[" ));
 		for (as = args->nic_ids; *as > 0; ++as) {
 			if (as != args->nic_ids)
@@ -8630,8 +8227,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->nic_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicIds\":" ));
                 STRY(osc_str_append_string(data, args->nic_ids_str));
 		ret += 1;
@@ -8639,8 +8235,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->private_dns_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateDnsNames\":[" ));
 		for (as = args->private_dns_names; *as > 0; ++as) {
 			if (as != args->private_dns_names)
@@ -8652,8 +8247,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->private_dns_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateDnsNames\":" ));
                 STRY(osc_str_append_string(data, args->private_dns_names_str));
 		ret += 1;
@@ -8661,8 +8255,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->private_ips_link_public_ip_account_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIpsLinkPublicIpAccountIds\":[" ));
 		for (as = args->private_ips_link_public_ip_account_ids; *as > 0; ++as) {
 			if (as != args->private_ips_link_public_ip_account_ids)
@@ -8674,8 +8267,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->private_ips_link_public_ip_account_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIpsLinkPublicIpAccountIds\":" ));
                 STRY(osc_str_append_string(data, args->private_ips_link_public_ip_account_ids_str));
 		ret += 1;
@@ -8683,8 +8275,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->private_ips_link_public_ip_public_ips) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIpsLinkPublicIpPublicIps\":[" ));
 		for (as = args->private_ips_link_public_ip_public_ips; *as > 0; ++as) {
 			if (as != args->private_ips_link_public_ip_public_ips)
@@ -8696,15 +8287,13 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->private_ips_link_public_ip_public_ips_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIpsLinkPublicIpPublicIps\":" ));
                 STRY(osc_str_append_string(data, args->private_ips_link_public_ip_public_ips_str));
 		ret += 1;
 	}
 	if (args->is_set_private_ips_primary_ip) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIpsPrimaryIp\":" ));
                 STRY(osc_str_append_bool(data, args->private_ips_primary_ip));
 	   	ret += 1;
@@ -8712,8 +8301,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->private_ips_private_ips) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIpsPrivateIps\":[" ));
 		for (as = args->private_ips_private_ips; *as > 0; ++as) {
 			if (as != args->private_ips_private_ips)
@@ -8725,8 +8313,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->private_ips_private_ips_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIpsPrivateIps\":" ));
                 STRY(osc_str_append_string(data, args->private_ips_private_ips_str));
 		ret += 1;
@@ -8734,8 +8321,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->security_group_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":[" ));
 		for (as = args->security_group_ids; *as > 0; ++as) {
 			if (as != args->security_group_ids)
@@ -8747,8 +8333,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_group_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":" ));
                 STRY(osc_str_append_string(data, args->security_group_ids_str));
 		ret += 1;
@@ -8756,8 +8341,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->security_group_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupNames\":[" ));
 		for (as = args->security_group_names; *as > 0; ++as) {
 			if (as != args->security_group_names)
@@ -8769,8 +8353,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_group_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupNames\":" ));
                 STRY(osc_str_append_string(data, args->security_group_names_str));
 		ret += 1;
@@ -8778,8 +8361,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->states) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
 		for (as = args->states; *as > 0; ++as) {
 			if (as != args->states)
@@ -8791,8 +8373,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->states_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":" ));
                 STRY(osc_str_append_string(data, args->states_str));
 		ret += 1;
@@ -8800,8 +8381,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->subnet_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetIds\":[" ));
 		for (as = args->subnet_ids; *as > 0; ++as) {
 			if (as != args->subnet_ids)
@@ -8813,8 +8393,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subnet_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetIds\":" ));
                 STRY(osc_str_append_string(data, args->subnet_ids_str));
 		ret += 1;
@@ -8822,8 +8401,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->subregion_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":[" ));
 		for (as = args->subregion_names; *as > 0; ++as) {
 			if (as != args->subregion_names)
@@ -8835,8 +8413,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subregion_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":" ));
                 STRY(osc_str_append_string(data, args->subregion_names_str));
 		ret += 1;
@@ -8844,8 +8421,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->tag_keys) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
@@ -8857,8 +8433,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
                 STRY(osc_str_append_string(data, args->tag_keys_str));
 		ret += 1;
@@ -8866,8 +8441,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->tag_values) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
@@ -8879,8 +8453,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":" ));
                 STRY(osc_str_append_string(data, args->tag_values_str));
 		ret += 1;
@@ -8888,8 +8461,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 	if (args->tags) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
@@ -8901,8 +8473,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -8915,8 +8486,7 @@ static int filters_product_type_setter(struct filters_product_type *args, struct
 	if (args->product_type_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ProductTypeIds\":[" ));
 		for (as = args->product_type_ids; *as > 0; ++as) {
 			if (as != args->product_type_ids)
@@ -8928,8 +8498,7 @@ static int filters_product_type_setter(struct filters_product_type *args, struct
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->product_type_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ProductTypeIds\":" ));
                 STRY(osc_str_append_string(data, args->product_type_ids_str));
 		ret += 1;
@@ -8942,8 +8511,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 	if (args->link_public_ip_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkPublicIpIds\":[" ));
 		for (as = args->link_public_ip_ids; *as > 0; ++as) {
 			if (as != args->link_public_ip_ids)
@@ -8955,8 +8523,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_public_ip_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkPublicIpIds\":" ));
                 STRY(osc_str_append_string(data, args->link_public_ip_ids_str));
 		ret += 1;
@@ -8964,8 +8531,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 	if (args->nic_account_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicAccountIds\":[" ));
 		for (as = args->nic_account_ids; *as > 0; ++as) {
 			if (as != args->nic_account_ids)
@@ -8977,8 +8543,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->nic_account_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicAccountIds\":" ));
                 STRY(osc_str_append_string(data, args->nic_account_ids_str));
 		ret += 1;
@@ -8986,8 +8551,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 	if (args->nic_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicIds\":[" ));
 		for (as = args->nic_ids; *as > 0; ++as) {
 			if (as != args->nic_ids)
@@ -8999,8 +8563,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->nic_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicIds\":" ));
                 STRY(osc_str_append_string(data, args->nic_ids_str));
 		ret += 1;
@@ -9008,8 +8571,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 	if (args->placements) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Placements\":[" ));
 		for (as = args->placements; *as > 0; ++as) {
 			if (as != args->placements)
@@ -9021,8 +8583,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->placements_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Placements\":" ));
                 STRY(osc_str_append_string(data, args->placements_str));
 		ret += 1;
@@ -9030,8 +8591,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 	if (args->private_ips) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIps\":[" ));
 		for (as = args->private_ips; *as > 0; ++as) {
 			if (as != args->private_ips)
@@ -9043,8 +8603,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->private_ips_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIps\":" ));
                 STRY(osc_str_append_string(data, args->private_ips_str));
 		ret += 1;
@@ -9052,8 +8611,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 	if (args->public_ip_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIpIds\":[" ));
 		for (as = args->public_ip_ids; *as > 0; ++as) {
 			if (as != args->public_ip_ids)
@@ -9065,8 +8623,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->public_ip_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIpIds\":" ));
                 STRY(osc_str_append_string(data, args->public_ip_ids_str));
 		ret += 1;
@@ -9074,8 +8631,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 	if (args->public_ips) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIps\":[" ));
 		for (as = args->public_ips; *as > 0; ++as) {
 			if (as != args->public_ips)
@@ -9087,8 +8643,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->public_ips_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIps\":" ));
                 STRY(osc_str_append_string(data, args->public_ips_str));
 		ret += 1;
@@ -9096,8 +8651,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 	if (args->tag_keys) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
@@ -9109,8 +8663,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
                 STRY(osc_str_append_string(data, args->tag_keys_str));
 		ret += 1;
@@ -9118,8 +8671,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 	if (args->tag_values) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
@@ -9131,8 +8683,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":" ));
                 STRY(osc_str_append_string(data, args->tag_values_str));
 		ret += 1;
@@ -9140,8 +8691,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 	if (args->tags) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
@@ -9153,8 +8703,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -9162,8 +8711,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 	if (args->vm_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
 		for (as = args->vm_ids; *as > 0; ++as) {
 			if (as != args->vm_ids)
@@ -9175,8 +8723,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":" ));
                 STRY(osc_str_append_string(data, args->vm_ids_str));
 		ret += 1;
@@ -9189,8 +8736,7 @@ static int filters_quota_setter(struct filters_quota *args, struct osc_str *data
 	if (args->collections) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Collections\":[" ));
 		for (as = args->collections; *as > 0; ++as) {
 			if (as != args->collections)
@@ -9202,8 +8748,7 @@ static int filters_quota_setter(struct filters_quota *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->collections_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Collections\":" ));
                 STRY(osc_str_append_string(data, args->collections_str));
 		ret += 1;
@@ -9211,8 +8756,7 @@ static int filters_quota_setter(struct filters_quota *args, struct osc_str *data
 	if (args->quota_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QuotaNames\":[" ));
 		for (as = args->quota_names; *as > 0; ++as) {
 			if (as != args->quota_names)
@@ -9224,8 +8768,7 @@ static int filters_quota_setter(struct filters_quota *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->quota_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QuotaNames\":" ));
                 STRY(osc_str_append_string(data, args->quota_names_str));
 		ret += 1;
@@ -9233,8 +8776,7 @@ static int filters_quota_setter(struct filters_quota *args, struct osc_str *data
 	if (args->quota_types) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QuotaTypes\":[" ));
 		for (as = args->quota_types; *as > 0; ++as) {
 			if (as != args->quota_types)
@@ -9246,8 +8788,7 @@ static int filters_quota_setter(struct filters_quota *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->quota_types_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QuotaTypes\":" ));
                 STRY(osc_str_append_string(data, args->quota_types_str));
 		ret += 1;
@@ -9255,8 +8796,7 @@ static int filters_quota_setter(struct filters_quota *args, struct osc_str *data
 	if (args->short_descriptions) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ShortDescriptions\":[" ));
 		for (as = args->short_descriptions; *as > 0; ++as) {
 			if (as != args->short_descriptions)
@@ -9268,8 +8808,7 @@ static int filters_quota_setter(struct filters_quota *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->short_descriptions_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ShortDescriptions\":" ));
                 STRY(osc_str_append_string(data, args->short_descriptions_str));
 		ret += 1;
@@ -9282,8 +8821,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 	if (args->link_route_table_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkRouteTableIds\":[" ));
 		for (as = args->link_route_table_ids; *as > 0; ++as) {
 			if (as != args->link_route_table_ids)
@@ -9295,8 +8833,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_route_table_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkRouteTableIds\":" ));
                 STRY(osc_str_append_string(data, args->link_route_table_ids_str));
 		ret += 1;
@@ -9304,8 +8841,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 	if (args->link_route_table_link_route_table_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkRouteTableLinkRouteTableIds\":[" ));
 		for (as = args->link_route_table_link_route_table_ids; *as > 0; ++as) {
 			if (as != args->link_route_table_link_route_table_ids)
@@ -9317,15 +8853,13 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_route_table_link_route_table_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkRouteTableLinkRouteTableIds\":" ));
                 STRY(osc_str_append_string(data, args->link_route_table_link_route_table_ids_str));
 		ret += 1;
 	}
 	if (args->is_set_link_route_table_main) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkRouteTableMain\":" ));
                 STRY(osc_str_append_bool(data, args->link_route_table_main));
 	   	ret += 1;
@@ -9333,8 +8867,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 	if (args->link_subnet_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkSubnetIds\":[" ));
 		for (as = args->link_subnet_ids; *as > 0; ++as) {
 			if (as != args->link_subnet_ids)
@@ -9346,8 +8879,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_subnet_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkSubnetIds\":" ));
                 STRY(osc_str_append_string(data, args->link_subnet_ids_str));
 		ret += 1;
@@ -9355,8 +8887,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 	if (args->net_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetIds\":[" ));
 		for (as = args->net_ids; *as > 0; ++as) {
 			if (as != args->net_ids)
@@ -9368,8 +8899,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->net_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetIds\":" ));
                 STRY(osc_str_append_string(data, args->net_ids_str));
 		ret += 1;
@@ -9377,8 +8907,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 	if (args->route_creation_methods) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteCreationMethods\":[" ));
 		for (as = args->route_creation_methods; *as > 0; ++as) {
 			if (as != args->route_creation_methods)
@@ -9390,8 +8919,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->route_creation_methods_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteCreationMethods\":" ));
                 STRY(osc_str_append_string(data, args->route_creation_methods_str));
 		ret += 1;
@@ -9399,8 +8927,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 	if (args->route_destination_ip_ranges) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteDestinationIpRanges\":[" ));
 		for (as = args->route_destination_ip_ranges; *as > 0; ++as) {
 			if (as != args->route_destination_ip_ranges)
@@ -9412,8 +8939,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->route_destination_ip_ranges_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteDestinationIpRanges\":" ));
                 STRY(osc_str_append_string(data, args->route_destination_ip_ranges_str));
 		ret += 1;
@@ -9421,8 +8947,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 	if (args->route_destination_service_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteDestinationServiceIds\":[" ));
 		for (as = args->route_destination_service_ids; *as > 0; ++as) {
 			if (as != args->route_destination_service_ids)
@@ -9434,8 +8959,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->route_destination_service_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteDestinationServiceIds\":" ));
                 STRY(osc_str_append_string(data, args->route_destination_service_ids_str));
 		ret += 1;
@@ -9443,8 +8967,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 	if (args->route_gateway_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteGatewayIds\":[" ));
 		for (as = args->route_gateway_ids; *as > 0; ++as) {
 			if (as != args->route_gateway_ids)
@@ -9456,8 +8979,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->route_gateway_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteGatewayIds\":" ));
                 STRY(osc_str_append_string(data, args->route_gateway_ids_str));
 		ret += 1;
@@ -9465,8 +8987,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 	if (args->route_nat_service_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteNatServiceIds\":[" ));
 		for (as = args->route_nat_service_ids; *as > 0; ++as) {
 			if (as != args->route_nat_service_ids)
@@ -9478,8 +8999,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->route_nat_service_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteNatServiceIds\":" ));
                 STRY(osc_str_append_string(data, args->route_nat_service_ids_str));
 		ret += 1;
@@ -9487,8 +9007,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 	if (args->route_net_peering_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteNetPeeringIds\":[" ));
 		for (as = args->route_net_peering_ids; *as > 0; ++as) {
 			if (as != args->route_net_peering_ids)
@@ -9500,8 +9019,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->route_net_peering_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteNetPeeringIds\":" ));
                 STRY(osc_str_append_string(data, args->route_net_peering_ids_str));
 		ret += 1;
@@ -9509,8 +9027,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 	if (args->route_states) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteStates\":[" ));
 		for (as = args->route_states; *as > 0; ++as) {
 			if (as != args->route_states)
@@ -9522,8 +9039,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->route_states_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteStates\":" ));
                 STRY(osc_str_append_string(data, args->route_states_str));
 		ret += 1;
@@ -9531,8 +9047,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 	if (args->route_table_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteTableIds\":[" ));
 		for (as = args->route_table_ids; *as > 0; ++as) {
 			if (as != args->route_table_ids)
@@ -9544,8 +9059,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->route_table_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteTableIds\":" ));
                 STRY(osc_str_append_string(data, args->route_table_ids_str));
 		ret += 1;
@@ -9553,8 +9067,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 	if (args->route_vm_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteVmIds\":[" ));
 		for (as = args->route_vm_ids; *as > 0; ++as) {
 			if (as != args->route_vm_ids)
@@ -9566,8 +9079,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->route_vm_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteVmIds\":" ));
                 STRY(osc_str_append_string(data, args->route_vm_ids_str));
 		ret += 1;
@@ -9575,8 +9087,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 	if (args->tag_keys) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
@@ -9588,8 +9099,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
                 STRY(osc_str_append_string(data, args->tag_keys_str));
 		ret += 1;
@@ -9597,8 +9107,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 	if (args->tag_values) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
@@ -9610,8 +9119,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":" ));
                 STRY(osc_str_append_string(data, args->tag_values_str));
 		ret += 1;
@@ -9619,8 +9127,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 	if (args->tags) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
@@ -9632,8 +9139,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -9646,8 +9152,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 	if (args->account_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountIds\":[" ));
 		for (as = args->account_ids; *as > 0; ++as) {
 			if (as != args->account_ids)
@@ -9659,8 +9164,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->account_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountIds\":" ));
                 STRY(osc_str_append_string(data, args->account_ids_str));
 		ret += 1;
@@ -9668,8 +9172,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 	if (args->descriptions) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Descriptions\":[" ));
 		for (as = args->descriptions; *as > 0; ++as) {
 			if (as != args->descriptions)
@@ -9681,8 +9184,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->descriptions_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Descriptions\":" ));
                 STRY(osc_str_append_string(data, args->descriptions_str));
 		ret += 1;
@@ -9690,8 +9192,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 	if (args->inbound_rule_account_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InboundRuleAccountIds\":[" ));
 		for (as = args->inbound_rule_account_ids; *as > 0; ++as) {
 			if (as != args->inbound_rule_account_ids)
@@ -9703,8 +9204,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->inbound_rule_account_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InboundRuleAccountIds\":" ));
                 STRY(osc_str_append_string(data, args->inbound_rule_account_ids_str));
 		ret += 1;
@@ -9712,8 +9212,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 	if (args->inbound_rule_from_port_ranges) {
 		int *ip;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InboundRuleFromPortRanges\":[" ));
 		for (ip = args->inbound_rule_from_port_ranges; *ip > 0; ++ip) {
 			if (ip != args->inbound_rule_from_port_ranges)
@@ -9723,8 +9222,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->inbound_rule_from_port_ranges_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InboundRuleFromPortRanges\":" ));
                 STRY(osc_str_append_string(data, args->inbound_rule_from_port_ranges_str));
 		ret += 1;
@@ -9732,8 +9230,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 	if (args->inbound_rule_ip_ranges) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InboundRuleIpRanges\":[" ));
 		for (as = args->inbound_rule_ip_ranges; *as > 0; ++as) {
 			if (as != args->inbound_rule_ip_ranges)
@@ -9745,8 +9242,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->inbound_rule_ip_ranges_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InboundRuleIpRanges\":" ));
                 STRY(osc_str_append_string(data, args->inbound_rule_ip_ranges_str));
 		ret += 1;
@@ -9754,8 +9250,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 	if (args->inbound_rule_protocols) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InboundRuleProtocols\":[" ));
 		for (as = args->inbound_rule_protocols; *as > 0; ++as) {
 			if (as != args->inbound_rule_protocols)
@@ -9767,8 +9262,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->inbound_rule_protocols_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InboundRuleProtocols\":" ));
                 STRY(osc_str_append_string(data, args->inbound_rule_protocols_str));
 		ret += 1;
@@ -9776,8 +9270,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 	if (args->inbound_rule_security_group_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InboundRuleSecurityGroupIds\":[" ));
 		for (as = args->inbound_rule_security_group_ids; *as > 0; ++as) {
 			if (as != args->inbound_rule_security_group_ids)
@@ -9789,8 +9282,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->inbound_rule_security_group_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InboundRuleSecurityGroupIds\":" ));
                 STRY(osc_str_append_string(data, args->inbound_rule_security_group_ids_str));
 		ret += 1;
@@ -9798,8 +9290,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 	if (args->inbound_rule_security_group_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InboundRuleSecurityGroupNames\":[" ));
 		for (as = args->inbound_rule_security_group_names; *as > 0; ++as) {
 			if (as != args->inbound_rule_security_group_names)
@@ -9811,8 +9302,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->inbound_rule_security_group_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InboundRuleSecurityGroupNames\":" ));
                 STRY(osc_str_append_string(data, args->inbound_rule_security_group_names_str));
 		ret += 1;
@@ -9820,8 +9310,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 	if (args->inbound_rule_to_port_ranges) {
 		int *ip;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InboundRuleToPortRanges\":[" ));
 		for (ip = args->inbound_rule_to_port_ranges; *ip > 0; ++ip) {
 			if (ip != args->inbound_rule_to_port_ranges)
@@ -9831,8 +9320,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->inbound_rule_to_port_ranges_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InboundRuleToPortRanges\":" ));
                 STRY(osc_str_append_string(data, args->inbound_rule_to_port_ranges_str));
 		ret += 1;
@@ -9840,8 +9328,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 	if (args->net_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetIds\":[" ));
 		for (as = args->net_ids; *as > 0; ++as) {
 			if (as != args->net_ids)
@@ -9853,8 +9340,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->net_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetIds\":" ));
                 STRY(osc_str_append_string(data, args->net_ids_str));
 		ret += 1;
@@ -9862,8 +9348,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 	if (args->outbound_rule_account_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OutboundRuleAccountIds\":[" ));
 		for (as = args->outbound_rule_account_ids; *as > 0; ++as) {
 			if (as != args->outbound_rule_account_ids)
@@ -9875,8 +9360,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->outbound_rule_account_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OutboundRuleAccountIds\":" ));
                 STRY(osc_str_append_string(data, args->outbound_rule_account_ids_str));
 		ret += 1;
@@ -9884,8 +9368,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 	if (args->outbound_rule_from_port_ranges) {
 		int *ip;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OutboundRuleFromPortRanges\":[" ));
 		for (ip = args->outbound_rule_from_port_ranges; *ip > 0; ++ip) {
 			if (ip != args->outbound_rule_from_port_ranges)
@@ -9895,8 +9378,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->outbound_rule_from_port_ranges_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OutboundRuleFromPortRanges\":" ));
                 STRY(osc_str_append_string(data, args->outbound_rule_from_port_ranges_str));
 		ret += 1;
@@ -9904,8 +9386,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 	if (args->outbound_rule_ip_ranges) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OutboundRuleIpRanges\":[" ));
 		for (as = args->outbound_rule_ip_ranges; *as > 0; ++as) {
 			if (as != args->outbound_rule_ip_ranges)
@@ -9917,8 +9398,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->outbound_rule_ip_ranges_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OutboundRuleIpRanges\":" ));
                 STRY(osc_str_append_string(data, args->outbound_rule_ip_ranges_str));
 		ret += 1;
@@ -9926,8 +9406,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 	if (args->outbound_rule_protocols) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OutboundRuleProtocols\":[" ));
 		for (as = args->outbound_rule_protocols; *as > 0; ++as) {
 			if (as != args->outbound_rule_protocols)
@@ -9939,8 +9418,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->outbound_rule_protocols_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OutboundRuleProtocols\":" ));
                 STRY(osc_str_append_string(data, args->outbound_rule_protocols_str));
 		ret += 1;
@@ -9948,8 +9426,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 	if (args->outbound_rule_security_group_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OutboundRuleSecurityGroupIds\":[" ));
 		for (as = args->outbound_rule_security_group_ids; *as > 0; ++as) {
 			if (as != args->outbound_rule_security_group_ids)
@@ -9961,8 +9438,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->outbound_rule_security_group_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OutboundRuleSecurityGroupIds\":" ));
                 STRY(osc_str_append_string(data, args->outbound_rule_security_group_ids_str));
 		ret += 1;
@@ -9970,8 +9446,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 	if (args->outbound_rule_security_group_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OutboundRuleSecurityGroupNames\":[" ));
 		for (as = args->outbound_rule_security_group_names; *as > 0; ++as) {
 			if (as != args->outbound_rule_security_group_names)
@@ -9983,8 +9458,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->outbound_rule_security_group_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OutboundRuleSecurityGroupNames\":" ));
                 STRY(osc_str_append_string(data, args->outbound_rule_security_group_names_str));
 		ret += 1;
@@ -9992,8 +9466,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 	if (args->outbound_rule_to_port_ranges) {
 		int *ip;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OutboundRuleToPortRanges\":[" ));
 		for (ip = args->outbound_rule_to_port_ranges; *ip > 0; ++ip) {
 			if (ip != args->outbound_rule_to_port_ranges)
@@ -10003,8 +9476,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->outbound_rule_to_port_ranges_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OutboundRuleToPortRanges\":" ));
                 STRY(osc_str_append_string(data, args->outbound_rule_to_port_ranges_str));
 		ret += 1;
@@ -10012,8 +9484,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 	if (args->security_group_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":[" ));
 		for (as = args->security_group_ids; *as > 0; ++as) {
 			if (as != args->security_group_ids)
@@ -10025,8 +9496,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_group_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":" ));
                 STRY(osc_str_append_string(data, args->security_group_ids_str));
 		ret += 1;
@@ -10034,8 +9504,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 	if (args->security_group_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupNames\":[" ));
 		for (as = args->security_group_names; *as > 0; ++as) {
 			if (as != args->security_group_names)
@@ -10047,8 +9516,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_group_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupNames\":" ));
                 STRY(osc_str_append_string(data, args->security_group_names_str));
 		ret += 1;
@@ -10056,8 +9524,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 	if (args->tag_keys) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
@@ -10069,8 +9536,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
                 STRY(osc_str_append_string(data, args->tag_keys_str));
 		ret += 1;
@@ -10078,8 +9544,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 	if (args->tag_values) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
@@ -10091,8 +9556,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":" ));
                 STRY(osc_str_append_string(data, args->tag_values_str));
 		ret += 1;
@@ -10100,8 +9564,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 	if (args->tags) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
@@ -10113,8 +9576,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -10127,8 +9589,7 @@ static int filters_server_certificate_setter(struct filters_server_certificate *
 	if (args->paths) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Paths\":[" ));
 		for (as = args->paths; *as > 0; ++as) {
 			if (as != args->paths)
@@ -10140,8 +9601,7 @@ static int filters_server_certificate_setter(struct filters_server_certificate *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->paths_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Paths\":" ));
                 STRY(osc_str_append_string(data, args->paths_str));
 		ret += 1;
@@ -10154,8 +9614,7 @@ static int filters_service_setter(struct filters_service *args, struct osc_str *
 	if (args->service_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ServiceIds\":[" ));
 		for (as = args->service_ids; *as > 0; ++as) {
 			if (as != args->service_ids)
@@ -10167,8 +9626,7 @@ static int filters_service_setter(struct filters_service *args, struct osc_str *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->service_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ServiceIds\":" ));
                 STRY(osc_str_append_string(data, args->service_ids_str));
 		ret += 1;
@@ -10176,8 +9634,7 @@ static int filters_service_setter(struct filters_service *args, struct osc_str *
 	if (args->service_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ServiceNames\":[" ));
 		for (as = args->service_names; *as > 0; ++as) {
 			if (as != args->service_names)
@@ -10189,8 +9646,7 @@ static int filters_service_setter(struct filters_service *args, struct osc_str *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->service_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ServiceNames\":" ));
                 STRY(osc_str_append_string(data, args->service_names_str));
 		ret += 1;
@@ -10203,8 +9659,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 	if (args->account_aliases) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountAliases\":[" ));
 		for (as = args->account_aliases; *as > 0; ++as) {
 			if (as != args->account_aliases)
@@ -10216,8 +9671,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->account_aliases_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountAliases\":" ));
                 STRY(osc_str_append_string(data, args->account_aliases_str));
 		ret += 1;
@@ -10225,8 +9679,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 	if (args->account_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountIds\":[" ));
 		for (as = args->account_ids; *as > 0; ++as) {
 			if (as != args->account_ids)
@@ -10238,8 +9691,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->account_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountIds\":" ));
                 STRY(osc_str_append_string(data, args->account_ids_str));
 		ret += 1;
@@ -10247,8 +9699,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 	if (args->descriptions) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Descriptions\":[" ));
 		for (as = args->descriptions; *as > 0; ++as) {
 			if (as != args->descriptions)
@@ -10260,15 +9711,13 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->descriptions_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Descriptions\":" ));
                 STRY(osc_str_append_string(data, args->descriptions_str));
 		ret += 1;
 	}
 	if (args->from_creation_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"FromCreationDate\":\"" ));
                 STRY(osc_str_append_string(data, args->from_creation_date));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -10277,8 +9726,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 	if (args->permissions_to_create_volume_account_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PermissionsToCreateVolumeAccountIds\":[" ));
 		for (as = args->permissions_to_create_volume_account_ids; *as > 0; ++as) {
 			if (as != args->permissions_to_create_volume_account_ids)
@@ -10290,15 +9738,13 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->permissions_to_create_volume_account_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PermissionsToCreateVolumeAccountIds\":" ));
                 STRY(osc_str_append_string(data, args->permissions_to_create_volume_account_ids_str));
 		ret += 1;
 	}
 	if (args->is_set_permissions_to_create_volume_global_permission) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PermissionsToCreateVolumeGlobalPermission\":" ));
                 STRY(osc_str_append_bool(data, args->permissions_to_create_volume_global_permission));
 	   	ret += 1;
@@ -10306,8 +9752,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 	if (args->progresses) {
 		int *ip;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Progresses\":[" ));
 		for (ip = args->progresses; *ip > 0; ++ip) {
 			if (ip != args->progresses)
@@ -10317,8 +9762,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->progresses_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Progresses\":" ));
                 STRY(osc_str_append_string(data, args->progresses_str));
 		ret += 1;
@@ -10326,8 +9770,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 	if (args->snapshot_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SnapshotIds\":[" ));
 		for (as = args->snapshot_ids; *as > 0; ++as) {
 			if (as != args->snapshot_ids)
@@ -10339,8 +9782,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->snapshot_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SnapshotIds\":" ));
                 STRY(osc_str_append_string(data, args->snapshot_ids_str));
 		ret += 1;
@@ -10348,8 +9790,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 	if (args->states) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
 		for (as = args->states; *as > 0; ++as) {
 			if (as != args->states)
@@ -10361,8 +9802,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->states_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":" ));
                 STRY(osc_str_append_string(data, args->states_str));
 		ret += 1;
@@ -10370,8 +9810,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 	if (args->tag_keys) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
@@ -10383,8 +9822,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
                 STRY(osc_str_append_string(data, args->tag_keys_str));
 		ret += 1;
@@ -10392,8 +9830,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 	if (args->tag_values) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
@@ -10405,8 +9842,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":" ));
                 STRY(osc_str_append_string(data, args->tag_values_str));
 		ret += 1;
@@ -10414,8 +9850,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 	if (args->tags) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
@@ -10427,15 +9862,13 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
 	}
 	if (args->to_creation_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ToCreationDate\":\"" ));
                 STRY(osc_str_append_string(data, args->to_creation_date));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -10444,8 +9877,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 	if (args->volume_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeIds\":[" ));
 		for (as = args->volume_ids; *as > 0; ++as) {
 			if (as != args->volume_ids)
@@ -10457,8 +9889,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->volume_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeIds\":" ));
                 STRY(osc_str_append_string(data, args->volume_ids_str));
 		ret += 1;
@@ -10466,8 +9897,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 	if (args->volume_sizes) {
 		int *ip;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeSizes\":[" ));
 		for (ip = args->volume_sizes; *ip > 0; ++ip) {
 			if (ip != args->volume_sizes)
@@ -10477,8 +9907,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->volume_sizes_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeSizes\":" ));
                 STRY(osc_str_append_string(data, args->volume_sizes_str));
 		ret += 1;
@@ -10491,8 +9920,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 	if (args->available_ips_counts) {
 		int *ip;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AvailableIpsCounts\":[" ));
 		for (ip = args->available_ips_counts; *ip > 0; ++ip) {
 			if (ip != args->available_ips_counts)
@@ -10502,8 +9930,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->available_ips_counts_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AvailableIpsCounts\":" ));
                 STRY(osc_str_append_string(data, args->available_ips_counts_str));
 		ret += 1;
@@ -10511,8 +9938,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 	if (args->ip_ranges) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRanges\":[" ));
 		for (as = args->ip_ranges; *as > 0; ++as) {
 			if (as != args->ip_ranges)
@@ -10524,8 +9950,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ip_ranges_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRanges\":" ));
                 STRY(osc_str_append_string(data, args->ip_ranges_str));
 		ret += 1;
@@ -10533,8 +9958,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 	if (args->net_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetIds\":[" ));
 		for (as = args->net_ids; *as > 0; ++as) {
 			if (as != args->net_ids)
@@ -10546,8 +9970,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->net_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetIds\":" ));
                 STRY(osc_str_append_string(data, args->net_ids_str));
 		ret += 1;
@@ -10555,8 +9978,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 	if (args->states) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
 		for (as = args->states; *as > 0; ++as) {
 			if (as != args->states)
@@ -10568,8 +9990,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->states_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":" ));
                 STRY(osc_str_append_string(data, args->states_str));
 		ret += 1;
@@ -10577,8 +9998,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 	if (args->subnet_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetIds\":[" ));
 		for (as = args->subnet_ids; *as > 0; ++as) {
 			if (as != args->subnet_ids)
@@ -10590,8 +10010,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subnet_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetIds\":" ));
                 STRY(osc_str_append_string(data, args->subnet_ids_str));
 		ret += 1;
@@ -10599,8 +10018,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 	if (args->subregion_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":[" ));
 		for (as = args->subregion_names; *as > 0; ++as) {
 			if (as != args->subregion_names)
@@ -10612,8 +10030,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subregion_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":" ));
                 STRY(osc_str_append_string(data, args->subregion_names_str));
 		ret += 1;
@@ -10621,8 +10038,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 	if (args->tag_keys) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
@@ -10634,8 +10050,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
                 STRY(osc_str_append_string(data, args->tag_keys_str));
 		ret += 1;
@@ -10643,8 +10058,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 	if (args->tag_values) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
@@ -10656,8 +10070,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":" ));
                 STRY(osc_str_append_string(data, args->tag_values_str));
 		ret += 1;
@@ -10665,8 +10078,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 	if (args->tags) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
@@ -10678,8 +10090,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -10692,8 +10103,7 @@ static int filters_subregion_setter(struct filters_subregion *args, struct osc_s
 	if (args->subregion_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":[" ));
 		for (as = args->subregion_names; *as > 0; ++as) {
 			if (as != args->subregion_names)
@@ -10705,8 +10115,7 @@ static int filters_subregion_setter(struct filters_subregion *args, struct osc_s
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subregion_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":" ));
                 STRY(osc_str_append_string(data, args->subregion_names_str));
 		ret += 1;
@@ -10719,8 +10128,7 @@ static int filters_tag_setter(struct filters_tag *args, struct osc_str *data) {
 	if (args->keys) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Keys\":[" ));
 		for (as = args->keys; *as > 0; ++as) {
 			if (as != args->keys)
@@ -10732,8 +10140,7 @@ static int filters_tag_setter(struct filters_tag *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->keys_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Keys\":" ));
                 STRY(osc_str_append_string(data, args->keys_str));
 		ret += 1;
@@ -10741,8 +10148,7 @@ static int filters_tag_setter(struct filters_tag *args, struct osc_str *data) {
 	if (args->resource_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ResourceIds\":[" ));
 		for (as = args->resource_ids; *as > 0; ++as) {
 			if (as != args->resource_ids)
@@ -10754,8 +10160,7 @@ static int filters_tag_setter(struct filters_tag *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->resource_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ResourceIds\":" ));
                 STRY(osc_str_append_string(data, args->resource_ids_str));
 		ret += 1;
@@ -10763,8 +10168,7 @@ static int filters_tag_setter(struct filters_tag *args, struct osc_str *data) {
 	if (args->resource_types) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ResourceTypes\":[" ));
 		for (as = args->resource_types; *as > 0; ++as) {
 			if (as != args->resource_types)
@@ -10776,8 +10180,7 @@ static int filters_tag_setter(struct filters_tag *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->resource_types_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ResourceTypes\":" ));
                 STRY(osc_str_append_string(data, args->resource_types_str));
 		ret += 1;
@@ -10785,8 +10188,7 @@ static int filters_tag_setter(struct filters_tag *args, struct osc_str *data) {
 	if (args->values) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Values\":[" ));
 		for (as = args->values; *as > 0; ++as) {
 			if (as != args->values)
@@ -10798,8 +10200,7 @@ static int filters_tag_setter(struct filters_tag *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->values_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Values\":" ));
                 STRY(osc_str_append_string(data, args->values_str));
 		ret += 1;
@@ -10812,8 +10213,7 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 	if (args->connection_types) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ConnectionTypes\":[" ));
 		for (as = args->connection_types; *as > 0; ++as) {
 			if (as != args->connection_types)
@@ -10825,8 +10225,7 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->connection_types_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ConnectionTypes\":" ));
                 STRY(osc_str_append_string(data, args->connection_types_str));
 		ret += 1;
@@ -10834,8 +10233,7 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 	if (args->link_net_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNetIds\":[" ));
 		for (as = args->link_net_ids; *as > 0; ++as) {
 			if (as != args->link_net_ids)
@@ -10847,8 +10245,7 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_net_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNetIds\":" ));
                 STRY(osc_str_append_string(data, args->link_net_ids_str));
 		ret += 1;
@@ -10856,8 +10253,7 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 	if (args->link_states) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkStates\":[" ));
 		for (as = args->link_states; *as > 0; ++as) {
 			if (as != args->link_states)
@@ -10869,8 +10265,7 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_states_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkStates\":" ));
                 STRY(osc_str_append_string(data, args->link_states_str));
 		ret += 1;
@@ -10878,8 +10273,7 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 	if (args->states) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
 		for (as = args->states; *as > 0; ++as) {
 			if (as != args->states)
@@ -10891,8 +10285,7 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->states_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":" ));
                 STRY(osc_str_append_string(data, args->states_str));
 		ret += 1;
@@ -10900,8 +10293,7 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 	if (args->tag_keys) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
@@ -10913,8 +10305,7 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
                 STRY(osc_str_append_string(data, args->tag_keys_str));
 		ret += 1;
@@ -10922,8 +10313,7 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 	if (args->tag_values) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
@@ -10935,8 +10325,7 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":" ));
                 STRY(osc_str_append_string(data, args->tag_values_str));
 		ret += 1;
@@ -10944,8 +10333,7 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 	if (args->tags) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
@@ -10957,8 +10345,7 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -10966,8 +10353,7 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 	if (args->virtual_gateway_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VirtualGatewayIds\":[" ));
 		for (as = args->virtual_gateway_ids; *as > 0; ++as) {
 			if (as != args->virtual_gateway_ids)
@@ -10979,8 +10365,7 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->virtual_gateway_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VirtualGatewayIds\":" ));
                 STRY(osc_str_append_string(data, args->virtual_gateway_ids_str));
 		ret += 1;
@@ -10993,8 +10378,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 	if (args->tag_keys) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
@@ -11006,8 +10390,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
                 STRY(osc_str_append_string(data, args->tag_keys_str));
 		ret += 1;
@@ -11015,8 +10398,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 	if (args->tag_values) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
@@ -11028,8 +10410,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":" ));
                 STRY(osc_str_append_string(data, args->tag_values_str));
 		ret += 1;
@@ -11037,8 +10418,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 	if (args->tags) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
@@ -11050,8 +10430,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -11059,8 +10438,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 	if (args->vm_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
 		for (as = args->vm_ids; *as > 0; ++as) {
 			if (as != args->vm_ids)
@@ -11072,8 +10450,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":" ));
                 STRY(osc_str_append_string(data, args->vm_ids_str));
 		ret += 1;
@@ -11086,8 +10463,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 	if (args->descriptions) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Descriptions\":[" ));
 		for (as = args->descriptions; *as > 0; ++as) {
 			if (as != args->descriptions)
@@ -11099,8 +10475,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->descriptions_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Descriptions\":" ));
                 STRY(osc_str_append_string(data, args->descriptions_str));
 		ret += 1;
@@ -11108,8 +10483,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 	if (args->security_group_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":[" ));
 		for (as = args->security_group_ids; *as > 0; ++as) {
 			if (as != args->security_group_ids)
@@ -11121,8 +10495,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_group_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":" ));
                 STRY(osc_str_append_string(data, args->security_group_ids_str));
 		ret += 1;
@@ -11130,8 +10503,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 	if (args->subnet_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetIds\":[" ));
 		for (as = args->subnet_ids; *as > 0; ++as) {
 			if (as != args->subnet_ids)
@@ -11143,8 +10515,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subnet_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetIds\":" ));
                 STRY(osc_str_append_string(data, args->subnet_ids_str));
 		ret += 1;
@@ -11152,8 +10523,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 	if (args->tag_keys) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
@@ -11165,8 +10535,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
                 STRY(osc_str_append_string(data, args->tag_keys_str));
 		ret += 1;
@@ -11174,8 +10543,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 	if (args->tag_values) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
@@ -11187,8 +10555,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":" ));
                 STRY(osc_str_append_string(data, args->tag_values_str));
 		ret += 1;
@@ -11196,8 +10563,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 	if (args->tags) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
@@ -11209,8 +10575,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -11218,8 +10583,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 	if (args->vm_counts) {
 		int *ip;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmCounts\":[" ));
 		for (ip = args->vm_counts; *ip > 0; ++ip) {
 			if (ip != args->vm_counts)
@@ -11229,8 +10593,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_counts_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmCounts\":" ));
                 STRY(osc_str_append_string(data, args->vm_counts_str));
 		ret += 1;
@@ -11238,8 +10601,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 	if (args->vm_group_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmGroupIds\":[" ));
 		for (as = args->vm_group_ids; *as > 0; ++as) {
 			if (as != args->vm_group_ids)
@@ -11251,8 +10613,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_group_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmGroupIds\":" ));
                 STRY(osc_str_append_string(data, args->vm_group_ids_str));
 		ret += 1;
@@ -11260,8 +10621,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 	if (args->vm_group_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmGroupNames\":[" ));
 		for (as = args->vm_group_names; *as > 0; ++as) {
 			if (as != args->vm_group_names)
@@ -11273,8 +10633,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_group_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmGroupNames\":" ));
                 STRY(osc_str_append_string(data, args->vm_group_names_str));
 		ret += 1;
@@ -11282,8 +10641,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 	if (args->vm_template_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmTemplateIds\":[" ));
 		for (as = args->vm_template_ids; *as > 0; ++as) {
 			if (as != args->vm_template_ids)
@@ -11295,8 +10653,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_template_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmTemplateIds\":" ));
                 STRY(osc_str_append_string(data, args->vm_template_ids_str));
 		ret += 1;
@@ -11309,8 +10666,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 	if (args->cpu_cores) {
 		int *ip;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CpuCores\":[" ));
 		for (ip = args->cpu_cores; *ip > 0; ++ip) {
 			if (ip != args->cpu_cores)
@@ -11320,8 +10676,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->cpu_cores_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CpuCores\":" ));
                 STRY(osc_str_append_string(data, args->cpu_cores_str));
 		ret += 1;
@@ -11329,8 +10684,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 	if (args->cpu_generations) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CpuGenerations\":[" ));
 		for (as = args->cpu_generations; *as > 0; ++as) {
 			if (as != args->cpu_generations)
@@ -11342,8 +10696,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->cpu_generations_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CpuGenerations\":" ));
                 STRY(osc_str_append_string(data, args->cpu_generations_str));
 		ret += 1;
@@ -11351,8 +10704,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 	if (args->cpu_performances) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CpuPerformances\":[" ));
 		for (as = args->cpu_performances; *as > 0; ++as) {
 			if (as != args->cpu_performances)
@@ -11364,8 +10716,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->cpu_performances_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CpuPerformances\":" ));
                 STRY(osc_str_append_string(data, args->cpu_performances_str));
 		ret += 1;
@@ -11373,8 +10724,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 	if (args->descriptions) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Descriptions\":[" ));
 		for (as = args->descriptions; *as > 0; ++as) {
 			if (as != args->descriptions)
@@ -11386,8 +10736,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->descriptions_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Descriptions\":" ));
                 STRY(osc_str_append_string(data, args->descriptions_str));
 		ret += 1;
@@ -11395,8 +10744,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 	if (args->image_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ImageIds\":[" ));
 		for (as = args->image_ids; *as > 0; ++as) {
 			if (as != args->image_ids)
@@ -11408,8 +10756,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->image_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ImageIds\":" ));
                 STRY(osc_str_append_string(data, args->image_ids_str));
 		ret += 1;
@@ -11417,8 +10764,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 	if (args->keypair_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"KeypairNames\":[" ));
 		for (as = args->keypair_names; *as > 0; ++as) {
 			if (as != args->keypair_names)
@@ -11430,8 +10776,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->keypair_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"KeypairNames\":" ));
                 STRY(osc_str_append_string(data, args->keypair_names_str));
 		ret += 1;
@@ -11439,8 +10784,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 	if (args->rams) {
 		int *ip;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Rams\":[" ));
 		for (ip = args->rams; *ip > 0; ++ip) {
 			if (ip != args->rams)
@@ -11450,8 +10794,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->rams_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Rams\":" ));
                 STRY(osc_str_append_string(data, args->rams_str));
 		ret += 1;
@@ -11459,8 +10802,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 	if (args->tag_keys) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
@@ -11472,8 +10814,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
                 STRY(osc_str_append_string(data, args->tag_keys_str));
 		ret += 1;
@@ -11481,8 +10822,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 	if (args->tag_values) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
@@ -11494,8 +10834,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":" ));
                 STRY(osc_str_append_string(data, args->tag_values_str));
 		ret += 1;
@@ -11503,8 +10842,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 	if (args->tags) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
@@ -11516,8 +10854,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -11525,8 +10862,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 	if (args->vm_template_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmTemplateIds\":[" ));
 		for (as = args->vm_template_ids; *as > 0; ++as) {
 			if (as != args->vm_template_ids)
@@ -11538,8 +10874,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_template_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmTemplateIds\":" ));
                 STRY(osc_str_append_string(data, args->vm_template_ids_str));
 		ret += 1;
@@ -11547,8 +10882,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 	if (args->vm_template_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmTemplateNames\":[" ));
 		for (as = args->vm_template_names; *as > 0; ++as) {
 			if (as != args->vm_template_names)
@@ -11560,8 +10894,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_template_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmTemplateNames\":" ));
                 STRY(osc_str_append_string(data, args->vm_template_names_str));
 		ret += 1;
@@ -11572,8 +10905,7 @@ static int filters_vm_type_setter(struct filters_vm_type *args, struct osc_str *
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_bsu_optimized) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BsuOptimized\":" ));
                 STRY(osc_str_append_bool(data, args->bsu_optimized));
 	   	ret += 1;
@@ -11581,8 +10913,7 @@ static int filters_vm_type_setter(struct filters_vm_type *args, struct osc_str *
 	if (args->memory_sizes) {
 		double *ip;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MemorySizes\":[" ));
 		for (ip = args->memory_sizes; *ip > 0; ++ip) {
 			if (ip != args->memory_sizes)
@@ -11592,8 +10923,7 @@ static int filters_vm_type_setter(struct filters_vm_type *args, struct osc_str *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->memory_sizes_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MemorySizes\":" ));
                 STRY(osc_str_append_string(data, args->memory_sizes_str));
 		ret += 1;
@@ -11601,8 +10931,7 @@ static int filters_vm_type_setter(struct filters_vm_type *args, struct osc_str *
 	if (args->vcore_counts) {
 		int *ip;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VcoreCounts\":[" ));
 		for (ip = args->vcore_counts; *ip > 0; ++ip) {
 			if (ip != args->vcore_counts)
@@ -11612,8 +10941,7 @@ static int filters_vm_type_setter(struct filters_vm_type *args, struct osc_str *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vcore_counts_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VcoreCounts\":" ));
                 STRY(osc_str_append_string(data, args->vcore_counts_str));
 		ret += 1;
@@ -11621,8 +10949,7 @@ static int filters_vm_type_setter(struct filters_vm_type *args, struct osc_str *
 	if (args->vm_type_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmTypeNames\":[" ));
 		for (as = args->vm_type_names; *as > 0; ++as) {
 			if (as != args->vm_type_names)
@@ -11634,8 +10961,7 @@ static int filters_vm_type_setter(struct filters_vm_type *args, struct osc_str *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_type_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmTypeNames\":" ));
                 STRY(osc_str_append_string(data, args->vm_type_names_str));
 		ret += 1;
@@ -11643,8 +10969,7 @@ static int filters_vm_type_setter(struct filters_vm_type *args, struct osc_str *
 	if (args->volume_counts) {
 		int *ip;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeCounts\":[" ));
 		for (ip = args->volume_counts; *ip > 0; ++ip) {
 			if (ip != args->volume_counts)
@@ -11654,8 +10979,7 @@ static int filters_vm_type_setter(struct filters_vm_type *args, struct osc_str *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->volume_counts_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeCounts\":" ));
                 STRY(osc_str_append_string(data, args->volume_counts_str));
 		ret += 1;
@@ -11663,8 +10987,7 @@ static int filters_vm_type_setter(struct filters_vm_type *args, struct osc_str *
 	if (args->volume_sizes) {
 		int *ip;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeSizes\":[" ));
 		for (ip = args->volume_sizes; *ip > 0; ++ip) {
 			if (ip != args->volume_sizes)
@@ -11674,8 +10997,7 @@ static int filters_vm_type_setter(struct filters_vm_type *args, struct osc_str *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->volume_sizes_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeSizes\":" ));
                 STRY(osc_str_append_string(data, args->volume_sizes_str));
 		ret += 1;
@@ -11688,8 +11010,7 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 	if (args->maintenance_event_codes) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MaintenanceEventCodes\":[" ));
 		for (as = args->maintenance_event_codes; *as > 0; ++as) {
 			if (as != args->maintenance_event_codes)
@@ -11701,8 +11022,7 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->maintenance_event_codes_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MaintenanceEventCodes\":" ));
                 STRY(osc_str_append_string(data, args->maintenance_event_codes_str));
 		ret += 1;
@@ -11710,8 +11030,7 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 	if (args->maintenance_event_descriptions) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MaintenanceEventDescriptions\":[" ));
 		for (as = args->maintenance_event_descriptions; *as > 0; ++as) {
 			if (as != args->maintenance_event_descriptions)
@@ -11723,8 +11042,7 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->maintenance_event_descriptions_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MaintenanceEventDescriptions\":" ));
                 STRY(osc_str_append_string(data, args->maintenance_event_descriptions_str));
 		ret += 1;
@@ -11732,8 +11050,7 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 	if (args->maintenance_events_not_after) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MaintenanceEventsNotAfter\":[" ));
 		for (as = args->maintenance_events_not_after; *as > 0; ++as) {
 			if (as != args->maintenance_events_not_after)
@@ -11745,8 +11062,7 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->maintenance_events_not_after_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MaintenanceEventsNotAfter\":" ));
                 STRY(osc_str_append_string(data, args->maintenance_events_not_after_str));
 		ret += 1;
@@ -11754,8 +11070,7 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 	if (args->maintenance_events_not_before) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MaintenanceEventsNotBefore\":[" ));
 		for (as = args->maintenance_events_not_before; *as > 0; ++as) {
 			if (as != args->maintenance_events_not_before)
@@ -11767,8 +11082,7 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->maintenance_events_not_before_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MaintenanceEventsNotBefore\":" ));
                 STRY(osc_str_append_string(data, args->maintenance_events_not_before_str));
 		ret += 1;
@@ -11776,8 +11090,7 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 	if (args->subregion_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":[" ));
 		for (as = args->subregion_names; *as > 0; ++as) {
 			if (as != args->subregion_names)
@@ -11789,8 +11102,7 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subregion_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":" ));
                 STRY(osc_str_append_string(data, args->subregion_names_str));
 		ret += 1;
@@ -11798,8 +11110,7 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 	if (args->vm_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
 		for (as = args->vm_ids; *as > 0; ++as) {
 			if (as != args->vm_ids)
@@ -11811,8 +11122,7 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":" ));
                 STRY(osc_str_append_string(data, args->vm_ids_str));
 		ret += 1;
@@ -11820,8 +11130,7 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 	if (args->vm_states) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmStates\":[" ));
 		for (as = args->vm_states; *as > 0; ++as) {
 			if (as != args->vm_states)
@@ -11833,8 +11142,7 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_states_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmStates\":" ));
                 STRY(osc_str_append_string(data, args->vm_states_str));
 		ret += 1;
@@ -11847,8 +11155,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 	if (args->creation_dates) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CreationDates\":[" ));
 		for (as = args->creation_dates; *as > 0; ++as) {
 			if (as != args->creation_dates)
@@ -11860,15 +11167,13 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->creation_dates_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CreationDates\":" ));
                 STRY(osc_str_append_string(data, args->creation_dates_str));
 		ret += 1;
 	}
 	if (args->is_set_link_volume_delete_on_vm_deletion) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkVolumeDeleteOnVmDeletion\":" ));
                 STRY(osc_str_append_bool(data, args->link_volume_delete_on_vm_deletion));
 	   	ret += 1;
@@ -11876,8 +11181,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 	if (args->link_volume_device_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkVolumeDeviceNames\":[" ));
 		for (as = args->link_volume_device_names; *as > 0; ++as) {
 			if (as != args->link_volume_device_names)
@@ -11889,8 +11193,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_volume_device_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkVolumeDeviceNames\":" ));
                 STRY(osc_str_append_string(data, args->link_volume_device_names_str));
 		ret += 1;
@@ -11898,8 +11201,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 	if (args->link_volume_link_dates) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkVolumeLinkDates\":[" ));
 		for (as = args->link_volume_link_dates; *as > 0; ++as) {
 			if (as != args->link_volume_link_dates)
@@ -11911,8 +11213,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_volume_link_dates_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkVolumeLinkDates\":" ));
                 STRY(osc_str_append_string(data, args->link_volume_link_dates_str));
 		ret += 1;
@@ -11920,8 +11221,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 	if (args->link_volume_link_states) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkVolumeLinkStates\":[" ));
 		for (as = args->link_volume_link_states; *as > 0; ++as) {
 			if (as != args->link_volume_link_states)
@@ -11933,8 +11233,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_volume_link_states_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkVolumeLinkStates\":" ));
                 STRY(osc_str_append_string(data, args->link_volume_link_states_str));
 		ret += 1;
@@ -11942,8 +11241,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 	if (args->link_volume_vm_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkVolumeVmIds\":[" ));
 		for (as = args->link_volume_vm_ids; *as > 0; ++as) {
 			if (as != args->link_volume_vm_ids)
@@ -11955,8 +11253,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_volume_vm_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkVolumeVmIds\":" ));
                 STRY(osc_str_append_string(data, args->link_volume_vm_ids_str));
 		ret += 1;
@@ -11964,8 +11261,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 	if (args->snapshot_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SnapshotIds\":[" ));
 		for (as = args->snapshot_ids; *as > 0; ++as) {
 			if (as != args->snapshot_ids)
@@ -11977,8 +11273,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->snapshot_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SnapshotIds\":" ));
                 STRY(osc_str_append_string(data, args->snapshot_ids_str));
 		ret += 1;
@@ -11986,8 +11281,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 	if (args->subregion_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":[" ));
 		for (as = args->subregion_names; *as > 0; ++as) {
 			if (as != args->subregion_names)
@@ -11999,8 +11293,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subregion_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":" ));
                 STRY(osc_str_append_string(data, args->subregion_names_str));
 		ret += 1;
@@ -12008,8 +11301,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 	if (args->tag_keys) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
@@ -12021,8 +11313,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
                 STRY(osc_str_append_string(data, args->tag_keys_str));
 		ret += 1;
@@ -12030,8 +11321,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 	if (args->tag_values) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
@@ -12043,8 +11333,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":" ));
                 STRY(osc_str_append_string(data, args->tag_values_str));
 		ret += 1;
@@ -12052,8 +11341,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 	if (args->tags) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
@@ -12065,8 +11353,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -12074,8 +11361,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 	if (args->volume_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeIds\":[" ));
 		for (as = args->volume_ids; *as > 0; ++as) {
 			if (as != args->volume_ids)
@@ -12087,8 +11373,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->volume_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeIds\":" ));
                 STRY(osc_str_append_string(data, args->volume_ids_str));
 		ret += 1;
@@ -12096,8 +11381,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 	if (args->volume_sizes) {
 		int *ip;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeSizes\":[" ));
 		for (ip = args->volume_sizes; *ip > 0; ++ip) {
 			if (ip != args->volume_sizes)
@@ -12107,8 +11391,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->volume_sizes_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeSizes\":" ));
                 STRY(osc_str_append_string(data, args->volume_sizes_str));
 		ret += 1;
@@ -12116,8 +11399,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 	if (args->volume_states) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeStates\":[" ));
 		for (as = args->volume_states; *as > 0; ++as) {
 			if (as != args->volume_states)
@@ -12129,8 +11411,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->volume_states_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeStates\":" ));
                 STRY(osc_str_append_string(data, args->volume_states_str));
 		ret += 1;
@@ -12138,8 +11419,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 	if (args->volume_types) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeTypes\":[" ));
 		for (as = args->volume_types; *as > 0; ++as) {
 			if (as != args->volume_types)
@@ -12151,8 +11431,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->volume_types_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeTypes\":" ));
                 STRY(osc_str_append_string(data, args->volume_types_str));
 		ret += 1;
@@ -12165,8 +11444,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 	if (args->bgp_asns) {
 		int *ip;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BgpAsns\":[" ));
 		for (ip = args->bgp_asns; *ip > 0; ++ip) {
 			if (ip != args->bgp_asns)
@@ -12176,8 +11454,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->bgp_asns_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BgpAsns\":" ));
                 STRY(osc_str_append_string(data, args->bgp_asns_str));
 		ret += 1;
@@ -12185,8 +11462,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 	if (args->client_gateway_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ClientGatewayIds\":[" ));
 		for (as = args->client_gateway_ids; *as > 0; ++as) {
 			if (as != args->client_gateway_ids)
@@ -12198,8 +11474,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->client_gateway_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ClientGatewayIds\":" ));
                 STRY(osc_str_append_string(data, args->client_gateway_ids_str));
 		ret += 1;
@@ -12207,8 +11482,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 	if (args->connection_types) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ConnectionTypes\":[" ));
 		for (as = args->connection_types; *as > 0; ++as) {
 			if (as != args->connection_types)
@@ -12220,8 +11494,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->connection_types_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ConnectionTypes\":" ));
                 STRY(osc_str_append_string(data, args->connection_types_str));
 		ret += 1;
@@ -12229,8 +11502,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 	if (args->route_destination_ip_ranges) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteDestinationIpRanges\":[" ));
 		for (as = args->route_destination_ip_ranges; *as > 0; ++as) {
 			if (as != args->route_destination_ip_ranges)
@@ -12242,8 +11514,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->route_destination_ip_ranges_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteDestinationIpRanges\":" ));
                 STRY(osc_str_append_string(data, args->route_destination_ip_ranges_str));
 		ret += 1;
@@ -12251,8 +11522,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 	if (args->states) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
 		for (as = args->states; *as > 0; ++as) {
 			if (as != args->states)
@@ -12264,15 +11534,13 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->states_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":" ));
                 STRY(osc_str_append_string(data, args->states_str));
 		ret += 1;
 	}
 	if (args->is_set_static_routes_only) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"StaticRoutesOnly\":" ));
                 STRY(osc_str_append_bool(data, args->static_routes_only));
 	   	ret += 1;
@@ -12280,8 +11548,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 	if (args->tag_keys) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
@@ -12293,8 +11560,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
                 STRY(osc_str_append_string(data, args->tag_keys_str));
 		ret += 1;
@@ -12302,8 +11568,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 	if (args->tag_values) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
@@ -12315,8 +11580,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":" ));
                 STRY(osc_str_append_string(data, args->tag_values_str));
 		ret += 1;
@@ -12324,8 +11588,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 	if (args->tags) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
@@ -12337,8 +11600,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -12346,8 +11608,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 	if (args->virtual_gateway_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VirtualGatewayIds\":[" ));
 		for (as = args->virtual_gateway_ids; *as > 0; ++as) {
 			if (as != args->virtual_gateway_ids)
@@ -12359,8 +11620,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->virtual_gateway_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VirtualGatewayIds\":" ));
                 STRY(osc_str_append_string(data, args->virtual_gateway_ids_str));
 		ret += 1;
@@ -12368,8 +11628,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 	if (args->vpn_connection_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VpnConnectionIds\":[" ));
 		for (as = args->vpn_connection_ids; *as > 0; ++as) {
 			if (as != args->vpn_connection_ids)
@@ -12381,8 +11640,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vpn_connection_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VpnConnectionIds\":" ));
                 STRY(osc_str_append_string(data, args->vpn_connection_ids_str));
 		ret += 1;
@@ -12393,55 +11651,48 @@ static int flexible_gpu_setter(struct flexible_gpu *args, struct osc_str *data) 
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_delete_on_vm_deletion) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeleteOnVmDeletion\":" ));
                 STRY(osc_str_append_bool(data, args->delete_on_vm_deletion));
 	   	ret += 1;
 	}
 	if (args->flexible_gpu_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"FlexibleGpuId\":\"" ));
                 STRY(osc_str_append_string(data, args->flexible_gpu_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->generation) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Generation\":\"" ));
                 STRY(osc_str_append_string(data, args->generation));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->model_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ModelName\":\"" ));
                 STRY(osc_str_append_string(data, args->model_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->subregion_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionName\":\"" ));
                 STRY(osc_str_append_string(data, args->subregion_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -12455,8 +11706,7 @@ static int flexible_gpu_catalog_setter(struct flexible_gpu_catalog *args, struct
 	if (args->generations) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Generations\":[" ));
 		for (as = args->generations; *as > 0; ++as) {
 			if (as != args->generations)
@@ -12468,37 +11718,32 @@ static int flexible_gpu_catalog_setter(struct flexible_gpu_catalog *args, struct
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->generations_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Generations\":" ));
                 STRY(osc_str_append_string(data, args->generations_str));
 		ret += 1;
 	}
 	if (args->is_set_max_cpu || args->max_cpu) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MaxCpu\":" ));
                 STRY(osc_str_append_int(data, args->max_cpu));
 	   	ret += 1;
 	}
 	if (args->is_set_max_ram || args->max_ram) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MaxRam\":" ));
                 STRY(osc_str_append_int(data, args->max_ram));
 	   	ret += 1;
 	}
 	if (args->model_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ModelName\":\"" ));
                 STRY(osc_str_append_string(data, args->model_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_vram || args->vram) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VRam\":" ));
                 STRY(osc_str_append_int(data, args->vram));
 	   	ret += 1;
@@ -12509,52 +11754,45 @@ static int health_check_setter(struct health_check *args, struct osc_str *data) 
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_check_interval || args->check_interval) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CheckInterval\":" ));
                 STRY(osc_str_append_int(data, args->check_interval));
 	   	ret += 1;
 	}
 	if (args->is_set_healthy_threshold || args->healthy_threshold) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"HealthyThreshold\":" ));
                 STRY(osc_str_append_int(data, args->healthy_threshold));
 	   	ret += 1;
 	}
 	if (args->path) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Path\":\"" ));
                 STRY(osc_str_append_string(data, args->path));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_port || args->port) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Port\":" ));
                 STRY(osc_str_append_int(data, args->port));
 	   	ret += 1;
 	}
 	if (args->protocol) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Protocol\":\"" ));
                 STRY(osc_str_append_string(data, args->protocol));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_timeout || args->timeout) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Timeout\":" ));
                 STRY(osc_str_append_int(data, args->timeout));
 	   	ret += 1;
 	}
 	if (args->is_set_unhealthy_threshold || args->unhealthy_threshold) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"UnhealthyThreshold\":" ));
                 STRY(osc_str_append_int(data, args->unhealthy_threshold));
 	   	ret += 1;
@@ -12565,32 +11803,28 @@ static int image_setter(struct image *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->account_alias) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountAlias\":\"" ));
                 STRY(osc_str_append_string(data, args->account_alias));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->account_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
                 STRY(osc_str_append_string(data, args->account_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->architecture) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Architecture\":\"" ));
                 STRY(osc_str_append_string(data, args->architecture));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->block_device_mappings) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappings\":[" ));
 		for (int i = 0; i < args->nb_block_device_mappings; ++i) {
 	       	    struct block_device_mapping_image *p = &args->block_device_mappings[i];
@@ -12604,69 +11838,60 @@ static int image_setter(struct image *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->block_device_mappings_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappings\":" ));
                 STRY(osc_str_append_string(data, args->block_device_mappings_str));
 		ret += 1;
 	}
 	if (args->creation_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CreationDate\":\"" ));
                 STRY(osc_str_append_string(data, args->creation_date));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->file_location) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"FileLocation\":\"" ));
                 STRY(osc_str_append_string(data, args->file_location));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->image_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ImageId\":\"" ));
                 STRY(osc_str_append_string(data, args->image_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->image_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ImageName\":\"" ));
                 STRY(osc_str_append_string(data, args->image_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->image_type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ImageType\":\"" ));
                 STRY(osc_str_append_string(data, args->image_type));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->permissions_to_launch_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PermissionsToLaunch\":" ));
                 STRY(osc_str_append_string(data, args->permissions_to_launch_str));
 		ret += 1;
 	} else if (args->is_set_permissions_to_launch) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"PermissionsToLaunch\": { " ));
 	       STRY(permissions_on_resource_setter(&args->permissions_to_launch, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -12675,8 +11900,7 @@ static int image_setter(struct image *args, struct osc_str *data) {
 	if (args->product_codes) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ProductCodes\":[" ));
 		for (as = args->product_codes; *as > 0; ++as) {
 			if (as != args->product_codes)
@@ -12688,53 +11912,46 @@ static int image_setter(struct image *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->product_codes_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ProductCodes\":" ));
                 STRY(osc_str_append_string(data, args->product_codes_str));
 		ret += 1;
 	}
 	if (args->root_device_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RootDeviceName\":\"" ));
                 STRY(osc_str_append_string(data, args->root_device_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->root_device_type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RootDeviceType\":\"" ));
                 STRY(osc_str_append_string(data, args->root_device_type));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state_comment_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"StateComment\":" ));
                 STRY(osc_str_append_string(data, args->state_comment_str));
 		ret += 1;
 	} else if (args->is_set_state_comment) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"StateComment\": { " ));
 	       STRY(state_comment_setter(&args->state_comment, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -12748,8 +11965,7 @@ static int image_setter(struct image *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -12760,53 +11976,46 @@ static int image_export_task_setter(struct image_export_task *args, struct osc_s
        int count_args = 0;
        int ret = 0;
 	if (args->comment) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Comment\":\"" ));
                 STRY(osc_str_append_string(data, args->comment));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->image_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ImageId\":\"" ));
                 STRY(osc_str_append_string(data, args->image_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->osu_export_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OsuExport\":" ));
                 STRY(osc_str_append_string(data, args->osu_export_str));
 		ret += 1;
 	} else if (args->is_set_osu_export) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"OsuExport\": { " ));
 	       STRY(osu_export_image_export_task_setter(&args->osu_export, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->is_set_progress || args->progress) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Progress\":" ));
                 STRY(osc_str_append_int(data, args->progress));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -12820,15 +12029,13 @@ static int image_export_task_setter(struct image_export_task *args, struct osc_s
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
 	}
 	if (args->task_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TaskId\":\"" ));
                 STRY(osc_str_append_string(data, args->task_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -12840,32 +12047,28 @@ static int internet_service_setter(struct internet_service *args, struct osc_str
        int count_args = 0;
        int ret = 0;
 	if (args->internet_service_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InternetServiceId\":\"" ));
                 STRY(osc_str_append_string(data, args->internet_service_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -12879,8 +12082,7 @@ static int internet_service_setter(struct internet_service *args, struct osc_str
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -12891,16 +12093,14 @@ static int keypair_setter(struct keypair *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->keypair_fingerprint) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"KeypairFingerprint\":\"" ));
                 STRY(osc_str_append_string(data, args->keypair_fingerprint));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->keypair_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"KeypairName\":\"" ));
                 STRY(osc_str_append_string(data, args->keypair_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -12912,24 +12112,21 @@ static int keypair_created_setter(struct keypair_created *args, struct osc_str *
        int count_args = 0;
        int ret = 0;
 	if (args->keypair_fingerprint) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"KeypairFingerprint\":\"" ));
                 STRY(osc_str_append_string(data, args->keypair_fingerprint));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->keypair_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"KeypairName\":\"" ));
                 STRY(osc_str_append_string(data, args->keypair_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->private_key) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateKey\":\"" ));
                 STRY(osc_str_append_string(data, args->private_key));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -12941,46 +12138,40 @@ static int link_nic_setter(struct link_nic *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_delete_on_vm_deletion) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeleteOnVmDeletion\":" ));
                 STRY(osc_str_append_bool(data, args->delete_on_vm_deletion));
 	   	ret += 1;
 	}
 	if (args->is_set_device_number || args->device_number) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeviceNumber\":" ));
                 STRY(osc_str_append_int(data, args->device_number));
 	   	ret += 1;
 	}
 	if (args->link_nic_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNicId\":\"" ));
                 STRY(osc_str_append_string(data, args->link_nic_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_account_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmAccountId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_account_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -12992,30 +12183,26 @@ static int link_nic_light_setter(struct link_nic_light *args, struct osc_str *da
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_delete_on_vm_deletion) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeleteOnVmDeletion\":" ));
                 STRY(osc_str_append_bool(data, args->delete_on_vm_deletion));
 	   	ret += 1;
 	}
 	if (args->is_set_device_number || args->device_number) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeviceNumber\":" ));
                 STRY(osc_str_append_int(data, args->device_number));
 	   	ret += 1;
 	}
 	if (args->link_nic_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNicId\":\"" ));
                 STRY(osc_str_append_string(data, args->link_nic_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -13027,15 +12214,13 @@ static int link_nic_to_update_setter(struct link_nic_to_update *args, struct osc
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_delete_on_vm_deletion) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeleteOnVmDeletion\":" ));
                 STRY(osc_str_append_bool(data, args->delete_on_vm_deletion));
 	   	ret += 1;
 	}
 	if (args->link_nic_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNicId\":\"" ));
                 STRY(osc_str_append_string(data, args->link_nic_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -13047,40 +12232,35 @@ static int link_public_ip_setter(struct link_public_ip *args, struct osc_str *da
        int count_args = 0;
        int ret = 0;
 	if (args->link_public_ip_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkPublicIpId\":\"" ));
                 STRY(osc_str_append_string(data, args->link_public_ip_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->public_dns_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicDnsName\":\"" ));
                 STRY(osc_str_append_string(data, args->public_dns_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->public_ip) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
                 STRY(osc_str_append_string(data, args->public_ip));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->public_ip_account_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIpAccountId\":\"" ));
                 STRY(osc_str_append_string(data, args->public_ip_account_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->public_ip_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIpId\":\"" ));
                 STRY(osc_str_append_string(data, args->public_ip_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -13092,24 +12272,21 @@ static int link_public_ip_light_for_vm_setter(struct link_public_ip_light_for_vm
        int count_args = 0;
        int ret = 0;
 	if (args->public_dns_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicDnsName\":\"" ));
                 STRY(osc_str_append_string(data, args->public_dns_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->public_ip) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
                 STRY(osc_str_append_string(data, args->public_ip));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->public_ip_account_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIpAccountId\":\"" ));
                 STRY(osc_str_append_string(data, args->public_ip_account_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -13121,31 +12298,27 @@ static int link_route_table_setter(struct link_route_table *args, struct osc_str
        int count_args = 0;
        int ret = 0;
 	if (args->link_route_table_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkRouteTableId\":\"" ));
                 STRY(osc_str_append_string(data, args->link_route_table_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_main) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Main\":" ));
                 STRY(osc_str_append_bool(data, args->main));
 	   	ret += 1;
 	}
 	if (args->route_table_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteTableId\":\"" ));
                 STRY(osc_str_append_string(data, args->route_table_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->subnet_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
                 STRY(osc_str_append_string(data, args->subnet_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -13157,39 +12330,34 @@ static int linked_volume_setter(struct linked_volume *args, struct osc_str *data
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_delete_on_vm_deletion) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeleteOnVmDeletion\":" ));
                 STRY(osc_str_append_bool(data, args->delete_on_vm_deletion));
 	   	ret += 1;
 	}
 	if (args->device_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeviceName\":\"" ));
                 STRY(osc_str_append_string(data, args->device_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->volume_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeId\":\"" ));
                 STRY(osc_str_append_string(data, args->volume_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -13201,30 +12369,26 @@ static int listener_setter(struct listener *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_backend_port || args->backend_port) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendPort\":" ));
                 STRY(osc_str_append_int(data, args->backend_port));
 	   	ret += 1;
 	}
 	if (args->backend_protocol) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendProtocol\":\"" ));
                 STRY(osc_str_append_string(data, args->backend_protocol));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_load_balancer_port || args->load_balancer_port) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerPort\":" ));
                 STRY(osc_str_append_int(data, args->load_balancer_port));
 	   	ret += 1;
 	}
 	if (args->load_balancer_protocol) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerProtocol\":\"" ));
                 STRY(osc_str_append_string(data, args->load_balancer_protocol));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -13233,8 +12397,7 @@ static int listener_setter(struct listener *args, struct osc_str *data) {
 	if (args->policy_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PolicyNames\":[" ));
 		for (as = args->policy_names; *as > 0; ++as) {
 			if (as != args->policy_names)
@@ -13246,15 +12409,13 @@ static int listener_setter(struct listener *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->policy_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PolicyNames\":" ));
                 STRY(osc_str_append_string(data, args->policy_names_str));
 		ret += 1;
 	}
 	if (args->server_certificate_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ServerCertificateId\":\"" ));
                 STRY(osc_str_append_string(data, args->server_certificate_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -13266,38 +12427,33 @@ static int listener_for_creation_setter(struct listener_for_creation *args, stru
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_backend_port || args->backend_port) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendPort\":" ));
                 STRY(osc_str_append_int(data, args->backend_port));
 	   	ret += 1;
 	}
 	if (args->backend_protocol) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendProtocol\":\"" ));
                 STRY(osc_str_append_string(data, args->backend_protocol));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_load_balancer_port || args->load_balancer_port) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerPort\":" ));
                 STRY(osc_str_append_int(data, args->load_balancer_port));
 	   	ret += 1;
 	}
 	if (args->load_balancer_protocol) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerProtocol\":\"" ));
                 STRY(osc_str_append_string(data, args->load_balancer_protocol));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->server_certificate_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ServerCertificateId\":\"" ));
                 STRY(osc_str_append_string(data, args->server_certificate_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -13309,54 +12465,47 @@ static int listener_rule_setter(struct listener_rule *args, struct osc_str *data
        int count_args = 0;
        int ret = 0;
 	if (args->action) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Action\":\"" ));
                 STRY(osc_str_append_string(data, args->action));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->host_name_pattern) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"HostNamePattern\":\"" ));
                 STRY(osc_str_append_string(data, args->host_name_pattern));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_listener_id || args->listener_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ListenerId\":" ));
                 STRY(osc_str_append_int(data, args->listener_id));
 	   	ret += 1;
 	}
 	if (args->is_set_listener_rule_id || args->listener_rule_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ListenerRuleId\":" ));
                 STRY(osc_str_append_int(data, args->listener_rule_id));
 	   	ret += 1;
 	}
 	if (args->listener_rule_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ListenerRuleName\":\"" ));
                 STRY(osc_str_append_string(data, args->listener_rule_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->path_pattern) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PathPattern\":\"" ));
                 STRY(osc_str_append_string(data, args->path_pattern));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_priority || args->priority) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Priority\":" ));
                 STRY(osc_str_append_int(data, args->priority));
 	   	ret += 1;
@@ -13364,8 +12513,7 @@ static int listener_rule_setter(struct listener_rule *args, struct osc_str *data
 	if (args->vm_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
 		for (as = args->vm_ids; *as > 0; ++as) {
 			if (as != args->vm_ids)
@@ -13377,8 +12525,7 @@ static int listener_rule_setter(struct listener_rule *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":" ));
                 STRY(osc_str_append_string(data, args->vm_ids_str));
 		ret += 1;
@@ -13389,40 +12536,35 @@ static int listener_rule_for_creation_setter(struct listener_rule_for_creation *
        int count_args = 0;
        int ret = 0;
 	if (args->action) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Action\":\"" ));
                 STRY(osc_str_append_string(data, args->action));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->host_name_pattern) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"HostNamePattern\":\"" ));
                 STRY(osc_str_append_string(data, args->host_name_pattern));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->listener_rule_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ListenerRuleName\":\"" ));
                 STRY(osc_str_append_string(data, args->listener_rule_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->path_pattern) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PathPattern\":\"" ));
                 STRY(osc_str_append_string(data, args->path_pattern));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_priority || args->priority) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Priority\":" ));
                 STRY(osc_str_append_int(data, args->priority));
 	   	ret += 1;
@@ -13433,22 +12575,19 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
        int count_args = 0;
        int ret = 0;
 	if (args->access_log_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccessLog\":" ));
                 STRY(osc_str_append_string(data, args->access_log_str));
 		ret += 1;
 	} else if (args->is_set_access_log) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"AccessLog\": { " ));
 	       STRY(access_log_setter(&args->access_log, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
         if (args->application_sticky_cookie_policies) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ApplicationStickyCookiePolicies\":[" ));
 		for (int i = 0; i < args->nb_application_sticky_cookie_policies; ++i) {
 	       	    struct application_sticky_cookie_policy *p = &args->application_sticky_cookie_policies[i];
@@ -13462,8 +12601,7 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 		ret += 1;
 	} else
 	if (args->application_sticky_cookie_policies_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ApplicationStickyCookiePolicies\":" ));
                 STRY(osc_str_append_string(data, args->application_sticky_cookie_policies_str));
 		ret += 1;
@@ -13471,8 +12609,7 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 	if (args->backend_ips) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendIps\":[" ));
 		for (as = args->backend_ips; *as > 0; ++as) {
 			if (as != args->backend_ips)
@@ -13484,8 +12621,7 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->backend_ips_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendIps\":" ));
                 STRY(osc_str_append_string(data, args->backend_ips_str));
 		ret += 1;
@@ -13493,8 +12629,7 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 	if (args->backend_vm_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendVmIds\":[" ));
 		for (as = args->backend_vm_ids; *as > 0; ++as) {
 			if (as != args->backend_vm_ids)
@@ -13506,37 +12641,32 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->backend_vm_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendVmIds\":" ));
                 STRY(osc_str_append_string(data, args->backend_vm_ids_str));
 		ret += 1;
 	}
 	if (args->dns_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DnsName\":\"" ));
                 STRY(osc_str_append_string(data, args->dns_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->health_check_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"HealthCheck\":" ));
                 STRY(osc_str_append_string(data, args->health_check_str));
 		ret += 1;
 	} else if (args->is_set_health_check) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"HealthCheck\": { " ));
 	       STRY(health_check_setter(&args->health_check, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
         if (args->listeners) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Listeners\":[" ));
 		for (int i = 0; i < args->nb_listeners; ++i) {
 	       	    struct listener *p = &args->listeners[i];
@@ -13550,23 +12680,20 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 		ret += 1;
 	} else
 	if (args->listeners_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Listeners\":" ));
                 STRY(osc_str_append_string(data, args->listeners_str));
 		ret += 1;
 	}
 	if (args->load_balancer_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
                 STRY(osc_str_append_string(data, args->load_balancer_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->load_balancer_sticky_cookie_policies) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerStickyCookiePolicies\":[" ));
 		for (int i = 0; i < args->nb_load_balancer_sticky_cookie_policies; ++i) {
 	       	    struct load_balancer_sticky_cookie_policy *p = &args->load_balancer_sticky_cookie_policies[i];
@@ -13580,39 +12707,34 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 		ret += 1;
 	} else
 	if (args->load_balancer_sticky_cookie_policies_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerStickyCookiePolicies\":" ));
                 STRY(osc_str_append_string(data, args->load_balancer_sticky_cookie_policies_str));
 		ret += 1;
 	}
 	if (args->load_balancer_type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerType\":\"" ));
                 STRY(osc_str_append_string(data, args->load_balancer_type));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->public_ip) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
                 STRY(osc_str_append_string(data, args->public_ip));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_secured_cookies) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecuredCookies\":" ));
                 STRY(osc_str_append_bool(data, args->secured_cookies));
 	   	ret += 1;
@@ -13620,8 +12742,7 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 	if (args->security_groups) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroups\":[" ));
 		for (as = args->security_groups; *as > 0; ++as) {
 			if (as != args->security_groups)
@@ -13633,21 +12754,18 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_groups_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroups\":" ));
                 STRY(osc_str_append_string(data, args->security_groups_str));
 		ret += 1;
 	}
 	if (args->source_security_group_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SourceSecurityGroup\":" ));
                 STRY(osc_str_append_string(data, args->source_security_group_str));
 		ret += 1;
 	} else if (args->is_set_source_security_group) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"SourceSecurityGroup\": { " ));
 	       STRY(source_security_group_setter(&args->source_security_group, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -13656,8 +12774,7 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 	if (args->subnets) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Subnets\":[" ));
 		for (as = args->subnets; *as > 0; ++as) {
 			if (as != args->subnets)
@@ -13669,8 +12786,7 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subnets_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Subnets\":" ));
                 STRY(osc_str_append_string(data, args->subnets_str));
 		ret += 1;
@@ -13678,8 +12794,7 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 	if (args->subregion_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":[" ));
 		for (as = args->subregion_names; *as > 0; ++as) {
 			if (as != args->subregion_names)
@@ -13691,15 +12806,13 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subregion_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":" ));
                 STRY(osc_str_append_string(data, args->subregion_names_str));
 		ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -13713,8 +12826,7 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -13725,16 +12837,14 @@ static int load_balancer_light_setter(struct load_balancer_light *args, struct o
        int count_args = 0;
        int ret = 0;
 	if (args->load_balancer_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
                 STRY(osc_str_append_string(data, args->load_balancer_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_load_balancer_port || args->load_balancer_port) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerPort\":" ));
                 STRY(osc_str_append_int(data, args->load_balancer_port));
 	   	ret += 1;
@@ -13745,15 +12855,13 @@ static int load_balancer_sticky_cookie_policy_setter(struct load_balancer_sticky
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_cookie_expiration_period || args->cookie_expiration_period) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CookieExpirationPeriod\":" ));
                 STRY(osc_str_append_int(data, args->cookie_expiration_period));
 	   	ret += 1;
 	}
 	if (args->policy_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PolicyName\":\"" ));
                 STRY(osc_str_append_string(data, args->policy_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -13765,24 +12873,21 @@ static int load_balancer_tag_setter(struct load_balancer_tag *args, struct osc_s
        int count_args = 0;
        int ret = 0;
 	if (args->key) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Key\":\"" ));
                 STRY(osc_str_append_string(data, args->key));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->load_balancer_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
                 STRY(osc_str_append_string(data, args->load_balancer_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->value) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Value\":\"" ));
                 STRY(osc_str_append_string(data, args->value));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -13794,16 +12899,14 @@ static int location_setter(struct location *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->code) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Code\":\"" ));
                 STRY(osc_str_append_string(data, args->code));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Name\":\"" ));
                 STRY(osc_str_append_string(data, args->name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -13815,124 +12918,108 @@ static int log_setter(struct log *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->account_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
                 STRY(osc_str_append_string(data, args->account_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_call_duration || args->call_duration) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CallDuration\":" ));
                 STRY(osc_str_append_int(data, args->call_duration));
 	   	ret += 1;
 	}
 	if (args->query_access_key) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryAccessKey\":\"" ));
                 STRY(osc_str_append_string(data, args->query_access_key));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->query_api_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryApiName\":\"" ));
                 STRY(osc_str_append_string(data, args->query_api_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->query_api_version) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryApiVersion\":\"" ));
                 STRY(osc_str_append_string(data, args->query_api_version));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->query_call_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryCallName\":\"" ));
                 STRY(osc_str_append_string(data, args->query_call_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->query_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryDate\":\"" ));
                 STRY(osc_str_append_string(data, args->query_date));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->query_header_raw) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryHeaderRaw\":\"" ));
                 STRY(osc_str_append_string(data, args->query_header_raw));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_query_header_size || args->query_header_size) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryHeaderSize\":" ));
                 STRY(osc_str_append_int(data, args->query_header_size));
 	   	ret += 1;
 	}
 	if (args->query_ip_address) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryIpAddress\":\"" ));
                 STRY(osc_str_append_string(data, args->query_ip_address));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->query_payload_raw) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryPayloadRaw\":\"" ));
                 STRY(osc_str_append_string(data, args->query_payload_raw));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_query_payload_size || args->query_payload_size) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryPayloadSize\":" ));
                 STRY(osc_str_append_int(data, args->query_payload_size));
 	   	ret += 1;
 	}
 	if (args->query_user_agent) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryUserAgent\":\"" ));
                 STRY(osc_str_append_string(data, args->query_user_agent));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->request_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RequestId\":\"" ));
                 STRY(osc_str_append_string(data, args->request_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_response_size || args->response_size) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ResponseSize\":" ));
                 STRY(osc_str_append_int(data, args->response_size));
 	   	ret += 1;
 	}
 	if (args->is_set_response_status_code || args->response_status_code) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ResponseStatusCode\":" ));
                 STRY(osc_str_append_int(data, args->response_status_code));
 	   	ret += 1;
@@ -13943,32 +13030,28 @@ static int maintenance_event_setter(struct maintenance_event *args, struct osc_s
        int count_args = 0;
        int ret = 0;
 	if (args->code) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Code\":\"" ));
                 STRY(osc_str_append_string(data, args->code));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->not_after) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NotAfter\":\"" ));
                 STRY(osc_str_append_string(data, args->not_after));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->not_before) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NotBefore\":\"" ));
                 STRY(osc_str_append_string(data, args->not_before));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -13980,24 +13063,21 @@ static int nat_service_setter(struct nat_service *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->nat_service_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NatServiceId\":\"" ));
                 STRY(osc_str_append_string(data, args->nat_service_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->public_ips) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIps\":[" ));
 		for (int i = 0; i < args->nb_public_ips; ++i) {
 	       	    struct public_ip_light *p = &args->public_ips[i];
@@ -14011,31 +13091,27 @@ static int nat_service_setter(struct nat_service *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->public_ips_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIps\":" ));
                 STRY(osc_str_append_string(data, args->public_ips_str));
 		ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->subnet_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
                 STRY(osc_str_append_string(data, args->subnet_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -14049,8 +13125,7 @@ static int nat_service_setter(struct nat_service *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -14061,40 +13136,35 @@ static int net_setter(struct net *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->dhcp_options_set_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DhcpOptionsSetId\":\"" ));
                 STRY(osc_str_append_string(data, args->dhcp_options_set_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->ip_range) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRange\":\"" ));
                 STRY(osc_str_append_string(data, args->ip_range));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -14108,15 +13178,13 @@ static int net_setter(struct net *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
 	}
 	if (args->tenancy) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tenancy\":\"" ));
                 STRY(osc_str_append_string(data, args->tenancy));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -14128,16 +13196,14 @@ static int net_access_point_setter(struct net_access_point *args, struct osc_str
        int count_args = 0;
        int ret = 0;
 	if (args->net_access_point_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetAccessPointId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_access_point_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -14146,8 +13212,7 @@ static int net_access_point_setter(struct net_access_point *args, struct osc_str
 	if (args->route_table_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteTableIds\":[" ));
 		for (as = args->route_table_ids; *as > 0; ++as) {
 			if (as != args->route_table_ids)
@@ -14159,31 +13224,27 @@ static int net_access_point_setter(struct net_access_point *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->route_table_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteTableIds\":" ));
                 STRY(osc_str_append_string(data, args->route_table_ids_str));
 		ret += 1;
 	}
 	if (args->service_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ServiceName\":\"" ));
                 STRY(osc_str_append_string(data, args->service_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -14197,8 +13258,7 @@ static int net_access_point_setter(struct net_access_point *args, struct osc_str
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -14209,58 +13269,50 @@ static int net_peering_setter(struct net_peering *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->accepter_net_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccepterNet\":" ));
                 STRY(osc_str_append_string(data, args->accepter_net_str));
 		ret += 1;
 	} else if (args->is_set_accepter_net) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"AccepterNet\": { " ));
 	       STRY(accepter_net_setter(&args->accepter_net, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->net_peering_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetPeeringId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_peering_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->source_net_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SourceNet\":" ));
                 STRY(osc_str_append_string(data, args->source_net_str));
 		ret += 1;
 	} else if (args->is_set_source_net) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"SourceNet\": { " ));
 	       STRY(source_net_setter(&args->source_net, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->state_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":" ));
                 STRY(osc_str_append_string(data, args->state_str));
 		ret += 1;
 	} else if (args->is_set_state) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"State\": { " ));
 	       STRY(net_peering_state_setter(&args->state, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -14274,8 +13326,7 @@ static int net_peering_setter(struct net_peering *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -14286,16 +13337,14 @@ static int net_peering_state_setter(struct net_peering_state *args, struct osc_s
        int count_args = 0;
        int ret = 0;
 	if (args->message) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Message\":\"" ));
                 STRY(osc_str_append_string(data, args->message));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Name\":\"" ));
                 STRY(osc_str_append_string(data, args->name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -14307,16 +13356,14 @@ static int net_to_virtual_gateway_link_setter(struct net_to_virtual_gateway_link
        int count_args = 0;
        int ret = 0;
 	if (args->net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -14328,91 +13375,79 @@ static int nic_setter(struct nic *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->account_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
                 STRY(osc_str_append_string(data, args->account_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_is_source_dest_checked) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IsSourceDestChecked\":" ));
                 STRY(osc_str_append_bool(data, args->is_source_dest_checked));
 	   	ret += 1;
 	}
 	if (args->link_nic_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNic\":" ));
                 STRY(osc_str_append_string(data, args->link_nic_str));
 		ret += 1;
 	} else if (args->is_set_link_nic) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"LinkNic\": { " ));
 	       STRY(link_nic_setter(&args->link_nic, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->link_public_ip_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkPublicIp\":" ));
                 STRY(osc_str_append_string(data, args->link_public_ip_str));
 		ret += 1;
 	} else if (args->is_set_link_public_ip) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"LinkPublicIp\": { " ));
 	       STRY(link_public_ip_setter(&args->link_public_ip, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->mac_address) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MacAddress\":\"" ));
                 STRY(osc_str_append_string(data, args->mac_address));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->nic_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
                 STRY(osc_str_append_string(data, args->nic_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->private_dns_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateDnsName\":\"" ));
                 STRY(osc_str_append_string(data, args->private_dns_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->private_ips) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIps\":[" ));
 		for (int i = 0; i < args->nb_private_ips; ++i) {
 	       	    struct private_ip *p = &args->private_ips[i];
@@ -14426,15 +13461,13 @@ static int nic_setter(struct nic *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->private_ips_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIps\":" ));
                 STRY(osc_str_append_string(data, args->private_ips_str));
 		ret += 1;
 	}
         if (args->security_groups) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroups\":[" ));
 		for (int i = 0; i < args->nb_security_groups; ++i) {
 	       	    struct security_group_light *p = &args->security_groups[i];
@@ -14448,39 +13481,34 @@ static int nic_setter(struct nic *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->security_groups_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroups\":" ));
                 STRY(osc_str_append_string(data, args->security_groups_str));
 		ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->subnet_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
                 STRY(osc_str_append_string(data, args->subnet_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->subregion_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionName\":\"" ));
                 STRY(osc_str_append_string(data, args->subregion_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -14494,8 +13522,7 @@ static int nic_setter(struct nic *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -14506,38 +13533,33 @@ static int nic_for_vm_creation_setter(struct nic_for_vm_creation *args, struct o
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_delete_on_vm_deletion) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeleteOnVmDeletion\":" ));
                 STRY(osc_str_append_bool(data, args->delete_on_vm_deletion));
 	   	ret += 1;
 	}
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_device_number || args->device_number) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeviceNumber\":" ));
                 STRY(osc_str_append_int(data, args->device_number));
 	   	ret += 1;
 	}
 	if (args->nic_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
                 STRY(osc_str_append_string(data, args->nic_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->private_ips) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIps\":[" ));
 		for (int i = 0; i < args->nb_private_ips; ++i) {
 	       	    struct private_ip_light *p = &args->private_ips[i];
@@ -14551,15 +13573,13 @@ static int nic_for_vm_creation_setter(struct nic_for_vm_creation *args, struct o
 		ret += 1;
 	} else
 	if (args->private_ips_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIps\":" ));
                 STRY(osc_str_append_string(data, args->private_ips_str));
 		ret += 1;
 	}
 	if (args->is_set_secondary_private_ip_count || args->secondary_private_ip_count) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecondaryPrivateIpCount\":" ));
                 STRY(osc_str_append_int(data, args->secondary_private_ip_count));
 	   	ret += 1;
@@ -14567,8 +13587,7 @@ static int nic_for_vm_creation_setter(struct nic_for_vm_creation *args, struct o
 	if (args->security_group_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":[" ));
 		for (as = args->security_group_ids; *as > 0; ++as) {
 			if (as != args->security_group_ids)
@@ -14580,15 +13599,13 @@ static int nic_for_vm_creation_setter(struct nic_for_vm_creation *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_group_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":" ));
                 STRY(osc_str_append_string(data, args->security_group_ids_str));
 		ret += 1;
 	}
 	if (args->subnet_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
                 STRY(osc_str_append_string(data, args->subnet_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -14600,91 +13617,79 @@ static int nic_light_setter(struct nic_light *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->account_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
                 STRY(osc_str_append_string(data, args->account_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_is_source_dest_checked) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IsSourceDestChecked\":" ));
                 STRY(osc_str_append_bool(data, args->is_source_dest_checked));
 	   	ret += 1;
 	}
 	if (args->link_nic_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNic\":" ));
                 STRY(osc_str_append_string(data, args->link_nic_str));
 		ret += 1;
 	} else if (args->is_set_link_nic) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"LinkNic\": { " ));
 	       STRY(link_nic_light_setter(&args->link_nic, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->link_public_ip_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkPublicIp\":" ));
                 STRY(osc_str_append_string(data, args->link_public_ip_str));
 		ret += 1;
 	} else if (args->is_set_link_public_ip) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"LinkPublicIp\": { " ));
 	       STRY(link_public_ip_light_for_vm_setter(&args->link_public_ip, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->mac_address) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MacAddress\":\"" ));
                 STRY(osc_str_append_string(data, args->mac_address));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->nic_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
                 STRY(osc_str_append_string(data, args->nic_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->private_dns_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateDnsName\":\"" ));
                 STRY(osc_str_append_string(data, args->private_dns_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->private_ips) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIps\":[" ));
 		for (int i = 0; i < args->nb_private_ips; ++i) {
 	       	    struct private_ip_light_for_vm *p = &args->private_ips[i];
@@ -14698,15 +13703,13 @@ static int nic_light_setter(struct nic_light *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->private_ips_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIps\":" ));
                 STRY(osc_str_append_string(data, args->private_ips_str));
 		ret += 1;
 	}
         if (args->security_groups) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroups\":[" ));
 		for (int i = 0; i < args->nb_security_groups; ++i) {
 	       	    struct security_group_light *p = &args->security_groups[i];
@@ -14720,23 +13723,20 @@ static int nic_light_setter(struct nic_light *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->security_groups_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroups\":" ));
                 STRY(osc_str_append_string(data, args->security_groups_str));
 		ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->subnet_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
                 STRY(osc_str_append_string(data, args->subnet_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -14748,16 +13748,14 @@ static int osu_api_key_setter(struct osu_api_key *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->api_key_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ApiKeyId\":\"" ));
                 STRY(osc_str_append_string(data, args->api_key_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->secret_key) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecretKey\":\"" ));
                 STRY(osc_str_append_string(data, args->secret_key));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -14769,32 +13767,28 @@ static int osu_export_image_export_task_setter(struct osu_export_image_export_ta
        int count_args = 0;
        int ret = 0;
 	if (args->disk_image_format) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DiskImageFormat\":\"" ));
                 STRY(osc_str_append_string(data, args->disk_image_format));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->osu_bucket) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OsuBucket\":\"" ));
                 STRY(osc_str_append_string(data, args->osu_bucket));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->osu_manifest_url) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OsuManifestUrl\":\"" ));
                 STRY(osc_str_append_string(data, args->osu_manifest_url));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->osu_prefix) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OsuPrefix\":\"" ));
                 STRY(osc_str_append_string(data, args->osu_prefix));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -14806,24 +13800,21 @@ static int osu_export_snapshot_export_task_setter(struct osu_export_snapshot_exp
        int count_args = 0;
        int ret = 0;
 	if (args->disk_image_format) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DiskImageFormat\":\"" ));
                 STRY(osc_str_append_string(data, args->disk_image_format));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->osu_bucket) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OsuBucket\":\"" ));
                 STRY(osc_str_append_string(data, args->osu_bucket));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->osu_prefix) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OsuPrefix\":\"" ));
                 STRY(osc_str_append_string(data, args->osu_prefix));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -14835,46 +13826,40 @@ static int osu_export_to_create_setter(struct osu_export_to_create *args, struct
        int count_args = 0;
        int ret = 0;
 	if (args->disk_image_format) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DiskImageFormat\":\"" ));
                 STRY(osc_str_append_string(data, args->disk_image_format));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->osu_api_key_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OsuApiKey\":" ));
                 STRY(osc_str_append_string(data, args->osu_api_key_str));
 		ret += 1;
 	} else if (args->is_set_osu_api_key) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"OsuApiKey\": { " ));
 	       STRY(osu_api_key_setter(&args->osu_api_key, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->osu_bucket) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OsuBucket\":\"" ));
                 STRY(osc_str_append_string(data, args->osu_bucket));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->osu_manifest_url) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OsuManifestUrl\":\"" ));
                 STRY(osc_str_append_string(data, args->osu_manifest_url));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->osu_prefix) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OsuPrefix\":\"" ));
                 STRY(osc_str_append_string(data, args->osu_prefix));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -14888,8 +13873,7 @@ static int permissions_on_resource_setter(struct permissions_on_resource *args, 
 	if (args->account_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountIds\":[" ));
 		for (as = args->account_ids; *as > 0; ++as) {
 			if (as != args->account_ids)
@@ -14901,15 +13885,13 @@ static int permissions_on_resource_setter(struct permissions_on_resource *args, 
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->account_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountIds\":" ));
                 STRY(osc_str_append_string(data, args->account_ids_str));
 		ret += 1;
 	}
 	if (args->is_set_global_permission) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"GlobalPermission\":" ));
                 STRY(osc_str_append_bool(data, args->global_permission));
 	   	ret += 1;
@@ -14920,28 +13902,24 @@ static int permissions_on_resource_creation_setter(struct permissions_on_resourc
        int count_args = 0;
        int ret = 0;
 	if (args->additions_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Additions\":" ));
                 STRY(osc_str_append_string(data, args->additions_str));
 		ret += 1;
 	} else if (args->is_set_additions) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Additions\": { " ));
 	       STRY(permissions_on_resource_setter(&args->additions, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->removals_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Removals\":" ));
                 STRY(osc_str_append_string(data, args->removals_str));
 		ret += 1;
 	} else if (args->is_set_removals) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Removals\": { " ));
 	       STRY(permissions_on_resource_setter(&args->removals, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -14953,16 +13931,14 @@ static int phase1_options_setter(struct phase1_options *args, struct osc_str *da
        int count_args = 0;
        int ret = 0;
 	if (args->dpd_timeout_action) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DpdTimeoutAction\":\"" ));
                 STRY(osc_str_append_string(data, args->dpd_timeout_action));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dpd_timeout_seconds || args->dpd_timeout_seconds) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DpdTimeoutSeconds\":" ));
                 STRY(osc_str_append_int(data, args->dpd_timeout_seconds));
 	   	ret += 1;
@@ -14970,8 +13946,7 @@ static int phase1_options_setter(struct phase1_options *args, struct osc_str *da
 	if (args->ike_versions) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IkeVersions\":[" ));
 		for (as = args->ike_versions; *as > 0; ++as) {
 			if (as != args->ike_versions)
@@ -14983,8 +13958,7 @@ static int phase1_options_setter(struct phase1_options *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ike_versions_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IkeVersions\":" ));
                 STRY(osc_str_append_string(data, args->ike_versions_str));
 		ret += 1;
@@ -14992,8 +13966,7 @@ static int phase1_options_setter(struct phase1_options *args, struct osc_str *da
 	if (args->phase1_dh_group_numbers) {
 		int *ip;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Phase1DhGroupNumbers\":[" ));
 		for (ip = args->phase1_dh_group_numbers; *ip > 0; ++ip) {
 			if (ip != args->phase1_dh_group_numbers)
@@ -15003,8 +13976,7 @@ static int phase1_options_setter(struct phase1_options *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->phase1_dh_group_numbers_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Phase1DhGroupNumbers\":" ));
                 STRY(osc_str_append_string(data, args->phase1_dh_group_numbers_str));
 		ret += 1;
@@ -15012,8 +13984,7 @@ static int phase1_options_setter(struct phase1_options *args, struct osc_str *da
 	if (args->phase1_encryption_algorithms) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Phase1EncryptionAlgorithms\":[" ));
 		for (as = args->phase1_encryption_algorithms; *as > 0; ++as) {
 			if (as != args->phase1_encryption_algorithms)
@@ -15025,8 +13996,7 @@ static int phase1_options_setter(struct phase1_options *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->phase1_encryption_algorithms_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Phase1EncryptionAlgorithms\":" ));
                 STRY(osc_str_append_string(data, args->phase1_encryption_algorithms_str));
 		ret += 1;
@@ -15034,8 +14004,7 @@ static int phase1_options_setter(struct phase1_options *args, struct osc_str *da
 	if (args->phase1_integrity_algorithms) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Phase1IntegrityAlgorithms\":[" ));
 		for (as = args->phase1_integrity_algorithms; *as > 0; ++as) {
 			if (as != args->phase1_integrity_algorithms)
@@ -15047,29 +14016,25 @@ static int phase1_options_setter(struct phase1_options *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->phase1_integrity_algorithms_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Phase1IntegrityAlgorithms\":" ));
                 STRY(osc_str_append_string(data, args->phase1_integrity_algorithms_str));
 		ret += 1;
 	}
 	if (args->is_set_phase1_lifetime_seconds || args->phase1_lifetime_seconds) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Phase1LifetimeSeconds\":" ));
                 STRY(osc_str_append_int(data, args->phase1_lifetime_seconds));
 	   	ret += 1;
 	}
 	if (args->is_set_replay_window_size || args->replay_window_size) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ReplayWindowSize\":" ));
                 STRY(osc_str_append_int(data, args->replay_window_size));
 	   	ret += 1;
 	}
 	if (args->startup_action) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"StartupAction\":\"" ));
                 STRY(osc_str_append_string(data, args->startup_action));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -15083,8 +14048,7 @@ static int phase2_options_setter(struct phase2_options *args, struct osc_str *da
 	if (args->phase2_dh_group_numbers) {
 		int *ip;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Phase2DhGroupNumbers\":[" ));
 		for (ip = args->phase2_dh_group_numbers; *ip > 0; ++ip) {
 			if (ip != args->phase2_dh_group_numbers)
@@ -15094,8 +14058,7 @@ static int phase2_options_setter(struct phase2_options *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->phase2_dh_group_numbers_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Phase2DhGroupNumbers\":" ));
                 STRY(osc_str_append_string(data, args->phase2_dh_group_numbers_str));
 		ret += 1;
@@ -15103,8 +14066,7 @@ static int phase2_options_setter(struct phase2_options *args, struct osc_str *da
 	if (args->phase2_encryption_algorithms) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Phase2EncryptionAlgorithms\":[" ));
 		for (as = args->phase2_encryption_algorithms; *as > 0; ++as) {
 			if (as != args->phase2_encryption_algorithms)
@@ -15116,8 +14078,7 @@ static int phase2_options_setter(struct phase2_options *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->phase2_encryption_algorithms_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Phase2EncryptionAlgorithms\":" ));
                 STRY(osc_str_append_string(data, args->phase2_encryption_algorithms_str));
 		ret += 1;
@@ -15125,8 +14086,7 @@ static int phase2_options_setter(struct phase2_options *args, struct osc_str *da
 	if (args->phase2_integrity_algorithms) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Phase2IntegrityAlgorithms\":[" ));
 		for (as = args->phase2_integrity_algorithms; *as > 0; ++as) {
 			if (as != args->phase2_integrity_algorithms)
@@ -15138,22 +14098,19 @@ static int phase2_options_setter(struct phase2_options *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->phase2_integrity_algorithms_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Phase2IntegrityAlgorithms\":" ));
                 STRY(osc_str_append_string(data, args->phase2_integrity_algorithms_str));
 		ret += 1;
 	}
 	if (args->is_set_phase2_lifetime_seconds || args->phase2_lifetime_seconds) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Phase2LifetimeSeconds\":" ));
                 STRY(osc_str_append_int(data, args->phase2_lifetime_seconds));
 	   	ret += 1;
 	}
 	if (args->pre_shared_key) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PreSharedKey\":\"" ));
                 STRY(osc_str_append_string(data, args->pre_shared_key));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -15165,16 +14122,14 @@ static int placement_setter(struct placement *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->subregion_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionName\":\"" ));
                 STRY(osc_str_append_string(data, args->subregion_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->tenancy) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tenancy\":\"" ));
                 STRY(osc_str_append_string(data, args->tenancy));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -15186,37 +14141,32 @@ static int private_ip_setter(struct private_ip *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_is_primary) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IsPrimary\":" ));
                 STRY(osc_str_append_bool(data, args->is_primary));
 	   	ret += 1;
 	}
 	if (args->link_public_ip_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkPublicIp\":" ));
                 STRY(osc_str_append_string(data, args->link_public_ip_str));
 		ret += 1;
 	} else if (args->is_set_link_public_ip) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"LinkPublicIp\": { " ));
 	       STRY(link_public_ip_setter(&args->link_public_ip, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->private_dns_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateDnsName\":\"" ));
                 STRY(osc_str_append_string(data, args->private_dns_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->private_ip) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIp\":\"" ));
                 STRY(osc_str_append_string(data, args->private_ip));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -15228,15 +14178,13 @@ static int private_ip_light_setter(struct private_ip_light *args, struct osc_str
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_is_primary) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IsPrimary\":" ));
                 STRY(osc_str_append_bool(data, args->is_primary));
 	   	ret += 1;
 	}
 	if (args->private_ip) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIp\":\"" ));
                 STRY(osc_str_append_string(data, args->private_ip));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -15248,37 +14196,32 @@ static int private_ip_light_for_vm_setter(struct private_ip_light_for_vm *args, 
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_is_primary) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IsPrimary\":" ));
                 STRY(osc_str_append_bool(data, args->is_primary));
 	   	ret += 1;
 	}
 	if (args->link_public_ip_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkPublicIp\":" ));
                 STRY(osc_str_append_string(data, args->link_public_ip_str));
 		ret += 1;
 	} else if (args->is_set_link_public_ip) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"LinkPublicIp\": { " ));
 	       STRY(link_public_ip_light_for_vm_setter(&args->link_public_ip, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->private_dns_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateDnsName\":\"" ));
                 STRY(osc_str_append_string(data, args->private_dns_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->private_ip) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIp\":\"" ));
                 STRY(osc_str_append_string(data, args->private_ip));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -15290,24 +14233,21 @@ static int product_type_setter(struct product_type *args, struct osc_str *data) 
        int count_args = 0;
        int ret = 0;
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->product_type_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ProductTypeId\":\"" ));
                 STRY(osc_str_append_string(data, args->product_type_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vendor) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Vendor\":\"" ));
                 STRY(osc_str_append_string(data, args->vendor));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -15319,56 +14259,49 @@ static int public_ip_setter(struct public_ip *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->link_public_ip_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkPublicIpId\":\"" ));
                 STRY(osc_str_append_string(data, args->link_public_ip_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->nic_account_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicAccountId\":\"" ));
                 STRY(osc_str_append_string(data, args->nic_account_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->nic_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
                 STRY(osc_str_append_string(data, args->nic_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->private_ip) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIp\":\"" ));
                 STRY(osc_str_append_string(data, args->private_ip));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->public_ip) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
                 STRY(osc_str_append_string(data, args->public_ip));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->public_ip_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIpId\":\"" ));
                 STRY(osc_str_append_string(data, args->public_ip_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -15382,15 +14315,13 @@ static int public_ip_setter(struct public_ip *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
 	}
 	if (args->vm_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -15402,16 +14333,14 @@ static int public_ip_light_setter(struct public_ip_light *args, struct osc_str *
        int count_args = 0;
        int ret = 0;
 	if (args->public_ip) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
                 STRY(osc_str_append_string(data, args->public_ip));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->public_ip_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIpId\":\"" ));
                 STRY(osc_str_append_string(data, args->public_ip_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -15423,55 +14352,48 @@ static int quota_setter(struct quota *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->account_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
                 STRY(osc_str_append_string(data, args->account_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_max_value || args->max_value) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MaxValue\":" ));
                 STRY(osc_str_append_int(data, args->max_value));
 	   	ret += 1;
 	}
 	if (args->name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Name\":\"" ));
                 STRY(osc_str_append_string(data, args->name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->quota_collection) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QuotaCollection\":\"" ));
                 STRY(osc_str_append_string(data, args->quota_collection));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->short_description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ShortDescription\":\"" ));
                 STRY(osc_str_append_string(data, args->short_description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_used_value || args->used_value) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"UsedValue\":" ));
                 STRY(osc_str_append_int(data, args->used_value));
 	   	ret += 1;
@@ -15482,16 +14404,14 @@ static int quota_types_setter(struct quota_types *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->quota_type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QuotaType\":\"" ));
                 STRY(osc_str_append_string(data, args->quota_type));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->quotas) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Quotas\":[" ));
 		for (int i = 0; i < args->nb_quotas; ++i) {
 	       	    struct quota *p = &args->quotas[i];
@@ -15505,8 +14425,7 @@ static int quota_types_setter(struct quota_types *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->quotas_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Quotas\":" ));
                 STRY(osc_str_append_string(data, args->quotas_str));
 		ret += 1;
@@ -15517,16 +14436,14 @@ static int region_setter(struct region *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->endpoint) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Endpoint\":\"" ));
                 STRY(osc_str_append_string(data, args->endpoint));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->region_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RegionName\":\"" ));
                 STRY(osc_str_append_string(data, args->region_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -15538,8 +14455,7 @@ static int resource_load_balancer_tag_setter(struct resource_load_balancer_tag *
        int count_args = 0;
        int ret = 0;
 	if (args->key) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Key\":\"" ));
                 STRY(osc_str_append_string(data, args->key));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -15551,16 +14467,14 @@ static int resource_tag_setter(struct resource_tag *args, struct osc_str *data) 
        int count_args = 0;
        int ret = 0;
 	if (args->key) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Key\":\"" ));
                 STRY(osc_str_append_string(data, args->key));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->value) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Value\":\"" ));
                 STRY(osc_str_append_string(data, args->value));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -15572,88 +14486,77 @@ static int route_setter(struct route *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->creation_method) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CreationMethod\":\"" ));
                 STRY(osc_str_append_string(data, args->creation_method));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->destination_ip_range) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DestinationIpRange\":\"" ));
                 STRY(osc_str_append_string(data, args->destination_ip_range));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->destination_service_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DestinationServiceId\":\"" ));
                 STRY(osc_str_append_string(data, args->destination_service_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->gateway_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"GatewayId\":\"" ));
                 STRY(osc_str_append_string(data, args->gateway_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->nat_service_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NatServiceId\":\"" ));
                 STRY(osc_str_append_string(data, args->nat_service_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->net_access_point_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetAccessPointId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_access_point_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->net_peering_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetPeeringId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_peering_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->nic_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
                 STRY(osc_str_append_string(data, args->nic_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_account_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmAccountId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_account_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -15665,24 +14568,21 @@ static int route_light_setter(struct route_light *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->destination_ip_range) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DestinationIpRange\":\"" ));
                 STRY(osc_str_append_string(data, args->destination_ip_range));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->route_type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteType\":\"" ));
                 STRY(osc_str_append_string(data, args->route_type));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -15694,8 +14594,7 @@ static int route_propagating_virtual_gateway_setter(struct route_propagating_vir
        int count_args = 0;
        int ret = 0;
 	if (args->virtual_gateway_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VirtualGatewayId\":\"" ));
                 STRY(osc_str_append_string(data, args->virtual_gateway_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -15707,8 +14606,7 @@ static int route_table_setter(struct route_table *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
         if (args->link_route_tables) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkRouteTables\":[" ));
 		for (int i = 0; i < args->nb_link_route_tables; ++i) {
 	       	    struct link_route_table *p = &args->link_route_tables[i];
@@ -15722,23 +14620,20 @@ static int route_table_setter(struct route_table *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->link_route_tables_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkRouteTables\":" ));
                 STRY(osc_str_append_string(data, args->link_route_tables_str));
 		ret += 1;
 	}
 	if (args->net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->route_propagating_virtual_gateways) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RoutePropagatingVirtualGateways\":[" ));
 		for (int i = 0; i < args->nb_route_propagating_virtual_gateways; ++i) {
 	       	    struct route_propagating_virtual_gateway *p = &args->route_propagating_virtual_gateways[i];
@@ -15752,23 +14647,20 @@ static int route_table_setter(struct route_table *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->route_propagating_virtual_gateways_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RoutePropagatingVirtualGateways\":" ));
                 STRY(osc_str_append_string(data, args->route_propagating_virtual_gateways_str));
 		ret += 1;
 	}
 	if (args->route_table_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteTableId\":\"" ));
                 STRY(osc_str_append_string(data, args->route_table_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->routes) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Routes\":[" ));
 		for (int i = 0; i < args->nb_routes; ++i) {
 	       	    struct route *p = &args->routes[i];
@@ -15782,15 +14674,13 @@ static int route_table_setter(struct route_table *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->routes_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Routes\":" ));
                 STRY(osc_str_append_string(data, args->routes_str));
 		ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -15804,8 +14694,7 @@ static int route_table_setter(struct route_table *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -15816,24 +14705,21 @@ static int security_group_setter(struct security_group *args, struct osc_str *da
        int count_args = 0;
        int ret = 0;
 	if (args->account_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
                 STRY(osc_str_append_string(data, args->account_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->inbound_rules) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InboundRules\":[" ));
 		for (int i = 0; i < args->nb_inbound_rules; ++i) {
 	       	    struct security_group_rule *p = &args->inbound_rules[i];
@@ -15847,23 +14733,20 @@ static int security_group_setter(struct security_group *args, struct osc_str *da
 		ret += 1;
 	} else
 	if (args->inbound_rules_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InboundRules\":" ));
                 STRY(osc_str_append_string(data, args->inbound_rules_str));
 		ret += 1;
 	}
 	if (args->net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->outbound_rules) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OutboundRules\":[" ));
 		for (int i = 0; i < args->nb_outbound_rules; ++i) {
 	       	    struct security_group_rule *p = &args->outbound_rules[i];
@@ -15877,31 +14760,27 @@ static int security_group_setter(struct security_group *args, struct osc_str *da
 		ret += 1;
 	} else
 	if (args->outbound_rules_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OutboundRules\":" ));
                 STRY(osc_str_append_string(data, args->outbound_rules_str));
 		ret += 1;
 	}
 	if (args->security_group_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupId\":\"" ));
                 STRY(osc_str_append_string(data, args->security_group_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->security_group_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupName\":\"" ));
                 STRY(osc_str_append_string(data, args->security_group_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -15915,8 +14794,7 @@ static int security_group_setter(struct security_group *args, struct osc_str *da
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -15927,16 +14805,14 @@ static int security_group_light_setter(struct security_group_light *args, struct
        int count_args = 0;
        int ret = 0;
 	if (args->security_group_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupId\":\"" ));
                 STRY(osc_str_append_string(data, args->security_group_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->security_group_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupName\":\"" ));
                 STRY(osc_str_append_string(data, args->security_group_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -15948,15 +14824,13 @@ static int security_group_rule_setter(struct security_group_rule *args, struct o
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_from_port_range || args->from_port_range) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"FromPortRange\":" ));
                 STRY(osc_str_append_int(data, args->from_port_range));
 	   	ret += 1;
 	}
 	if (args->ip_protocol) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpProtocol\":\"" ));
                 STRY(osc_str_append_string(data, args->ip_protocol));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -15965,8 +14839,7 @@ static int security_group_rule_setter(struct security_group_rule *args, struct o
 	if (args->ip_ranges) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRanges\":[" ));
 		for (as = args->ip_ranges; *as > 0; ++as) {
 			if (as != args->ip_ranges)
@@ -15978,15 +14851,13 @@ static int security_group_rule_setter(struct security_group_rule *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ip_ranges_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRanges\":" ));
                 STRY(osc_str_append_string(data, args->ip_ranges_str));
 		ret += 1;
 	}
         if (args->security_groups_members) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupsMembers\":[" ));
 		for (int i = 0; i < args->nb_security_groups_members; ++i) {
 	       	    struct security_groups_member *p = &args->security_groups_members[i];
@@ -16000,8 +14871,7 @@ static int security_group_rule_setter(struct security_group_rule *args, struct o
 		ret += 1;
 	} else
 	if (args->security_groups_members_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupsMembers\":" ));
                 STRY(osc_str_append_string(data, args->security_groups_members_str));
 		ret += 1;
@@ -16009,8 +14879,7 @@ static int security_group_rule_setter(struct security_group_rule *args, struct o
 	if (args->service_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ServiceIds\":[" ));
 		for (as = args->service_ids; *as > 0; ++as) {
 			if (as != args->service_ids)
@@ -16022,15 +14891,13 @@ static int security_group_rule_setter(struct security_group_rule *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->service_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ServiceIds\":" ));
                 STRY(osc_str_append_string(data, args->service_ids_str));
 		ret += 1;
 	}
 	if (args->is_set_to_port_range || args->to_port_range) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ToPortRange\":" ));
                 STRY(osc_str_append_int(data, args->to_port_range));
 	   	ret += 1;
@@ -16041,24 +14908,21 @@ static int security_groups_member_setter(struct security_groups_member *args, st
        int count_args = 0;
        int ret = 0;
 	if (args->account_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
                 STRY(osc_str_append_string(data, args->account_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->security_group_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupId\":\"" ));
                 STRY(osc_str_append_string(data, args->security_group_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->security_group_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupName\":\"" ));
                 STRY(osc_str_append_string(data, args->security_group_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -16070,48 +14934,42 @@ static int server_certificate_setter(struct server_certificate *args, struct osc
        int count_args = 0;
        int ret = 0;
 	if (args->expiration_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ExpirationDate\":\"" ));
                 STRY(osc_str_append_string(data, args->expiration_date));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Id\":\"" ));
                 STRY(osc_str_append_string(data, args->id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Name\":\"" ));
                 STRY(osc_str_append_string(data, args->name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->orn) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Orn\":\"" ));
                 STRY(osc_str_append_string(data, args->orn));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->path) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Path\":\"" ));
                 STRY(osc_str_append_string(data, args->path));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->upload_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"UploadDate\":\"" ));
                 STRY(osc_str_append_string(data, args->upload_date));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -16125,8 +14983,7 @@ static int service_setter(struct service *args, struct osc_str *data) {
 	if (args->ip_ranges) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRanges\":[" ));
 		for (as = args->ip_ranges; *as > 0; ++as) {
 			if (as != args->ip_ranges)
@@ -16138,23 +14995,20 @@ static int service_setter(struct service *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ip_ranges_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRanges\":" ));
                 STRY(osc_str_append_string(data, args->ip_ranges_str));
 		ret += 1;
 	}
 	if (args->service_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ServiceId\":\"" ));
                 STRY(osc_str_append_string(data, args->service_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->service_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ServiceName\":\"" ));
                 STRY(osc_str_append_string(data, args->service_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -16166,77 +15020,67 @@ static int snapshot_setter(struct snapshot *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->account_alias) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountAlias\":\"" ));
                 STRY(osc_str_append_string(data, args->account_alias));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->account_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
                 STRY(osc_str_append_string(data, args->account_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->creation_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CreationDate\":\"" ));
                 STRY(osc_str_append_string(data, args->creation_date));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->permissions_to_create_volume_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PermissionsToCreateVolume\":" ));
                 STRY(osc_str_append_string(data, args->permissions_to_create_volume_str));
 		ret += 1;
 	} else if (args->is_set_permissions_to_create_volume) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"PermissionsToCreateVolume\": { " ));
 	       STRY(permissions_on_resource_setter(&args->permissions_to_create_volume, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->is_set_progress || args->progress) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Progress\":" ));
                 STRY(osc_str_append_int(data, args->progress));
 	   	ret += 1;
 	}
 	if (args->snapshot_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SnapshotId\":\"" ));
                 STRY(osc_str_append_string(data, args->snapshot_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -16250,23 +15094,20 @@ static int snapshot_setter(struct snapshot *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
 	}
 	if (args->volume_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeId\":\"" ));
                 STRY(osc_str_append_string(data, args->volume_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_volume_size || args->volume_size) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeSize\":" ));
                 STRY(osc_str_append_int(data, args->volume_size));
 	   	ret += 1;
@@ -16277,53 +15118,46 @@ static int snapshot_export_task_setter(struct snapshot_export_task *args, struct
        int count_args = 0;
        int ret = 0;
 	if (args->comment) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Comment\":\"" ));
                 STRY(osc_str_append_string(data, args->comment));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->osu_export_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OsuExport\":" ));
                 STRY(osc_str_append_string(data, args->osu_export_str));
 		ret += 1;
 	} else if (args->is_set_osu_export) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"OsuExport\": { " ));
 	       STRY(osu_export_snapshot_export_task_setter(&args->osu_export, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->is_set_progress || args->progress) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Progress\":" ));
                 STRY(osc_str_append_int(data, args->progress));
 	   	ret += 1;
 	}
 	if (args->snapshot_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SnapshotId\":\"" ));
                 STRY(osc_str_append_string(data, args->snapshot_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -16337,15 +15171,13 @@ static int snapshot_export_task_setter(struct snapshot_export_task *args, struct
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
 	}
 	if (args->task_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TaskId\":\"" ));
                 STRY(osc_str_append_string(data, args->task_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -16357,24 +15189,21 @@ static int source_net_setter(struct source_net *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->account_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
                 STRY(osc_str_append_string(data, args->account_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->ip_range) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRange\":\"" ));
                 STRY(osc_str_append_string(data, args->ip_range));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -16386,16 +15215,14 @@ static int source_security_group_setter(struct source_security_group *args, stru
        int count_args = 0;
        int ret = 0;
 	if (args->security_group_account_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupAccountId\":\"" ));
                 STRY(osc_str_append_string(data, args->security_group_account_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->security_group_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupName\":\"" ));
                 STRY(osc_str_append_string(data, args->security_group_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -16407,16 +15234,14 @@ static int state_comment_setter(struct state_comment *args, struct osc_str *data
        int count_args = 0;
        int ret = 0;
 	if (args->state_code) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"StateCode\":\"" ));
                 STRY(osc_str_append_string(data, args->state_code));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state_message) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"StateMessage\":\"" ));
                 STRY(osc_str_append_string(data, args->state_message));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -16428,62 +15253,54 @@ static int subnet_setter(struct subnet *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_available_ips_count || args->available_ips_count) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AvailableIpsCount\":" ));
                 STRY(osc_str_append_int(data, args->available_ips_count));
 	   	ret += 1;
 	}
 	if (args->ip_range) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRange\":\"" ));
                 STRY(osc_str_append_string(data, args->ip_range));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_map_public_ip_on_launch) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MapPublicIpOnLaunch\":" ));
                 STRY(osc_str_append_bool(data, args->map_public_ip_on_launch));
 	   	ret += 1;
 	}
 	if (args->net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->subnet_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
                 STRY(osc_str_append_string(data, args->subnet_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->subregion_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionName\":\"" ));
                 STRY(osc_str_append_string(data, args->subregion_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -16497,8 +15314,7 @@ static int subnet_setter(struct subnet *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -16509,32 +15325,28 @@ static int subregion_setter(struct subregion *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->location_code) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LocationCode\":\"" ));
                 STRY(osc_str_append_string(data, args->location_code));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->region_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RegionName\":\"" ));
                 STRY(osc_str_append_string(data, args->region_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->subregion_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionName\":\"" ));
                 STRY(osc_str_append_string(data, args->subregion_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -16546,32 +15358,28 @@ static int tag_setter(struct tag *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->key) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Key\":\"" ));
                 STRY(osc_str_append_string(data, args->key));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->resource_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ResourceId\":\"" ));
                 STRY(osc_str_append_string(data, args->resource_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->resource_type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ResourceType\":\"" ));
                 STRY(osc_str_append_string(data, args->resource_type));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->value) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Value\":\"" ));
                 STRY(osc_str_append_string(data, args->value));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -16583,24 +15391,21 @@ static int user_setter(struct user *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->path) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Path\":\"" ));
                 STRY(osc_str_append_string(data, args->path));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->user_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"UserId\":\"" ));
                 STRY(osc_str_append_string(data, args->user_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->user_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"UserName\":\"" ));
                 STRY(osc_str_append_string(data, args->user_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -16612,39 +15417,34 @@ static int vgw_telemetry_setter(struct vgw_telemetry *args, struct osc_str *data
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_accepted_route_count || args->accepted_route_count) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AcceptedRouteCount\":" ));
                 STRY(osc_str_append_int(data, args->accepted_route_count));
 	   	ret += 1;
 	}
 	if (args->last_state_change_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LastStateChangeDate\":\"" ));
                 STRY(osc_str_append_string(data, args->last_state_change_date));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->outside_ip_address) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OutsideIpAddress\":\"" ));
                 STRY(osc_str_append_string(data, args->outside_ip_address));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state_description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"StateDescription\":\"" ));
                 STRY(osc_str_append_string(data, args->state_description));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -16656,16 +15456,14 @@ static int virtual_gateway_setter(struct virtual_gateway *args, struct osc_str *
        int count_args = 0;
        int ret = 0;
 	if (args->connection_type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ConnectionType\":\"" ));
                 STRY(osc_str_append_string(data, args->connection_type));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->net_to_virtual_gateway_links) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetToVirtualGatewayLinks\":[" ));
 		for (int i = 0; i < args->nb_net_to_virtual_gateway_links; ++i) {
 	       	    struct net_to_virtual_gateway_link *p = &args->net_to_virtual_gateway_links[i];
@@ -16679,23 +15477,20 @@ static int virtual_gateway_setter(struct virtual_gateway *args, struct osc_str *
 		ret += 1;
 	} else
 	if (args->net_to_virtual_gateway_links_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetToVirtualGatewayLinks\":" ));
                 STRY(osc_str_append_string(data, args->net_to_virtual_gateway_links_str));
 		ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -16709,15 +15504,13 @@ static int virtual_gateway_setter(struct virtual_gateway *args, struct osc_str *
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
 	}
 	if (args->virtual_gateway_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VirtualGatewayId\":\"" ));
                 STRY(osc_str_append_string(data, args->virtual_gateway_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -16729,16 +15522,14 @@ static int vm_setter(struct vm *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->architecture) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Architecture\":\"" ));
                 STRY(osc_str_append_string(data, args->architecture));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->block_device_mappings) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappings\":[" ));
 		for (int i = 0; i < args->nb_block_device_mappings; ++i) {
 	       	    struct block_device_mapping_created *p = &args->block_device_mappings[i];
@@ -16752,98 +15543,85 @@ static int vm_setter(struct vm *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->block_device_mappings_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappings\":" ));
                 STRY(osc_str_append_string(data, args->block_device_mappings_str));
 		ret += 1;
 	}
 	if (args->is_set_bsu_optimized) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BsuOptimized\":" ));
                 STRY(osc_str_append_bool(data, args->bsu_optimized));
 	   	ret += 1;
 	}
 	if (args->client_token) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ClientToken\":\"" ));
                 STRY(osc_str_append_string(data, args->client_token));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->creation_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CreationDate\":\"" ));
                 STRY(osc_str_append_string(data, args->creation_date));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_deletion_protection) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeletionProtection\":" ));
                 STRY(osc_str_append_bool(data, args->deletion_protection));
 	   	ret += 1;
 	}
 	if (args->hypervisor) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Hypervisor\":\"" ));
                 STRY(osc_str_append_string(data, args->hypervisor));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->image_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ImageId\":\"" ));
                 STRY(osc_str_append_string(data, args->image_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_is_source_dest_checked) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IsSourceDestChecked\":" ));
                 STRY(osc_str_append_bool(data, args->is_source_dest_checked));
 	   	ret += 1;
 	}
 	if (args->keypair_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"KeypairName\":\"" ));
                 STRY(osc_str_append_string(data, args->keypair_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_launch_number || args->launch_number) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LaunchNumber\":" ));
                 STRY(osc_str_append_int(data, args->launch_number));
 	   	ret += 1;
 	}
 	if (args->is_set_nested_virtualization) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NestedVirtualization\":" ));
                 STRY(osc_str_append_bool(data, args->nested_virtualization));
 	   	ret += 1;
 	}
 	if (args->net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->nics) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Nics\":[" ));
 		for (int i = 0; i < args->nb_nics; ++i) {
 	       	    struct nic_light *p = &args->nics[i];
@@ -16857,53 +15635,46 @@ static int vm_setter(struct vm *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->nics_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Nics\":" ));
                 STRY(osc_str_append_string(data, args->nics_str));
 		ret += 1;
 	}
 	if (args->os_family) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OsFamily\":\"" ));
                 STRY(osc_str_append_string(data, args->os_family));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->performance) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Performance\":\"" ));
                 STRY(osc_str_append_string(data, args->performance));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->placement_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Placement\":" ));
                 STRY(osc_str_append_string(data, args->placement_str));
 		ret += 1;
 	} else if (args->is_set_placement) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Placement\": { " ));
 	       STRY(placement_setter(&args->placement, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->private_dns_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateDnsName\":\"" ));
                 STRY(osc_str_append_string(data, args->private_dns_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->private_ip) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIp\":\"" ));
                 STRY(osc_str_append_string(data, args->private_ip));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -16912,8 +15683,7 @@ static int vm_setter(struct vm *args, struct osc_str *data) {
 	if (args->product_codes) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ProductCodes\":[" ));
 		for (as = args->product_codes; *as > 0; ++as) {
 			if (as != args->product_codes)
@@ -16925,55 +15695,48 @@ static int vm_setter(struct vm *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->product_codes_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ProductCodes\":" ));
                 STRY(osc_str_append_string(data, args->product_codes_str));
 		ret += 1;
 	}
 	if (args->public_dns_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicDnsName\":\"" ));
                 STRY(osc_str_append_string(data, args->public_dns_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->public_ip) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
                 STRY(osc_str_append_string(data, args->public_ip));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->reservation_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ReservationId\":\"" ));
                 STRY(osc_str_append_string(data, args->reservation_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->root_device_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RootDeviceName\":\"" ));
                 STRY(osc_str_append_string(data, args->root_device_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->root_device_type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RootDeviceType\":\"" ));
                 STRY(osc_str_append_string(data, args->root_device_type));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->security_groups) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroups\":[" ));
 		for (int i = 0; i < args->nb_security_groups; ++i) {
 	       	    struct security_group_light *p = &args->security_groups[i];
@@ -16987,39 +15750,34 @@ static int vm_setter(struct vm *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->security_groups_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroups\":" ));
                 STRY(osc_str_append_string(data, args->security_groups_str));
 		ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state_reason) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"StateReason\":\"" ));
                 STRY(osc_str_append_string(data, args->state_reason));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->subnet_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
                 STRY(osc_str_append_string(data, args->subnet_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -17033,39 +15791,34 @@ static int vm_setter(struct vm *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
 	}
 	if (args->user_data) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"UserData\":\"" ));
                 STRY(osc_str_append_string(data, args->user_data));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_initiated_shutdown_behavior) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmInitiatedShutdownBehavior\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_initiated_shutdown_behavior));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmType\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_type));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -17077,24 +15830,21 @@ static int vm_group_setter(struct vm_group *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->creation_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CreationDate\":\"" ));
                 STRY(osc_str_append_string(data, args->creation_date));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->positioning_strategy) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PositioningStrategy\":\"" ));
                 STRY(osc_str_append_string(data, args->positioning_strategy));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -17103,8 +15853,7 @@ static int vm_group_setter(struct vm_group *args, struct osc_str *data) {
 	if (args->security_group_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":[" ));
 		for (as = args->security_group_ids; *as > 0; ++as) {
 			if (as != args->security_group_ids)
@@ -17116,31 +15865,27 @@ static int vm_group_setter(struct vm_group *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_group_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":" ));
                 STRY(osc_str_append_string(data, args->security_group_ids_str));
 		ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->subnet_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
                 STRY(osc_str_append_string(data, args->subnet_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -17154,30 +15899,26 @@ static int vm_group_setter(struct vm_group *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
 	}
 	if (args->is_set_vm_count || args->vm_count) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmCount\":" ));
                 STRY(osc_str_append_int(data, args->vm_count));
 	   	ret += 1;
 	}
 	if (args->vm_group_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmGroupId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_group_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_group_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmGroupName\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_group_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -17186,8 +15927,7 @@ static int vm_group_setter(struct vm_group *args, struct osc_str *data) {
 	if (args->vm_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
 		for (as = args->vm_ids; *as > 0; ++as) {
 			if (as != args->vm_ids)
@@ -17199,15 +15939,13 @@ static int vm_group_setter(struct vm_group *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":" ));
                 STRY(osc_str_append_string(data, args->vm_ids_str));
 		ret += 1;
 	}
 	if (args->vm_template_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmTemplateId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_template_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -17219,24 +15957,21 @@ static int vm_state_setter(struct vm_state *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->current_state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CurrentState\":\"" ));
                 STRY(osc_str_append_string(data, args->current_state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->previous_state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PreviousState\":\"" ));
                 STRY(osc_str_append_string(data, args->previous_state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -17248,8 +15983,7 @@ static int vm_states_setter(struct vm_states *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
         if (args->maintenance_events) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MaintenanceEvents\":[" ));
 		for (int i = 0; i < args->nb_maintenance_events; ++i) {
 	       	    struct maintenance_event *p = &args->maintenance_events[i];
@@ -17263,31 +15997,27 @@ static int vm_states_setter(struct vm_states *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->maintenance_events_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MaintenanceEvents\":" ));
                 STRY(osc_str_append_string(data, args->maintenance_events_str));
 		ret += 1;
 	}
 	if (args->subregion_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionName\":\"" ));
                 STRY(osc_str_append_string(data, args->subregion_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmState\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_state));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -17299,70 +16029,61 @@ static int vm_template_setter(struct vm_template *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_cpu_cores || args->cpu_cores) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CpuCores\":" ));
                 STRY(osc_str_append_int(data, args->cpu_cores));
 	   	ret += 1;
 	}
 	if (args->cpu_generation) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CpuGeneration\":\"" ));
                 STRY(osc_str_append_string(data, args->cpu_generation));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->cpu_performance) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CpuPerformance\":\"" ));
                 STRY(osc_str_append_string(data, args->cpu_performance));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->creation_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CreationDate\":\"" ));
                 STRY(osc_str_append_string(data, args->creation_date));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->image_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ImageId\":\"" ));
                 STRY(osc_str_append_string(data, args->image_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->keypair_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"KeypairName\":\"" ));
                 STRY(osc_str_append_string(data, args->keypair_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_ram || args->ram) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Ram\":" ));
                 STRY(osc_str_append_int(data, args->ram));
 	   	ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -17376,23 +16097,20 @@ static int vm_template_setter(struct vm_template *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
 	}
 	if (args->vm_template_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmTemplateId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_template_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_template_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmTemplateName\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_template_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -17404,51 +16122,44 @@ static int vm_type_setter(struct vm_type *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_bsu_optimized) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BsuOptimized\":" ));
                 STRY(osc_str_append_bool(data, args->bsu_optimized));
 	   	ret += 1;
 	}
 	if (args->is_set_max_private_ips || args->max_private_ips) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MaxPrivateIps\":" ));
                 STRY(osc_str_append_int(data, args->max_private_ips));
 	   	ret += 1;
 	}
 	if (args->is_set_memory_size || args->memory_size) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MemorySize\":" ));
                 STRY(osc_str_append_double(data, args->memory_size));
 	   	ret += 1;
 	}
 	if (args->is_set_vcore_count || args->vcore_count) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VcoreCount\":" ));
                 STRY(osc_str_append_int(data, args->vcore_count));
 	   	ret += 1;
 	}
 	if (args->vm_type_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmTypeName\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_type_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_volume_count || args->volume_count) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeCount\":" ));
                 STRY(osc_str_append_int(data, args->volume_count));
 	   	ret += 1;
 	}
 	if (args->is_set_volume_size || args->volume_size) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeSize\":" ));
                 STRY(osc_str_append_int(data, args->volume_size));
 	   	ret += 1;
@@ -17459,23 +16170,20 @@ static int volume_setter(struct volume *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->creation_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CreationDate\":\"" ));
                 STRY(osc_str_append_string(data, args->creation_date));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_iops || args->iops) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Iops\":" ));
                 STRY(osc_str_append_int(data, args->iops));
 	   	ret += 1;
 	}
         if (args->linked_volumes) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkedVolumes\":[" ));
 		for (int i = 0; i < args->nb_linked_volumes; ++i) {
 	       	    struct linked_volume *p = &args->linked_volumes[i];
@@ -17489,46 +16197,40 @@ static int volume_setter(struct volume *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->linked_volumes_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkedVolumes\":" ));
                 STRY(osc_str_append_string(data, args->linked_volumes_str));
 		ret += 1;
 	}
 	if (args->is_set_size || args->size) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Size\":" ));
                 STRY(osc_str_append_int(data, args->size));
 	   	ret += 1;
 	}
 	if (args->snapshot_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SnapshotId\":\"" ));
                 STRY(osc_str_append_string(data, args->snapshot_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->subregion_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionName\":\"" ));
                 STRY(osc_str_append_string(data, args->subregion_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -17542,23 +16244,20 @@ static int volume_setter(struct volume *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
 	}
 	if (args->volume_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeId\":\"" ));
                 STRY(osc_str_append_string(data, args->volume_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->volume_type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeType\":\"" ));
                 STRY(osc_str_append_string(data, args->volume_type));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -17570,32 +16269,28 @@ static int vpn_connection_setter(struct vpn_connection *args, struct osc_str *da
        int count_args = 0;
        int ret = 0;
 	if (args->client_gateway_configuration) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ClientGatewayConfiguration\":\"" ));
                 STRY(osc_str_append_string(data, args->client_gateway_configuration));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->client_gateway_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ClientGatewayId\":\"" ));
                 STRY(osc_str_append_string(data, args->client_gateway_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->connection_type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ConnectionType\":\"" ));
                 STRY(osc_str_append_string(data, args->connection_type));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->routes) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Routes\":[" ));
 		for (int i = 0; i < args->nb_routes; ++i) {
 	       	    struct route_light *p = &args->routes[i];
@@ -17609,30 +16304,26 @@ static int vpn_connection_setter(struct vpn_connection *args, struct osc_str *da
 		ret += 1;
 	} else
 	if (args->routes_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Routes\":" ));
                 STRY(osc_str_append_string(data, args->routes_str));
 		ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_static_routes_only) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"StaticRoutesOnly\":" ));
                 STRY(osc_str_append_bool(data, args->static_routes_only));
 	   	ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -17646,15 +16337,13 @@ static int vpn_connection_setter(struct vpn_connection *args, struct osc_str *da
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
 	}
         if (args->vgw_telemetries) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VgwTelemetries\":[" ));
 		for (int i = 0; i < args->nb_vgw_telemetries; ++i) {
 	       	    struct vgw_telemetry *p = &args->vgw_telemetries[i];
@@ -17668,37 +16357,32 @@ static int vpn_connection_setter(struct vpn_connection *args, struct osc_str *da
 		ret += 1;
 	} else
 	if (args->vgw_telemetries_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VgwTelemetries\":" ));
                 STRY(osc_str_append_string(data, args->vgw_telemetries_str));
 		ret += 1;
 	}
 	if (args->virtual_gateway_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VirtualGatewayId\":\"" ));
                 STRY(osc_str_append_string(data, args->virtual_gateway_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vpn_connection_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VpnConnectionId\":\"" ));
                 STRY(osc_str_append_string(data, args->vpn_connection_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vpn_options_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VpnOptions\":" ));
                 STRY(osc_str_append_string(data, args->vpn_options_str));
 		ret += 1;
 	} else if (args->is_set_vpn_options) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"VpnOptions\": { " ));
 	       STRY(vpn_options_setter(&args->vpn_options, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -17710,36 +16394,31 @@ static int vpn_options_setter(struct vpn_options *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->phase1_options_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Phase1Options\":" ));
                 STRY(osc_str_append_string(data, args->phase1_options_str));
 		ret += 1;
 	} else if (args->is_set_phase1_options) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Phase1Options\": { " ));
 	       STRY(phase1_options_setter(&args->phase1_options, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->phase2_options_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Phase2Options\":" ));
                 STRY(osc_str_append_string(data, args->phase2_options_str));
 		ret += 1;
 	} else if (args->is_set_phase2_options) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Phase2Options\": { " ));
 	       STRY(phase2_options_setter(&args->phase2_options, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->tunnel_inside_ip_range) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TunnelInsideIpRange\":\"" ));
                 STRY(osc_str_append_string(data, args->tunnel_inside_ip_range));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -17751,113 +16430,97 @@ static int with_setter(struct with *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_account_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountId\":" ));
                 STRY(osc_str_append_bool(data, args->account_id));
 	   	ret += 1;
 	}
 	if (args->is_set_call_duration) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CallDuration\":" ));
                 STRY(osc_str_append_bool(data, args->call_duration));
 	   	ret += 1;
 	}
 	if (args->is_set_query_access_key) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryAccessKey\":" ));
                 STRY(osc_str_append_bool(data, args->query_access_key));
 	   	ret += 1;
 	}
 	if (args->is_set_query_api_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryApiName\":" ));
                 STRY(osc_str_append_bool(data, args->query_api_name));
 	   	ret += 1;
 	}
 	if (args->is_set_query_api_version) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryApiVersion\":" ));
                 STRY(osc_str_append_bool(data, args->query_api_version));
 	   	ret += 1;
 	}
 	if (args->is_set_query_call_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryCallName\":" ));
                 STRY(osc_str_append_bool(data, args->query_call_name));
 	   	ret += 1;
 	}
 	if (args->is_set_query_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryDate\":" ));
                 STRY(osc_str_append_bool(data, args->query_date));
 	   	ret += 1;
 	}
 	if (args->is_set_query_header_raw) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryHeaderRaw\":" ));
                 STRY(osc_str_append_bool(data, args->query_header_raw));
 	   	ret += 1;
 	}
 	if (args->is_set_query_header_size) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryHeaderSize\":" ));
                 STRY(osc_str_append_bool(data, args->query_header_size));
 	   	ret += 1;
 	}
 	if (args->is_set_query_ip_address) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryIpAddress\":" ));
                 STRY(osc_str_append_bool(data, args->query_ip_address));
 	   	ret += 1;
 	}
 	if (args->is_set_query_payload_raw) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryPayloadRaw\":" ));
                 STRY(osc_str_append_bool(data, args->query_payload_raw));
 	   	ret += 1;
 	}
 	if (args->is_set_query_payload_size) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryPayloadSize\":" ));
                 STRY(osc_str_append_bool(data, args->query_payload_size));
 	   	ret += 1;
 	}
 	if (args->is_set_query_user_agent) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryUserAgent\":" ));
                 STRY(osc_str_append_bool(data, args->query_user_agent));
 	   	ret += 1;
 	}
 	if (args->is_set_request_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RequestId\":" ));
                 STRY(osc_str_append_bool(data, args->request_id));
 	   	ret += 1;
 	}
 	if (args->is_set_response_size) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ResponseSize\":" ));
                 STRY(osc_str_append_bool(data, args->response_size));
 	   	ret += 1;
 	}
 	if (args->is_set_response_status_code) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ResponseStatusCode\":" ));
                 STRY(osc_str_append_bool(data, args->response_status_code));
 	   	ret += 1;
@@ -17874,45 +16537,39 @@ static  int update_vpn_connection_data(struct osc_update_vpn_connection_arg *arg
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->client_gateway_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ClientGatewayId\":\"" ));
                 STRY(osc_str_append_string(data, args->client_gateway_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->virtual_gateway_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VirtualGatewayId\":\"" ));
                 STRY(osc_str_append_string(data, args->virtual_gateway_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vpn_connection_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VpnConnectionId\":\"" ));
                 STRY(osc_str_append_string(data, args->vpn_connection_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vpn_options_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VpnOptions\":" ));
                 STRY(osc_str_append_string(data, args->vpn_options_str));
 		ret += 1;
 	} else if (args->is_set_vpn_options) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"VpnOptions\": { " ));
 	       STRY(vpn_options_setter(&args->vpn_options, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -17958,37 +16615,32 @@ static  int update_volume_data(struct osc_update_volume_arg *args, struct osc_st
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->is_set_iops || args->iops) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Iops\":" ));
                 STRY(osc_str_append_int(data, args->iops));
 	   	ret += 1;
 	}
 	if (args->is_set_size || args->size) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Size\":" ));
                 STRY(osc_str_append_int(data, args->size));
 	   	ret += 1;
 	}
 	if (args->volume_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeId\":\"" ));
                 STRY(osc_str_append_string(data, args->volume_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->volume_type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeType\":\"" ));
                 STRY(osc_str_append_string(data, args->volume_type));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -18034,23 +16686,20 @@ static  int update_vm_template_data(struct osc_update_vm_template_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -18064,23 +16713,20 @@ static  int update_vm_template_data(struct osc_update_vm_template_arg *args, str
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
 	}
 	if (args->vm_template_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmTemplateId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_template_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_template_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmTemplateName\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_template_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -18126,23 +16772,20 @@ static  int update_vm_group_data(struct osc_update_vm_group_arg *args, struct os
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -18156,31 +16799,27 @@ static  int update_vm_group_data(struct osc_update_vm_group_arg *args, struct os
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
 	}
 	if (args->vm_group_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmGroupId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_group_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_group_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmGroupName\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_group_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_template_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmTemplateId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_template_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -18226,8 +16865,7 @@ static  int update_vm_data(struct osc_update_vm_arg *args, struct osc_str *data)
 		return 0;
 	osc_str_append_string(data, "{");
         if (args->block_device_mappings) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappings\":[" ));
 		for (int i = 0; i < args->nb_block_device_mappings; ++i) {
 	       	    struct block_device_mapping_vm_update *p = &args->block_device_mappings[i];
@@ -18241,58 +16879,50 @@ static  int update_vm_data(struct osc_update_vm_arg *args, struct osc_str *data)
 		ret += 1;
 	} else
 	if (args->block_device_mappings_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappings\":" ));
                 STRY(osc_str_append_string(data, args->block_device_mappings_str));
 		ret += 1;
 	}
 	if (args->is_set_bsu_optimized) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BsuOptimized\":" ));
                 STRY(osc_str_append_bool(data, args->bsu_optimized));
 	   	ret += 1;
 	}
 	if (args->is_set_deletion_protection) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeletionProtection\":" ));
                 STRY(osc_str_append_bool(data, args->deletion_protection));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->is_set_is_source_dest_checked) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IsSourceDestChecked\":" ));
                 STRY(osc_str_append_bool(data, args->is_source_dest_checked));
 	   	ret += 1;
 	}
 	if (args->keypair_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"KeypairName\":\"" ));
                 STRY(osc_str_append_string(data, args->keypair_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_nested_virtualization) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NestedVirtualization\":" ));
                 STRY(osc_str_append_bool(data, args->nested_virtualization));
 	   	ret += 1;
 	}
 	if (args->performance) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Performance\":\"" ));
                 STRY(osc_str_append_string(data, args->performance));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -18301,8 +16931,7 @@ static  int update_vm_data(struct osc_update_vm_arg *args, struct osc_str *data)
 	if (args->security_group_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":[" ));
 		for (as = args->security_group_ids; *as > 0; ++as) {
 			if (as != args->security_group_ids)
@@ -18314,39 +16943,34 @@ static  int update_vm_data(struct osc_update_vm_arg *args, struct osc_str *data)
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_group_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":" ));
                 STRY(osc_str_append_string(data, args->security_group_ids_str));
 		ret += 1;
 	}
 	if (args->user_data) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"UserData\":\"" ));
                 STRY(osc_str_append_string(data, args->user_data));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_initiated_shutdown_behavior) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmInitiatedShutdownBehavior\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_initiated_shutdown_behavior));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmType\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_type));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -18392,31 +17016,27 @@ static  int update_user_data(struct osc_update_user_arg *args, struct osc_str *d
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->new_path) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NewPath\":\"" ));
                 STRY(osc_str_append_string(data, args->new_path));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->new_user_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NewUserName\":\"" ));
                 STRY(osc_str_append_string(data, args->new_user_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->user_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"UserName\":\"" ));
                 STRY(osc_str_append_string(data, args->user_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -18462,22 +17082,19 @@ static  int update_subnet_data(struct osc_update_subnet_arg *args, struct osc_st
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->is_set_map_public_ip_on_launch) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MapPublicIpOnLaunch\":" ));
                 STRY(osc_str_append_bool(data, args->map_public_ip_on_launch));
 	   	ret += 1;
 	}
 	if (args->subnet_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
                 STRY(osc_str_append_string(data, args->subnet_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -18523,29 +17140,25 @@ static  int update_snapshot_data(struct osc_update_snapshot_arg *args, struct os
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->permissions_to_create_volume_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PermissionsToCreateVolume\":" ));
                 STRY(osc_str_append_string(data, args->permissions_to_create_volume_str));
 		ret += 1;
 	} else if (args->is_set_permissions_to_create_volume) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"PermissionsToCreateVolume\": { " ));
 	       STRY(permissions_on_resource_creation_setter(&args->permissions_to_create_volume, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->snapshot_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SnapshotId\":\"" ));
                 STRY(osc_str_append_string(data, args->snapshot_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -18591,31 +17204,27 @@ static  int update_server_certificate_data(struct osc_update_server_certificate_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Name\":\"" ));
                 STRY(osc_str_append_string(data, args->name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->new_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NewName\":\"" ));
                 STRY(osc_str_append_string(data, args->new_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->new_path) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NewPath\":\"" ));
                 STRY(osc_str_append_string(data, args->new_path));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -18661,30 +17270,26 @@ static  int update_route_propagation_data(struct osc_update_route_propagation_ar
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->is_set_enable) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Enable\":" ));
                 STRY(osc_str_append_bool(data, args->enable));
 	   	ret += 1;
 	}
 	if (args->route_table_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteTableId\":\"" ));
                 STRY(osc_str_append_string(data, args->route_table_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->virtual_gateway_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VirtualGatewayId\":\"" ));
                 STRY(osc_str_append_string(data, args->virtual_gateway_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -18730,63 +17335,55 @@ static  int update_route_data(struct osc_update_route_arg *args, struct osc_str 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->destination_ip_range) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DestinationIpRange\":\"" ));
                 STRY(osc_str_append_string(data, args->destination_ip_range));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->gateway_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"GatewayId\":\"" ));
                 STRY(osc_str_append_string(data, args->gateway_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->nat_service_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NatServiceId\":\"" ));
                 STRY(osc_str_append_string(data, args->nat_service_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->net_peering_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetPeeringId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_peering_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->nic_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
                 STRY(osc_str_append_string(data, args->nic_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->route_table_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteTableId\":\"" ));
                 STRY(osc_str_append_string(data, args->route_table_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -18832,37 +17429,32 @@ static  int update_nic_data(struct osc_update_nic_arg *args, struct osc_str *dat
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->link_nic_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNic\":" ));
                 STRY(osc_str_append_string(data, args->link_nic_str));
 		ret += 1;
 	} else if (args->is_set_link_nic) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"LinkNic\": { " ));
 	       STRY(link_nic_to_update_setter(&args->link_nic, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->nic_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
                 STRY(osc_str_append_string(data, args->nic_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -18871,8 +17463,7 @@ static  int update_nic_data(struct osc_update_nic_arg *args, struct osc_str *dat
 	if (args->security_group_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":[" ));
 		for (as = args->security_group_ids; *as > 0; ++as) {
 			if (as != args->security_group_ids)
@@ -18884,8 +17475,7 @@ static  int update_nic_data(struct osc_update_nic_arg *args, struct osc_str *dat
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_group_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":" ));
                 STRY(osc_str_append_string(data, args->security_group_ids_str));
 		ret += 1;
@@ -18932,8 +17522,7 @@ static  int update_net_access_point_data(struct osc_update_net_access_point_arg 
 	if (args->add_route_table_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AddRouteTableIds\":[" ));
 		for (as = args->add_route_table_ids; *as > 0; ++as) {
 			if (as != args->add_route_table_ids)
@@ -18945,22 +17534,19 @@ static  int update_net_access_point_data(struct osc_update_net_access_point_arg 
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->add_route_table_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AddRouteTableIds\":" ));
                 STRY(osc_str_append_string(data, args->add_route_table_ids_str));
 		ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->net_access_point_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetAccessPointId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_access_point_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -18969,8 +17555,7 @@ static  int update_net_access_point_data(struct osc_update_net_access_point_arg 
 	if (args->remove_route_table_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RemoveRouteTableIds\":[" ));
 		for (as = args->remove_route_table_ids; *as > 0; ++as) {
 			if (as != args->remove_route_table_ids)
@@ -18982,8 +17567,7 @@ static  int update_net_access_point_data(struct osc_update_net_access_point_arg 
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->remove_route_table_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RemoveRouteTableIds\":" ));
                 STRY(osc_str_append_string(data, args->remove_route_table_ids_str));
 		ret += 1;
@@ -19028,23 +17612,20 @@ static  int update_net_data(struct osc_update_net_arg *args, struct osc_str *dat
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->dhcp_options_set_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DhcpOptionsSetId\":\"" ));
                 STRY(osc_str_append_string(data, args->dhcp_options_set_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -19090,51 +17671,44 @@ static  int update_load_balancer_data(struct osc_update_load_balancer_arg *args,
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->access_log_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccessLog\":" ));
                 STRY(osc_str_append_string(data, args->access_log_str));
 		ret += 1;
 	} else if (args->is_set_access_log) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"AccessLog\": { " ));
 	       STRY(access_log_setter(&args->access_log, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->health_check_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"HealthCheck\":" ));
                 STRY(osc_str_append_string(data, args->health_check_str));
 		ret += 1;
 	} else if (args->is_set_health_check) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"HealthCheck\": { " ));
 	       STRY(health_check_setter(&args->health_check, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->load_balancer_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
                 STRY(osc_str_append_string(data, args->load_balancer_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_load_balancer_port || args->load_balancer_port) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerPort\":" ));
                 STRY(osc_str_append_int(data, args->load_balancer_port));
 	   	ret += 1;
@@ -19142,8 +17716,7 @@ static  int update_load_balancer_data(struct osc_update_load_balancer_arg *args,
 	if (args->policy_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PolicyNames\":[" ));
 		for (as = args->policy_names; *as > 0; ++as) {
 			if (as != args->policy_names)
@@ -19155,23 +17728,20 @@ static  int update_load_balancer_data(struct osc_update_load_balancer_arg *args,
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->policy_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PolicyNames\":" ));
                 STRY(osc_str_append_string(data, args->policy_names_str));
 		ret += 1;
 	}
 	if (args->public_ip) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
                 STRY(osc_str_append_string(data, args->public_ip));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_secured_cookies) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecuredCookies\":" ));
                 STRY(osc_str_append_bool(data, args->secured_cookies));
 	   	ret += 1;
@@ -19179,8 +17749,7 @@ static  int update_load_balancer_data(struct osc_update_load_balancer_arg *args,
 	if (args->security_groups) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroups\":[" ));
 		for (as = args->security_groups; *as > 0; ++as) {
 			if (as != args->security_groups)
@@ -19192,15 +17761,13 @@ static  int update_load_balancer_data(struct osc_update_load_balancer_arg *args,
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_groups_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroups\":" ));
                 STRY(osc_str_append_string(data, args->security_groups_str));
 		ret += 1;
 	}
 	if (args->server_certificate_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ServerCertificateId\":\"" ));
                 STRY(osc_str_append_string(data, args->server_certificate_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -19246,31 +17813,27 @@ static  int update_listener_rule_data(struct osc_update_listener_rule_arg *args,
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->host_pattern) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"HostPattern\":\"" ));
                 STRY(osc_str_append_string(data, args->host_pattern));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->listener_rule_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ListenerRuleName\":\"" ));
                 STRY(osc_str_append_string(data, args->listener_rule_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->path_pattern) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PathPattern\":\"" ));
                 STRY(osc_str_append_string(data, args->path_pattern));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -19316,29 +17879,25 @@ static  int update_image_data(struct osc_update_image_arg *args, struct osc_str 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->image_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ImageId\":\"" ));
                 STRY(osc_str_append_string(data, args->image_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->permissions_to_launch_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PermissionsToLaunch\":" ));
                 STRY(osc_str_append_string(data, args->permissions_to_launch_str));
 		ret += 1;
 	} else if (args->is_set_permissions_to_launch) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"PermissionsToLaunch\": { " ));
 	       STRY(permissions_on_resource_creation_setter(&args->permissions_to_launch, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -19384,22 +17943,19 @@ static  int update_flexible_gpu_data(struct osc_update_flexible_gpu_arg *args, s
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_delete_on_vm_deletion) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeleteOnVmDeletion\":" ));
                 STRY(osc_str_append_bool(data, args->delete_on_vm_deletion));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->flexible_gpu_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"FlexibleGpuId\":\"" ));
                 STRY(osc_str_append_string(data, args->flexible_gpu_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -19445,23 +18001,20 @@ static  int update_direct_link_interface_data(struct osc_update_direct_link_inte
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->direct_link_interface_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DirectLinkInterfaceId\":\"" ));
                 STRY(osc_str_append_string(data, args->direct_link_interface_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->is_set_mtu || args->mtu) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Mtu\":" ));
                 STRY(osc_str_append_int(data, args->mtu));
 	   	ret += 1;
@@ -19506,24 +18059,21 @@ static  int update_ca_data(struct osc_update_ca_arg *args, struct osc_str *data)
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->ca_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CaId\":\"" ));
                 STRY(osc_str_append_string(data, args->ca_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -19568,8 +18118,7 @@ static  int update_api_access_rule_data(struct osc_update_api_access_rule_arg *a
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->api_access_rule_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ApiAccessRuleId\":\"" ));
                 STRY(osc_str_append_string(data, args->api_access_rule_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -19578,8 +18127,7 @@ static  int update_api_access_rule_data(struct osc_update_api_access_rule_arg *a
 	if (args->ca_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CaIds\":[" ));
 		for (as = args->ca_ids; *as > 0; ++as) {
 			if (as != args->ca_ids)
@@ -19591,8 +18139,7 @@ static  int update_api_access_rule_data(struct osc_update_api_access_rule_arg *a
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ca_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CaIds\":" ));
                 STRY(osc_str_append_string(data, args->ca_ids_str));
 		ret += 1;
@@ -19600,8 +18147,7 @@ static  int update_api_access_rule_data(struct osc_update_api_access_rule_arg *a
 	if (args->cns) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Cns\":[" ));
 		for (as = args->cns; *as > 0; ++as) {
 			if (as != args->cns)
@@ -19613,23 +18159,20 @@ static  int update_api_access_rule_data(struct osc_update_api_access_rule_arg *a
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->cns_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Cns\":" ));
                 STRY(osc_str_append_string(data, args->cns_str));
 		ret += 1;
 	}
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -19637,8 +18180,7 @@ static  int update_api_access_rule_data(struct osc_update_api_access_rule_arg *a
 	if (args->ip_ranges) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRanges\":[" ));
 		for (as = args->ip_ranges; *as > 0; ++as) {
 			if (as != args->ip_ranges)
@@ -19650,8 +18192,7 @@ static  int update_api_access_rule_data(struct osc_update_api_access_rule_arg *a
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ip_ranges_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRanges\":" ));
                 STRY(osc_str_append_string(data, args->ip_ranges_str));
 		ret += 1;
@@ -19696,22 +18237,19 @@ static  int update_api_access_policy_data(struct osc_update_api_access_policy_ar
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->is_set_max_access_key_expiration_seconds || args->max_access_key_expiration_seconds) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MaxAccessKeyExpirationSeconds\":" ));
                 STRY(osc_str_append_int(data, args->max_access_key_expiration_seconds));
 	   	ret += 1;
 	}
 	if (args->is_set_require_trusted_env) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RequireTrustedEnv\":" ));
                 STRY(osc_str_append_bool(data, args->require_trusted_env));
 	   	ret += 1;
@@ -19758,8 +18296,7 @@ static  int update_account_data(struct osc_update_account_arg *args, struct osc_
 	if (args->additional_emails) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AdditionalEmails\":[" ));
 		for (as = args->additional_emails; *as > 0; ++as) {
 			if (as != args->additional_emails)
@@ -19771,110 +18308,96 @@ static  int update_account_data(struct osc_update_account_arg *args, struct osc_
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->additional_emails_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AdditionalEmails\":" ));
                 STRY(osc_str_append_string(data, args->additional_emails_str));
 		ret += 1;
 	}
 	if (args->city) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"City\":\"" ));
                 STRY(osc_str_append_string(data, args->city));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->company_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CompanyName\":\"" ));
                 STRY(osc_str_append_string(data, args->company_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->country) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Country\":\"" ));
                 STRY(osc_str_append_string(data, args->country));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->email) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Email\":\"" ));
                 STRY(osc_str_append_string(data, args->email));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->first_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"FirstName\":\"" ));
                 STRY(osc_str_append_string(data, args->first_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->job_title) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"JobTitle\":\"" ));
                 STRY(osc_str_append_string(data, args->job_title));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->last_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LastName\":\"" ));
                 STRY(osc_str_append_string(data, args->last_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->mobile_number) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MobileNumber\":\"" ));
                 STRY(osc_str_append_string(data, args->mobile_number));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->phone_number) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PhoneNumber\":\"" ));
                 STRY(osc_str_append_string(data, args->phone_number));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state_province) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"StateProvince\":\"" ));
                 STRY(osc_str_append_string(data, args->state_province));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vat_number) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VatNumber\":\"" ));
                 STRY(osc_str_append_string(data, args->vat_number));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->zip_code) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ZipCode\":\"" ));
                 STRY(osc_str_append_string(data, args->zip_code));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -19920,38 +18443,34 @@ static  int update_access_key_data(struct osc_update_access_key_arg *args, struc
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->access_key_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccessKeyId\":\"" ));
                 STRY(osc_str_append_string(data, args->access_key_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->expiration_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
-		STRY(osc_str_append_string(data, "\"ExpirationDate\":" ));
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"ExpirationDate\":\"" ));
                 STRY(osc_str_append_string(data, args->expiration_date));
-		ret += 1;
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
 	}
 	if (args->state) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"State\":\"" ));
                 STRY(osc_str_append_string(data, args->state));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->user_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"UserName\":\"" ));
                 STRY(osc_str_append_string(data, args->user_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -19997,22 +18516,19 @@ static  int unlink_volume_data(struct osc_unlink_volume_arg *args, struct osc_st
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->is_set_force_unlink) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ForceUnlink\":" ));
                 STRY(osc_str_append_bool(data, args->force_unlink));
 	   	ret += 1;
 	}
 	if (args->volume_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeId\":\"" ));
                 STRY(osc_str_append_string(data, args->volume_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -20058,23 +18574,20 @@ static  int unlink_virtual_gateway_data(struct osc_unlink_virtual_gateway_arg *a
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->virtual_gateway_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VirtualGatewayId\":\"" ));
                 STRY(osc_str_append_string(data, args->virtual_gateway_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -20120,15 +18633,13 @@ static  int unlink_route_table_data(struct osc_unlink_route_table_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->link_route_table_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkRouteTableId\":\"" ));
                 STRY(osc_str_append_string(data, args->link_route_table_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -20174,23 +18685,20 @@ static  int unlink_public_ip_data(struct osc_unlink_public_ip_arg *args, struct 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->link_public_ip_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkPublicIpId\":\"" ));
                 STRY(osc_str_append_string(data, args->link_public_ip_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->public_ip) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
                 STRY(osc_str_append_string(data, args->public_ip));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -20236,15 +18744,13 @@ static  int unlink_private_ips_data(struct osc_unlink_private_ips_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->nic_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
                 STRY(osc_str_append_string(data, args->nic_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -20253,8 +18759,7 @@ static  int unlink_private_ips_data(struct osc_unlink_private_ips_arg *args, str
 	if (args->private_ips) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIps\":[" ));
 		for (as = args->private_ips; *as > 0; ++as) {
 			if (as != args->private_ips)
@@ -20266,8 +18771,7 @@ static  int unlink_private_ips_data(struct osc_unlink_private_ips_arg *args, str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->private_ips_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIps\":" ));
                 STRY(osc_str_append_string(data, args->private_ips_str));
 		ret += 1;
@@ -20312,15 +18816,13 @@ static  int unlink_nic_data(struct osc_unlink_nic_arg *args, struct osc_str *dat
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->link_nic_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNicId\":\"" ));
                 STRY(osc_str_append_string(data, args->link_nic_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -20368,8 +18870,7 @@ static  int unlink_load_balancer_backend_machines_data(struct osc_unlink_load_ba
 	if (args->backend_ips) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendIps\":[" ));
 		for (as = args->backend_ips; *as > 0; ++as) {
 			if (as != args->backend_ips)
@@ -20381,8 +18882,7 @@ static  int unlink_load_balancer_backend_machines_data(struct osc_unlink_load_ba
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->backend_ips_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendIps\":" ));
                 STRY(osc_str_append_string(data, args->backend_ips_str));
 		ret += 1;
@@ -20390,8 +18890,7 @@ static  int unlink_load_balancer_backend_machines_data(struct osc_unlink_load_ba
 	if (args->backend_vm_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendVmIds\":[" ));
 		for (as = args->backend_vm_ids; *as > 0; ++as) {
 			if (as != args->backend_vm_ids)
@@ -20403,22 +18902,19 @@ static  int unlink_load_balancer_backend_machines_data(struct osc_unlink_load_ba
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->backend_vm_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendVmIds\":" ));
                 STRY(osc_str_append_string(data, args->backend_vm_ids_str));
 		ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->load_balancer_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
                 STRY(osc_str_append_string(data, args->load_balancer_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -20464,23 +18960,20 @@ static  int unlink_internet_service_data(struct osc_unlink_internet_service_arg 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->internet_service_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InternetServiceId\":\"" ));
                 STRY(osc_str_append_string(data, args->internet_service_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -20526,15 +19019,13 @@ static  int unlink_flexible_gpu_data(struct osc_unlink_flexible_gpu_arg *args, s
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->flexible_gpu_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"FlexibleGpuId\":\"" ));
                 STRY(osc_str_append_string(data, args->flexible_gpu_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -20580,15 +19071,13 @@ static  int stop_vms_data(struct osc_stop_vms_arg *args, struct osc_str *data)
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->is_set_force_stop) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ForceStop\":" ));
                 STRY(osc_str_append_bool(data, args->force_stop));
 	   	ret += 1;
@@ -20596,8 +19085,7 @@ static  int stop_vms_data(struct osc_stop_vms_arg *args, struct osc_str *data)
 	if (args->vm_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
 		for (as = args->vm_ids; *as > 0; ++as) {
 			if (as != args->vm_ids)
@@ -20609,8 +19097,7 @@ static  int stop_vms_data(struct osc_stop_vms_arg *args, struct osc_str *data)
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":" ));
                 STRY(osc_str_append_string(data, args->vm_ids_str));
 		ret += 1;
@@ -20655,8 +19142,7 @@ static  int start_vms_data(struct osc_start_vms_arg *args, struct osc_str *data)
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -20664,8 +19150,7 @@ static  int start_vms_data(struct osc_start_vms_arg *args, struct osc_str *data)
 	if (args->vm_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
 		for (as = args->vm_ids; *as > 0; ++as) {
 			if (as != args->vm_ids)
@@ -20677,8 +19162,7 @@ static  int start_vms_data(struct osc_start_vms_arg *args, struct osc_str *data)
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":" ));
                 STRY(osc_str_append_string(data, args->vm_ids_str));
 		ret += 1;
@@ -20723,15 +19207,13 @@ static  int send_reset_password_email_data(struct osc_send_reset_password_email_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->email) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Email\":\"" ));
                 STRY(osc_str_append_string(data, args->email));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -20777,22 +19259,19 @@ static  int scale_up_vm_group_data(struct osc_scale_up_vm_group_arg *args, struc
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->is_set_vm_addition || args->vm_addition) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmAddition\":" ));
                 STRY(osc_str_append_int(data, args->vm_addition));
 	   	ret += 1;
 	}
 	if (args->vm_group_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmGroupId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_group_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -20838,23 +19317,20 @@ static  int scale_down_vm_group_data(struct osc_scale_down_vm_group_arg *args, s
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->vm_group_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmGroupId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_group_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_vm_subtraction || args->vm_subtraction) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmSubtraction\":" ));
                 STRY(osc_str_append_int(data, args->vm_subtraction));
 	   	ret += 1;
@@ -20899,23 +19375,20 @@ static  int reset_account_password_data(struct osc_reset_account_password_arg *a
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->password) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Password\":\"" ));
                 STRY(osc_str_append_string(data, args->password));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->token) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Token\":\"" ));
                 STRY(osc_str_append_string(data, args->token));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -20961,15 +19434,13 @@ static  int reject_net_peering_data(struct osc_reject_net_peering_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->net_peering_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetPeeringId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_peering_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -21017,8 +19488,7 @@ static  int register_vms_in_load_balancer_data(struct osc_register_vms_in_load_b
 	if (args->backend_vm_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendVmIds\":[" ));
 		for (as = args->backend_vm_ids; *as > 0; ++as) {
 			if (as != args->backend_vm_ids)
@@ -21030,22 +19500,19 @@ static  int register_vms_in_load_balancer_data(struct osc_register_vms_in_load_b
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->backend_vm_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendVmIds\":" ));
                 STRY(osc_str_append_string(data, args->backend_vm_ids_str));
 		ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->load_balancer_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
                 STRY(osc_str_append_string(data, args->load_balancer_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -21091,8 +19558,7 @@ static  int reboot_vms_data(struct osc_reboot_vms_arg *args, struct osc_str *dat
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -21100,8 +19566,7 @@ static  int reboot_vms_data(struct osc_reboot_vms_arg *args, struct osc_str *dat
 	if (args->vm_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
 		for (as = args->vm_ids; *as > 0; ++as) {
 			if (as != args->vm_ids)
@@ -21113,8 +19578,7 @@ static  int reboot_vms_data(struct osc_reboot_vms_arg *args, struct osc_str *dat
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":" ));
                 STRY(osc_str_append_string(data, args->vm_ids_str));
 		ret += 1;
@@ -21159,21 +19623,18 @@ static  int read_vpn_connections_data(struct osc_read_vpn_connections_arg *args,
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_vpn_connection_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -21219,21 +19680,18 @@ static  int read_volumes_data(struct osc_read_volumes_arg *args, struct osc_str 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_volume_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -21279,28 +19737,24 @@ static  int read_vms_state_data(struct osc_read_vms_state_arg *args, struct osc_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_all_vms) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AllVms\":" ));
                 STRY(osc_str_append_bool(data, args->all_vms));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_vms_state_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -21348,8 +19802,7 @@ static  int read_vms_health_data(struct osc_read_vms_health_arg *args, struct os
 	if (args->backend_vm_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendVmIds\":[" ));
 		for (as = args->backend_vm_ids; *as > 0; ++as) {
 			if (as != args->backend_vm_ids)
@@ -21361,22 +19814,19 @@ static  int read_vms_health_data(struct osc_read_vms_health_arg *args, struct os
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->backend_vm_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendVmIds\":" ));
                 STRY(osc_str_append_string(data, args->backend_vm_ids_str));
 		ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->load_balancer_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
                 STRY(osc_str_append_string(data, args->load_balancer_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -21422,21 +19872,18 @@ static  int read_vms_data(struct osc_read_vms_arg *args, struct osc_str *data)
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_vm_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -21482,21 +19929,18 @@ static  int read_vm_types_data(struct osc_read_vm_types_arg *args, struct osc_st
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_vm_type_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -21542,21 +19986,18 @@ static  int read_vm_templates_data(struct osc_read_vm_templates_arg *args, struc
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_vm_template_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -21602,21 +20043,18 @@ static  int read_vm_groups_data(struct osc_read_vm_groups_arg *args, struct osc_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_vm_group_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -21662,21 +20100,18 @@ static  int read_virtual_gateways_data(struct osc_read_virtual_gateways_arg *arg
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_virtual_gateway_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -21722,8 +20157,7 @@ static  int read_users_data(struct osc_read_users_arg *args, struct osc_str *dat
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -21768,21 +20202,18 @@ static  int read_tags_data(struct osc_read_tags_arg *args, struct osc_str *data)
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_tag_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -21828,21 +20259,18 @@ static  int read_subregions_data(struct osc_read_subregions_arg *args, struct os
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_subregion_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -21888,21 +20316,18 @@ static  int read_subnets_data(struct osc_read_subnets_arg *args, struct osc_str 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_subnet_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -21948,21 +20373,18 @@ static  int read_snapshots_data(struct osc_read_snapshots_arg *args, struct osc_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_snapshot_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -22008,21 +20430,18 @@ static  int read_snapshot_export_tasks_data(struct osc_read_snapshot_export_task
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_export_task_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -22068,21 +20487,18 @@ static  int read_server_certificates_data(struct osc_read_server_certificates_ar
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_server_certificate_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -22128,21 +20544,18 @@ static  int read_security_groups_data(struct osc_read_security_groups_arg *args,
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_security_group_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -22188,16 +20601,14 @@ static  int read_secret_access_key_data(struct osc_read_secret_access_key_arg *a
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->access_key_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccessKeyId\":\"" ));
                 STRY(osc_str_append_string(data, args->access_key_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -22242,21 +20653,18 @@ static  int read_route_tables_data(struct osc_read_route_tables_arg *args, struc
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_route_table_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -22302,8 +20710,7 @@ static  int read_regions_data(struct osc_read_regions_arg *args, struct osc_str 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -22348,21 +20755,18 @@ static  int read_quotas_data(struct osc_read_quotas_arg *args, struct osc_str *d
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_quota_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -22408,21 +20812,18 @@ static  int read_public_ips_data(struct osc_read_public_ips_arg *args, struct os
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_public_ip_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -22468,8 +20869,7 @@ static  int read_public_ip_ranges_data(struct osc_read_public_ip_ranges_arg *arg
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -22514,8 +20914,7 @@ static  int read_public_catalog_data(struct osc_read_public_catalog_arg *args, s
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -22560,21 +20959,18 @@ static  int read_product_types_data(struct osc_read_product_types_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_product_type_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -22620,21 +21016,18 @@ static  int read_nics_data(struct osc_read_nics_arg *args, struct osc_str *data)
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_nic_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -22680,21 +21073,18 @@ static  int read_nets_data(struct osc_read_nets_arg *args, struct osc_str *data)
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_net_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -22740,21 +21130,18 @@ static  int read_net_peerings_data(struct osc_read_net_peerings_arg *args, struc
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_net_peering_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -22800,21 +21187,18 @@ static  int read_net_access_points_data(struct osc_read_net_access_points_arg *a
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_net_access_point_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -22860,21 +21244,18 @@ static  int read_net_access_point_services_data(struct osc_read_net_access_point
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_service_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -22920,21 +21301,18 @@ static  int read_nat_services_data(struct osc_read_nat_services_arg *args, struc
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_nat_service_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -22980,8 +21358,7 @@ static  int read_locations_data(struct osc_read_locations_arg *args, struct osc_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -23026,21 +21403,18 @@ static  int read_load_balancers_data(struct osc_read_load_balancers_arg *args, s
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_load_balancer_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -23086,8 +21460,7 @@ static  int read_load_balancer_tags_data(struct osc_read_load_balancer_tags_arg 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -23095,8 +21468,7 @@ static  int read_load_balancer_tags_data(struct osc_read_load_balancer_tags_arg 
 	if (args->load_balancer_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerNames\":[" ));
 		for (as = args->load_balancer_names; *as > 0; ++as) {
 			if (as != args->load_balancer_names)
@@ -23108,8 +21480,7 @@ static  int read_load_balancer_tags_data(struct osc_read_load_balancer_tags_arg 
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->load_balancer_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerNames\":" ));
                 STRY(osc_str_append_string(data, args->load_balancer_names_str));
 		ret += 1;
@@ -23154,21 +21525,18 @@ static  int read_listener_rules_data(struct osc_read_listener_rules_arg *args, s
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_listener_rule_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -23214,21 +21582,18 @@ static  int read_keypairs_data(struct osc_read_keypairs_arg *args, struct osc_st
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_keypair_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -23274,21 +21639,18 @@ static  int read_internet_services_data(struct osc_read_internet_services_arg *a
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_internet_service_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -23334,21 +21696,18 @@ static  int read_images_data(struct osc_read_images_arg *args, struct osc_str *d
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_image_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -23394,21 +21753,18 @@ static  int read_image_export_tasks_data(struct osc_read_image_export_tasks_arg 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_export_task_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -23454,21 +21810,18 @@ static  int read_flexible_gpus_data(struct osc_read_flexible_gpus_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_flexible_gpu_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -23514,8 +21867,7 @@ static  int read_flexible_gpu_catalog_data(struct osc_read_flexible_gpu_catalog_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -23560,21 +21912,18 @@ static  int read_direct_links_data(struct osc_read_direct_links_arg *args, struc
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_direct_link_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -23620,21 +21969,18 @@ static  int read_direct_link_interfaces_data(struct osc_read_direct_link_interfa
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_direct_link_interface_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -23680,21 +22026,18 @@ static  int read_dhcp_options_data(struct osc_read_dhcp_options_arg *args, struc
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_dhcp_options_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -23740,32 +22083,30 @@ static  int read_consumption_account_data(struct osc_read_consumption_account_ar
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->from_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
-		STRY(osc_str_append_string(data, "\"FromDate\":" ));
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"FromDate\":\"" ));
                 STRY(osc_str_append_string(data, args->from_date));
-		ret += 1;
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
 	}
 	if (args->is_set_overall) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Overall\":" ));
                 STRY(osc_str_append_bool(data, args->overall));
 	   	ret += 1;
 	}
 	if (args->to_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
-		STRY(osc_str_append_string(data, "\"ToDate\":" ));
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"ToDate\":\"" ));
                 STRY(osc_str_append_string(data, args->to_date));
-		ret += 1;
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
 	return !!ret;
@@ -23807,15 +22148,13 @@ static  int read_console_output_data(struct osc_read_console_output_arg *args, s
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -23861,21 +22200,18 @@ static  int read_client_gateways_data(struct osc_read_client_gateways_arg *args,
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_client_gateway_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -23921,21 +22257,18 @@ static  int read_catalogs_data(struct osc_read_catalogs_arg *args, struct osc_st
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_catalogs_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -23981,8 +22314,7 @@ static  int read_catalog_data(struct osc_read_catalog_arg *args, struct osc_str 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -24027,21 +22359,18 @@ static  int read_cas_data(struct osc_read_cas_arg *args, struct osc_str *data)
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_ca_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -24087,50 +22416,43 @@ static  int read_api_logs_data(struct osc_read_api_logs_arg *args, struct osc_st
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_api_log_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->next_page_token) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NextPageToken\":\"" ));
                 STRY(osc_str_append_string(data, args->next_page_token));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_results_per_page || args->results_per_page) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ResultsPerPage\":" ));
                 STRY(osc_str_append_int(data, args->results_per_page));
 	   	ret += 1;
 	}
 	if (args->with_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"With\":" ));
                 STRY(osc_str_append_string(data, args->with_str));
 		ret += 1;
 	} else if (args->is_set_with) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"With\": { " ));
 	       STRY(with_setter(&args->with, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -24176,21 +22498,18 @@ static  int read_api_access_rules_data(struct osc_read_api_access_rules_arg *arg
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_api_access_rule_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -24236,8 +22555,7 @@ static  int read_api_access_policy_data(struct osc_read_api_access_policy_arg *a
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -24282,15 +22600,13 @@ static  int read_admin_password_data(struct osc_read_admin_password_arg *args, s
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -24336,8 +22652,7 @@ static  int read_accounts_data(struct osc_read_accounts_arg *args, struct osc_st
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -24382,29 +22697,25 @@ static  int read_access_keys_data(struct osc_read_access_keys_arg *args, struct 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Filters\":" ));
                 STRY(osc_str_append_string(data, args->filters_str));
 		ret += 1;
 	} else if (args->is_set_filters) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
 	       STRY(filters_access_keys_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->user_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"UserName\":\"" ));
                 STRY(osc_str_append_string(data, args->user_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -24450,31 +22761,27 @@ static  int link_volume_data(struct osc_link_volume_arg *args, struct osc_str *d
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->device_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeviceName\":\"" ));
                 STRY(osc_str_append_string(data, args->device_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->volume_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeId\":\"" ));
                 STRY(osc_str_append_string(data, args->volume_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -24520,23 +22827,20 @@ static  int link_virtual_gateway_data(struct osc_link_virtual_gateway_arg *args,
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->virtual_gateway_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VirtualGatewayId\":\"" ));
                 STRY(osc_str_append_string(data, args->virtual_gateway_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -24582,23 +22886,20 @@ static  int link_route_table_data(struct osc_link_route_table_arg *args, struct 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->route_table_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteTableId\":\"" ));
                 STRY(osc_str_append_string(data, args->route_table_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->subnet_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
                 STRY(osc_str_append_string(data, args->subnet_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -24644,54 +22945,47 @@ static  int link_public_ip_data(struct osc_link_public_ip_arg *args, struct osc_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_allow_relink) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AllowRelink\":" ));
                 STRY(osc_str_append_bool(data, args->allow_relink));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->nic_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
                 STRY(osc_str_append_string(data, args->nic_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->private_ip) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIp\":\"" ));
                 STRY(osc_str_append_string(data, args->private_ip));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->public_ip) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
                 STRY(osc_str_append_string(data, args->public_ip));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->public_ip_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIpId\":\"" ));
                 STRY(osc_str_append_string(data, args->public_ip_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -24737,22 +23031,19 @@ static  int link_private_ips_data(struct osc_link_private_ips_arg *args, struct 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_allow_relink) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AllowRelink\":" ));
                 STRY(osc_str_append_bool(data, args->allow_relink));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->nic_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
                 STRY(osc_str_append_string(data, args->nic_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -24761,8 +23052,7 @@ static  int link_private_ips_data(struct osc_link_private_ips_arg *args, struct 
 	if (args->private_ips) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIps\":[" ));
 		for (as = args->private_ips; *as > 0; ++as) {
 			if (as != args->private_ips)
@@ -24774,15 +23064,13 @@ static  int link_private_ips_data(struct osc_link_private_ips_arg *args, struct 
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->private_ips_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIps\":" ));
                 STRY(osc_str_append_string(data, args->private_ips_str));
 		ret += 1;
 	}
 	if (args->is_set_secondary_private_ip_count || args->secondary_private_ip_count) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecondaryPrivateIpCount\":" ));
                 STRY(osc_str_append_int(data, args->secondary_private_ip_count));
 	   	ret += 1;
@@ -24827,30 +23115,26 @@ static  int link_nic_data(struct osc_link_nic_arg *args, struct osc_str *data)
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_device_number || args->device_number) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeviceNumber\":" ));
                 STRY(osc_str_append_int(data, args->device_number));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->nic_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
                 STRY(osc_str_append_string(data, args->nic_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -24898,8 +23182,7 @@ static  int link_load_balancer_backend_machines_data(struct osc_link_load_balanc
 	if (args->backend_ips) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendIps\":[" ));
 		for (as = args->backend_ips; *as > 0; ++as) {
 			if (as != args->backend_ips)
@@ -24911,8 +23194,7 @@ static  int link_load_balancer_backend_machines_data(struct osc_link_load_balanc
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->backend_ips_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendIps\":" ));
                 STRY(osc_str_append_string(data, args->backend_ips_str));
 		ret += 1;
@@ -24920,8 +23202,7 @@ static  int link_load_balancer_backend_machines_data(struct osc_link_load_balanc
 	if (args->backend_vm_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendVmIds\":[" ));
 		for (as = args->backend_vm_ids; *as > 0; ++as) {
 			if (as != args->backend_vm_ids)
@@ -24933,22 +23214,19 @@ static  int link_load_balancer_backend_machines_data(struct osc_link_load_balanc
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->backend_vm_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendVmIds\":" ));
                 STRY(osc_str_append_string(data, args->backend_vm_ids_str));
 		ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->load_balancer_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
                 STRY(osc_str_append_string(data, args->load_balancer_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -24994,23 +23272,20 @@ static  int link_internet_service_data(struct osc_link_internet_service_arg *arg
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->internet_service_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InternetServiceId\":\"" ));
                 STRY(osc_str_append_string(data, args->internet_service_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -25056,23 +23331,20 @@ static  int link_flexible_gpu_data(struct osc_link_flexible_gpu_arg *args, struc
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->flexible_gpu_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"FlexibleGpuId\":\"" ));
                 STRY(osc_str_append_string(data, args->flexible_gpu_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -25120,8 +23392,7 @@ static  int deregister_vms_in_load_balancer_data(struct osc_deregister_vms_in_lo
 	if (args->backend_vm_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendVmIds\":[" ));
 		for (as = args->backend_vm_ids; *as > 0; ++as) {
 			if (as != args->backend_vm_ids)
@@ -25133,22 +23404,19 @@ static  int deregister_vms_in_load_balancer_data(struct osc_deregister_vms_in_lo
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->backend_vm_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendVmIds\":" ));
                 STRY(osc_str_append_string(data, args->backend_vm_ids_str));
 		ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->load_balancer_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
                 STRY(osc_str_append_string(data, args->load_balancer_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -25194,23 +23462,20 @@ static  int delete_vpn_connection_route_data(struct osc_delete_vpn_connection_ro
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->destination_ip_range) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DestinationIpRange\":\"" ));
                 STRY(osc_str_append_string(data, args->destination_ip_range));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->vpn_connection_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VpnConnectionId\":\"" ));
                 STRY(osc_str_append_string(data, args->vpn_connection_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -25256,15 +23521,13 @@ static  int delete_vpn_connection_data(struct osc_delete_vpn_connection_arg *arg
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->vpn_connection_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VpnConnectionId\":\"" ));
                 STRY(osc_str_append_string(data, args->vpn_connection_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -25310,15 +23573,13 @@ static  int delete_volume_data(struct osc_delete_volume_arg *args, struct osc_st
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->volume_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeId\":\"" ));
                 STRY(osc_str_append_string(data, args->volume_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -25364,8 +23625,7 @@ static  int delete_vms_data(struct osc_delete_vms_arg *args, struct osc_str *dat
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -25373,8 +23633,7 @@ static  int delete_vms_data(struct osc_delete_vms_arg *args, struct osc_str *dat
 	if (args->vm_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
 		for (as = args->vm_ids; *as > 0; ++as) {
 			if (as != args->vm_ids)
@@ -25386,8 +23645,7 @@ static  int delete_vms_data(struct osc_delete_vms_arg *args, struct osc_str *dat
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":" ));
                 STRY(osc_str_append_string(data, args->vm_ids_str));
 		ret += 1;
@@ -25432,15 +23690,13 @@ static  int delete_vm_template_data(struct osc_delete_vm_template_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->vm_template_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmTemplateId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_template_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -25486,15 +23742,13 @@ static  int delete_vm_group_data(struct osc_delete_vm_group_arg *args, struct os
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->vm_group_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmGroupId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_group_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -25540,15 +23794,13 @@ static  int delete_virtual_gateway_data(struct osc_delete_virtual_gateway_arg *a
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->virtual_gateway_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VirtualGatewayId\":\"" ));
                 STRY(osc_str_append_string(data, args->virtual_gateway_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -25594,15 +23846,13 @@ static  int delete_user_data(struct osc_delete_user_arg *args, struct osc_str *d
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->user_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"UserName\":\"" ));
                 STRY(osc_str_append_string(data, args->user_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -25648,8 +23898,7 @@ static  int delete_tags_data(struct osc_delete_tags_arg *args, struct osc_str *d
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -25657,8 +23906,7 @@ static  int delete_tags_data(struct osc_delete_tags_arg *args, struct osc_str *d
 	if (args->resource_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ResourceIds\":[" ));
 		for (as = args->resource_ids; *as > 0; ++as) {
 			if (as != args->resource_ids)
@@ -25670,15 +23918,13 @@ static  int delete_tags_data(struct osc_delete_tags_arg *args, struct osc_str *d
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->resource_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ResourceIds\":" ));
                 STRY(osc_str_append_string(data, args->resource_ids_str));
 		ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -25692,8 +23938,7 @@ static  int delete_tags_data(struct osc_delete_tags_arg *args, struct osc_str *d
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -25738,15 +23983,13 @@ static  int delete_subnet_data(struct osc_delete_subnet_arg *args, struct osc_st
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->subnet_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
                 STRY(osc_str_append_string(data, args->subnet_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -25792,15 +24035,13 @@ static  int delete_snapshot_data(struct osc_delete_snapshot_arg *args, struct os
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->snapshot_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SnapshotId\":\"" ));
                 STRY(osc_str_append_string(data, args->snapshot_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -25846,15 +24087,13 @@ static  int delete_server_certificate_data(struct osc_delete_server_certificate_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Name\":\"" ));
                 STRY(osc_str_append_string(data, args->name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -25900,46 +24139,40 @@ static  int delete_security_group_rule_data(struct osc_delete_security_group_rul
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->flow) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Flow\":\"" ));
                 STRY(osc_str_append_string(data, args->flow));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_from_port_range || args->from_port_range) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"FromPortRange\":" ));
                 STRY(osc_str_append_int(data, args->from_port_range));
 	   	ret += 1;
 	}
 	if (args->ip_protocol) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpProtocol\":\"" ));
                 STRY(osc_str_append_string(data, args->ip_protocol));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->ip_range) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRange\":\"" ));
                 STRY(osc_str_append_string(data, args->ip_range));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->rules) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Rules\":[" ));
 		for (int i = 0; i < args->nb_rules; ++i) {
 	       	    struct security_group_rule *p = &args->rules[i];
@@ -25953,39 +24186,34 @@ static  int delete_security_group_rule_data(struct osc_delete_security_group_rul
 		ret += 1;
 	} else
 	if (args->rules_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Rules\":" ));
                 STRY(osc_str_append_string(data, args->rules_str));
 		ret += 1;
 	}
 	if (args->security_group_account_id_to_unlink) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupAccountIdToUnlink\":\"" ));
                 STRY(osc_str_append_string(data, args->security_group_account_id_to_unlink));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->security_group_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupId\":\"" ));
                 STRY(osc_str_append_string(data, args->security_group_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->security_group_name_to_unlink) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupNameToUnlink\":\"" ));
                 STRY(osc_str_append_string(data, args->security_group_name_to_unlink));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_to_port_range || args->to_port_range) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ToPortRange\":" ));
                 STRY(osc_str_append_int(data, args->to_port_range));
 	   	ret += 1;
@@ -26030,23 +24258,20 @@ static  int delete_security_group_data(struct osc_delete_security_group_arg *arg
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->security_group_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupId\":\"" ));
                 STRY(osc_str_append_string(data, args->security_group_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->security_group_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupName\":\"" ));
                 STRY(osc_str_append_string(data, args->security_group_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -26092,15 +24317,13 @@ static  int delete_route_table_data(struct osc_delete_route_table_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->route_table_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteTableId\":\"" ));
                 STRY(osc_str_append_string(data, args->route_table_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -26146,23 +24369,20 @@ static  int delete_route_data(struct osc_delete_route_arg *args, struct osc_str 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->destination_ip_range) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DestinationIpRange\":\"" ));
                 STRY(osc_str_append_string(data, args->destination_ip_range));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->route_table_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteTableId\":\"" ));
                 STRY(osc_str_append_string(data, args->route_table_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -26208,23 +24428,20 @@ static  int delete_public_ip_data(struct osc_delete_public_ip_arg *args, struct 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->public_ip) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
                 STRY(osc_str_append_string(data, args->public_ip));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->public_ip_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIpId\":\"" ));
                 STRY(osc_str_append_string(data, args->public_ip_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -26270,15 +24487,13 @@ static  int delete_nic_data(struct osc_delete_nic_arg *args, struct osc_str *dat
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->nic_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
                 STRY(osc_str_append_string(data, args->nic_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -26324,15 +24539,13 @@ static  int delete_net_peering_data(struct osc_delete_net_peering_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->net_peering_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetPeeringId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_peering_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -26378,15 +24591,13 @@ static  int delete_net_access_point_data(struct osc_delete_net_access_point_arg 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->net_access_point_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetAccessPointId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_access_point_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -26432,15 +24643,13 @@ static  int delete_net_data(struct osc_delete_net_arg *args, struct osc_str *dat
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -26486,15 +24695,13 @@ static  int delete_nat_service_data(struct osc_delete_nat_service_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->nat_service_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NatServiceId\":\"" ));
                 STRY(osc_str_append_string(data, args->nat_service_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -26540,8 +24747,7 @@ static  int delete_load_balancer_tags_data(struct osc_delete_load_balancer_tags_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -26549,8 +24755,7 @@ static  int delete_load_balancer_tags_data(struct osc_delete_load_balancer_tags_
 	if (args->load_balancer_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerNames\":[" ));
 		for (as = args->load_balancer_names; *as > 0; ++as) {
 			if (as != args->load_balancer_names)
@@ -26562,15 +24767,13 @@ static  int delete_load_balancer_tags_data(struct osc_delete_load_balancer_tags_
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->load_balancer_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerNames\":" ));
                 STRY(osc_str_append_string(data, args->load_balancer_names_str));
 		ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_load_balancer_tag *p = &args->tags[i];
@@ -26584,8 +24787,7 @@ static  int delete_load_balancer_tags_data(struct osc_delete_load_balancer_tags_
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -26630,23 +24832,20 @@ static  int delete_load_balancer_policy_data(struct osc_delete_load_balancer_pol
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->load_balancer_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
                 STRY(osc_str_append_string(data, args->load_balancer_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->policy_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PolicyName\":\"" ));
                 STRY(osc_str_append_string(data, args->policy_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -26692,15 +24891,13 @@ static  int delete_load_balancer_listeners_data(struct osc_delete_load_balancer_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->load_balancer_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
                 STRY(osc_str_append_string(data, args->load_balancer_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -26709,8 +24906,7 @@ static  int delete_load_balancer_listeners_data(struct osc_delete_load_balancer_
 	if (args->load_balancer_ports) {
 		int *ip;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerPorts\":[" ));
 		for (ip = args->load_balancer_ports; *ip > 0; ++ip) {
 			if (ip != args->load_balancer_ports)
@@ -26720,8 +24916,7 @@ static  int delete_load_balancer_listeners_data(struct osc_delete_load_balancer_
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->load_balancer_ports_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerPorts\":" ));
                 STRY(osc_str_append_string(data, args->load_balancer_ports_str));
 		ret += 1;
@@ -26766,15 +24961,13 @@ static  int delete_load_balancer_data(struct osc_delete_load_balancer_arg *args,
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->load_balancer_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
                 STRY(osc_str_append_string(data, args->load_balancer_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -26820,15 +25013,13 @@ static  int delete_listener_rule_data(struct osc_delete_listener_rule_arg *args,
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->listener_rule_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ListenerRuleName\":\"" ));
                 STRY(osc_str_append_string(data, args->listener_rule_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -26874,15 +25065,13 @@ static  int delete_keypair_data(struct osc_delete_keypair_arg *args, struct osc_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->keypair_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"KeypairName\":\"" ));
                 STRY(osc_str_append_string(data, args->keypair_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -26928,15 +25117,13 @@ static  int delete_internet_service_data(struct osc_delete_internet_service_arg 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->internet_service_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InternetServiceId\":\"" ));
                 STRY(osc_str_append_string(data, args->internet_service_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -26982,15 +25169,13 @@ static  int delete_image_data(struct osc_delete_image_arg *args, struct osc_str 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->image_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ImageId\":\"" ));
                 STRY(osc_str_append_string(data, args->image_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -27036,15 +25221,13 @@ static  int delete_flexible_gpu_data(struct osc_delete_flexible_gpu_arg *args, s
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->flexible_gpu_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"FlexibleGpuId\":\"" ));
                 STRY(osc_str_append_string(data, args->flexible_gpu_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -27090,15 +25273,13 @@ static  int delete_export_task_data(struct osc_delete_export_task_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->export_task_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ExportTaskId\":\"" ));
                 STRY(osc_str_append_string(data, args->export_task_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -27144,16 +25325,14 @@ static  int delete_direct_link_interface_data(struct osc_delete_direct_link_inte
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->direct_link_interface_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DirectLinkInterfaceId\":\"" ));
                 STRY(osc_str_append_string(data, args->direct_link_interface_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -27198,16 +25377,14 @@ static  int delete_direct_link_data(struct osc_delete_direct_link_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->direct_link_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DirectLinkId\":\"" ));
                 STRY(osc_str_append_string(data, args->direct_link_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -27252,16 +25429,14 @@ static  int delete_dhcp_options_data(struct osc_delete_dhcp_options_arg *args, s
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->dhcp_options_set_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DhcpOptionsSetId\":\"" ));
                 STRY(osc_str_append_string(data, args->dhcp_options_set_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -27306,16 +25481,14 @@ static  int delete_client_gateway_data(struct osc_delete_client_gateway_arg *arg
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->client_gateway_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ClientGatewayId\":\"" ));
                 STRY(osc_str_append_string(data, args->client_gateway_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -27360,16 +25533,14 @@ static  int delete_ca_data(struct osc_delete_ca_arg *args, struct osc_str *data)
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->ca_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CaId\":\"" ));
                 STRY(osc_str_append_string(data, args->ca_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -27414,16 +25585,14 @@ static  int delete_api_access_rule_data(struct osc_delete_api_access_rule_arg *a
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->api_access_rule_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ApiAccessRuleId\":\"" ));
                 STRY(osc_str_append_string(data, args->api_access_rule_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -27468,23 +25637,20 @@ static  int delete_access_key_data(struct osc_delete_access_key_arg *args, struc
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->access_key_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccessKeyId\":\"" ));
                 STRY(osc_str_append_string(data, args->access_key_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->user_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"UserName\":\"" ));
                 STRY(osc_str_append_string(data, args->user_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -27530,23 +25696,20 @@ static  int create_vpn_connection_route_data(struct osc_create_vpn_connection_ro
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->destination_ip_range) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DestinationIpRange\":\"" ));
                 STRY(osc_str_append_string(data, args->destination_ip_range));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->vpn_connection_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VpnConnectionId\":\"" ));
                 STRY(osc_str_append_string(data, args->vpn_connection_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -27592,38 +25755,33 @@ static  int create_vpn_connection_data(struct osc_create_vpn_connection_arg *arg
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->client_gateway_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ClientGatewayId\":\"" ));
                 STRY(osc_str_append_string(data, args->client_gateway_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->connection_type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ConnectionType\":\"" ));
                 STRY(osc_str_append_string(data, args->connection_type));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->is_set_static_routes_only) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"StaticRoutesOnly\":" ));
                 STRY(osc_str_append_bool(data, args->static_routes_only));
 	   	ret += 1;
 	}
 	if (args->virtual_gateway_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VirtualGatewayId\":\"" ));
                 STRY(osc_str_append_string(data, args->virtual_gateway_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -27669,45 +25827,39 @@ static  int create_volume_data(struct osc_create_volume_arg *args, struct osc_st
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->is_set_iops || args->iops) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Iops\":" ));
                 STRY(osc_str_append_int(data, args->iops));
 	   	ret += 1;
 	}
 	if (args->is_set_size || args->size) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Size\":" ));
                 STRY(osc_str_append_int(data, args->size));
 	   	ret += 1;
 	}
 	if (args->snapshot_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SnapshotId\":\"" ));
                 STRY(osc_str_append_string(data, args->snapshot_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->subregion_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionName\":\"" ));
                 STRY(osc_str_append_string(data, args->subregion_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->volume_type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeType\":\"" ));
                 STRY(osc_str_append_string(data, args->volume_type));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -27753,8 +25905,7 @@ static  int create_vms_data(struct osc_create_vms_arg *args, struct osc_str *dat
 		return 0;
 	osc_str_append_string(data, "{");
         if (args->block_device_mappings) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappings\":[" ));
 		for (int i = 0; i < args->nb_block_device_mappings; ++i) {
 	       	    struct block_device_mapping_vm_creation *p = &args->block_device_mappings[i];
@@ -27768,88 +25919,76 @@ static  int create_vms_data(struct osc_create_vms_arg *args, struct osc_str *dat
 		ret += 1;
 	} else
 	if (args->block_device_mappings_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappings\":" ));
                 STRY(osc_str_append_string(data, args->block_device_mappings_str));
 		ret += 1;
 	}
 	if (args->is_set_boot_on_creation) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BootOnCreation\":" ));
                 STRY(osc_str_append_bool(data, args->boot_on_creation));
 	   	ret += 1;
 	}
 	if (args->is_set_bsu_optimized) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BsuOptimized\":" ));
                 STRY(osc_str_append_bool(data, args->bsu_optimized));
 	   	ret += 1;
 	}
 	if (args->client_token) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ClientToken\":\"" ));
                 STRY(osc_str_append_string(data, args->client_token));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_deletion_protection) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeletionProtection\":" ));
                 STRY(osc_str_append_bool(data, args->deletion_protection));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->image_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ImageId\":\"" ));
                 STRY(osc_str_append_string(data, args->image_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->keypair_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"KeypairName\":\"" ));
                 STRY(osc_str_append_string(data, args->keypair_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_max_vms_count || args->max_vms_count) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MaxVmsCount\":" ));
                 STRY(osc_str_append_int(data, args->max_vms_count));
 	   	ret += 1;
 	}
 	if (args->is_set_min_vms_count || args->min_vms_count) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MinVmsCount\":" ));
                 STRY(osc_str_append_int(data, args->min_vms_count));
 	   	ret += 1;
 	}
 	if (args->is_set_nested_virtualization) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NestedVirtualization\":" ));
                 STRY(osc_str_append_bool(data, args->nested_virtualization));
 	   	ret += 1;
 	}
         if (args->nics) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Nics\":[" ));
 		for (int i = 0; i < args->nb_nics; ++i) {
 	       	    struct nic_for_vm_creation *p = &args->nics[i];
@@ -27863,29 +26002,25 @@ static  int create_vms_data(struct osc_create_vms_arg *args, struct osc_str *dat
 		ret += 1;
 	} else
 	if (args->nics_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Nics\":" ));
                 STRY(osc_str_append_string(data, args->nics_str));
 		ret += 1;
 	}
 	if (args->performance) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Performance\":\"" ));
                 STRY(osc_str_append_string(data, args->performance));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->placement_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Placement\":" ));
                 STRY(osc_str_append_string(data, args->placement_str));
 		ret += 1;
 	} else if (args->is_set_placement) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Placement\": { " ));
 	       STRY(placement_setter(&args->placement, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -27894,8 +26029,7 @@ static  int create_vms_data(struct osc_create_vms_arg *args, struct osc_str *dat
 	if (args->private_ips) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIps\":[" ));
 		for (as = args->private_ips; *as > 0; ++as) {
 			if (as != args->private_ips)
@@ -27907,8 +26041,7 @@ static  int create_vms_data(struct osc_create_vms_arg *args, struct osc_str *dat
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->private_ips_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIps\":" ));
                 STRY(osc_str_append_string(data, args->private_ips_str));
 		ret += 1;
@@ -27916,8 +26049,7 @@ static  int create_vms_data(struct osc_create_vms_arg *args, struct osc_str *dat
 	if (args->security_group_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":[" ));
 		for (as = args->security_group_ids; *as > 0; ++as) {
 			if (as != args->security_group_ids)
@@ -27929,8 +26061,7 @@ static  int create_vms_data(struct osc_create_vms_arg *args, struct osc_str *dat
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_group_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":" ));
                 STRY(osc_str_append_string(data, args->security_group_ids_str));
 		ret += 1;
@@ -27938,8 +26069,7 @@ static  int create_vms_data(struct osc_create_vms_arg *args, struct osc_str *dat
 	if (args->security_groups) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroups\":[" ));
 		for (as = args->security_groups; *as > 0; ++as) {
 			if (as != args->security_groups)
@@ -27951,39 +26081,34 @@ static  int create_vms_data(struct osc_create_vms_arg *args, struct osc_str *dat
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_groups_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroups\":" ));
                 STRY(osc_str_append_string(data, args->security_groups_str));
 		ret += 1;
 	}
 	if (args->subnet_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
                 STRY(osc_str_append_string(data, args->subnet_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->user_data) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"UserData\":\"" ));
                 STRY(osc_str_append_string(data, args->user_data));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_initiated_shutdown_behavior) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmInitiatedShutdownBehavior\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_initiated_shutdown_behavior));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmType\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_type));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -28029,69 +26154,60 @@ static  int create_vm_template_data(struct osc_create_vm_template_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_cpu_cores || args->cpu_cores) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CpuCores\":" ));
                 STRY(osc_str_append_int(data, args->cpu_cores));
 	   	ret += 1;
 	}
 	if (args->cpu_generation) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CpuGeneration\":\"" ));
                 STRY(osc_str_append_string(data, args->cpu_generation));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->cpu_performance) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CpuPerformance\":\"" ));
                 STRY(osc_str_append_string(data, args->cpu_performance));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->image_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ImageId\":\"" ));
                 STRY(osc_str_append_string(data, args->image_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->keypair_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"KeypairName\":\"" ));
                 STRY(osc_str_append_string(data, args->keypair_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_ram || args->ram) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Ram\":" ));
                 STRY(osc_str_append_int(data, args->ram));
 	   	ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -28105,15 +26221,13 @@ static  int create_vm_template_data(struct osc_create_vm_template_arg *args, str
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
 	}
 	if (args->vm_template_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmTemplateName\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_template_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -28159,23 +26273,20 @@ static  int create_vm_group_data(struct osc_create_vm_group_arg *args, struct os
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->positioning_strategy) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PositioningStrategy\":\"" ));
                 STRY(osc_str_append_string(data, args->positioning_strategy));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -28184,8 +26295,7 @@ static  int create_vm_group_data(struct osc_create_vm_group_arg *args, struct os
 	if (args->security_group_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":[" ));
 		for (as = args->security_group_ids; *as > 0; ++as) {
 			if (as != args->security_group_ids)
@@ -28197,23 +26307,20 @@ static  int create_vm_group_data(struct osc_create_vm_group_arg *args, struct os
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_group_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":" ));
                 STRY(osc_str_append_string(data, args->security_group_ids_str));
 		ret += 1;
 	}
 	if (args->subnet_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
                 STRY(osc_str_append_string(data, args->subnet_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -28227,30 +26334,26 @@ static  int create_vm_group_data(struct osc_create_vm_group_arg *args, struct os
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
 	}
 	if (args->is_set_vm_count || args->vm_count) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmCount\":" ));
                 STRY(osc_str_append_int(data, args->vm_count));
 	   	ret += 1;
 	}
 	if (args->vm_group_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmGroupName\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_group_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_template_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmTemplateId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_template_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -28296,16 +26399,14 @@ static  int create_virtual_gateway_data(struct osc_create_virtual_gateway_arg *a
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->connection_type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ConnectionType\":\"" ));
                 STRY(osc_str_append_string(data, args->connection_type));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -28350,23 +26451,20 @@ static  int create_user_data(struct osc_create_user_arg *args, struct osc_str *d
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->path) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Path\":\"" ));
                 STRY(osc_str_append_string(data, args->path));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->user_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"UserName\":\"" ));
                 STRY(osc_str_append_string(data, args->user_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -28412,8 +26510,7 @@ static  int create_tags_data(struct osc_create_tags_arg *args, struct osc_str *d
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -28421,8 +26518,7 @@ static  int create_tags_data(struct osc_create_tags_arg *args, struct osc_str *d
 	if (args->resource_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ResourceIds\":[" ));
 		for (as = args->resource_ids; *as > 0; ++as) {
 			if (as != args->resource_ids)
@@ -28434,15 +26530,13 @@ static  int create_tags_data(struct osc_create_tags_arg *args, struct osc_str *d
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->resource_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ResourceIds\":" ));
                 STRY(osc_str_append_string(data, args->resource_ids_str));
 		ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -28456,8 +26550,7 @@ static  int create_tags_data(struct osc_create_tags_arg *args, struct osc_str *d
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -28502,31 +26595,27 @@ static  int create_subnet_data(struct osc_create_subnet_arg *args, struct osc_st
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->ip_range) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRange\":\"" ));
                 STRY(osc_str_append_string(data, args->ip_range));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->subregion_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionName\":\"" ));
                 STRY(osc_str_append_string(data, args->subregion_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -28572,29 +26661,25 @@ static  int create_snapshot_export_task_data(struct osc_create_snapshot_export_t
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->osu_export_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OsuExport\":" ));
                 STRY(osc_str_append_string(data, args->osu_export_str));
 		ret += 1;
 	} else if (args->is_set_osu_export) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"OsuExport\": { " ));
 	       STRY(osu_export_to_create_setter(&args->osu_export, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->snapshot_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SnapshotId\":\"" ));
                 STRY(osc_str_append_string(data, args->snapshot_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -28640,54 +26725,47 @@ static  int create_snapshot_data(struct osc_create_snapshot_arg *args, struct os
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->file_location) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"FileLocation\":\"" ));
                 STRY(osc_str_append_string(data, args->file_location));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_snapshot_size || args->snapshot_size) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SnapshotSize\":" ));
                 STRY(osc_str_append_int(data, args->snapshot_size));
 	   	ret += 1;
 	}
 	if (args->source_region_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SourceRegionName\":\"" ));
                 STRY(osc_str_append_string(data, args->source_region_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->source_snapshot_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SourceSnapshotId\":\"" ));
                 STRY(osc_str_append_string(data, args->source_snapshot_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->volume_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeId\":\"" ));
                 STRY(osc_str_append_string(data, args->volume_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -28733,47 +26811,41 @@ static  int create_server_certificate_data(struct osc_create_server_certificate_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->body) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Body\":\"" ));
                 STRY(osc_str_append_string(data, args->body));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->chain) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Chain\":\"" ));
                 STRY(osc_str_append_string(data, args->chain));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Name\":\"" ));
                 STRY(osc_str_append_string(data, args->name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->path) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Path\":\"" ));
                 STRY(osc_str_append_string(data, args->path));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->private_key) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateKey\":\"" ));
                 STRY(osc_str_append_string(data, args->private_key));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -28819,46 +26891,40 @@ static  int create_security_group_rule_data(struct osc_create_security_group_rul
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->flow) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Flow\":\"" ));
                 STRY(osc_str_append_string(data, args->flow));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_from_port_range || args->from_port_range) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"FromPortRange\":" ));
                 STRY(osc_str_append_int(data, args->from_port_range));
 	   	ret += 1;
 	}
 	if (args->ip_protocol) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpProtocol\":\"" ));
                 STRY(osc_str_append_string(data, args->ip_protocol));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->ip_range) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRange\":\"" ));
                 STRY(osc_str_append_string(data, args->ip_range));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->rules) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Rules\":[" ));
 		for (int i = 0; i < args->nb_rules; ++i) {
 	       	    struct security_group_rule *p = &args->rules[i];
@@ -28872,39 +26938,34 @@ static  int create_security_group_rule_data(struct osc_create_security_group_rul
 		ret += 1;
 	} else
 	if (args->rules_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Rules\":" ));
                 STRY(osc_str_append_string(data, args->rules_str));
 		ret += 1;
 	}
 	if (args->security_group_account_id_to_link) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupAccountIdToLink\":\"" ));
                 STRY(osc_str_append_string(data, args->security_group_account_id_to_link));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->security_group_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupId\":\"" ));
                 STRY(osc_str_append_string(data, args->security_group_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->security_group_name_to_link) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupNameToLink\":\"" ));
                 STRY(osc_str_append_string(data, args->security_group_name_to_link));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_to_port_range || args->to_port_range) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ToPortRange\":" ));
                 STRY(osc_str_append_int(data, args->to_port_range));
 	   	ret += 1;
@@ -28949,31 +27010,27 @@ static  int create_security_group_data(struct osc_create_security_group_arg *arg
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->security_group_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupName\":\"" ));
                 STRY(osc_str_append_string(data, args->security_group_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -29019,15 +27076,13 @@ static  int create_route_table_data(struct osc_create_route_table_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -29073,63 +27128,55 @@ static  int create_route_data(struct osc_create_route_arg *args, struct osc_str 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->destination_ip_range) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DestinationIpRange\":\"" ));
                 STRY(osc_str_append_string(data, args->destination_ip_range));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->gateway_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"GatewayId\":\"" ));
                 STRY(osc_str_append_string(data, args->gateway_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->nat_service_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NatServiceId\":\"" ));
                 STRY(osc_str_append_string(data, args->nat_service_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->net_peering_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetPeeringId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_peering_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->nic_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
                 STRY(osc_str_append_string(data, args->nic_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->route_table_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteTableId\":\"" ));
                 STRY(osc_str_append_string(data, args->route_table_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -29175,8 +27222,7 @@ static  int create_public_ip_data(struct osc_create_public_ip_arg *args, struct 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -29221,23 +27267,20 @@ static  int create_nic_data(struct osc_create_nic_arg *args, struct osc_str *dat
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
         if (args->private_ips) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIps\":[" ));
 		for (int i = 0; i < args->nb_private_ips; ++i) {
 	       	    struct private_ip_light *p = &args->private_ips[i];
@@ -29251,8 +27294,7 @@ static  int create_nic_data(struct osc_create_nic_arg *args, struct osc_str *dat
 		ret += 1;
 	} else
 	if (args->private_ips_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIps\":" ));
                 STRY(osc_str_append_string(data, args->private_ips_str));
 		ret += 1;
@@ -29260,8 +27302,7 @@ static  int create_nic_data(struct osc_create_nic_arg *args, struct osc_str *dat
 	if (args->security_group_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":[" ));
 		for (as = args->security_group_ids; *as > 0; ++as) {
 			if (as != args->security_group_ids)
@@ -29273,15 +27314,13 @@ static  int create_nic_data(struct osc_create_nic_arg *args, struct osc_str *dat
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_group_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":" ));
                 STRY(osc_str_append_string(data, args->security_group_ids_str));
 		ret += 1;
 	}
 	if (args->subnet_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
                 STRY(osc_str_append_string(data, args->subnet_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -29327,23 +27366,20 @@ static  int create_net_peering_data(struct osc_create_net_peering_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->accepter_net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccepterNetId\":\"" ));
                 STRY(osc_str_append_string(data, args->accepter_net_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->source_net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SourceNetId\":\"" ));
                 STRY(osc_str_append_string(data, args->source_net_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -29389,15 +27425,13 @@ static  int create_net_access_point_data(struct osc_create_net_access_point_arg 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->net_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -29406,8 +27440,7 @@ static  int create_net_access_point_data(struct osc_create_net_access_point_arg 
 	if (args->route_table_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteTableIds\":[" ));
 		for (as = args->route_table_ids; *as > 0; ++as) {
 			if (as != args->route_table_ids)
@@ -29419,15 +27452,13 @@ static  int create_net_access_point_data(struct osc_create_net_access_point_arg 
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->route_table_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteTableIds\":" ));
                 STRY(osc_str_append_string(data, args->route_table_ids_str));
 		ret += 1;
 	}
 	if (args->service_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ServiceName\":\"" ));
                 STRY(osc_str_append_string(data, args->service_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -29473,23 +27504,20 @@ static  int create_net_data(struct osc_create_net_arg *args, struct osc_str *dat
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->ip_range) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRange\":\"" ));
                 STRY(osc_str_append_string(data, args->ip_range));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->tenancy) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tenancy\":\"" ));
                 STRY(osc_str_append_string(data, args->tenancy));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -29535,23 +27563,20 @@ static  int create_nat_service_data(struct osc_create_nat_service_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->public_ip_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIpId\":\"" ));
                 STRY(osc_str_append_string(data, args->public_ip_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->subnet_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
                 STRY(osc_str_append_string(data, args->subnet_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -29597,8 +27622,7 @@ static  int create_load_balancer_tags_data(struct osc_create_load_balancer_tags_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -29606,8 +27630,7 @@ static  int create_load_balancer_tags_data(struct osc_create_load_balancer_tags_
 	if (args->load_balancer_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerNames\":[" ));
 		for (as = args->load_balancer_names; *as > 0; ++as) {
 			if (as != args->load_balancer_names)
@@ -29619,15 +27642,13 @@ static  int create_load_balancer_tags_data(struct osc_create_load_balancer_tags_
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->load_balancer_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerNames\":" ));
                 STRY(osc_str_append_string(data, args->load_balancer_names_str));
 		ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -29641,8 +27662,7 @@ static  int create_load_balancer_tags_data(struct osc_create_load_balancer_tags_
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -29687,46 +27707,40 @@ static  int create_load_balancer_policy_data(struct osc_create_load_balancer_pol
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_cookie_expiration_period || args->cookie_expiration_period) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CookieExpirationPeriod\":" ));
                 STRY(osc_str_append_int(data, args->cookie_expiration_period));
 	   	ret += 1;
 	}
 	if (args->cookie_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CookieName\":\"" ));
                 STRY(osc_str_append_string(data, args->cookie_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->load_balancer_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
                 STRY(osc_str_append_string(data, args->load_balancer_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->policy_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PolicyName\":\"" ));
                 STRY(osc_str_append_string(data, args->policy_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->policy_type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PolicyType\":\"" ));
                 STRY(osc_str_append_string(data, args->policy_type));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -29772,15 +27786,13 @@ static  int create_load_balancer_listeners_data(struct osc_create_load_balancer_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
         if (args->listeners) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Listeners\":[" ));
 		for (int i = 0; i < args->nb_listeners; ++i) {
 	       	    struct listener_for_creation *p = &args->listeners[i];
@@ -29794,15 +27806,13 @@ static  int create_load_balancer_listeners_data(struct osc_create_load_balancer_
 		ret += 1;
 	} else
 	if (args->listeners_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Listeners\":" ));
                 STRY(osc_str_append_string(data, args->listeners_str));
 		ret += 1;
 	}
 	if (args->load_balancer_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
                 STRY(osc_str_append_string(data, args->load_balancer_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -29848,15 +27858,13 @@ static  int create_load_balancer_data(struct osc_create_load_balancer_arg *args,
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
         if (args->listeners) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Listeners\":[" ));
 		for (int i = 0; i < args->nb_listeners; ++i) {
 	       	    struct listener_for_creation *p = &args->listeners[i];
@@ -29870,31 +27878,27 @@ static  int create_load_balancer_data(struct osc_create_load_balancer_arg *args,
 		ret += 1;
 	} else
 	if (args->listeners_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Listeners\":" ));
                 STRY(osc_str_append_string(data, args->listeners_str));
 		ret += 1;
 	}
 	if (args->load_balancer_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
                 STRY(osc_str_append_string(data, args->load_balancer_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->load_balancer_type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerType\":\"" ));
                 STRY(osc_str_append_string(data, args->load_balancer_type));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->public_ip) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
                 STRY(osc_str_append_string(data, args->public_ip));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -29903,8 +27907,7 @@ static  int create_load_balancer_data(struct osc_create_load_balancer_arg *args,
 	if (args->security_groups) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroups\":[" ));
 		for (as = args->security_groups; *as > 0; ++as) {
 			if (as != args->security_groups)
@@ -29916,8 +27919,7 @@ static  int create_load_balancer_data(struct osc_create_load_balancer_arg *args,
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_groups_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroups\":" ));
                 STRY(osc_str_append_string(data, args->security_groups_str));
 		ret += 1;
@@ -29925,8 +27927,7 @@ static  int create_load_balancer_data(struct osc_create_load_balancer_arg *args,
 	if (args->subnets) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Subnets\":[" ));
 		for (as = args->subnets; *as > 0; ++as) {
 			if (as != args->subnets)
@@ -29938,8 +27939,7 @@ static  int create_load_balancer_data(struct osc_create_load_balancer_arg *args,
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subnets_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Subnets\":" ));
                 STRY(osc_str_append_string(data, args->subnets_str));
 		ret += 1;
@@ -29947,8 +27947,7 @@ static  int create_load_balancer_data(struct osc_create_load_balancer_arg *args,
 	if (args->subregion_names) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":[" ));
 		for (as = args->subregion_names; *as > 0; ++as) {
 			if (as != args->subregion_names)
@@ -29960,15 +27959,13 @@ static  int create_load_balancer_data(struct osc_create_load_balancer_arg *args,
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subregion_names_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":" ));
                 STRY(osc_str_append_string(data, args->subregion_names_str));
 		ret += 1;
 	}
         if (args->tags) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
 		for (int i = 0; i < args->nb_tags; ++i) {
 	       	    struct resource_tag *p = &args->tags[i];
@@ -29982,8 +27979,7 @@ static  int create_load_balancer_data(struct osc_create_load_balancer_arg *args,
 		ret += 1;
 	} else
 	if (args->tags_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":" ));
                 STRY(osc_str_append_string(data, args->tags_str));
 		ret += 1;
@@ -30028,35 +28024,30 @@ static  int create_listener_rule_data(struct osc_create_listener_rule_arg *args,
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->listener_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Listener\":" ));
                 STRY(osc_str_append_string(data, args->listener_str));
 		ret += 1;
 	} else if (args->is_set_listener) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Listener\": { " ));
 	       STRY(load_balancer_light_setter(&args->listener, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->listener_rule_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ListenerRule\":" ));
                 STRY(osc_str_append_string(data, args->listener_rule_str));
 		ret += 1;
 	} else if (args->is_set_listener_rule) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"ListenerRule\": { " ));
 	       STRY(listener_rule_for_creation_setter(&args->listener_rule, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -30065,8 +28056,7 @@ static  int create_listener_rule_data(struct osc_create_listener_rule_arg *args,
 	if (args->vm_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
 		for (as = args->vm_ids; *as > 0; ++as) {
 			if (as != args->vm_ids)
@@ -30078,8 +28068,7 @@ static  int create_listener_rule_data(struct osc_create_listener_rule_arg *args,
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":" ));
                 STRY(osc_str_append_string(data, args->vm_ids_str));
 		ret += 1;
@@ -30124,23 +28113,20 @@ static  int create_keypair_data(struct osc_create_keypair_arg *args, struct osc_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->keypair_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"KeypairName\":\"" ));
                 STRY(osc_str_append_string(data, args->keypair_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->public_key) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicKey\":\"" ));
                 STRY(osc_str_append_string(data, args->public_key));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -30186,8 +28172,7 @@ static  int create_internet_service_data(struct osc_create_internet_service_arg 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -30232,29 +28217,25 @@ static  int create_image_export_task_data(struct osc_create_image_export_task_ar
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->image_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ImageId\":\"" ));
                 STRY(osc_str_append_string(data, args->image_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->osu_export_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OsuExport\":" ));
                 STRY(osc_str_append_string(data, args->osu_export_str));
 		ret += 1;
 	} else if (args->is_set_osu_export) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"OsuExport\": { " ));
 	       STRY(osu_export_to_create_setter(&args->osu_export, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
@@ -30300,16 +28281,14 @@ static  int create_image_data(struct osc_create_image_arg *args, struct osc_str 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->architecture) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Architecture\":\"" ));
                 STRY(osc_str_append_string(data, args->architecture));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
         if (args->block_device_mappings) {
-	       	if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappings\":[" ));
 		for (int i = 0; i < args->nb_block_device_mappings; ++i) {
 	       	    struct block_device_mapping_image *p = &args->block_device_mappings[i];
@@ -30323,46 +28302,40 @@ static  int create_image_data(struct osc_create_image_arg *args, struct osc_str 
 		ret += 1;
 	} else
 	if (args->block_device_mappings_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappings\":" ));
                 STRY(osc_str_append_string(data, args->block_device_mappings_str));
 		ret += 1;
 	}
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->file_location) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"FileLocation\":\"" ));
                 STRY(osc_str_append_string(data, args->file_location));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->image_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ImageName\":\"" ));
                 STRY(osc_str_append_string(data, args->image_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_no_reboot) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NoReboot\":" ));
                 STRY(osc_str_append_bool(data, args->no_reboot));
 	   	ret += 1;
@@ -30370,8 +28343,7 @@ static  int create_image_data(struct osc_create_image_arg *args, struct osc_str 
 	if (args->product_codes) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ProductCodes\":[" ));
 		for (as = args->product_codes; *as > 0; ++as) {
 			if (as != args->product_codes)
@@ -30383,39 +28355,34 @@ static  int create_image_data(struct osc_create_image_arg *args, struct osc_str 
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->product_codes_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ProductCodes\":" ));
                 STRY(osc_str_append_string(data, args->product_codes_str));
 		ret += 1;
 	}
 	if (args->root_device_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RootDeviceName\":\"" ));
                 STRY(osc_str_append_string(data, args->root_device_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->source_image_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SourceImageId\":\"" ));
                 STRY(osc_str_append_string(data, args->source_image_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->source_region_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SourceRegionName\":\"" ));
                 STRY(osc_str_append_string(data, args->source_region_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
                 STRY(osc_str_append_string(data, args->vm_id));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -30461,38 +28428,33 @@ static  int create_flexible_gpu_data(struct osc_create_flexible_gpu_arg *args, s
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_delete_on_vm_deletion) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DeleteOnVmDeletion\":" ));
                 STRY(osc_str_append_bool(data, args->delete_on_vm_deletion));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->generation) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Generation\":\"" ));
                 STRY(osc_str_append_string(data, args->generation));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->model_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ModelName\":\"" ));
                 STRY(osc_str_append_string(data, args->model_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->subregion_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionName\":\"" ));
                 STRY(osc_str_append_string(data, args->subregion_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -30538,30 +28500,26 @@ static  int create_direct_link_interface_data(struct osc_create_direct_link_inte
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->direct_link_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DirectLinkId\":\"" ));
                 STRY(osc_str_append_string(data, args->direct_link_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->direct_link_interface_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DirectLinkInterface\":" ));
                 STRY(osc_str_append_string(data, args->direct_link_interface_str));
 		ret += 1;
 	} else if (args->is_set_direct_link_interface) {
-	       if (count_args++ > 0)
-		       STRY(osc_str_append_string(data, "," ));
+	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"DirectLinkInterface\": { " ));
 	       STRY(direct_link_interface_setter(&args->direct_link_interface, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -30606,31 +28564,27 @@ static  int create_direct_link_data(struct osc_create_direct_link_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->bandwidth) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Bandwidth\":\"" ));
                 STRY(osc_str_append_string(data, args->bandwidth));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->direct_link_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DirectLinkName\":\"" ));
                 STRY(osc_str_append_string(data, args->direct_link_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->location) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Location\":\"" ));
                 STRY(osc_str_append_string(data, args->location));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -30676,8 +28630,7 @@ static  int create_dhcp_options_data(struct osc_create_dhcp_options_arg *args, s
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->domain_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DomainName\":\"" ));
                 STRY(osc_str_append_string(data, args->domain_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -30686,8 +28639,7 @@ static  int create_dhcp_options_data(struct osc_create_dhcp_options_arg *args, s
 	if (args->domain_name_servers) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DomainNameServers\":[" ));
 		for (as = args->domain_name_servers; *as > 0; ++as) {
 			if (as != args->domain_name_servers)
@@ -30699,15 +28651,13 @@ static  int create_dhcp_options_data(struct osc_create_dhcp_options_arg *args, s
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->domain_name_servers_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DomainNameServers\":" ));
                 STRY(osc_str_append_string(data, args->domain_name_servers_str));
 		ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -30715,8 +28665,7 @@ static  int create_dhcp_options_data(struct osc_create_dhcp_options_arg *args, s
 	if (args->log_servers) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LogServers\":[" ));
 		for (as = args->log_servers; *as > 0; ++as) {
 			if (as != args->log_servers)
@@ -30728,8 +28677,7 @@ static  int create_dhcp_options_data(struct osc_create_dhcp_options_arg *args, s
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->log_servers_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LogServers\":" ));
                 STRY(osc_str_append_string(data, args->log_servers_str));
 		ret += 1;
@@ -30737,8 +28685,7 @@ static  int create_dhcp_options_data(struct osc_create_dhcp_options_arg *args, s
 	if (args->ntp_servers) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NtpServers\":[" ));
 		for (as = args->ntp_servers; *as > 0; ++as) {
 			if (as != args->ntp_servers)
@@ -30750,8 +28697,7 @@ static  int create_dhcp_options_data(struct osc_create_dhcp_options_arg *args, s
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ntp_servers_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NtpServers\":" ));
                 STRY(osc_str_append_string(data, args->ntp_servers_str));
 		ret += 1;
@@ -30796,30 +28742,26 @@ static  int create_client_gateway_data(struct osc_create_client_gateway_arg *arg
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_bgp_asn || args->bgp_asn) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BgpAsn\":" ));
                 STRY(osc_str_append_int(data, args->bgp_asn));
 	   	ret += 1;
 	}
 	if (args->connection_type) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ConnectionType\":\"" ));
                 STRY(osc_str_append_string(data, args->connection_type));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->public_ip) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
                 STRY(osc_str_append_string(data, args->public_ip));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -30865,24 +28807,21 @@ static  int create_ca_data(struct osc_create_ca_arg *args, struct osc_str *data)
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->ca_pem) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CaPem\":\"" ));
                 STRY(osc_str_append_string(data, args->ca_pem));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -30929,8 +28868,7 @@ static  int create_api_access_rule_data(struct osc_create_api_access_rule_arg *a
 	if (args->ca_ids) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CaIds\":[" ));
 		for (as = args->ca_ids; *as > 0; ++as) {
 			if (as != args->ca_ids)
@@ -30942,8 +28880,7 @@ static  int create_api_access_rule_data(struct osc_create_api_access_rule_arg *a
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ca_ids_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CaIds\":" ));
                 STRY(osc_str_append_string(data, args->ca_ids_str));
 		ret += 1;
@@ -30951,8 +28888,7 @@ static  int create_api_access_rule_data(struct osc_create_api_access_rule_arg *a
 	if (args->cns) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Cns\":[" ));
 		for (as = args->cns; *as > 0; ++as) {
 			if (as != args->cns)
@@ -30964,23 +28900,20 @@ static  int create_api_access_rule_data(struct osc_create_api_access_rule_arg *a
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->cns_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Cns\":" ));
                 STRY(osc_str_append_string(data, args->cns_str));
 		ret += 1;
 	}
 	if (args->description) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Description\":\"" ));
                 STRY(osc_str_append_string(data, args->description));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
@@ -30988,8 +28921,7 @@ static  int create_api_access_rule_data(struct osc_create_api_access_rule_arg *a
 	if (args->ip_ranges) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRanges\":[" ));
 		for (as = args->ip_ranges; *as > 0; ++as) {
 			if (as != args->ip_ranges)
@@ -31001,8 +28933,7 @@ static  int create_api_access_rule_data(struct osc_create_api_access_rule_arg *a
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ip_ranges_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRanges\":" ));
                 STRY(osc_str_append_string(data, args->ip_ranges_str));
 		ret += 1;
@@ -31049,8 +28980,7 @@ static  int create_account_data(struct osc_create_account_arg *args, struct osc_
 	if (args->additional_emails) {
 		char **as;
 
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AdditionalEmails\":[" ));
 		for (as = args->additional_emails; *as > 0; ++as) {
 			if (as != args->additional_emails)
@@ -31062,118 +28992,103 @@ static  int create_account_data(struct osc_create_account_arg *args, struct osc_
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->additional_emails_str) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AdditionalEmails\":" ));
                 STRY(osc_str_append_string(data, args->additional_emails_str));
 		ret += 1;
 	}
 	if (args->city) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"City\":\"" ));
                 STRY(osc_str_append_string(data, args->city));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->company_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CompanyName\":\"" ));
                 STRY(osc_str_append_string(data, args->company_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->country) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Country\":\"" ));
                 STRY(osc_str_append_string(data, args->country));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->customer_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CustomerId\":\"" ));
                 STRY(osc_str_append_string(data, args->customer_id));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->email) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Email\":\"" ));
                 STRY(osc_str_append_string(data, args->email));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->first_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"FirstName\":\"" ));
                 STRY(osc_str_append_string(data, args->first_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->job_title) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"JobTitle\":\"" ));
                 STRY(osc_str_append_string(data, args->job_title));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->last_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LastName\":\"" ));
                 STRY(osc_str_append_string(data, args->last_name));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->mobile_number) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MobileNumber\":\"" ));
                 STRY(osc_str_append_string(data, args->mobile_number));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->phone_number) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PhoneNumber\":\"" ));
                 STRY(osc_str_append_string(data, args->phone_number));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->state_province) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"StateProvince\":\"" ));
                 STRY(osc_str_append_string(data, args->state_province));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->vat_number) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VatNumber\":\"" ));
                 STRY(osc_str_append_string(data, args->vat_number));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->zip_code) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ZipCode\":\"" ));
                 STRY(osc_str_append_string(data, args->zip_code));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -31219,22 +29134,20 @@ static  int create_access_key_data(struct osc_create_access_key_arg *args, struc
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->expiration_date) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
-		STRY(osc_str_append_string(data, "\"ExpirationDate\":" ));
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"ExpirationDate\":\"" ));
                 STRY(osc_str_append_string(data, args->expiration_date));
-		ret += 1;
+		STRY(osc_str_append_string(data, "\"" ));
+	   	ret += 1;
 	}
 	if (args->user_name) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"UserName\":\"" ));
                 STRY(osc_str_append_string(data, args->user_name));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -31280,23 +29193,20 @@ static  int check_authentication_data(struct osc_check_authentication_arg *args,
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->login) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Login\":\"" ));
                 STRY(osc_str_append_string(data, args->login));
 		STRY(osc_str_append_string(data, "\"" ));
 	   	ret += 1;
 	}
 	if (args->password) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Password\":\"" ));
                 STRY(osc_str_append_string(data, args->password));
 		STRY(osc_str_append_string(data, "\"" ));
@@ -31342,15 +29252,13 @@ static  int accept_net_peering_data(struct osc_accept_net_peering_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DryRun\":" ));
                 STRY(osc_str_append_bool(data, args->dry_run));
 	   	ret += 1;
 	}
 	if (args->net_peering_id) {
-		if (count_args++ > 0)
-			STRY(osc_str_append_string(data, "," ));
+	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetPeeringId\":\"" ));
                 STRY(osc_str_append_string(data, args->net_peering_id));
 		STRY(osc_str_append_string(data, "\"" ));
