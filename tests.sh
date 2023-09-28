@@ -36,3 +36,11 @@ trap "echo [$MSG_BASE DeleteTags --Tags.0.Key k0 ..Value v0 --Tags.1.Key k1 ..Va
 # this doesn't check that the call work, as for that we would require to set ResourceIds
 ./oapi-cli DeleteTags --Tags.0.Key k0 ..Value v0 --Tags.1.Key k1 ..Value v1 | grep RequestId > /dev/null
 echo "[$MSG_BASE --Tags.0.Key k0 ..Value v0 --Tags.1.Key k1 ..Value v1 OK]"
+
+trap "echo [$MSG_BASE Lot of Arguments FAIL]" ERR
+tests-lot-arg.sh
+echo "[$MSG_BASE Lot of Arguments OK]"
+
+trap "echo [$MSG_BASE ReadConsumptionAccount --FromDate $(date -d "yesterday" '+%F') --ToDate $(date "+%F") FAIL]" ERR
+./oapi-cli ReadConsumptionAccount --FromDate $(date -d "yesterday" '+%F') --ToDate $(date "+%F")
+echo "[$MSG_BASE ReadConsumptionAccount --FromDate $(date -d "yesterday" '+%F') --ToDate $(date "+%F") OK]"
