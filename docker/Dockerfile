@@ -1,4 +1,4 @@
-FROM centos7
+FROM centos:centos7
 
 RUN yum search epel-release
 RUN yum info epel-release
