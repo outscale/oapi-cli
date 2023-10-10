@@ -105,7 +105,7 @@ export OSC_ENDPOINT_API=XXX
 
 ```bash
 brew tap outscale/tap
-brew install oapi-cli  
+brew install outscale/tap/oapi-cli  
 ```
 or if you want to clone the homebrew repo:
 
