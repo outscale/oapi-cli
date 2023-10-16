@@ -4051,6 +4051,23 @@ int osc_str_append_string(struct osc_str *osc_str, const char *str)
 	return 0;
 }
 
+int osc_str_append_n_string(struct osc_str *osc_str, const char *str, int l)
+{
+	if (!str)
+		return 0;
+	assert(osc_str);
+
+	int len = osc_str->len;
+
+	osc_str->len = osc_str->len + l;
+	osc_str->buf = osc_realloc(osc_str->buf, osc_str->len + 1);
+	if (!osc_str->buf)
+		return -1;
+	memcpy(osc_str->buf + len, str, l);
+	osc_str->buf[len + l] = 0;
+	return 0;
+}
+
 static char *osc_strdup(const char *str) {
 	if (!str)
 		return NULL;
@@ -4076,6 +4093,32 @@ static char *osc_strdup(const char *str) {
 		    "home path too big");				\
 		strcpy(stpcpy(buf, home), dest);			\
 	}
+
+#define ARG_TO_JSON_STR(separator, what) do {				\
+		auto_osc_str struct osc_str s;				\
+		char *tmp = what;					\
+		char *endl;						\
+									\
+		osc_init_str(&s);					\
+		while((endl = strchr(tmp, '\n')) != NULL) {		\
+			int l = endl - tmp;				\
+									\
+			osc_str_append_n_string(&s, tmp, l);		\
+			osc_str_append_string(&s, "\\n");		\
+			tmp = endl + 1;					\
+		}							\
+		osc_str_append_string(&s, tmp);				\
+		STRY(osc_str_append_string(data, separator));		\
+		STRY(osc_str_append_string(data, "\"" ));		\
+		STRY(osc_str_append_string(data, s.buf));		\
+		STRY(osc_str_append_string(data, "\"" ));		\
+	} while (0)
+
+#define ARG_TO_JSON(name, type, what) do {				\
+		TRY_APPEND_COL(count_args, data);			\
+		STRY(osc_str_append_string(data, "\""#name"\":" ));	\
+		STRY(osc_str_append_##type(data, what));		\
+	} while (0)
 
 
 int osc_load_ak_sk_from_conf(const char *profile, char **ak, char **sk)
@@ -4398,24 +4441,18 @@ static int accepter_net_setter(struct accepter_net *args, struct osc_str *data) 
        int count_args = 0;
        int ret = 0;
 	if (args->account_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
-                STRY(osc_str_append_string(data, args->account_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"AccountId\":", args->account_id);
 	   	ret += 1;
 	}
 	if (args->ip_range) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IpRange\":\"" ));
-                STRY(osc_str_append_string(data, args->ip_range));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"IpRange\":", args->ip_range);
 	   	ret += 1;
 	}
 	if (args->net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -4424,38 +4461,28 @@ static int access_key_setter(struct access_key *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->access_key_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccessKeyId\":\"" ));
-                STRY(osc_str_append_string(data, args->access_key_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"AccessKeyId\":", args->access_key_id);
 	   	ret += 1;
 	}
 	if (args->creation_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CreationDate\":\"" ));
-                STRY(osc_str_append_string(data, args->creation_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CreationDate\":", args->creation_date);
 	   	ret += 1;
 	}
 	if (args->expiration_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ExpirationDate\":\"" ));
-                STRY(osc_str_append_string(data, args->expiration_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ExpirationDate\":", args->expiration_date);
 	   	ret += 1;
 	}
 	if (args->last_modification_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LastModificationDate\":\"" ));
-                STRY(osc_str_append_string(data, args->last_modification_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LastModificationDate\":", args->last_modification_date);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -4464,45 +4491,33 @@ static int access_key_secret_key_setter(struct access_key_secret_key *args, stru
        int count_args = 0;
        int ret = 0;
 	if (args->access_key_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccessKeyId\":\"" ));
-                STRY(osc_str_append_string(data, args->access_key_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"AccessKeyId\":", args->access_key_id);
 	   	ret += 1;
 	}
 	if (args->creation_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CreationDate\":\"" ));
-                STRY(osc_str_append_string(data, args->creation_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CreationDate\":", args->creation_date);
 	   	ret += 1;
 	}
 	if (args->expiration_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ExpirationDate\":\"" ));
-                STRY(osc_str_append_string(data, args->expiration_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ExpirationDate\":", args->expiration_date);
 	   	ret += 1;
 	}
 	if (args->last_modification_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LastModificationDate\":\"" ));
-                STRY(osc_str_append_string(data, args->last_modification_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LastModificationDate\":", args->last_modification_date);
 	   	ret += 1;
 	}
 	if (args->secret_key) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecretKey\":\"" ));
-                STRY(osc_str_append_string(data, args->secret_key));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SecretKey\":", args->secret_key);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -4511,29 +4526,21 @@ static int access_log_setter(struct access_log *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_is_enabled) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IsEnabled\":" ));
-                STRY(osc_str_append_bool(data, args->is_enabled));
+		ARG_TO_JSON(IsEnabled, bool, args->is_enabled);
 	   	ret += 1;
 	}
 	if (args->osu_bucket_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OsuBucketName\":\"" ));
-                STRY(osc_str_append_string(data, args->osu_bucket_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"OsuBucketName\":", args->osu_bucket_name);
 	   	ret += 1;
 	}
 	if (args->osu_bucket_prefix) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OsuBucketPrefix\":\"" ));
-                STRY(osc_str_append_string(data, args->osu_bucket_prefix));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"OsuBucketPrefix\":", args->osu_bucket_prefix);
 	   	ret += 1;
 	}
 	if (args->is_set_publication_interval || args->publication_interval) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicationInterval\":" ));
-                STRY(osc_str_append_int(data, args->publication_interval));
+		ARG_TO_JSON(PublicationInterval, int, args->publication_interval);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -4542,10 +4549,8 @@ static int account_setter(struct account *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->account_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
-                STRY(osc_str_append_string(data, args->account_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"AccountId\":", args->account_id);
 	   	ret += 1;
 	}
 	if (args->additional_emails) {
@@ -4556,107 +4561,77 @@ static int account_setter(struct account *args, struct osc_str *data) {
 		for (as = args->additional_emails; *as > 0; ++as) {
 			if (as != args->additional_emails)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->additional_emails_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AdditionalEmails\":" ));
-                STRY(osc_str_append_string(data, args->additional_emails_str));
+		ARG_TO_JSON(AdditionalEmails, string, args->additional_emails_str);
 		ret += 1;
 	}
 	if (args->city) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"City\":\"" ));
-                STRY(osc_str_append_string(data, args->city));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"City\":", args->city);
 	   	ret += 1;
 	}
 	if (args->company_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CompanyName\":\"" ));
-                STRY(osc_str_append_string(data, args->company_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CompanyName\":", args->company_name);
 	   	ret += 1;
 	}
 	if (args->country) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Country\":\"" ));
-                STRY(osc_str_append_string(data, args->country));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Country\":", args->country);
 	   	ret += 1;
 	}
 	if (args->customer_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CustomerId\":\"" ));
-                STRY(osc_str_append_string(data, args->customer_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CustomerId\":", args->customer_id);
 	   	ret += 1;
 	}
 	if (args->email) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Email\":\"" ));
-                STRY(osc_str_append_string(data, args->email));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Email\":", args->email);
 	   	ret += 1;
 	}
 	if (args->first_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"FirstName\":\"" ));
-                STRY(osc_str_append_string(data, args->first_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"FirstName\":", args->first_name);
 	   	ret += 1;
 	}
 	if (args->job_title) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"JobTitle\":\"" ));
-                STRY(osc_str_append_string(data, args->job_title));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"JobTitle\":", args->job_title);
 	   	ret += 1;
 	}
 	if (args->last_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LastName\":\"" ));
-                STRY(osc_str_append_string(data, args->last_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LastName\":", args->last_name);
 	   	ret += 1;
 	}
 	if (args->mobile_number) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MobileNumber\":\"" ));
-                STRY(osc_str_append_string(data, args->mobile_number));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"MobileNumber\":", args->mobile_number);
 	   	ret += 1;
 	}
 	if (args->phone_number) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PhoneNumber\":\"" ));
-                STRY(osc_str_append_string(data, args->phone_number));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PhoneNumber\":", args->phone_number);
 	   	ret += 1;
 	}
 	if (args->state_province) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"StateProvince\":\"" ));
-                STRY(osc_str_append_string(data, args->state_province));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"StateProvince\":", args->state_province);
 	   	ret += 1;
 	}
 	if (args->vat_number) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VatNumber\":\"" ));
-                STRY(osc_str_append_string(data, args->vat_number));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VatNumber\":", args->vat_number);
 	   	ret += 1;
 	}
 	if (args->zip_code) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ZipCode\":\"" ));
-                STRY(osc_str_append_string(data, args->zip_code));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ZipCode\":", args->zip_code);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -4665,15 +4640,11 @@ static int api_access_policy_setter(struct api_access_policy *args, struct osc_s
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_max_access_key_expiration_seconds || args->max_access_key_expiration_seconds) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MaxAccessKeyExpirationSeconds\":" ));
-                STRY(osc_str_append_int(data, args->max_access_key_expiration_seconds));
+		ARG_TO_JSON(MaxAccessKeyExpirationSeconds, int, args->max_access_key_expiration_seconds);
 	   	ret += 1;
 	}
 	if (args->is_set_require_trusted_env) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RequireTrustedEnv\":" ));
-                STRY(osc_str_append_bool(data, args->require_trusted_env));
+		ARG_TO_JSON(RequireTrustedEnv, bool, args->require_trusted_env);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -4682,10 +4653,8 @@ static int api_access_rule_setter(struct api_access_rule *args, struct osc_str *
        int count_args = 0;
        int ret = 0;
 	if (args->api_access_rule_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ApiAccessRuleId\":\"" ));
-                STRY(osc_str_append_string(data, args->api_access_rule_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ApiAccessRuleId\":", args->api_access_rule_id);
 	   	ret += 1;
 	}
 	if (args->ca_ids) {
@@ -4696,16 +4665,12 @@ static int api_access_rule_setter(struct api_access_rule *args, struct osc_str *
 		for (as = args->ca_ids; *as > 0; ++as) {
 			if (as != args->ca_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ca_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CaIds\":" ));
-                STRY(osc_str_append_string(data, args->ca_ids_str));
+		ARG_TO_JSON(CaIds, string, args->ca_ids_str);
 		ret += 1;
 	}
 	if (args->cns) {
@@ -4716,23 +4681,17 @@ static int api_access_rule_setter(struct api_access_rule *args, struct osc_str *
 		for (as = args->cns; *as > 0; ++as) {
 			if (as != args->cns)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->cns_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Cns\":" ));
-                STRY(osc_str_append_string(data, args->cns_str));
+		ARG_TO_JSON(Cns, string, args->cns_str);
 		ret += 1;
 	}
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->ip_ranges) {
@@ -4743,16 +4702,12 @@ static int api_access_rule_setter(struct api_access_rule *args, struct osc_str *
 		for (as = args->ip_ranges; *as > 0; ++as) {
 			if (as != args->ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ip_ranges_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IpRanges\":" ));
-                STRY(osc_str_append_string(data, args->ip_ranges_str));
+		ARG_TO_JSON(IpRanges, string, args->ip_ranges_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -4761,17 +4716,13 @@ static int application_sticky_cookie_policy_setter(struct application_sticky_coo
        int count_args = 0;
        int ret = 0;
 	if (args->cookie_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CookieName\":\"" ));
-                STRY(osc_str_append_string(data, args->cookie_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CookieName\":", args->cookie_name);
 	   	ret += 1;
 	}
 	if (args->policy_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PolicyName\":\"" ));
-                STRY(osc_str_append_string(data, args->policy_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PolicyName\":", args->policy_name);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -4780,31 +4731,23 @@ static int backend_vm_health_setter(struct backend_vm_health *args, struct osc_s
        int count_args = 0;
        int ret = 0;
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	if (args->state_reason) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"StateReason\":\"" ));
-                STRY(osc_str_append_string(data, args->state_reason));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"StateReason\":", args->state_reason);
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmId\":", args->vm_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -4813,9 +4756,7 @@ static int block_device_mapping_created_setter(struct block_device_mapping_creat
        int count_args = 0;
        int ret = 0;
 	if (args->bsu_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Bsu\":" ));
-                STRY(osc_str_append_string(data, args->bsu_str));
+		ARG_TO_JSON(Bsu, string, args->bsu_str);
 		ret += 1;
 	} else if (args->is_set_bsu) {
 	       TRY_APPEND_COL(count_args, data);
@@ -4825,10 +4766,8 @@ static int block_device_mapping_created_setter(struct block_device_mapping_creat
 	       ret += 1;
 	}
 	if (args->device_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeviceName\":\"" ));
-                STRY(osc_str_append_string(data, args->device_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DeviceName\":", args->device_name);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -4837,9 +4776,7 @@ static int block_device_mapping_image_setter(struct block_device_mapping_image *
        int count_args = 0;
        int ret = 0;
 	if (args->bsu_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Bsu\":" ));
-                STRY(osc_str_append_string(data, args->bsu_str));
+		ARG_TO_JSON(Bsu, string, args->bsu_str);
 		ret += 1;
 	} else if (args->is_set_bsu) {
 	       TRY_APPEND_COL(count_args, data);
@@ -4849,17 +4786,13 @@ static int block_device_mapping_image_setter(struct block_device_mapping_image *
 	       ret += 1;
 	}
 	if (args->device_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeviceName\":\"" ));
-                STRY(osc_str_append_string(data, args->device_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DeviceName\":", args->device_name);
 	   	ret += 1;
 	}
 	if (args->virtual_device_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VirtualDeviceName\":\"" ));
-                STRY(osc_str_append_string(data, args->virtual_device_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VirtualDeviceName\":", args->virtual_device_name);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -4868,9 +4801,7 @@ static int block_device_mapping_vm_creation_setter(struct block_device_mapping_v
        int count_args = 0;
        int ret = 0;
 	if (args->bsu_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Bsu\":" ));
-                STRY(osc_str_append_string(data, args->bsu_str));
+		ARG_TO_JSON(Bsu, string, args->bsu_str);
 		ret += 1;
 	} else if (args->is_set_bsu) {
 	       TRY_APPEND_COL(count_args, data);
@@ -4880,24 +4811,18 @@ static int block_device_mapping_vm_creation_setter(struct block_device_mapping_v
 	       ret += 1;
 	}
 	if (args->device_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeviceName\":\"" ));
-                STRY(osc_str_append_string(data, args->device_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DeviceName\":", args->device_name);
 	   	ret += 1;
 	}
 	if (args->no_device) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NoDevice\":\"" ));
-                STRY(osc_str_append_string(data, args->no_device));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NoDevice\":", args->no_device);
 	   	ret += 1;
 	}
 	if (args->virtual_device_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VirtualDeviceName\":\"" ));
-                STRY(osc_str_append_string(data, args->virtual_device_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VirtualDeviceName\":", args->virtual_device_name);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -4906,9 +4831,7 @@ static int block_device_mapping_vm_update_setter(struct block_device_mapping_vm_
        int count_args = 0;
        int ret = 0;
 	if (args->bsu_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Bsu\":" ));
-                STRY(osc_str_append_string(data, args->bsu_str));
+		ARG_TO_JSON(Bsu, string, args->bsu_str);
 		ret += 1;
 	} else if (args->is_set_bsu) {
 	       TRY_APPEND_COL(count_args, data);
@@ -4918,24 +4841,18 @@ static int block_device_mapping_vm_update_setter(struct block_device_mapping_vm_
 	       ret += 1;
 	}
 	if (args->device_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeviceName\":\"" ));
-                STRY(osc_str_append_string(data, args->device_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DeviceName\":", args->device_name);
 	   	ret += 1;
 	}
 	if (args->no_device) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NoDevice\":\"" ));
-                STRY(osc_str_append_string(data, args->no_device));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NoDevice\":", args->no_device);
 	   	ret += 1;
 	}
 	if (args->virtual_device_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VirtualDeviceName\":\"" ));
-                STRY(osc_str_append_string(data, args->virtual_device_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VirtualDeviceName\":", args->virtual_device_name);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -4944,30 +4861,22 @@ static int bsu_created_setter(struct bsu_created *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_delete_on_vm_deletion) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeleteOnVmDeletion\":" ));
-                STRY(osc_str_append_bool(data, args->delete_on_vm_deletion));
+		ARG_TO_JSON(DeleteOnVmDeletion, bool, args->delete_on_vm_deletion);
 	   	ret += 1;
 	}
 	if (args->link_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkDate\":\"" ));
-                STRY(osc_str_append_string(data, args->link_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LinkDate\":", args->link_date);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	if (args->volume_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeId\":\"" ));
-                STRY(osc_str_append_string(data, args->volume_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VolumeId\":", args->volume_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -4976,35 +4885,25 @@ static int bsu_to_create_setter(struct bsu_to_create *args, struct osc_str *data
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_delete_on_vm_deletion) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeleteOnVmDeletion\":" ));
-                STRY(osc_str_append_bool(data, args->delete_on_vm_deletion));
+		ARG_TO_JSON(DeleteOnVmDeletion, bool, args->delete_on_vm_deletion);
 	   	ret += 1;
 	}
 	if (args->is_set_iops || args->iops) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Iops\":" ));
-                STRY(osc_str_append_int(data, args->iops));
+		ARG_TO_JSON(Iops, int, args->iops);
 	   	ret += 1;
 	}
 	if (args->snapshot_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SnapshotId\":\"" ));
-                STRY(osc_str_append_string(data, args->snapshot_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SnapshotId\":", args->snapshot_id);
 	   	ret += 1;
 	}
 	if (args->is_set_volume_size || args->volume_size) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeSize\":" ));
-                STRY(osc_str_append_int(data, args->volume_size));
+		ARG_TO_JSON(VolumeSize, int, args->volume_size);
 	   	ret += 1;
 	}
 	if (args->volume_type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeType\":\"" ));
-                STRY(osc_str_append_string(data, args->volume_type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VolumeType\":", args->volume_type);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -5013,16 +4912,12 @@ static int bsu_to_update_vm_setter(struct bsu_to_update_vm *args, struct osc_str
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_delete_on_vm_deletion) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeleteOnVmDeletion\":" ));
-                STRY(osc_str_append_bool(data, args->delete_on_vm_deletion));
+		ARG_TO_JSON(DeleteOnVmDeletion, bool, args->delete_on_vm_deletion);
 	   	ret += 1;
 	}
 	if (args->volume_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeId\":\"" ));
-                STRY(osc_str_append_string(data, args->volume_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VolumeId\":", args->volume_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -5031,24 +4926,18 @@ static int ca_setter(struct ca *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->ca_fingerprint) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CaFingerprint\":\"" ));
-                STRY(osc_str_append_string(data, args->ca_fingerprint));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CaFingerprint\":", args->ca_fingerprint);
 	   	ret += 1;
 	}
 	if (args->ca_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CaId\":\"" ));
-                STRY(osc_str_append_string(data, args->ca_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CaId\":", args->ca_id);
 	   	ret += 1;
 	}
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -5071,9 +4960,7 @@ static int catalog_setter(struct catalog *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->entries_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Entries\":" ));
-                STRY(osc_str_append_string(data, args->entries_str));
+		ARG_TO_JSON(Entries, string, args->entries_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -5082,58 +4969,42 @@ static int catalog_entry_setter(struct catalog_entry *args, struct osc_str *data
        int count_args = 0;
        int ret = 0;
 	if (args->category) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Category\":\"" ));
-                STRY(osc_str_append_string(data, args->category));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Category\":", args->category);
 	   	ret += 1;
 	}
 	if (args->flags) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Flags\":\"" ));
-                STRY(osc_str_append_string(data, args->flags));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Flags\":", args->flags);
 	   	ret += 1;
 	}
 	if (args->operation) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Operation\":\"" ));
-                STRY(osc_str_append_string(data, args->operation));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Operation\":", args->operation);
 	   	ret += 1;
 	}
 	if (args->service) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Service\":\"" ));
-                STRY(osc_str_append_string(data, args->service));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Service\":", args->service);
 	   	ret += 1;
 	}
 	if (args->subregion_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubregionName\":\"" ));
-                STRY(osc_str_append_string(data, args->subregion_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubregionName\":", args->subregion_name);
 	   	ret += 1;
 	}
 	if (args->title) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Title\":\"" ));
-                STRY(osc_str_append_string(data, args->title));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Title\":", args->title);
 	   	ret += 1;
 	}
 	if (args->type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Type\":\"" ));
-                STRY(osc_str_append_string(data, args->type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Type\":", args->type);
 	   	ret += 1;
 	}
 	if (args->is_set_unit_price || args->unit_price) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"UnitPrice\":" ));
-                STRY(osc_str_append_double(data, args->unit_price));
+		ARG_TO_JSON(UnitPrice, double, args->unit_price);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -5156,30 +5027,22 @@ static int catalogs_setter(struct catalogs *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->entries_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Entries\":" ));
-                STRY(osc_str_append_string(data, args->entries_str));
+		ARG_TO_JSON(Entries, string, args->entries_str);
 		ret += 1;
 	}
 	if (args->from_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"FromDate\":\"" ));
-                STRY(osc_str_append_string(data, args->from_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"FromDate\":", args->from_date);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	if (args->to_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ToDate\":\"" ));
-                STRY(osc_str_append_string(data, args->to_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ToDate\":", args->to_date);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -5188,37 +5051,27 @@ static int client_gateway_setter(struct client_gateway *args, struct osc_str *da
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_bgp_asn || args->bgp_asn) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BgpAsn\":" ));
-                STRY(osc_str_append_int(data, args->bgp_asn));
+		ARG_TO_JSON(BgpAsn, int, args->bgp_asn);
 	   	ret += 1;
 	}
 	if (args->client_gateway_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ClientGatewayId\":\"" ));
-                STRY(osc_str_append_string(data, args->client_gateway_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ClientGatewayId\":", args->client_gateway_id);
 	   	ret += 1;
 	}
 	if (args->connection_type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ConnectionType\":\"" ));
-                STRY(osc_str_append_string(data, args->connection_type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ConnectionType\":", args->connection_type);
 	   	ret += 1;
 	}
 	if (args->public_ip) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
-                STRY(osc_str_append_string(data, args->public_ip));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicIp\":", args->public_ip);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
         if (args->tags) {
@@ -5236,9 +5089,7 @@ static int client_gateway_setter(struct client_gateway *args, struct osc_str *da
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -5247,79 +5098,57 @@ static int consumption_entry_setter(struct consumption_entry *args, struct osc_s
        int count_args = 0;
        int ret = 0;
 	if (args->account_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
-                STRY(osc_str_append_string(data, args->account_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"AccountId\":", args->account_id);
 	   	ret += 1;
 	}
 	if (args->category) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Category\":\"" ));
-                STRY(osc_str_append_string(data, args->category));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Category\":", args->category);
 	   	ret += 1;
 	}
 	if (args->from_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"FromDate\":\"" ));
-                STRY(osc_str_append_string(data, args->from_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"FromDate\":", args->from_date);
 	   	ret += 1;
 	}
 	if (args->operation) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Operation\":\"" ));
-                STRY(osc_str_append_string(data, args->operation));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Operation\":", args->operation);
 	   	ret += 1;
 	}
 	if (args->paying_account_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PayingAccountId\":\"" ));
-                STRY(osc_str_append_string(data, args->paying_account_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PayingAccountId\":", args->paying_account_id);
 	   	ret += 1;
 	}
 	if (args->service) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Service\":\"" ));
-                STRY(osc_str_append_string(data, args->service));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Service\":", args->service);
 	   	ret += 1;
 	}
 	if (args->subregion_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubregionName\":\"" ));
-                STRY(osc_str_append_string(data, args->subregion_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubregionName\":", args->subregion_name);
 	   	ret += 1;
 	}
 	if (args->title) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Title\":\"" ));
-                STRY(osc_str_append_string(data, args->title));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Title\":", args->title);
 	   	ret += 1;
 	}
 	if (args->to_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ToDate\":\"" ));
-                STRY(osc_str_append_string(data, args->to_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ToDate\":", args->to_date);
 	   	ret += 1;
 	}
 	if (args->type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Type\":\"" ));
-                STRY(osc_str_append_string(data, args->type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Type\":", args->type);
 	   	ret += 1;
 	}
 	if (args->is_set_value || args->value) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Value\":" ));
-                STRY(osc_str_append_double(data, args->value));
+		ARG_TO_JSON(Value, double, args->value);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -5328,23 +5157,17 @@ static int dhcp_options_set_setter(struct dhcp_options_set *args, struct osc_str
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_default_arg) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Default\":" ));
-                STRY(osc_str_append_bool(data, args->default_arg));
+		ARG_TO_JSON(Default, bool, args->default_arg);
 	   	ret += 1;
 	}
 	if (args->dhcp_options_set_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DhcpOptionsSetId\":\"" ));
-                STRY(osc_str_append_string(data, args->dhcp_options_set_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DhcpOptionsSetId\":", args->dhcp_options_set_id);
 	   	ret += 1;
 	}
 	if (args->domain_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DomainName\":\"" ));
-                STRY(osc_str_append_string(data, args->domain_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DomainName\":", args->domain_name);
 	   	ret += 1;
 	}
 	if (args->domain_name_servers) {
@@ -5355,16 +5178,12 @@ static int dhcp_options_set_setter(struct dhcp_options_set *args, struct osc_str
 		for (as = args->domain_name_servers; *as > 0; ++as) {
 			if (as != args->domain_name_servers)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->domain_name_servers_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DomainNameServers\":" ));
-                STRY(osc_str_append_string(data, args->domain_name_servers_str));
+		ARG_TO_JSON(DomainNameServers, string, args->domain_name_servers_str);
 		ret += 1;
 	}
 	if (args->log_servers) {
@@ -5375,16 +5194,12 @@ static int dhcp_options_set_setter(struct dhcp_options_set *args, struct osc_str
 		for (as = args->log_servers; *as > 0; ++as) {
 			if (as != args->log_servers)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->log_servers_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LogServers\":" ));
-                STRY(osc_str_append_string(data, args->log_servers_str));
+		ARG_TO_JSON(LogServers, string, args->log_servers_str);
 		ret += 1;
 	}
 	if (args->ntp_servers) {
@@ -5395,16 +5210,12 @@ static int dhcp_options_set_setter(struct dhcp_options_set *args, struct osc_str
 		for (as = args->ntp_servers; *as > 0; ++as) {
 			if (as != args->ntp_servers)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ntp_servers_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NtpServers\":" ));
-                STRY(osc_str_append_string(data, args->ntp_servers_str));
+		ARG_TO_JSON(NtpServers, string, args->ntp_servers_str);
 		ret += 1;
 	}
         if (args->tags) {
@@ -5422,9 +5233,7 @@ static int dhcp_options_set_setter(struct dhcp_options_set *args, struct osc_str
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -5433,52 +5242,38 @@ static int direct_link_setter(struct direct_link *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->account_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
-                STRY(osc_str_append_string(data, args->account_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"AccountId\":", args->account_id);
 	   	ret += 1;
 	}
 	if (args->bandwidth) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Bandwidth\":\"" ));
-                STRY(osc_str_append_string(data, args->bandwidth));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Bandwidth\":", args->bandwidth);
 	   	ret += 1;
 	}
 	if (args->direct_link_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DirectLinkId\":\"" ));
-                STRY(osc_str_append_string(data, args->direct_link_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DirectLinkId\":", args->direct_link_id);
 	   	ret += 1;
 	}
 	if (args->direct_link_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DirectLinkName\":\"" ));
-                STRY(osc_str_append_string(data, args->direct_link_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DirectLinkName\":", args->direct_link_name);
 	   	ret += 1;
 	}
 	if (args->location) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Location\":\"" ));
-                STRY(osc_str_append_string(data, args->location));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Location\":", args->location);
 	   	ret += 1;
 	}
 	if (args->region_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RegionName\":\"" ));
-                STRY(osc_str_append_string(data, args->region_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"RegionName\":", args->region_name);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -5487,50 +5282,36 @@ static int direct_link_interface_setter(struct direct_link_interface *args, stru
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_bgp_asn || args->bgp_asn) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BgpAsn\":" ));
-                STRY(osc_str_append_int(data, args->bgp_asn));
+		ARG_TO_JSON(BgpAsn, int, args->bgp_asn);
 	   	ret += 1;
 	}
 	if (args->bgp_key) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BgpKey\":\"" ));
-                STRY(osc_str_append_string(data, args->bgp_key));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"BgpKey\":", args->bgp_key);
 	   	ret += 1;
 	}
 	if (args->client_private_ip) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ClientPrivateIp\":\"" ));
-                STRY(osc_str_append_string(data, args->client_private_ip));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ClientPrivateIp\":", args->client_private_ip);
 	   	ret += 1;
 	}
 	if (args->direct_link_interface_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DirectLinkInterfaceName\":\"" ));
-                STRY(osc_str_append_string(data, args->direct_link_interface_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DirectLinkInterfaceName\":", args->direct_link_interface_name);
 	   	ret += 1;
 	}
 	if (args->outscale_private_ip) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OutscalePrivateIp\":\"" ));
-                STRY(osc_str_append_string(data, args->outscale_private_ip));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"OutscalePrivateIp\":", args->outscale_private_ip);
 	   	ret += 1;
 	}
 	if (args->virtual_gateway_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VirtualGatewayId\":\"" ));
-                STRY(osc_str_append_string(data, args->virtual_gateway_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VirtualGatewayId\":", args->virtual_gateway_id);
 	   	ret += 1;
 	}
 	if (args->is_set_vlan || args->vlan) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Vlan\":" ));
-                STRY(osc_str_append_int(data, args->vlan));
+		ARG_TO_JSON(Vlan, int, args->vlan);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -5539,98 +5320,70 @@ static int direct_link_interfaces_setter(struct direct_link_interfaces *args, st
        int count_args = 0;
        int ret = 0;
 	if (args->account_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
-                STRY(osc_str_append_string(data, args->account_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"AccountId\":", args->account_id);
 	   	ret += 1;
 	}
 	if (args->is_set_bgp_asn || args->bgp_asn) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BgpAsn\":" ));
-                STRY(osc_str_append_int(data, args->bgp_asn));
+		ARG_TO_JSON(BgpAsn, int, args->bgp_asn);
 	   	ret += 1;
 	}
 	if (args->bgp_key) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BgpKey\":\"" ));
-                STRY(osc_str_append_string(data, args->bgp_key));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"BgpKey\":", args->bgp_key);
 	   	ret += 1;
 	}
 	if (args->client_private_ip) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ClientPrivateIp\":\"" ));
-                STRY(osc_str_append_string(data, args->client_private_ip));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ClientPrivateIp\":", args->client_private_ip);
 	   	ret += 1;
 	}
 	if (args->direct_link_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DirectLinkId\":\"" ));
-                STRY(osc_str_append_string(data, args->direct_link_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DirectLinkId\":", args->direct_link_id);
 	   	ret += 1;
 	}
 	if (args->direct_link_interface_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DirectLinkInterfaceId\":\"" ));
-                STRY(osc_str_append_string(data, args->direct_link_interface_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DirectLinkInterfaceId\":", args->direct_link_interface_id);
 	   	ret += 1;
 	}
 	if (args->direct_link_interface_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DirectLinkInterfaceName\":\"" ));
-                STRY(osc_str_append_string(data, args->direct_link_interface_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DirectLinkInterfaceName\":", args->direct_link_interface_name);
 	   	ret += 1;
 	}
 	if (args->interface_type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"InterfaceType\":\"" ));
-                STRY(osc_str_append_string(data, args->interface_type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"InterfaceType\":", args->interface_type);
 	   	ret += 1;
 	}
 	if (args->location) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Location\":\"" ));
-                STRY(osc_str_append_string(data, args->location));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Location\":", args->location);
 	   	ret += 1;
 	}
 	if (args->is_set_mtu || args->mtu) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Mtu\":" ));
-                STRY(osc_str_append_int(data, args->mtu));
+		ARG_TO_JSON(Mtu, int, args->mtu);
 	   	ret += 1;
 	}
 	if (args->outscale_private_ip) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OutscalePrivateIp\":\"" ));
-                STRY(osc_str_append_string(data, args->outscale_private_ip));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"OutscalePrivateIp\":", args->outscale_private_ip);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	if (args->virtual_gateway_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VirtualGatewayId\":\"" ));
-                STRY(osc_str_append_string(data, args->virtual_gateway_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VirtualGatewayId\":", args->virtual_gateway_id);
 	   	ret += 1;
 	}
 	if (args->is_set_vlan || args->vlan) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Vlan\":" ));
-                STRY(osc_str_append_int(data, args->vlan));
+		ARG_TO_JSON(Vlan, int, args->vlan);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -5639,24 +5392,18 @@ static int errors_setter(struct errors *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->code) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Code\":\"" ));
-                STRY(osc_str_append_string(data, args->code));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Code\":", args->code);
 	   	ret += 1;
 	}
 	if (args->details) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Details\":\"" ));
-                STRY(osc_str_append_string(data, args->details));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Details\":", args->details);
 	   	ret += 1;
 	}
 	if (args->type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Type\":\"" ));
-                STRY(osc_str_append_string(data, args->type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Type\":", args->type);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -5672,16 +5419,12 @@ static int filters_access_keys_setter(struct filters_access_keys *args, struct o
 		for (as = args->access_key_ids; *as > 0; ++as) {
 			if (as != args->access_key_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->access_key_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccessKeyIds\":" ));
-                STRY(osc_str_append_string(data, args->access_key_ids_str));
+		ARG_TO_JSON(AccessKeyIds, string, args->access_key_ids_str);
 		ret += 1;
 	}
 	if (args->states) {
@@ -5692,16 +5435,12 @@ static int filters_access_keys_setter(struct filters_access_keys *args, struct o
 		for (as = args->states; *as > 0; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->states_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"States\":" ));
-                STRY(osc_str_append_string(data, args->states_str));
+		ARG_TO_JSON(States, string, args->states_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -5717,16 +5456,12 @@ static int filters_api_access_rule_setter(struct filters_api_access_rule *args, 
 		for (as = args->api_access_rule_ids; *as > 0; ++as) {
 			if (as != args->api_access_rule_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->api_access_rule_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ApiAccessRuleIds\":" ));
-                STRY(osc_str_append_string(data, args->api_access_rule_ids_str));
+		ARG_TO_JSON(ApiAccessRuleIds, string, args->api_access_rule_ids_str);
 		ret += 1;
 	}
 	if (args->ca_ids) {
@@ -5737,16 +5472,12 @@ static int filters_api_access_rule_setter(struct filters_api_access_rule *args, 
 		for (as = args->ca_ids; *as > 0; ++as) {
 			if (as != args->ca_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ca_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CaIds\":" ));
-                STRY(osc_str_append_string(data, args->ca_ids_str));
+		ARG_TO_JSON(CaIds, string, args->ca_ids_str);
 		ret += 1;
 	}
 	if (args->cns) {
@@ -5757,16 +5488,12 @@ static int filters_api_access_rule_setter(struct filters_api_access_rule *args, 
 		for (as = args->cns; *as > 0; ++as) {
 			if (as != args->cns)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->cns_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Cns\":" ));
-                STRY(osc_str_append_string(data, args->cns_str));
+		ARG_TO_JSON(Cns, string, args->cns_str);
 		ret += 1;
 	}
 	if (args->descriptions) {
@@ -5777,16 +5504,12 @@ static int filters_api_access_rule_setter(struct filters_api_access_rule *args, 
 		for (as = args->descriptions; *as > 0; ++as) {
 			if (as != args->descriptions)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->descriptions_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Descriptions\":" ));
-                STRY(osc_str_append_string(data, args->descriptions_str));
+		ARG_TO_JSON(Descriptions, string, args->descriptions_str);
 		ret += 1;
 	}
 	if (args->ip_ranges) {
@@ -5797,16 +5520,12 @@ static int filters_api_access_rule_setter(struct filters_api_access_rule *args, 
 		for (as = args->ip_ranges; *as > 0; ++as) {
 			if (as != args->ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ip_ranges_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IpRanges\":" ));
-                STRY(osc_str_append_string(data, args->ip_ranges_str));
+		ARG_TO_JSON(IpRanges, string, args->ip_ranges_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -5822,16 +5541,12 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 		for (as = args->query_access_keys; *as > 0; ++as) {
 			if (as != args->query_access_keys)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->query_access_keys_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryAccessKeys\":" ));
-                STRY(osc_str_append_string(data, args->query_access_keys_str));
+		ARG_TO_JSON(QueryAccessKeys, string, args->query_access_keys_str);
 		ret += 1;
 	}
 	if (args->query_api_names) {
@@ -5842,16 +5557,12 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 		for (as = args->query_api_names; *as > 0; ++as) {
 			if (as != args->query_api_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->query_api_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryApiNames\":" ));
-                STRY(osc_str_append_string(data, args->query_api_names_str));
+		ARG_TO_JSON(QueryApiNames, string, args->query_api_names_str);
 		ret += 1;
 	}
 	if (args->query_call_names) {
@@ -5862,30 +5573,22 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 		for (as = args->query_call_names; *as > 0; ++as) {
 			if (as != args->query_call_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->query_call_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryCallNames\":" ));
-                STRY(osc_str_append_string(data, args->query_call_names_str));
+		ARG_TO_JSON(QueryCallNames, string, args->query_call_names_str);
 		ret += 1;
 	}
 	if (args->query_date_after) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryDateAfter\":\"" ));
-                STRY(osc_str_append_string(data, args->query_date_after));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"QueryDateAfter\":", args->query_date_after);
 	   	ret += 1;
 	}
 	if (args->query_date_before) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryDateBefore\":\"" ));
-                STRY(osc_str_append_string(data, args->query_date_before));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"QueryDateBefore\":", args->query_date_before);
 	   	ret += 1;
 	}
 	if (args->query_ip_addresses) {
@@ -5896,16 +5599,12 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 		for (as = args->query_ip_addresses; *as > 0; ++as) {
 			if (as != args->query_ip_addresses)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->query_ip_addresses_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryIpAddresses\":" ));
-                STRY(osc_str_append_string(data, args->query_ip_addresses_str));
+		ARG_TO_JSON(QueryIpAddresses, string, args->query_ip_addresses_str);
 		ret += 1;
 	}
 	if (args->query_user_agents) {
@@ -5916,16 +5615,12 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 		for (as = args->query_user_agents; *as > 0; ++as) {
 			if (as != args->query_user_agents)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->query_user_agents_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryUserAgents\":" ));
-                STRY(osc_str_append_string(data, args->query_user_agents_str));
+		ARG_TO_JSON(QueryUserAgents, string, args->query_user_agents_str);
 		ret += 1;
 	}
 	if (args->request_ids) {
@@ -5936,16 +5631,12 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 		for (as = args->request_ids; *as > 0; ++as) {
 			if (as != args->request_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->request_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RequestIds\":" ));
-                STRY(osc_str_append_string(data, args->request_ids_str));
+		ARG_TO_JSON(RequestIds, string, args->request_ids_str);
 		ret += 1;
 	}
 	if (args->response_status_codes) {
@@ -5961,9 +5652,7 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->response_status_codes_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ResponseStatusCodes\":" ));
-                STRY(osc_str_append_string(data, args->response_status_codes_str));
+		ARG_TO_JSON(ResponseStatusCodes, string, args->response_status_codes_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -5979,16 +5668,12 @@ static int filters_ca_setter(struct filters_ca *args, struct osc_str *data) {
 		for (as = args->ca_fingerprints; *as > 0; ++as) {
 			if (as != args->ca_fingerprints)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ca_fingerprints_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CaFingerprints\":" ));
-                STRY(osc_str_append_string(data, args->ca_fingerprints_str));
+		ARG_TO_JSON(CaFingerprints, string, args->ca_fingerprints_str);
 		ret += 1;
 	}
 	if (args->ca_ids) {
@@ -5999,16 +5684,12 @@ static int filters_ca_setter(struct filters_ca *args, struct osc_str *data) {
 		for (as = args->ca_ids; *as > 0; ++as) {
 			if (as != args->ca_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ca_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CaIds\":" ));
-                STRY(osc_str_append_string(data, args->ca_ids_str));
+		ARG_TO_JSON(CaIds, string, args->ca_ids_str);
 		ret += 1;
 	}
 	if (args->descriptions) {
@@ -6019,16 +5700,12 @@ static int filters_ca_setter(struct filters_ca *args, struct osc_str *data) {
 		for (as = args->descriptions; *as > 0; ++as) {
 			if (as != args->descriptions)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->descriptions_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Descriptions\":" ));
-                STRY(osc_str_append_string(data, args->descriptions_str));
+		ARG_TO_JSON(Descriptions, string, args->descriptions_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -6037,23 +5714,17 @@ static int filters_catalogs_setter(struct filters_catalogs *args, struct osc_str
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_current_catalog_only) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CurrentCatalogOnly\":" ));
-                STRY(osc_str_append_bool(data, args->current_catalog_only));
+		ARG_TO_JSON(CurrentCatalogOnly, bool, args->current_catalog_only);
 	   	ret += 1;
 	}
 	if (args->from_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"FromDate\":\"" ));
-                STRY(osc_str_append_string(data, args->from_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"FromDate\":", args->from_date);
 	   	ret += 1;
 	}
 	if (args->to_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ToDate\":\"" ));
-                STRY(osc_str_append_string(data, args->to_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ToDate\":", args->to_date);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -6074,9 +5745,7 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->bgp_asns_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BgpAsns\":" ));
-                STRY(osc_str_append_string(data, args->bgp_asns_str));
+		ARG_TO_JSON(BgpAsns, string, args->bgp_asns_str);
 		ret += 1;
 	}
 	if (args->client_gateway_ids) {
@@ -6087,16 +5756,12 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 		for (as = args->client_gateway_ids; *as > 0; ++as) {
 			if (as != args->client_gateway_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->client_gateway_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ClientGatewayIds\":" ));
-                STRY(osc_str_append_string(data, args->client_gateway_ids_str));
+		ARG_TO_JSON(ClientGatewayIds, string, args->client_gateway_ids_str);
 		ret += 1;
 	}
 	if (args->connection_types) {
@@ -6107,16 +5772,12 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 		for (as = args->connection_types; *as > 0; ++as) {
 			if (as != args->connection_types)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->connection_types_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ConnectionTypes\":" ));
-                STRY(osc_str_append_string(data, args->connection_types_str));
+		ARG_TO_JSON(ConnectionTypes, string, args->connection_types_str);
 		ret += 1;
 	}
 	if (args->public_ips) {
@@ -6127,16 +5788,12 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 		for (as = args->public_ips; *as > 0; ++as) {
 			if (as != args->public_ips)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->public_ips_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIps\":" ));
-                STRY(osc_str_append_string(data, args->public_ips_str));
+		ARG_TO_JSON(PublicIps, string, args->public_ips_str);
 		ret += 1;
 	}
 	if (args->states) {
@@ -6147,16 +5804,12 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 		for (as = args->states; *as > 0; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->states_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"States\":" ));
-                STRY(osc_str_append_string(data, args->states_str));
+		ARG_TO_JSON(States, string, args->states_str);
 		ret += 1;
 	}
 	if (args->tag_keys) {
@@ -6167,16 +5820,12 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
-                STRY(osc_str_append_string(data, args->tag_keys_str));
+		ARG_TO_JSON(TagKeys, string, args->tag_keys_str);
 		ret += 1;
 	}
 	if (args->tag_values) {
@@ -6187,16 +5836,12 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagValues\":" ));
-                STRY(osc_str_append_string(data, args->tag_values_str));
+		ARG_TO_JSON(TagValues, string, args->tag_values_str);
 		ret += 1;
 	}
 	if (args->tags) {
@@ -6207,16 +5852,12 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -6225,9 +5866,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_default_arg) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Default\":" ));
-                STRY(osc_str_append_bool(data, args->default_arg));
+		ARG_TO_JSON(Default, bool, args->default_arg);
 	   	ret += 1;
 	}
 	if (args->dhcp_options_set_ids) {
@@ -6238,16 +5877,12 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 		for (as = args->dhcp_options_set_ids; *as > 0; ++as) {
 			if (as != args->dhcp_options_set_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->dhcp_options_set_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DhcpOptionsSetIds\":" ));
-                STRY(osc_str_append_string(data, args->dhcp_options_set_ids_str));
+		ARG_TO_JSON(DhcpOptionsSetIds, string, args->dhcp_options_set_ids_str);
 		ret += 1;
 	}
 	if (args->domain_name_servers) {
@@ -6258,16 +5893,12 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 		for (as = args->domain_name_servers; *as > 0; ++as) {
 			if (as != args->domain_name_servers)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->domain_name_servers_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DomainNameServers\":" ));
-                STRY(osc_str_append_string(data, args->domain_name_servers_str));
+		ARG_TO_JSON(DomainNameServers, string, args->domain_name_servers_str);
 		ret += 1;
 	}
 	if (args->domain_names) {
@@ -6278,16 +5909,12 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 		for (as = args->domain_names; *as > 0; ++as) {
 			if (as != args->domain_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->domain_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DomainNames\":" ));
-                STRY(osc_str_append_string(data, args->domain_names_str));
+		ARG_TO_JSON(DomainNames, string, args->domain_names_str);
 		ret += 1;
 	}
 	if (args->log_servers) {
@@ -6298,16 +5925,12 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 		for (as = args->log_servers; *as > 0; ++as) {
 			if (as != args->log_servers)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->log_servers_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LogServers\":" ));
-                STRY(osc_str_append_string(data, args->log_servers_str));
+		ARG_TO_JSON(LogServers, string, args->log_servers_str);
 		ret += 1;
 	}
 	if (args->ntp_servers) {
@@ -6318,16 +5941,12 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 		for (as = args->ntp_servers; *as > 0; ++as) {
 			if (as != args->ntp_servers)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ntp_servers_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NtpServers\":" ));
-                STRY(osc_str_append_string(data, args->ntp_servers_str));
+		ARG_TO_JSON(NtpServers, string, args->ntp_servers_str);
 		ret += 1;
 	}
 	if (args->tag_keys) {
@@ -6338,16 +5957,12 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
-                STRY(osc_str_append_string(data, args->tag_keys_str));
+		ARG_TO_JSON(TagKeys, string, args->tag_keys_str);
 		ret += 1;
 	}
 	if (args->tag_values) {
@@ -6358,16 +5973,12 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagValues\":" ));
-                STRY(osc_str_append_string(data, args->tag_values_str));
+		ARG_TO_JSON(TagValues, string, args->tag_values_str);
 		ret += 1;
 	}
 	if (args->tags) {
@@ -6378,16 +5989,12 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -6403,16 +6010,12 @@ static int filters_direct_link_setter(struct filters_direct_link *args, struct o
 		for (as = args->direct_link_ids; *as > 0; ++as) {
 			if (as != args->direct_link_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->direct_link_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DirectLinkIds\":" ));
-                STRY(osc_str_append_string(data, args->direct_link_ids_str));
+		ARG_TO_JSON(DirectLinkIds, string, args->direct_link_ids_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -6428,16 +6031,12 @@ static int filters_direct_link_interface_setter(struct filters_direct_link_inter
 		for (as = args->direct_link_ids; *as > 0; ++as) {
 			if (as != args->direct_link_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->direct_link_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DirectLinkIds\":" ));
-                STRY(osc_str_append_string(data, args->direct_link_ids_str));
+		ARG_TO_JSON(DirectLinkIds, string, args->direct_link_ids_str);
 		ret += 1;
 	}
 	if (args->direct_link_interface_ids) {
@@ -6448,16 +6047,12 @@ static int filters_direct_link_interface_setter(struct filters_direct_link_inter
 		for (as = args->direct_link_interface_ids; *as > 0; ++as) {
 			if (as != args->direct_link_interface_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->direct_link_interface_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DirectLinkInterfaceIds\":" ));
-                STRY(osc_str_append_string(data, args->direct_link_interface_ids_str));
+		ARG_TO_JSON(DirectLinkInterfaceIds, string, args->direct_link_interface_ids_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -6473,16 +6068,12 @@ static int filters_export_task_setter(struct filters_export_task *args, struct o
 		for (as = args->task_ids; *as > 0; ++as) {
 			if (as != args->task_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->task_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TaskIds\":" ));
-                STRY(osc_str_append_string(data, args->task_ids_str));
+		ARG_TO_JSON(TaskIds, string, args->task_ids_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -6491,9 +6082,7 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_delete_on_vm_deletion) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeleteOnVmDeletion\":" ));
-                STRY(osc_str_append_bool(data, args->delete_on_vm_deletion));
+		ARG_TO_JSON(DeleteOnVmDeletion, bool, args->delete_on_vm_deletion);
 	   	ret += 1;
 	}
 	if (args->flexible_gpu_ids) {
@@ -6504,16 +6093,12 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 		for (as = args->flexible_gpu_ids; *as > 0; ++as) {
 			if (as != args->flexible_gpu_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->flexible_gpu_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"FlexibleGpuIds\":" ));
-                STRY(osc_str_append_string(data, args->flexible_gpu_ids_str));
+		ARG_TO_JSON(FlexibleGpuIds, string, args->flexible_gpu_ids_str);
 		ret += 1;
 	}
 	if (args->generations) {
@@ -6524,16 +6109,12 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 		for (as = args->generations; *as > 0; ++as) {
 			if (as != args->generations)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->generations_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Generations\":" ));
-                STRY(osc_str_append_string(data, args->generations_str));
+		ARG_TO_JSON(Generations, string, args->generations_str);
 		ret += 1;
 	}
 	if (args->model_names) {
@@ -6544,16 +6125,12 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 		for (as = args->model_names; *as > 0; ++as) {
 			if (as != args->model_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->model_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ModelNames\":" ));
-                STRY(osc_str_append_string(data, args->model_names_str));
+		ARG_TO_JSON(ModelNames, string, args->model_names_str);
 		ret += 1;
 	}
 	if (args->states) {
@@ -6564,16 +6141,12 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 		for (as = args->states; *as > 0; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->states_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"States\":" ));
-                STRY(osc_str_append_string(data, args->states_str));
+		ARG_TO_JSON(States, string, args->states_str);
 		ret += 1;
 	}
 	if (args->subregion_names) {
@@ -6584,16 +6157,12 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 		for (as = args->subregion_names; *as > 0; ++as) {
 			if (as != args->subregion_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subregion_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubregionNames\":" ));
-                STRY(osc_str_append_string(data, args->subregion_names_str));
+		ARG_TO_JSON(SubregionNames, string, args->subregion_names_str);
 		ret += 1;
 	}
 	if (args->vm_ids) {
@@ -6604,16 +6173,12 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 		for (as = args->vm_ids; *as > 0; ++as) {
 			if (as != args->vm_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmIds\":" ));
-                STRY(osc_str_append_string(data, args->vm_ids_str));
+		ARG_TO_JSON(VmIds, string, args->vm_ids_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -6629,16 +6194,12 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		for (as = args->account_aliases; *as > 0; ++as) {
 			if (as != args->account_aliases)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->account_aliases_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccountAliases\":" ));
-                STRY(osc_str_append_string(data, args->account_aliases_str));
+		ARG_TO_JSON(AccountAliases, string, args->account_aliases_str);
 		ret += 1;
 	}
 	if (args->account_ids) {
@@ -6649,16 +6210,12 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		for (as = args->account_ids; *as > 0; ++as) {
 			if (as != args->account_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->account_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccountIds\":" ));
-                STRY(osc_str_append_string(data, args->account_ids_str));
+		ARG_TO_JSON(AccountIds, string, args->account_ids_str);
 		ret += 1;
 	}
 	if (args->architectures) {
@@ -6669,22 +6226,16 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		for (as = args->architectures; *as > 0; ++as) {
 			if (as != args->architectures)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->architectures_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Architectures\":" ));
-                STRY(osc_str_append_string(data, args->architectures_str));
+		ARG_TO_JSON(Architectures, string, args->architectures_str);
 		ret += 1;
 	}
 	if (args->is_set_block_device_mapping_delete_on_vm_deletion) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BlockDeviceMappingDeleteOnVmDeletion\":" ));
-                STRY(osc_str_append_bool(data, args->block_device_mapping_delete_on_vm_deletion));
+		ARG_TO_JSON(BlockDeviceMappingDeleteOnVmDeletion, bool, args->block_device_mapping_delete_on_vm_deletion);
 	   	ret += 1;
 	}
 	if (args->block_device_mapping_device_names) {
@@ -6695,16 +6246,12 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		for (as = args->block_device_mapping_device_names; *as > 0; ++as) {
 			if (as != args->block_device_mapping_device_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->block_device_mapping_device_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BlockDeviceMappingDeviceNames\":" ));
-                STRY(osc_str_append_string(data, args->block_device_mapping_device_names_str));
+		ARG_TO_JSON(BlockDeviceMappingDeviceNames, string, args->block_device_mapping_device_names_str);
 		ret += 1;
 	}
 	if (args->block_device_mapping_snapshot_ids) {
@@ -6715,16 +6262,12 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		for (as = args->block_device_mapping_snapshot_ids; *as > 0; ++as) {
 			if (as != args->block_device_mapping_snapshot_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->block_device_mapping_snapshot_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BlockDeviceMappingSnapshotIds\":" ));
-                STRY(osc_str_append_string(data, args->block_device_mapping_snapshot_ids_str));
+		ARG_TO_JSON(BlockDeviceMappingSnapshotIds, string, args->block_device_mapping_snapshot_ids_str);
 		ret += 1;
 	}
 	if (args->block_device_mapping_volume_sizes) {
@@ -6740,9 +6283,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->block_device_mapping_volume_sizes_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BlockDeviceMappingVolumeSizes\":" ));
-                STRY(osc_str_append_string(data, args->block_device_mapping_volume_sizes_str));
+		ARG_TO_JSON(BlockDeviceMappingVolumeSizes, string, args->block_device_mapping_volume_sizes_str);
 		ret += 1;
 	}
 	if (args->block_device_mapping_volume_types) {
@@ -6753,16 +6294,12 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		for (as = args->block_device_mapping_volume_types; *as > 0; ++as) {
 			if (as != args->block_device_mapping_volume_types)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->block_device_mapping_volume_types_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BlockDeviceMappingVolumeTypes\":" ));
-                STRY(osc_str_append_string(data, args->block_device_mapping_volume_types_str));
+		ARG_TO_JSON(BlockDeviceMappingVolumeTypes, string, args->block_device_mapping_volume_types_str);
 		ret += 1;
 	}
 	if (args->descriptions) {
@@ -6773,16 +6310,12 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		for (as = args->descriptions; *as > 0; ++as) {
 			if (as != args->descriptions)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->descriptions_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Descriptions\":" ));
-                STRY(osc_str_append_string(data, args->descriptions_str));
+		ARG_TO_JSON(Descriptions, string, args->descriptions_str);
 		ret += 1;
 	}
 	if (args->file_locations) {
@@ -6793,16 +6326,12 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		for (as = args->file_locations; *as > 0; ++as) {
 			if (as != args->file_locations)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->file_locations_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"FileLocations\":" ));
-                STRY(osc_str_append_string(data, args->file_locations_str));
+		ARG_TO_JSON(FileLocations, string, args->file_locations_str);
 		ret += 1;
 	}
 	if (args->hypervisors) {
@@ -6813,16 +6342,12 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		for (as = args->hypervisors; *as > 0; ++as) {
 			if (as != args->hypervisors)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->hypervisors_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Hypervisors\":" ));
-                STRY(osc_str_append_string(data, args->hypervisors_str));
+		ARG_TO_JSON(Hypervisors, string, args->hypervisors_str);
 		ret += 1;
 	}
 	if (args->image_ids) {
@@ -6833,16 +6358,12 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		for (as = args->image_ids; *as > 0; ++as) {
 			if (as != args->image_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->image_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ImageIds\":" ));
-                STRY(osc_str_append_string(data, args->image_ids_str));
+		ARG_TO_JSON(ImageIds, string, args->image_ids_str);
 		ret += 1;
 	}
 	if (args->image_names) {
@@ -6853,16 +6374,12 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		for (as = args->image_names; *as > 0; ++as) {
 			if (as != args->image_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->image_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ImageNames\":" ));
-                STRY(osc_str_append_string(data, args->image_names_str));
+		ARG_TO_JSON(ImageNames, string, args->image_names_str);
 		ret += 1;
 	}
 	if (args->permissions_to_launch_account_ids) {
@@ -6873,22 +6390,16 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		for (as = args->permissions_to_launch_account_ids; *as > 0; ++as) {
 			if (as != args->permissions_to_launch_account_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->permissions_to_launch_account_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PermissionsToLaunchAccountIds\":" ));
-                STRY(osc_str_append_string(data, args->permissions_to_launch_account_ids_str));
+		ARG_TO_JSON(PermissionsToLaunchAccountIds, string, args->permissions_to_launch_account_ids_str);
 		ret += 1;
 	}
 	if (args->is_set_permissions_to_launch_global_permission) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PermissionsToLaunchGlobalPermission\":" ));
-                STRY(osc_str_append_bool(data, args->permissions_to_launch_global_permission));
+		ARG_TO_JSON(PermissionsToLaunchGlobalPermission, bool, args->permissions_to_launch_global_permission);
 	   	ret += 1;
 	}
 	if (args->product_codes) {
@@ -6899,16 +6410,12 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		for (as = args->product_codes; *as > 0; ++as) {
 			if (as != args->product_codes)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->product_codes_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ProductCodes\":" ));
-                STRY(osc_str_append_string(data, args->product_codes_str));
+		ARG_TO_JSON(ProductCodes, string, args->product_codes_str);
 		ret += 1;
 	}
 	if (args->root_device_names) {
@@ -6919,16 +6426,12 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		for (as = args->root_device_names; *as > 0; ++as) {
 			if (as != args->root_device_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->root_device_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RootDeviceNames\":" ));
-                STRY(osc_str_append_string(data, args->root_device_names_str));
+		ARG_TO_JSON(RootDeviceNames, string, args->root_device_names_str);
 		ret += 1;
 	}
 	if (args->root_device_types) {
@@ -6939,16 +6442,12 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		for (as = args->root_device_types; *as > 0; ++as) {
 			if (as != args->root_device_types)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->root_device_types_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RootDeviceTypes\":" ));
-                STRY(osc_str_append_string(data, args->root_device_types_str));
+		ARG_TO_JSON(RootDeviceTypes, string, args->root_device_types_str);
 		ret += 1;
 	}
 	if (args->states) {
@@ -6959,16 +6458,12 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		for (as = args->states; *as > 0; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->states_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"States\":" ));
-                STRY(osc_str_append_string(data, args->states_str));
+		ARG_TO_JSON(States, string, args->states_str);
 		ret += 1;
 	}
 	if (args->tag_keys) {
@@ -6979,16 +6474,12 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
-                STRY(osc_str_append_string(data, args->tag_keys_str));
+		ARG_TO_JSON(TagKeys, string, args->tag_keys_str);
 		ret += 1;
 	}
 	if (args->tag_values) {
@@ -6999,16 +6490,12 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagValues\":" ));
-                STRY(osc_str_append_string(data, args->tag_values_str));
+		ARG_TO_JSON(TagValues, string, args->tag_values_str);
 		ret += 1;
 	}
 	if (args->tags) {
@@ -7019,16 +6506,12 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	if (args->virtualization_types) {
@@ -7039,16 +6522,12 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		for (as = args->virtualization_types; *as > 0; ++as) {
 			if (as != args->virtualization_types)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->virtualization_types_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VirtualizationTypes\":" ));
-                STRY(osc_str_append_string(data, args->virtualization_types_str));
+		ARG_TO_JSON(VirtualizationTypes, string, args->virtualization_types_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -7064,16 +6543,12 @@ static int filters_internet_service_setter(struct filters_internet_service *args
 		for (as = args->internet_service_ids; *as > 0; ++as) {
 			if (as != args->internet_service_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->internet_service_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"InternetServiceIds\":" ));
-                STRY(osc_str_append_string(data, args->internet_service_ids_str));
+		ARG_TO_JSON(InternetServiceIds, string, args->internet_service_ids_str);
 		ret += 1;
 	}
 	if (args->link_net_ids) {
@@ -7084,16 +6559,12 @@ static int filters_internet_service_setter(struct filters_internet_service *args
 		for (as = args->link_net_ids; *as > 0; ++as) {
 			if (as != args->link_net_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_net_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkNetIds\":" ));
-                STRY(osc_str_append_string(data, args->link_net_ids_str));
+		ARG_TO_JSON(LinkNetIds, string, args->link_net_ids_str);
 		ret += 1;
 	}
 	if (args->link_states) {
@@ -7104,16 +6575,12 @@ static int filters_internet_service_setter(struct filters_internet_service *args
 		for (as = args->link_states; *as > 0; ++as) {
 			if (as != args->link_states)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_states_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkStates\":" ));
-                STRY(osc_str_append_string(data, args->link_states_str));
+		ARG_TO_JSON(LinkStates, string, args->link_states_str);
 		ret += 1;
 	}
 	if (args->tag_keys) {
@@ -7124,16 +6591,12 @@ static int filters_internet_service_setter(struct filters_internet_service *args
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
-                STRY(osc_str_append_string(data, args->tag_keys_str));
+		ARG_TO_JSON(TagKeys, string, args->tag_keys_str);
 		ret += 1;
 	}
 	if (args->tag_values) {
@@ -7144,16 +6607,12 @@ static int filters_internet_service_setter(struct filters_internet_service *args
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagValues\":" ));
-                STRY(osc_str_append_string(data, args->tag_values_str));
+		ARG_TO_JSON(TagValues, string, args->tag_values_str);
 		ret += 1;
 	}
 	if (args->tags) {
@@ -7164,16 +6623,12 @@ static int filters_internet_service_setter(struct filters_internet_service *args
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -7189,16 +6644,12 @@ static int filters_keypair_setter(struct filters_keypair *args, struct osc_str *
 		for (as = args->keypair_fingerprints; *as > 0; ++as) {
 			if (as != args->keypair_fingerprints)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->keypair_fingerprints_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"KeypairFingerprints\":" ));
-                STRY(osc_str_append_string(data, args->keypair_fingerprints_str));
+		ARG_TO_JSON(KeypairFingerprints, string, args->keypair_fingerprints_str);
 		ret += 1;
 	}
 	if (args->keypair_names) {
@@ -7209,16 +6660,12 @@ static int filters_keypair_setter(struct filters_keypair *args, struct osc_str *
 		for (as = args->keypair_names; *as > 0; ++as) {
 			if (as != args->keypair_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->keypair_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"KeypairNames\":" ));
-                STRY(osc_str_append_string(data, args->keypair_names_str));
+		ARG_TO_JSON(KeypairNames, string, args->keypair_names_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -7234,16 +6681,12 @@ static int filters_listener_rule_setter(struct filters_listener_rule *args, stru
 		for (as = args->listener_rule_names; *as > 0; ++as) {
 			if (as != args->listener_rule_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->listener_rule_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ListenerRuleNames\":" ));
-                STRY(osc_str_append_string(data, args->listener_rule_names_str));
+		ARG_TO_JSON(ListenerRuleNames, string, args->listener_rule_names_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -7259,16 +6702,12 @@ static int filters_load_balancer_setter(struct filters_load_balancer *args, stru
 		for (as = args->load_balancer_names; *as > 0; ++as) {
 			if (as != args->load_balancer_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->load_balancer_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerNames\":" ));
-                STRY(osc_str_append_string(data, args->load_balancer_names_str));
+		ARG_TO_JSON(LoadBalancerNames, string, args->load_balancer_names_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -7284,16 +6723,12 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 		for (as = args->nat_service_ids; *as > 0; ++as) {
 			if (as != args->nat_service_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->nat_service_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NatServiceIds\":" ));
-                STRY(osc_str_append_string(data, args->nat_service_ids_str));
+		ARG_TO_JSON(NatServiceIds, string, args->nat_service_ids_str);
 		ret += 1;
 	}
 	if (args->net_ids) {
@@ -7304,16 +6739,12 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 		for (as = args->net_ids; *as > 0; ++as) {
 			if (as != args->net_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->net_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetIds\":" ));
-                STRY(osc_str_append_string(data, args->net_ids_str));
+		ARG_TO_JSON(NetIds, string, args->net_ids_str);
 		ret += 1;
 	}
 	if (args->states) {
@@ -7324,16 +6755,12 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 		for (as = args->states; *as > 0; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->states_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"States\":" ));
-                STRY(osc_str_append_string(data, args->states_str));
+		ARG_TO_JSON(States, string, args->states_str);
 		ret += 1;
 	}
 	if (args->subnet_ids) {
@@ -7344,16 +6771,12 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 		for (as = args->subnet_ids; *as > 0; ++as) {
 			if (as != args->subnet_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subnet_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubnetIds\":" ));
-                STRY(osc_str_append_string(data, args->subnet_ids_str));
+		ARG_TO_JSON(SubnetIds, string, args->subnet_ids_str);
 		ret += 1;
 	}
 	if (args->tag_keys) {
@@ -7364,16 +6787,12 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
-                STRY(osc_str_append_string(data, args->tag_keys_str));
+		ARG_TO_JSON(TagKeys, string, args->tag_keys_str);
 		ret += 1;
 	}
 	if (args->tag_values) {
@@ -7384,16 +6803,12 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagValues\":" ));
-                STRY(osc_str_append_string(data, args->tag_values_str));
+		ARG_TO_JSON(TagValues, string, args->tag_values_str);
 		ret += 1;
 	}
 	if (args->tags) {
@@ -7404,16 +6819,12 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -7429,16 +6840,12 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 		for (as = args->dhcp_options_set_ids; *as > 0; ++as) {
 			if (as != args->dhcp_options_set_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->dhcp_options_set_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DhcpOptionsSetIds\":" ));
-                STRY(osc_str_append_string(data, args->dhcp_options_set_ids_str));
+		ARG_TO_JSON(DhcpOptionsSetIds, string, args->dhcp_options_set_ids_str);
 		ret += 1;
 	}
 	if (args->ip_ranges) {
@@ -7449,22 +6856,16 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 		for (as = args->ip_ranges; *as > 0; ++as) {
 			if (as != args->ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ip_ranges_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IpRanges\":" ));
-                STRY(osc_str_append_string(data, args->ip_ranges_str));
+		ARG_TO_JSON(IpRanges, string, args->ip_ranges_str);
 		ret += 1;
 	}
 	if (args->is_set_is_default_arg) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IsDefault\":" ));
-                STRY(osc_str_append_bool(data, args->is_default_arg));
+		ARG_TO_JSON(IsDefault, bool, args->is_default_arg);
 	   	ret += 1;
 	}
 	if (args->net_ids) {
@@ -7475,16 +6876,12 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 		for (as = args->net_ids; *as > 0; ++as) {
 			if (as != args->net_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->net_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetIds\":" ));
-                STRY(osc_str_append_string(data, args->net_ids_str));
+		ARG_TO_JSON(NetIds, string, args->net_ids_str);
 		ret += 1;
 	}
 	if (args->states) {
@@ -7495,16 +6892,12 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 		for (as = args->states; *as > 0; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->states_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"States\":" ));
-                STRY(osc_str_append_string(data, args->states_str));
+		ARG_TO_JSON(States, string, args->states_str);
 		ret += 1;
 	}
 	if (args->tag_keys) {
@@ -7515,16 +6908,12 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
-                STRY(osc_str_append_string(data, args->tag_keys_str));
+		ARG_TO_JSON(TagKeys, string, args->tag_keys_str);
 		ret += 1;
 	}
 	if (args->tag_values) {
@@ -7535,16 +6924,12 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagValues\":" ));
-                STRY(osc_str_append_string(data, args->tag_values_str));
+		ARG_TO_JSON(TagValues, string, args->tag_values_str);
 		ret += 1;
 	}
 	if (args->tags) {
@@ -7555,16 +6940,12 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -7580,16 +6961,12 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 		for (as = args->net_access_point_ids; *as > 0; ++as) {
 			if (as != args->net_access_point_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->net_access_point_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetAccessPointIds\":" ));
-                STRY(osc_str_append_string(data, args->net_access_point_ids_str));
+		ARG_TO_JSON(NetAccessPointIds, string, args->net_access_point_ids_str);
 		ret += 1;
 	}
 	if (args->net_ids) {
@@ -7600,16 +6977,12 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 		for (as = args->net_ids; *as > 0; ++as) {
 			if (as != args->net_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->net_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetIds\":" ));
-                STRY(osc_str_append_string(data, args->net_ids_str));
+		ARG_TO_JSON(NetIds, string, args->net_ids_str);
 		ret += 1;
 	}
 	if (args->service_names) {
@@ -7620,16 +6993,12 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 		for (as = args->service_names; *as > 0; ++as) {
 			if (as != args->service_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->service_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ServiceNames\":" ));
-                STRY(osc_str_append_string(data, args->service_names_str));
+		ARG_TO_JSON(ServiceNames, string, args->service_names_str);
 		ret += 1;
 	}
 	if (args->states) {
@@ -7640,16 +7009,12 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 		for (as = args->states; *as > 0; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->states_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"States\":" ));
-                STRY(osc_str_append_string(data, args->states_str));
+		ARG_TO_JSON(States, string, args->states_str);
 		ret += 1;
 	}
 	if (args->tag_keys) {
@@ -7660,16 +7025,12 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
-                STRY(osc_str_append_string(data, args->tag_keys_str));
+		ARG_TO_JSON(TagKeys, string, args->tag_keys_str);
 		ret += 1;
 	}
 	if (args->tag_values) {
@@ -7680,16 +7041,12 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagValues\":" ));
-                STRY(osc_str_append_string(data, args->tag_values_str));
+		ARG_TO_JSON(TagValues, string, args->tag_values_str);
 		ret += 1;
 	}
 	if (args->tags) {
@@ -7700,16 +7057,12 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -7725,16 +7078,12 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 		for (as = args->accepter_net_account_ids; *as > 0; ++as) {
 			if (as != args->accepter_net_account_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->accepter_net_account_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccepterNetAccountIds\":" ));
-                STRY(osc_str_append_string(data, args->accepter_net_account_ids_str));
+		ARG_TO_JSON(AccepterNetAccountIds, string, args->accepter_net_account_ids_str);
 		ret += 1;
 	}
 	if (args->accepter_net_ip_ranges) {
@@ -7745,16 +7094,12 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 		for (as = args->accepter_net_ip_ranges; *as > 0; ++as) {
 			if (as != args->accepter_net_ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->accepter_net_ip_ranges_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccepterNetIpRanges\":" ));
-                STRY(osc_str_append_string(data, args->accepter_net_ip_ranges_str));
+		ARG_TO_JSON(AccepterNetIpRanges, string, args->accepter_net_ip_ranges_str);
 		ret += 1;
 	}
 	if (args->accepter_net_net_ids) {
@@ -7765,16 +7110,12 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 		for (as = args->accepter_net_net_ids; *as > 0; ++as) {
 			if (as != args->accepter_net_net_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->accepter_net_net_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccepterNetNetIds\":" ));
-                STRY(osc_str_append_string(data, args->accepter_net_net_ids_str));
+		ARG_TO_JSON(AccepterNetNetIds, string, args->accepter_net_net_ids_str);
 		ret += 1;
 	}
 	if (args->net_peering_ids) {
@@ -7785,16 +7126,12 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 		for (as = args->net_peering_ids; *as > 0; ++as) {
 			if (as != args->net_peering_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->net_peering_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetPeeringIds\":" ));
-                STRY(osc_str_append_string(data, args->net_peering_ids_str));
+		ARG_TO_JSON(NetPeeringIds, string, args->net_peering_ids_str);
 		ret += 1;
 	}
 	if (args->source_net_account_ids) {
@@ -7805,16 +7142,12 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 		for (as = args->source_net_account_ids; *as > 0; ++as) {
 			if (as != args->source_net_account_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->source_net_account_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SourceNetAccountIds\":" ));
-                STRY(osc_str_append_string(data, args->source_net_account_ids_str));
+		ARG_TO_JSON(SourceNetAccountIds, string, args->source_net_account_ids_str);
 		ret += 1;
 	}
 	if (args->source_net_ip_ranges) {
@@ -7825,16 +7158,12 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 		for (as = args->source_net_ip_ranges; *as > 0; ++as) {
 			if (as != args->source_net_ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->source_net_ip_ranges_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SourceNetIpRanges\":" ));
-                STRY(osc_str_append_string(data, args->source_net_ip_ranges_str));
+		ARG_TO_JSON(SourceNetIpRanges, string, args->source_net_ip_ranges_str);
 		ret += 1;
 	}
 	if (args->source_net_net_ids) {
@@ -7845,16 +7174,12 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 		for (as = args->source_net_net_ids; *as > 0; ++as) {
 			if (as != args->source_net_net_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->source_net_net_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SourceNetNetIds\":" ));
-                STRY(osc_str_append_string(data, args->source_net_net_ids_str));
+		ARG_TO_JSON(SourceNetNetIds, string, args->source_net_net_ids_str);
 		ret += 1;
 	}
 	if (args->state_messages) {
@@ -7865,16 +7190,12 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 		for (as = args->state_messages; *as > 0; ++as) {
 			if (as != args->state_messages)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->state_messages_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"StateMessages\":" ));
-                STRY(osc_str_append_string(data, args->state_messages_str));
+		ARG_TO_JSON(StateMessages, string, args->state_messages_str);
 		ret += 1;
 	}
 	if (args->state_names) {
@@ -7885,16 +7206,12 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 		for (as = args->state_names; *as > 0; ++as) {
 			if (as != args->state_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->state_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"StateNames\":" ));
-                STRY(osc_str_append_string(data, args->state_names_str));
+		ARG_TO_JSON(StateNames, string, args->state_names_str);
 		ret += 1;
 	}
 	if (args->tag_keys) {
@@ -7905,16 +7222,12 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
-                STRY(osc_str_append_string(data, args->tag_keys_str));
+		ARG_TO_JSON(TagKeys, string, args->tag_keys_str);
 		ret += 1;
 	}
 	if (args->tag_values) {
@@ -7925,16 +7238,12 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagValues\":" ));
-                STRY(osc_str_append_string(data, args->tag_values_str));
+		ARG_TO_JSON(TagValues, string, args->tag_values_str);
 		ret += 1;
 	}
 	if (args->tags) {
@@ -7945,16 +7254,12 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -7970,28 +7275,20 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		for (as = args->descriptions; *as > 0; ++as) {
 			if (as != args->descriptions)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->descriptions_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Descriptions\":" ));
-                STRY(osc_str_append_string(data, args->descriptions_str));
+		ARG_TO_JSON(Descriptions, string, args->descriptions_str);
 		ret += 1;
 	}
 	if (args->is_set_is_source_dest_check) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IsSourceDestCheck\":" ));
-                STRY(osc_str_append_bool(data, args->is_source_dest_check));
+		ARG_TO_JSON(IsSourceDestCheck, bool, args->is_source_dest_check);
 	   	ret += 1;
 	}
 	if (args->is_set_link_nic_delete_on_vm_deletion) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkNicDeleteOnVmDeletion\":" ));
-                STRY(osc_str_append_bool(data, args->link_nic_delete_on_vm_deletion));
+		ARG_TO_JSON(LinkNicDeleteOnVmDeletion, bool, args->link_nic_delete_on_vm_deletion);
 	   	ret += 1;
 	}
 	if (args->link_nic_device_numbers) {
@@ -8007,9 +7304,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_nic_device_numbers_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkNicDeviceNumbers\":" ));
-                STRY(osc_str_append_string(data, args->link_nic_device_numbers_str));
+		ARG_TO_JSON(LinkNicDeviceNumbers, string, args->link_nic_device_numbers_str);
 		ret += 1;
 	}
 	if (args->link_nic_link_nic_ids) {
@@ -8020,16 +7315,12 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		for (as = args->link_nic_link_nic_ids; *as > 0; ++as) {
 			if (as != args->link_nic_link_nic_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_nic_link_nic_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkNicLinkNicIds\":" ));
-                STRY(osc_str_append_string(data, args->link_nic_link_nic_ids_str));
+		ARG_TO_JSON(LinkNicLinkNicIds, string, args->link_nic_link_nic_ids_str);
 		ret += 1;
 	}
 	if (args->link_nic_states) {
@@ -8040,16 +7331,12 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		for (as = args->link_nic_states; *as > 0; ++as) {
 			if (as != args->link_nic_states)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_nic_states_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkNicStates\":" ));
-                STRY(osc_str_append_string(data, args->link_nic_states_str));
+		ARG_TO_JSON(LinkNicStates, string, args->link_nic_states_str);
 		ret += 1;
 	}
 	if (args->link_nic_vm_account_ids) {
@@ -8060,16 +7347,12 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		for (as = args->link_nic_vm_account_ids; *as > 0; ++as) {
 			if (as != args->link_nic_vm_account_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_nic_vm_account_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkNicVmAccountIds\":" ));
-                STRY(osc_str_append_string(data, args->link_nic_vm_account_ids_str));
+		ARG_TO_JSON(LinkNicVmAccountIds, string, args->link_nic_vm_account_ids_str);
 		ret += 1;
 	}
 	if (args->link_nic_vm_ids) {
@@ -8080,16 +7363,12 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		for (as = args->link_nic_vm_ids; *as > 0; ++as) {
 			if (as != args->link_nic_vm_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_nic_vm_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkNicVmIds\":" ));
-                STRY(osc_str_append_string(data, args->link_nic_vm_ids_str));
+		ARG_TO_JSON(LinkNicVmIds, string, args->link_nic_vm_ids_str);
 		ret += 1;
 	}
 	if (args->link_public_ip_account_ids) {
@@ -8100,16 +7379,12 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		for (as = args->link_public_ip_account_ids; *as > 0; ++as) {
 			if (as != args->link_public_ip_account_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_public_ip_account_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkPublicIpAccountIds\":" ));
-                STRY(osc_str_append_string(data, args->link_public_ip_account_ids_str));
+		ARG_TO_JSON(LinkPublicIpAccountIds, string, args->link_public_ip_account_ids_str);
 		ret += 1;
 	}
 	if (args->link_public_ip_link_public_ip_ids) {
@@ -8120,16 +7395,12 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		for (as = args->link_public_ip_link_public_ip_ids; *as > 0; ++as) {
 			if (as != args->link_public_ip_link_public_ip_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_public_ip_link_public_ip_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkPublicIpLinkPublicIpIds\":" ));
-                STRY(osc_str_append_string(data, args->link_public_ip_link_public_ip_ids_str));
+		ARG_TO_JSON(LinkPublicIpLinkPublicIpIds, string, args->link_public_ip_link_public_ip_ids_str);
 		ret += 1;
 	}
 	if (args->link_public_ip_public_ip_ids) {
@@ -8140,16 +7411,12 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		for (as = args->link_public_ip_public_ip_ids; *as > 0; ++as) {
 			if (as != args->link_public_ip_public_ip_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_public_ip_public_ip_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkPublicIpPublicIpIds\":" ));
-                STRY(osc_str_append_string(data, args->link_public_ip_public_ip_ids_str));
+		ARG_TO_JSON(LinkPublicIpPublicIpIds, string, args->link_public_ip_public_ip_ids_str);
 		ret += 1;
 	}
 	if (args->link_public_ip_public_ips) {
@@ -8160,16 +7427,12 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		for (as = args->link_public_ip_public_ips; *as > 0; ++as) {
 			if (as != args->link_public_ip_public_ips)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_public_ip_public_ips_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkPublicIpPublicIps\":" ));
-                STRY(osc_str_append_string(data, args->link_public_ip_public_ips_str));
+		ARG_TO_JSON(LinkPublicIpPublicIps, string, args->link_public_ip_public_ips_str);
 		ret += 1;
 	}
 	if (args->mac_addresses) {
@@ -8180,16 +7443,12 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		for (as = args->mac_addresses; *as > 0; ++as) {
 			if (as != args->mac_addresses)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->mac_addresses_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MacAddresses\":" ));
-                STRY(osc_str_append_string(data, args->mac_addresses_str));
+		ARG_TO_JSON(MacAddresses, string, args->mac_addresses_str);
 		ret += 1;
 	}
 	if (args->net_ids) {
@@ -8200,16 +7459,12 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		for (as = args->net_ids; *as > 0; ++as) {
 			if (as != args->net_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->net_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetIds\":" ));
-                STRY(osc_str_append_string(data, args->net_ids_str));
+		ARG_TO_JSON(NetIds, string, args->net_ids_str);
 		ret += 1;
 	}
 	if (args->nic_ids) {
@@ -8220,16 +7475,12 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		for (as = args->nic_ids; *as > 0; ++as) {
 			if (as != args->nic_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->nic_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NicIds\":" ));
-                STRY(osc_str_append_string(data, args->nic_ids_str));
+		ARG_TO_JSON(NicIds, string, args->nic_ids_str);
 		ret += 1;
 	}
 	if (args->private_dns_names) {
@@ -8240,16 +7491,12 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		for (as = args->private_dns_names; *as > 0; ++as) {
 			if (as != args->private_dns_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->private_dns_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateDnsNames\":" ));
-                STRY(osc_str_append_string(data, args->private_dns_names_str));
+		ARG_TO_JSON(PrivateDnsNames, string, args->private_dns_names_str);
 		ret += 1;
 	}
 	if (args->private_ips_link_public_ip_account_ids) {
@@ -8260,16 +7507,12 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		for (as = args->private_ips_link_public_ip_account_ids; *as > 0; ++as) {
 			if (as != args->private_ips_link_public_ip_account_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->private_ips_link_public_ip_account_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateIpsLinkPublicIpAccountIds\":" ));
-                STRY(osc_str_append_string(data, args->private_ips_link_public_ip_account_ids_str));
+		ARG_TO_JSON(PrivateIpsLinkPublicIpAccountIds, string, args->private_ips_link_public_ip_account_ids_str);
 		ret += 1;
 	}
 	if (args->private_ips_link_public_ip_public_ips) {
@@ -8280,22 +7523,16 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		for (as = args->private_ips_link_public_ip_public_ips; *as > 0; ++as) {
 			if (as != args->private_ips_link_public_ip_public_ips)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->private_ips_link_public_ip_public_ips_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateIpsLinkPublicIpPublicIps\":" ));
-                STRY(osc_str_append_string(data, args->private_ips_link_public_ip_public_ips_str));
+		ARG_TO_JSON(PrivateIpsLinkPublicIpPublicIps, string, args->private_ips_link_public_ip_public_ips_str);
 		ret += 1;
 	}
 	if (args->is_set_private_ips_primary_ip) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateIpsPrimaryIp\":" ));
-                STRY(osc_str_append_bool(data, args->private_ips_primary_ip));
+		ARG_TO_JSON(PrivateIpsPrimaryIp, bool, args->private_ips_primary_ip);
 	   	ret += 1;
 	}
 	if (args->private_ips_private_ips) {
@@ -8306,16 +7543,12 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		for (as = args->private_ips_private_ips; *as > 0; ++as) {
 			if (as != args->private_ips_private_ips)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->private_ips_private_ips_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateIpsPrivateIps\":" ));
-                STRY(osc_str_append_string(data, args->private_ips_private_ips_str));
+		ARG_TO_JSON(PrivateIpsPrivateIps, string, args->private_ips_private_ips_str);
 		ret += 1;
 	}
 	if (args->security_group_ids) {
@@ -8326,16 +7559,12 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		for (as = args->security_group_ids; *as > 0; ++as) {
 			if (as != args->security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_group_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":" ));
-                STRY(osc_str_append_string(data, args->security_group_ids_str));
+		ARG_TO_JSON(SecurityGroupIds, string, args->security_group_ids_str);
 		ret += 1;
 	}
 	if (args->security_group_names) {
@@ -8346,16 +7575,12 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		for (as = args->security_group_names; *as > 0; ++as) {
 			if (as != args->security_group_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_group_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupNames\":" ));
-                STRY(osc_str_append_string(data, args->security_group_names_str));
+		ARG_TO_JSON(SecurityGroupNames, string, args->security_group_names_str);
 		ret += 1;
 	}
 	if (args->states) {
@@ -8366,16 +7591,12 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		for (as = args->states; *as > 0; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->states_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"States\":" ));
-                STRY(osc_str_append_string(data, args->states_str));
+		ARG_TO_JSON(States, string, args->states_str);
 		ret += 1;
 	}
 	if (args->subnet_ids) {
@@ -8386,16 +7607,12 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		for (as = args->subnet_ids; *as > 0; ++as) {
 			if (as != args->subnet_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subnet_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubnetIds\":" ));
-                STRY(osc_str_append_string(data, args->subnet_ids_str));
+		ARG_TO_JSON(SubnetIds, string, args->subnet_ids_str);
 		ret += 1;
 	}
 	if (args->subregion_names) {
@@ -8406,16 +7623,12 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		for (as = args->subregion_names; *as > 0; ++as) {
 			if (as != args->subregion_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subregion_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubregionNames\":" ));
-                STRY(osc_str_append_string(data, args->subregion_names_str));
+		ARG_TO_JSON(SubregionNames, string, args->subregion_names_str);
 		ret += 1;
 	}
 	if (args->tag_keys) {
@@ -8426,16 +7639,12 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
-                STRY(osc_str_append_string(data, args->tag_keys_str));
+		ARG_TO_JSON(TagKeys, string, args->tag_keys_str);
 		ret += 1;
 	}
 	if (args->tag_values) {
@@ -8446,16 +7655,12 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagValues\":" ));
-                STRY(osc_str_append_string(data, args->tag_values_str));
+		ARG_TO_JSON(TagValues, string, args->tag_values_str);
 		ret += 1;
 	}
 	if (args->tags) {
@@ -8466,16 +7671,12 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -8491,16 +7692,12 @@ static int filters_product_type_setter(struct filters_product_type *args, struct
 		for (as = args->product_type_ids; *as > 0; ++as) {
 			if (as != args->product_type_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->product_type_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ProductTypeIds\":" ));
-                STRY(osc_str_append_string(data, args->product_type_ids_str));
+		ARG_TO_JSON(ProductTypeIds, string, args->product_type_ids_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -8516,16 +7713,12 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 		for (as = args->link_public_ip_ids; *as > 0; ++as) {
 			if (as != args->link_public_ip_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_public_ip_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkPublicIpIds\":" ));
-                STRY(osc_str_append_string(data, args->link_public_ip_ids_str));
+		ARG_TO_JSON(LinkPublicIpIds, string, args->link_public_ip_ids_str);
 		ret += 1;
 	}
 	if (args->nic_account_ids) {
@@ -8536,16 +7729,12 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 		for (as = args->nic_account_ids; *as > 0; ++as) {
 			if (as != args->nic_account_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->nic_account_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NicAccountIds\":" ));
-                STRY(osc_str_append_string(data, args->nic_account_ids_str));
+		ARG_TO_JSON(NicAccountIds, string, args->nic_account_ids_str);
 		ret += 1;
 	}
 	if (args->nic_ids) {
@@ -8556,16 +7745,12 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 		for (as = args->nic_ids; *as > 0; ++as) {
 			if (as != args->nic_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->nic_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NicIds\":" ));
-                STRY(osc_str_append_string(data, args->nic_ids_str));
+		ARG_TO_JSON(NicIds, string, args->nic_ids_str);
 		ret += 1;
 	}
 	if (args->placements) {
@@ -8576,16 +7761,12 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 		for (as = args->placements; *as > 0; ++as) {
 			if (as != args->placements)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->placements_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Placements\":" ));
-                STRY(osc_str_append_string(data, args->placements_str));
+		ARG_TO_JSON(Placements, string, args->placements_str);
 		ret += 1;
 	}
 	if (args->private_ips) {
@@ -8596,16 +7777,12 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 		for (as = args->private_ips; *as > 0; ++as) {
 			if (as != args->private_ips)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->private_ips_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateIps\":" ));
-                STRY(osc_str_append_string(data, args->private_ips_str));
+		ARG_TO_JSON(PrivateIps, string, args->private_ips_str);
 		ret += 1;
 	}
 	if (args->public_ip_ids) {
@@ -8616,16 +7793,12 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 		for (as = args->public_ip_ids; *as > 0; ++as) {
 			if (as != args->public_ip_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->public_ip_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIpIds\":" ));
-                STRY(osc_str_append_string(data, args->public_ip_ids_str));
+		ARG_TO_JSON(PublicIpIds, string, args->public_ip_ids_str);
 		ret += 1;
 	}
 	if (args->public_ips) {
@@ -8636,16 +7809,12 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 		for (as = args->public_ips; *as > 0; ++as) {
 			if (as != args->public_ips)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->public_ips_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIps\":" ));
-                STRY(osc_str_append_string(data, args->public_ips_str));
+		ARG_TO_JSON(PublicIps, string, args->public_ips_str);
 		ret += 1;
 	}
 	if (args->tag_keys) {
@@ -8656,16 +7825,12 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
-                STRY(osc_str_append_string(data, args->tag_keys_str));
+		ARG_TO_JSON(TagKeys, string, args->tag_keys_str);
 		ret += 1;
 	}
 	if (args->tag_values) {
@@ -8676,16 +7841,12 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagValues\":" ));
-                STRY(osc_str_append_string(data, args->tag_values_str));
+		ARG_TO_JSON(TagValues, string, args->tag_values_str);
 		ret += 1;
 	}
 	if (args->tags) {
@@ -8696,16 +7857,12 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	if (args->vm_ids) {
@@ -8716,16 +7873,12 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 		for (as = args->vm_ids; *as > 0; ++as) {
 			if (as != args->vm_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmIds\":" ));
-                STRY(osc_str_append_string(data, args->vm_ids_str));
+		ARG_TO_JSON(VmIds, string, args->vm_ids_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -8741,16 +7894,12 @@ static int filters_quota_setter(struct filters_quota *args, struct osc_str *data
 		for (as = args->collections; *as > 0; ++as) {
 			if (as != args->collections)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->collections_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Collections\":" ));
-                STRY(osc_str_append_string(data, args->collections_str));
+		ARG_TO_JSON(Collections, string, args->collections_str);
 		ret += 1;
 	}
 	if (args->quota_names) {
@@ -8761,16 +7910,12 @@ static int filters_quota_setter(struct filters_quota *args, struct osc_str *data
 		for (as = args->quota_names; *as > 0; ++as) {
 			if (as != args->quota_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->quota_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QuotaNames\":" ));
-                STRY(osc_str_append_string(data, args->quota_names_str));
+		ARG_TO_JSON(QuotaNames, string, args->quota_names_str);
 		ret += 1;
 	}
 	if (args->quota_types) {
@@ -8781,16 +7926,12 @@ static int filters_quota_setter(struct filters_quota *args, struct osc_str *data
 		for (as = args->quota_types; *as > 0; ++as) {
 			if (as != args->quota_types)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->quota_types_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QuotaTypes\":" ));
-                STRY(osc_str_append_string(data, args->quota_types_str));
+		ARG_TO_JSON(QuotaTypes, string, args->quota_types_str);
 		ret += 1;
 	}
 	if (args->short_descriptions) {
@@ -8801,16 +7942,12 @@ static int filters_quota_setter(struct filters_quota *args, struct osc_str *data
 		for (as = args->short_descriptions; *as > 0; ++as) {
 			if (as != args->short_descriptions)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->short_descriptions_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ShortDescriptions\":" ));
-                STRY(osc_str_append_string(data, args->short_descriptions_str));
+		ARG_TO_JSON(ShortDescriptions, string, args->short_descriptions_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -8826,16 +7963,12 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		for (as = args->link_route_table_ids; *as > 0; ++as) {
 			if (as != args->link_route_table_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_route_table_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkRouteTableIds\":" ));
-                STRY(osc_str_append_string(data, args->link_route_table_ids_str));
+		ARG_TO_JSON(LinkRouteTableIds, string, args->link_route_table_ids_str);
 		ret += 1;
 	}
 	if (args->link_route_table_link_route_table_ids) {
@@ -8846,22 +7979,16 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		for (as = args->link_route_table_link_route_table_ids; *as > 0; ++as) {
 			if (as != args->link_route_table_link_route_table_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_route_table_link_route_table_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkRouteTableLinkRouteTableIds\":" ));
-                STRY(osc_str_append_string(data, args->link_route_table_link_route_table_ids_str));
+		ARG_TO_JSON(LinkRouteTableLinkRouteTableIds, string, args->link_route_table_link_route_table_ids_str);
 		ret += 1;
 	}
 	if (args->is_set_link_route_table_main) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkRouteTableMain\":" ));
-                STRY(osc_str_append_bool(data, args->link_route_table_main));
+		ARG_TO_JSON(LinkRouteTableMain, bool, args->link_route_table_main);
 	   	ret += 1;
 	}
 	if (args->link_subnet_ids) {
@@ -8872,16 +7999,12 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		for (as = args->link_subnet_ids; *as > 0; ++as) {
 			if (as != args->link_subnet_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_subnet_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkSubnetIds\":" ));
-                STRY(osc_str_append_string(data, args->link_subnet_ids_str));
+		ARG_TO_JSON(LinkSubnetIds, string, args->link_subnet_ids_str);
 		ret += 1;
 	}
 	if (args->net_ids) {
@@ -8892,16 +8015,12 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		for (as = args->net_ids; *as > 0; ++as) {
 			if (as != args->net_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->net_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetIds\":" ));
-                STRY(osc_str_append_string(data, args->net_ids_str));
+		ARG_TO_JSON(NetIds, string, args->net_ids_str);
 		ret += 1;
 	}
 	if (args->route_creation_methods) {
@@ -8912,16 +8031,12 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		for (as = args->route_creation_methods; *as > 0; ++as) {
 			if (as != args->route_creation_methods)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->route_creation_methods_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RouteCreationMethods\":" ));
-                STRY(osc_str_append_string(data, args->route_creation_methods_str));
+		ARG_TO_JSON(RouteCreationMethods, string, args->route_creation_methods_str);
 		ret += 1;
 	}
 	if (args->route_destination_ip_ranges) {
@@ -8932,16 +8047,12 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		for (as = args->route_destination_ip_ranges; *as > 0; ++as) {
 			if (as != args->route_destination_ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->route_destination_ip_ranges_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RouteDestinationIpRanges\":" ));
-                STRY(osc_str_append_string(data, args->route_destination_ip_ranges_str));
+		ARG_TO_JSON(RouteDestinationIpRanges, string, args->route_destination_ip_ranges_str);
 		ret += 1;
 	}
 	if (args->route_destination_service_ids) {
@@ -8952,16 +8063,12 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		for (as = args->route_destination_service_ids; *as > 0; ++as) {
 			if (as != args->route_destination_service_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->route_destination_service_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RouteDestinationServiceIds\":" ));
-                STRY(osc_str_append_string(data, args->route_destination_service_ids_str));
+		ARG_TO_JSON(RouteDestinationServiceIds, string, args->route_destination_service_ids_str);
 		ret += 1;
 	}
 	if (args->route_gateway_ids) {
@@ -8972,16 +8079,12 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		for (as = args->route_gateway_ids; *as > 0; ++as) {
 			if (as != args->route_gateway_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->route_gateway_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RouteGatewayIds\":" ));
-                STRY(osc_str_append_string(data, args->route_gateway_ids_str));
+		ARG_TO_JSON(RouteGatewayIds, string, args->route_gateway_ids_str);
 		ret += 1;
 	}
 	if (args->route_nat_service_ids) {
@@ -8992,16 +8095,12 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		for (as = args->route_nat_service_ids; *as > 0; ++as) {
 			if (as != args->route_nat_service_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->route_nat_service_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RouteNatServiceIds\":" ));
-                STRY(osc_str_append_string(data, args->route_nat_service_ids_str));
+		ARG_TO_JSON(RouteNatServiceIds, string, args->route_nat_service_ids_str);
 		ret += 1;
 	}
 	if (args->route_net_peering_ids) {
@@ -9012,16 +8111,12 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		for (as = args->route_net_peering_ids; *as > 0; ++as) {
 			if (as != args->route_net_peering_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->route_net_peering_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RouteNetPeeringIds\":" ));
-                STRY(osc_str_append_string(data, args->route_net_peering_ids_str));
+		ARG_TO_JSON(RouteNetPeeringIds, string, args->route_net_peering_ids_str);
 		ret += 1;
 	}
 	if (args->route_states) {
@@ -9032,16 +8127,12 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		for (as = args->route_states; *as > 0; ++as) {
 			if (as != args->route_states)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->route_states_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RouteStates\":" ));
-                STRY(osc_str_append_string(data, args->route_states_str));
+		ARG_TO_JSON(RouteStates, string, args->route_states_str);
 		ret += 1;
 	}
 	if (args->route_table_ids) {
@@ -9052,16 +8143,12 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		for (as = args->route_table_ids; *as > 0; ++as) {
 			if (as != args->route_table_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->route_table_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RouteTableIds\":" ));
-                STRY(osc_str_append_string(data, args->route_table_ids_str));
+		ARG_TO_JSON(RouteTableIds, string, args->route_table_ids_str);
 		ret += 1;
 	}
 	if (args->route_vm_ids) {
@@ -9072,16 +8159,12 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		for (as = args->route_vm_ids; *as > 0; ++as) {
 			if (as != args->route_vm_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->route_vm_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RouteVmIds\":" ));
-                STRY(osc_str_append_string(data, args->route_vm_ids_str));
+		ARG_TO_JSON(RouteVmIds, string, args->route_vm_ids_str);
 		ret += 1;
 	}
 	if (args->tag_keys) {
@@ -9092,16 +8175,12 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
-                STRY(osc_str_append_string(data, args->tag_keys_str));
+		ARG_TO_JSON(TagKeys, string, args->tag_keys_str);
 		ret += 1;
 	}
 	if (args->tag_values) {
@@ -9112,16 +8191,12 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagValues\":" ));
-                STRY(osc_str_append_string(data, args->tag_values_str));
+		ARG_TO_JSON(TagValues, string, args->tag_values_str);
 		ret += 1;
 	}
 	if (args->tags) {
@@ -9132,16 +8207,12 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -9157,16 +8228,12 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		for (as = args->account_ids; *as > 0; ++as) {
 			if (as != args->account_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->account_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccountIds\":" ));
-                STRY(osc_str_append_string(data, args->account_ids_str));
+		ARG_TO_JSON(AccountIds, string, args->account_ids_str);
 		ret += 1;
 	}
 	if (args->descriptions) {
@@ -9177,16 +8244,12 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		for (as = args->descriptions; *as > 0; ++as) {
 			if (as != args->descriptions)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->descriptions_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Descriptions\":" ));
-                STRY(osc_str_append_string(data, args->descriptions_str));
+		ARG_TO_JSON(Descriptions, string, args->descriptions_str);
 		ret += 1;
 	}
 	if (args->inbound_rule_account_ids) {
@@ -9197,16 +8260,12 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		for (as = args->inbound_rule_account_ids; *as > 0; ++as) {
 			if (as != args->inbound_rule_account_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->inbound_rule_account_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"InboundRuleAccountIds\":" ));
-                STRY(osc_str_append_string(data, args->inbound_rule_account_ids_str));
+		ARG_TO_JSON(InboundRuleAccountIds, string, args->inbound_rule_account_ids_str);
 		ret += 1;
 	}
 	if (args->inbound_rule_from_port_ranges) {
@@ -9222,9 +8281,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->inbound_rule_from_port_ranges_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"InboundRuleFromPortRanges\":" ));
-                STRY(osc_str_append_string(data, args->inbound_rule_from_port_ranges_str));
+		ARG_TO_JSON(InboundRuleFromPortRanges, string, args->inbound_rule_from_port_ranges_str);
 		ret += 1;
 	}
 	if (args->inbound_rule_ip_ranges) {
@@ -9235,16 +8292,12 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		for (as = args->inbound_rule_ip_ranges; *as > 0; ++as) {
 			if (as != args->inbound_rule_ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->inbound_rule_ip_ranges_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"InboundRuleIpRanges\":" ));
-                STRY(osc_str_append_string(data, args->inbound_rule_ip_ranges_str));
+		ARG_TO_JSON(InboundRuleIpRanges, string, args->inbound_rule_ip_ranges_str);
 		ret += 1;
 	}
 	if (args->inbound_rule_protocols) {
@@ -9255,16 +8308,12 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		for (as = args->inbound_rule_protocols; *as > 0; ++as) {
 			if (as != args->inbound_rule_protocols)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->inbound_rule_protocols_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"InboundRuleProtocols\":" ));
-                STRY(osc_str_append_string(data, args->inbound_rule_protocols_str));
+		ARG_TO_JSON(InboundRuleProtocols, string, args->inbound_rule_protocols_str);
 		ret += 1;
 	}
 	if (args->inbound_rule_security_group_ids) {
@@ -9275,16 +8324,12 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		for (as = args->inbound_rule_security_group_ids; *as > 0; ++as) {
 			if (as != args->inbound_rule_security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->inbound_rule_security_group_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"InboundRuleSecurityGroupIds\":" ));
-                STRY(osc_str_append_string(data, args->inbound_rule_security_group_ids_str));
+		ARG_TO_JSON(InboundRuleSecurityGroupIds, string, args->inbound_rule_security_group_ids_str);
 		ret += 1;
 	}
 	if (args->inbound_rule_security_group_names) {
@@ -9295,16 +8340,12 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		for (as = args->inbound_rule_security_group_names; *as > 0; ++as) {
 			if (as != args->inbound_rule_security_group_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->inbound_rule_security_group_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"InboundRuleSecurityGroupNames\":" ));
-                STRY(osc_str_append_string(data, args->inbound_rule_security_group_names_str));
+		ARG_TO_JSON(InboundRuleSecurityGroupNames, string, args->inbound_rule_security_group_names_str);
 		ret += 1;
 	}
 	if (args->inbound_rule_to_port_ranges) {
@@ -9320,9 +8361,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->inbound_rule_to_port_ranges_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"InboundRuleToPortRanges\":" ));
-                STRY(osc_str_append_string(data, args->inbound_rule_to_port_ranges_str));
+		ARG_TO_JSON(InboundRuleToPortRanges, string, args->inbound_rule_to_port_ranges_str);
 		ret += 1;
 	}
 	if (args->net_ids) {
@@ -9333,16 +8372,12 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		for (as = args->net_ids; *as > 0; ++as) {
 			if (as != args->net_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->net_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetIds\":" ));
-                STRY(osc_str_append_string(data, args->net_ids_str));
+		ARG_TO_JSON(NetIds, string, args->net_ids_str);
 		ret += 1;
 	}
 	if (args->outbound_rule_account_ids) {
@@ -9353,16 +8388,12 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		for (as = args->outbound_rule_account_ids; *as > 0; ++as) {
 			if (as != args->outbound_rule_account_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->outbound_rule_account_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OutboundRuleAccountIds\":" ));
-                STRY(osc_str_append_string(data, args->outbound_rule_account_ids_str));
+		ARG_TO_JSON(OutboundRuleAccountIds, string, args->outbound_rule_account_ids_str);
 		ret += 1;
 	}
 	if (args->outbound_rule_from_port_ranges) {
@@ -9378,9 +8409,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->outbound_rule_from_port_ranges_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OutboundRuleFromPortRanges\":" ));
-                STRY(osc_str_append_string(data, args->outbound_rule_from_port_ranges_str));
+		ARG_TO_JSON(OutboundRuleFromPortRanges, string, args->outbound_rule_from_port_ranges_str);
 		ret += 1;
 	}
 	if (args->outbound_rule_ip_ranges) {
@@ -9391,16 +8420,12 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		for (as = args->outbound_rule_ip_ranges; *as > 0; ++as) {
 			if (as != args->outbound_rule_ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->outbound_rule_ip_ranges_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OutboundRuleIpRanges\":" ));
-                STRY(osc_str_append_string(data, args->outbound_rule_ip_ranges_str));
+		ARG_TO_JSON(OutboundRuleIpRanges, string, args->outbound_rule_ip_ranges_str);
 		ret += 1;
 	}
 	if (args->outbound_rule_protocols) {
@@ -9411,16 +8436,12 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		for (as = args->outbound_rule_protocols; *as > 0; ++as) {
 			if (as != args->outbound_rule_protocols)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->outbound_rule_protocols_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OutboundRuleProtocols\":" ));
-                STRY(osc_str_append_string(data, args->outbound_rule_protocols_str));
+		ARG_TO_JSON(OutboundRuleProtocols, string, args->outbound_rule_protocols_str);
 		ret += 1;
 	}
 	if (args->outbound_rule_security_group_ids) {
@@ -9431,16 +8452,12 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		for (as = args->outbound_rule_security_group_ids; *as > 0; ++as) {
 			if (as != args->outbound_rule_security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->outbound_rule_security_group_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OutboundRuleSecurityGroupIds\":" ));
-                STRY(osc_str_append_string(data, args->outbound_rule_security_group_ids_str));
+		ARG_TO_JSON(OutboundRuleSecurityGroupIds, string, args->outbound_rule_security_group_ids_str);
 		ret += 1;
 	}
 	if (args->outbound_rule_security_group_names) {
@@ -9451,16 +8468,12 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		for (as = args->outbound_rule_security_group_names; *as > 0; ++as) {
 			if (as != args->outbound_rule_security_group_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->outbound_rule_security_group_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OutboundRuleSecurityGroupNames\":" ));
-                STRY(osc_str_append_string(data, args->outbound_rule_security_group_names_str));
+		ARG_TO_JSON(OutboundRuleSecurityGroupNames, string, args->outbound_rule_security_group_names_str);
 		ret += 1;
 	}
 	if (args->outbound_rule_to_port_ranges) {
@@ -9476,9 +8489,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->outbound_rule_to_port_ranges_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OutboundRuleToPortRanges\":" ));
-                STRY(osc_str_append_string(data, args->outbound_rule_to_port_ranges_str));
+		ARG_TO_JSON(OutboundRuleToPortRanges, string, args->outbound_rule_to_port_ranges_str);
 		ret += 1;
 	}
 	if (args->security_group_ids) {
@@ -9489,16 +8500,12 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		for (as = args->security_group_ids; *as > 0; ++as) {
 			if (as != args->security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_group_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":" ));
-                STRY(osc_str_append_string(data, args->security_group_ids_str));
+		ARG_TO_JSON(SecurityGroupIds, string, args->security_group_ids_str);
 		ret += 1;
 	}
 	if (args->security_group_names) {
@@ -9509,16 +8516,12 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		for (as = args->security_group_names; *as > 0; ++as) {
 			if (as != args->security_group_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_group_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupNames\":" ));
-                STRY(osc_str_append_string(data, args->security_group_names_str));
+		ARG_TO_JSON(SecurityGroupNames, string, args->security_group_names_str);
 		ret += 1;
 	}
 	if (args->tag_keys) {
@@ -9529,16 +8532,12 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
-                STRY(osc_str_append_string(data, args->tag_keys_str));
+		ARG_TO_JSON(TagKeys, string, args->tag_keys_str);
 		ret += 1;
 	}
 	if (args->tag_values) {
@@ -9549,16 +8548,12 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagValues\":" ));
-                STRY(osc_str_append_string(data, args->tag_values_str));
+		ARG_TO_JSON(TagValues, string, args->tag_values_str);
 		ret += 1;
 	}
 	if (args->tags) {
@@ -9569,16 +8564,12 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -9594,16 +8585,12 @@ static int filters_server_certificate_setter(struct filters_server_certificate *
 		for (as = args->paths; *as > 0; ++as) {
 			if (as != args->paths)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->paths_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Paths\":" ));
-                STRY(osc_str_append_string(data, args->paths_str));
+		ARG_TO_JSON(Paths, string, args->paths_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -9619,16 +8606,12 @@ static int filters_service_setter(struct filters_service *args, struct osc_str *
 		for (as = args->service_ids; *as > 0; ++as) {
 			if (as != args->service_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->service_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ServiceIds\":" ));
-                STRY(osc_str_append_string(data, args->service_ids_str));
+		ARG_TO_JSON(ServiceIds, string, args->service_ids_str);
 		ret += 1;
 	}
 	if (args->service_names) {
@@ -9639,16 +8622,12 @@ static int filters_service_setter(struct filters_service *args, struct osc_str *
 		for (as = args->service_names; *as > 0; ++as) {
 			if (as != args->service_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->service_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ServiceNames\":" ));
-                STRY(osc_str_append_string(data, args->service_names_str));
+		ARG_TO_JSON(ServiceNames, string, args->service_names_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -9664,16 +8643,12 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		for (as = args->account_aliases; *as > 0; ++as) {
 			if (as != args->account_aliases)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->account_aliases_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccountAliases\":" ));
-                STRY(osc_str_append_string(data, args->account_aliases_str));
+		ARG_TO_JSON(AccountAliases, string, args->account_aliases_str);
 		ret += 1;
 	}
 	if (args->account_ids) {
@@ -9684,16 +8659,12 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		for (as = args->account_ids; *as > 0; ++as) {
 			if (as != args->account_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->account_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccountIds\":" ));
-                STRY(osc_str_append_string(data, args->account_ids_str));
+		ARG_TO_JSON(AccountIds, string, args->account_ids_str);
 		ret += 1;
 	}
 	if (args->descriptions) {
@@ -9704,23 +8675,17 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		for (as = args->descriptions; *as > 0; ++as) {
 			if (as != args->descriptions)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->descriptions_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Descriptions\":" ));
-                STRY(osc_str_append_string(data, args->descriptions_str));
+		ARG_TO_JSON(Descriptions, string, args->descriptions_str);
 		ret += 1;
 	}
 	if (args->from_creation_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"FromCreationDate\":\"" ));
-                STRY(osc_str_append_string(data, args->from_creation_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"FromCreationDate\":", args->from_creation_date);
 	   	ret += 1;
 	}
 	if (args->permissions_to_create_volume_account_ids) {
@@ -9731,22 +8696,16 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		for (as = args->permissions_to_create_volume_account_ids; *as > 0; ++as) {
 			if (as != args->permissions_to_create_volume_account_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->permissions_to_create_volume_account_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PermissionsToCreateVolumeAccountIds\":" ));
-                STRY(osc_str_append_string(data, args->permissions_to_create_volume_account_ids_str));
+		ARG_TO_JSON(PermissionsToCreateVolumeAccountIds, string, args->permissions_to_create_volume_account_ids_str);
 		ret += 1;
 	}
 	if (args->is_set_permissions_to_create_volume_global_permission) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PermissionsToCreateVolumeGlobalPermission\":" ));
-                STRY(osc_str_append_bool(data, args->permissions_to_create_volume_global_permission));
+		ARG_TO_JSON(PermissionsToCreateVolumeGlobalPermission, bool, args->permissions_to_create_volume_global_permission);
 	   	ret += 1;
 	}
 	if (args->progresses) {
@@ -9762,9 +8721,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->progresses_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Progresses\":" ));
-                STRY(osc_str_append_string(data, args->progresses_str));
+		ARG_TO_JSON(Progresses, string, args->progresses_str);
 		ret += 1;
 	}
 	if (args->snapshot_ids) {
@@ -9775,16 +8732,12 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		for (as = args->snapshot_ids; *as > 0; ++as) {
 			if (as != args->snapshot_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->snapshot_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SnapshotIds\":" ));
-                STRY(osc_str_append_string(data, args->snapshot_ids_str));
+		ARG_TO_JSON(SnapshotIds, string, args->snapshot_ids_str);
 		ret += 1;
 	}
 	if (args->states) {
@@ -9795,16 +8748,12 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		for (as = args->states; *as > 0; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->states_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"States\":" ));
-                STRY(osc_str_append_string(data, args->states_str));
+		ARG_TO_JSON(States, string, args->states_str);
 		ret += 1;
 	}
 	if (args->tag_keys) {
@@ -9815,16 +8764,12 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
-                STRY(osc_str_append_string(data, args->tag_keys_str));
+		ARG_TO_JSON(TagKeys, string, args->tag_keys_str);
 		ret += 1;
 	}
 	if (args->tag_values) {
@@ -9835,16 +8780,12 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagValues\":" ));
-                STRY(osc_str_append_string(data, args->tag_values_str));
+		ARG_TO_JSON(TagValues, string, args->tag_values_str);
 		ret += 1;
 	}
 	if (args->tags) {
@@ -9855,23 +8796,17 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	if (args->to_creation_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ToCreationDate\":\"" ));
-                STRY(osc_str_append_string(data, args->to_creation_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ToCreationDate\":", args->to_creation_date);
 	   	ret += 1;
 	}
 	if (args->volume_ids) {
@@ -9882,16 +8817,12 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		for (as = args->volume_ids; *as > 0; ++as) {
 			if (as != args->volume_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->volume_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeIds\":" ));
-                STRY(osc_str_append_string(data, args->volume_ids_str));
+		ARG_TO_JSON(VolumeIds, string, args->volume_ids_str);
 		ret += 1;
 	}
 	if (args->volume_sizes) {
@@ -9907,9 +8838,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->volume_sizes_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeSizes\":" ));
-                STRY(osc_str_append_string(data, args->volume_sizes_str));
+		ARG_TO_JSON(VolumeSizes, string, args->volume_sizes_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -9930,9 +8859,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->available_ips_counts_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AvailableIpsCounts\":" ));
-                STRY(osc_str_append_string(data, args->available_ips_counts_str));
+		ARG_TO_JSON(AvailableIpsCounts, string, args->available_ips_counts_str);
 		ret += 1;
 	}
 	if (args->ip_ranges) {
@@ -9943,16 +8870,12 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 		for (as = args->ip_ranges; *as > 0; ++as) {
 			if (as != args->ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ip_ranges_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IpRanges\":" ));
-                STRY(osc_str_append_string(data, args->ip_ranges_str));
+		ARG_TO_JSON(IpRanges, string, args->ip_ranges_str);
 		ret += 1;
 	}
 	if (args->net_ids) {
@@ -9963,16 +8886,12 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 		for (as = args->net_ids; *as > 0; ++as) {
 			if (as != args->net_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->net_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetIds\":" ));
-                STRY(osc_str_append_string(data, args->net_ids_str));
+		ARG_TO_JSON(NetIds, string, args->net_ids_str);
 		ret += 1;
 	}
 	if (args->states) {
@@ -9983,16 +8902,12 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 		for (as = args->states; *as > 0; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->states_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"States\":" ));
-                STRY(osc_str_append_string(data, args->states_str));
+		ARG_TO_JSON(States, string, args->states_str);
 		ret += 1;
 	}
 	if (args->subnet_ids) {
@@ -10003,16 +8918,12 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 		for (as = args->subnet_ids; *as > 0; ++as) {
 			if (as != args->subnet_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subnet_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubnetIds\":" ));
-                STRY(osc_str_append_string(data, args->subnet_ids_str));
+		ARG_TO_JSON(SubnetIds, string, args->subnet_ids_str);
 		ret += 1;
 	}
 	if (args->subregion_names) {
@@ -10023,16 +8934,12 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 		for (as = args->subregion_names; *as > 0; ++as) {
 			if (as != args->subregion_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subregion_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubregionNames\":" ));
-                STRY(osc_str_append_string(data, args->subregion_names_str));
+		ARG_TO_JSON(SubregionNames, string, args->subregion_names_str);
 		ret += 1;
 	}
 	if (args->tag_keys) {
@@ -10043,16 +8950,12 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
-                STRY(osc_str_append_string(data, args->tag_keys_str));
+		ARG_TO_JSON(TagKeys, string, args->tag_keys_str);
 		ret += 1;
 	}
 	if (args->tag_values) {
@@ -10063,16 +8966,12 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagValues\":" ));
-                STRY(osc_str_append_string(data, args->tag_values_str));
+		ARG_TO_JSON(TagValues, string, args->tag_values_str);
 		ret += 1;
 	}
 	if (args->tags) {
@@ -10083,16 +8982,12 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -10108,16 +9003,12 @@ static int filters_subregion_setter(struct filters_subregion *args, struct osc_s
 		for (as = args->subregion_names; *as > 0; ++as) {
 			if (as != args->subregion_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subregion_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubregionNames\":" ));
-                STRY(osc_str_append_string(data, args->subregion_names_str));
+		ARG_TO_JSON(SubregionNames, string, args->subregion_names_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -10133,16 +9024,12 @@ static int filters_tag_setter(struct filters_tag *args, struct osc_str *data) {
 		for (as = args->keys; *as > 0; ++as) {
 			if (as != args->keys)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->keys_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Keys\":" ));
-                STRY(osc_str_append_string(data, args->keys_str));
+		ARG_TO_JSON(Keys, string, args->keys_str);
 		ret += 1;
 	}
 	if (args->resource_ids) {
@@ -10153,16 +9040,12 @@ static int filters_tag_setter(struct filters_tag *args, struct osc_str *data) {
 		for (as = args->resource_ids; *as > 0; ++as) {
 			if (as != args->resource_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->resource_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ResourceIds\":" ));
-                STRY(osc_str_append_string(data, args->resource_ids_str));
+		ARG_TO_JSON(ResourceIds, string, args->resource_ids_str);
 		ret += 1;
 	}
 	if (args->resource_types) {
@@ -10173,16 +9056,12 @@ static int filters_tag_setter(struct filters_tag *args, struct osc_str *data) {
 		for (as = args->resource_types; *as > 0; ++as) {
 			if (as != args->resource_types)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->resource_types_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ResourceTypes\":" ));
-                STRY(osc_str_append_string(data, args->resource_types_str));
+		ARG_TO_JSON(ResourceTypes, string, args->resource_types_str);
 		ret += 1;
 	}
 	if (args->values) {
@@ -10193,16 +9072,12 @@ static int filters_tag_setter(struct filters_tag *args, struct osc_str *data) {
 		for (as = args->values; *as > 0; ++as) {
 			if (as != args->values)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->values_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Values\":" ));
-                STRY(osc_str_append_string(data, args->values_str));
+		ARG_TO_JSON(Values, string, args->values_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -10218,16 +9093,12 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 		for (as = args->connection_types; *as > 0; ++as) {
 			if (as != args->connection_types)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->connection_types_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ConnectionTypes\":" ));
-                STRY(osc_str_append_string(data, args->connection_types_str));
+		ARG_TO_JSON(ConnectionTypes, string, args->connection_types_str);
 		ret += 1;
 	}
 	if (args->link_net_ids) {
@@ -10238,16 +9109,12 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 		for (as = args->link_net_ids; *as > 0; ++as) {
 			if (as != args->link_net_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_net_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkNetIds\":" ));
-                STRY(osc_str_append_string(data, args->link_net_ids_str));
+		ARG_TO_JSON(LinkNetIds, string, args->link_net_ids_str);
 		ret += 1;
 	}
 	if (args->link_states) {
@@ -10258,16 +9125,12 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 		for (as = args->link_states; *as > 0; ++as) {
 			if (as != args->link_states)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_states_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkStates\":" ));
-                STRY(osc_str_append_string(data, args->link_states_str));
+		ARG_TO_JSON(LinkStates, string, args->link_states_str);
 		ret += 1;
 	}
 	if (args->states) {
@@ -10278,16 +9141,12 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 		for (as = args->states; *as > 0; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->states_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"States\":" ));
-                STRY(osc_str_append_string(data, args->states_str));
+		ARG_TO_JSON(States, string, args->states_str);
 		ret += 1;
 	}
 	if (args->tag_keys) {
@@ -10298,16 +9157,12 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
-                STRY(osc_str_append_string(data, args->tag_keys_str));
+		ARG_TO_JSON(TagKeys, string, args->tag_keys_str);
 		ret += 1;
 	}
 	if (args->tag_values) {
@@ -10318,16 +9173,12 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagValues\":" ));
-                STRY(osc_str_append_string(data, args->tag_values_str));
+		ARG_TO_JSON(TagValues, string, args->tag_values_str);
 		ret += 1;
 	}
 	if (args->tags) {
@@ -10338,16 +9189,12 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	if (args->virtual_gateway_ids) {
@@ -10358,16 +9205,12 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 		for (as = args->virtual_gateway_ids; *as > 0; ++as) {
 			if (as != args->virtual_gateway_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->virtual_gateway_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VirtualGatewayIds\":" ));
-                STRY(osc_str_append_string(data, args->virtual_gateway_ids_str));
+		ARG_TO_JSON(VirtualGatewayIds, string, args->virtual_gateway_ids_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -10383,16 +9226,12 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
-                STRY(osc_str_append_string(data, args->tag_keys_str));
+		ARG_TO_JSON(TagKeys, string, args->tag_keys_str);
 		ret += 1;
 	}
 	if (args->tag_values) {
@@ -10403,16 +9242,12 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagValues\":" ));
-                STRY(osc_str_append_string(data, args->tag_values_str));
+		ARG_TO_JSON(TagValues, string, args->tag_values_str);
 		ret += 1;
 	}
 	if (args->tags) {
@@ -10423,16 +9258,12 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	if (args->vm_ids) {
@@ -10443,16 +9274,12 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 		for (as = args->vm_ids; *as > 0; ++as) {
 			if (as != args->vm_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmIds\":" ));
-                STRY(osc_str_append_string(data, args->vm_ids_str));
+		ARG_TO_JSON(VmIds, string, args->vm_ids_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -10468,16 +9295,12 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 		for (as = args->descriptions; *as > 0; ++as) {
 			if (as != args->descriptions)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->descriptions_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Descriptions\":" ));
-                STRY(osc_str_append_string(data, args->descriptions_str));
+		ARG_TO_JSON(Descriptions, string, args->descriptions_str);
 		ret += 1;
 	}
 	if (args->security_group_ids) {
@@ -10488,16 +9311,12 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 		for (as = args->security_group_ids; *as > 0; ++as) {
 			if (as != args->security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_group_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":" ));
-                STRY(osc_str_append_string(data, args->security_group_ids_str));
+		ARG_TO_JSON(SecurityGroupIds, string, args->security_group_ids_str);
 		ret += 1;
 	}
 	if (args->subnet_ids) {
@@ -10508,16 +9327,12 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 		for (as = args->subnet_ids; *as > 0; ++as) {
 			if (as != args->subnet_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subnet_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubnetIds\":" ));
-                STRY(osc_str_append_string(data, args->subnet_ids_str));
+		ARG_TO_JSON(SubnetIds, string, args->subnet_ids_str);
 		ret += 1;
 	}
 	if (args->tag_keys) {
@@ -10528,16 +9343,12 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
-                STRY(osc_str_append_string(data, args->tag_keys_str));
+		ARG_TO_JSON(TagKeys, string, args->tag_keys_str);
 		ret += 1;
 	}
 	if (args->tag_values) {
@@ -10548,16 +9359,12 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagValues\":" ));
-                STRY(osc_str_append_string(data, args->tag_values_str));
+		ARG_TO_JSON(TagValues, string, args->tag_values_str);
 		ret += 1;
 	}
 	if (args->tags) {
@@ -10568,16 +9375,12 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	if (args->vm_counts) {
@@ -10593,9 +9396,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_counts_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmCounts\":" ));
-                STRY(osc_str_append_string(data, args->vm_counts_str));
+		ARG_TO_JSON(VmCounts, string, args->vm_counts_str);
 		ret += 1;
 	}
 	if (args->vm_group_ids) {
@@ -10606,16 +9407,12 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 		for (as = args->vm_group_ids; *as > 0; ++as) {
 			if (as != args->vm_group_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_group_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmGroupIds\":" ));
-                STRY(osc_str_append_string(data, args->vm_group_ids_str));
+		ARG_TO_JSON(VmGroupIds, string, args->vm_group_ids_str);
 		ret += 1;
 	}
 	if (args->vm_group_names) {
@@ -10626,16 +9423,12 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 		for (as = args->vm_group_names; *as > 0; ++as) {
 			if (as != args->vm_group_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_group_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmGroupNames\":" ));
-                STRY(osc_str_append_string(data, args->vm_group_names_str));
+		ARG_TO_JSON(VmGroupNames, string, args->vm_group_names_str);
 		ret += 1;
 	}
 	if (args->vm_template_ids) {
@@ -10646,16 +9439,12 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 		for (as = args->vm_template_ids; *as > 0; ++as) {
 			if (as != args->vm_template_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_template_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmTemplateIds\":" ));
-                STRY(osc_str_append_string(data, args->vm_template_ids_str));
+		ARG_TO_JSON(VmTemplateIds, string, args->vm_template_ids_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -10676,9 +9465,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->cpu_cores_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CpuCores\":" ));
-                STRY(osc_str_append_string(data, args->cpu_cores_str));
+		ARG_TO_JSON(CpuCores, string, args->cpu_cores_str);
 		ret += 1;
 	}
 	if (args->cpu_generations) {
@@ -10689,16 +9476,12 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 		for (as = args->cpu_generations; *as > 0; ++as) {
 			if (as != args->cpu_generations)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->cpu_generations_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CpuGenerations\":" ));
-                STRY(osc_str_append_string(data, args->cpu_generations_str));
+		ARG_TO_JSON(CpuGenerations, string, args->cpu_generations_str);
 		ret += 1;
 	}
 	if (args->cpu_performances) {
@@ -10709,16 +9492,12 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 		for (as = args->cpu_performances; *as > 0; ++as) {
 			if (as != args->cpu_performances)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->cpu_performances_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CpuPerformances\":" ));
-                STRY(osc_str_append_string(data, args->cpu_performances_str));
+		ARG_TO_JSON(CpuPerformances, string, args->cpu_performances_str);
 		ret += 1;
 	}
 	if (args->descriptions) {
@@ -10729,16 +9508,12 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 		for (as = args->descriptions; *as > 0; ++as) {
 			if (as != args->descriptions)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->descriptions_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Descriptions\":" ));
-                STRY(osc_str_append_string(data, args->descriptions_str));
+		ARG_TO_JSON(Descriptions, string, args->descriptions_str);
 		ret += 1;
 	}
 	if (args->image_ids) {
@@ -10749,16 +9524,12 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 		for (as = args->image_ids; *as > 0; ++as) {
 			if (as != args->image_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->image_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ImageIds\":" ));
-                STRY(osc_str_append_string(data, args->image_ids_str));
+		ARG_TO_JSON(ImageIds, string, args->image_ids_str);
 		ret += 1;
 	}
 	if (args->keypair_names) {
@@ -10769,16 +9540,12 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 		for (as = args->keypair_names; *as > 0; ++as) {
 			if (as != args->keypair_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->keypair_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"KeypairNames\":" ));
-                STRY(osc_str_append_string(data, args->keypair_names_str));
+		ARG_TO_JSON(KeypairNames, string, args->keypair_names_str);
 		ret += 1;
 	}
 	if (args->rams) {
@@ -10794,9 +9561,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->rams_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Rams\":" ));
-                STRY(osc_str_append_string(data, args->rams_str));
+		ARG_TO_JSON(Rams, string, args->rams_str);
 		ret += 1;
 	}
 	if (args->tag_keys) {
@@ -10807,16 +9572,12 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
-                STRY(osc_str_append_string(data, args->tag_keys_str));
+		ARG_TO_JSON(TagKeys, string, args->tag_keys_str);
 		ret += 1;
 	}
 	if (args->tag_values) {
@@ -10827,16 +9588,12 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagValues\":" ));
-                STRY(osc_str_append_string(data, args->tag_values_str));
+		ARG_TO_JSON(TagValues, string, args->tag_values_str);
 		ret += 1;
 	}
 	if (args->tags) {
@@ -10847,16 +9604,12 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	if (args->vm_template_ids) {
@@ -10867,16 +9620,12 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 		for (as = args->vm_template_ids; *as > 0; ++as) {
 			if (as != args->vm_template_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_template_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmTemplateIds\":" ));
-                STRY(osc_str_append_string(data, args->vm_template_ids_str));
+		ARG_TO_JSON(VmTemplateIds, string, args->vm_template_ids_str);
 		ret += 1;
 	}
 	if (args->vm_template_names) {
@@ -10887,16 +9636,12 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 		for (as = args->vm_template_names; *as > 0; ++as) {
 			if (as != args->vm_template_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_template_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmTemplateNames\":" ));
-                STRY(osc_str_append_string(data, args->vm_template_names_str));
+		ARG_TO_JSON(VmTemplateNames, string, args->vm_template_names_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -10905,9 +9650,7 @@ static int filters_vm_type_setter(struct filters_vm_type *args, struct osc_str *
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_bsu_optimized) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BsuOptimized\":" ));
-                STRY(osc_str_append_bool(data, args->bsu_optimized));
+		ARG_TO_JSON(BsuOptimized, bool, args->bsu_optimized);
 	   	ret += 1;
 	}
 	if (args->memory_sizes) {
@@ -10923,9 +9666,7 @@ static int filters_vm_type_setter(struct filters_vm_type *args, struct osc_str *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->memory_sizes_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MemorySizes\":" ));
-                STRY(osc_str_append_string(data, args->memory_sizes_str));
+		ARG_TO_JSON(MemorySizes, string, args->memory_sizes_str);
 		ret += 1;
 	}
 	if (args->vcore_counts) {
@@ -10941,9 +9682,7 @@ static int filters_vm_type_setter(struct filters_vm_type *args, struct osc_str *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vcore_counts_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VcoreCounts\":" ));
-                STRY(osc_str_append_string(data, args->vcore_counts_str));
+		ARG_TO_JSON(VcoreCounts, string, args->vcore_counts_str);
 		ret += 1;
 	}
 	if (args->vm_type_names) {
@@ -10954,16 +9693,12 @@ static int filters_vm_type_setter(struct filters_vm_type *args, struct osc_str *
 		for (as = args->vm_type_names; *as > 0; ++as) {
 			if (as != args->vm_type_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_type_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmTypeNames\":" ));
-                STRY(osc_str_append_string(data, args->vm_type_names_str));
+		ARG_TO_JSON(VmTypeNames, string, args->vm_type_names_str);
 		ret += 1;
 	}
 	if (args->volume_counts) {
@@ -10979,9 +9714,7 @@ static int filters_vm_type_setter(struct filters_vm_type *args, struct osc_str *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->volume_counts_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeCounts\":" ));
-                STRY(osc_str_append_string(data, args->volume_counts_str));
+		ARG_TO_JSON(VolumeCounts, string, args->volume_counts_str);
 		ret += 1;
 	}
 	if (args->volume_sizes) {
@@ -10997,9 +9730,7 @@ static int filters_vm_type_setter(struct filters_vm_type *args, struct osc_str *
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->volume_sizes_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeSizes\":" ));
-                STRY(osc_str_append_string(data, args->volume_sizes_str));
+		ARG_TO_JSON(VolumeSizes, string, args->volume_sizes_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -11015,16 +9746,12 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 		for (as = args->maintenance_event_codes; *as > 0; ++as) {
 			if (as != args->maintenance_event_codes)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->maintenance_event_codes_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MaintenanceEventCodes\":" ));
-                STRY(osc_str_append_string(data, args->maintenance_event_codes_str));
+		ARG_TO_JSON(MaintenanceEventCodes, string, args->maintenance_event_codes_str);
 		ret += 1;
 	}
 	if (args->maintenance_event_descriptions) {
@@ -11035,16 +9762,12 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 		for (as = args->maintenance_event_descriptions; *as > 0; ++as) {
 			if (as != args->maintenance_event_descriptions)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->maintenance_event_descriptions_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MaintenanceEventDescriptions\":" ));
-                STRY(osc_str_append_string(data, args->maintenance_event_descriptions_str));
+		ARG_TO_JSON(MaintenanceEventDescriptions, string, args->maintenance_event_descriptions_str);
 		ret += 1;
 	}
 	if (args->maintenance_events_not_after) {
@@ -11055,16 +9778,12 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 		for (as = args->maintenance_events_not_after; *as > 0; ++as) {
 			if (as != args->maintenance_events_not_after)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->maintenance_events_not_after_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MaintenanceEventsNotAfter\":" ));
-                STRY(osc_str_append_string(data, args->maintenance_events_not_after_str));
+		ARG_TO_JSON(MaintenanceEventsNotAfter, string, args->maintenance_events_not_after_str);
 		ret += 1;
 	}
 	if (args->maintenance_events_not_before) {
@@ -11075,16 +9794,12 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 		for (as = args->maintenance_events_not_before; *as > 0; ++as) {
 			if (as != args->maintenance_events_not_before)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->maintenance_events_not_before_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MaintenanceEventsNotBefore\":" ));
-                STRY(osc_str_append_string(data, args->maintenance_events_not_before_str));
+		ARG_TO_JSON(MaintenanceEventsNotBefore, string, args->maintenance_events_not_before_str);
 		ret += 1;
 	}
 	if (args->subregion_names) {
@@ -11095,16 +9810,12 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 		for (as = args->subregion_names; *as > 0; ++as) {
 			if (as != args->subregion_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subregion_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubregionNames\":" ));
-                STRY(osc_str_append_string(data, args->subregion_names_str));
+		ARG_TO_JSON(SubregionNames, string, args->subregion_names_str);
 		ret += 1;
 	}
 	if (args->vm_ids) {
@@ -11115,16 +9826,12 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 		for (as = args->vm_ids; *as > 0; ++as) {
 			if (as != args->vm_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmIds\":" ));
-                STRY(osc_str_append_string(data, args->vm_ids_str));
+		ARG_TO_JSON(VmIds, string, args->vm_ids_str);
 		ret += 1;
 	}
 	if (args->vm_states) {
@@ -11135,16 +9842,12 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 		for (as = args->vm_states; *as > 0; ++as) {
 			if (as != args->vm_states)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_states_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmStates\":" ));
-                STRY(osc_str_append_string(data, args->vm_states_str));
+		ARG_TO_JSON(VmStates, string, args->vm_states_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -11160,22 +9863,16 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		for (as = args->creation_dates; *as > 0; ++as) {
 			if (as != args->creation_dates)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->creation_dates_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CreationDates\":" ));
-                STRY(osc_str_append_string(data, args->creation_dates_str));
+		ARG_TO_JSON(CreationDates, string, args->creation_dates_str);
 		ret += 1;
 	}
 	if (args->is_set_link_volume_delete_on_vm_deletion) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkVolumeDeleteOnVmDeletion\":" ));
-                STRY(osc_str_append_bool(data, args->link_volume_delete_on_vm_deletion));
+		ARG_TO_JSON(LinkVolumeDeleteOnVmDeletion, bool, args->link_volume_delete_on_vm_deletion);
 	   	ret += 1;
 	}
 	if (args->link_volume_device_names) {
@@ -11186,16 +9883,12 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		for (as = args->link_volume_device_names; *as > 0; ++as) {
 			if (as != args->link_volume_device_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_volume_device_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkVolumeDeviceNames\":" ));
-                STRY(osc_str_append_string(data, args->link_volume_device_names_str));
+		ARG_TO_JSON(LinkVolumeDeviceNames, string, args->link_volume_device_names_str);
 		ret += 1;
 	}
 	if (args->link_volume_link_dates) {
@@ -11206,16 +9899,12 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		for (as = args->link_volume_link_dates; *as > 0; ++as) {
 			if (as != args->link_volume_link_dates)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_volume_link_dates_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkVolumeLinkDates\":" ));
-                STRY(osc_str_append_string(data, args->link_volume_link_dates_str));
+		ARG_TO_JSON(LinkVolumeLinkDates, string, args->link_volume_link_dates_str);
 		ret += 1;
 	}
 	if (args->link_volume_link_states) {
@@ -11226,16 +9915,12 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		for (as = args->link_volume_link_states; *as > 0; ++as) {
 			if (as != args->link_volume_link_states)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_volume_link_states_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkVolumeLinkStates\":" ));
-                STRY(osc_str_append_string(data, args->link_volume_link_states_str));
+		ARG_TO_JSON(LinkVolumeLinkStates, string, args->link_volume_link_states_str);
 		ret += 1;
 	}
 	if (args->link_volume_vm_ids) {
@@ -11246,16 +9931,12 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		for (as = args->link_volume_vm_ids; *as > 0; ++as) {
 			if (as != args->link_volume_vm_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->link_volume_vm_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkVolumeVmIds\":" ));
-                STRY(osc_str_append_string(data, args->link_volume_vm_ids_str));
+		ARG_TO_JSON(LinkVolumeVmIds, string, args->link_volume_vm_ids_str);
 		ret += 1;
 	}
 	if (args->snapshot_ids) {
@@ -11266,16 +9947,12 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		for (as = args->snapshot_ids; *as > 0; ++as) {
 			if (as != args->snapshot_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->snapshot_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SnapshotIds\":" ));
-                STRY(osc_str_append_string(data, args->snapshot_ids_str));
+		ARG_TO_JSON(SnapshotIds, string, args->snapshot_ids_str);
 		ret += 1;
 	}
 	if (args->subregion_names) {
@@ -11286,16 +9963,12 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		for (as = args->subregion_names; *as > 0; ++as) {
 			if (as != args->subregion_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subregion_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubregionNames\":" ));
-                STRY(osc_str_append_string(data, args->subregion_names_str));
+		ARG_TO_JSON(SubregionNames, string, args->subregion_names_str);
 		ret += 1;
 	}
 	if (args->tag_keys) {
@@ -11306,16 +9979,12 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
-                STRY(osc_str_append_string(data, args->tag_keys_str));
+		ARG_TO_JSON(TagKeys, string, args->tag_keys_str);
 		ret += 1;
 	}
 	if (args->tag_values) {
@@ -11326,16 +9995,12 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagValues\":" ));
-                STRY(osc_str_append_string(data, args->tag_values_str));
+		ARG_TO_JSON(TagValues, string, args->tag_values_str);
 		ret += 1;
 	}
 	if (args->tags) {
@@ -11346,16 +10011,12 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	if (args->volume_ids) {
@@ -11366,16 +10027,12 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		for (as = args->volume_ids; *as > 0; ++as) {
 			if (as != args->volume_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->volume_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeIds\":" ));
-                STRY(osc_str_append_string(data, args->volume_ids_str));
+		ARG_TO_JSON(VolumeIds, string, args->volume_ids_str);
 		ret += 1;
 	}
 	if (args->volume_sizes) {
@@ -11391,9 +10048,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->volume_sizes_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeSizes\":" ));
-                STRY(osc_str_append_string(data, args->volume_sizes_str));
+		ARG_TO_JSON(VolumeSizes, string, args->volume_sizes_str);
 		ret += 1;
 	}
 	if (args->volume_states) {
@@ -11404,16 +10059,12 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		for (as = args->volume_states; *as > 0; ++as) {
 			if (as != args->volume_states)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->volume_states_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeStates\":" ));
-                STRY(osc_str_append_string(data, args->volume_states_str));
+		ARG_TO_JSON(VolumeStates, string, args->volume_states_str);
 		ret += 1;
 	}
 	if (args->volume_types) {
@@ -11424,16 +10075,12 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 		for (as = args->volume_types; *as > 0; ++as) {
 			if (as != args->volume_types)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->volume_types_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeTypes\":" ));
-                STRY(osc_str_append_string(data, args->volume_types_str));
+		ARG_TO_JSON(VolumeTypes, string, args->volume_types_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -11454,9 +10101,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->bgp_asns_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BgpAsns\":" ));
-                STRY(osc_str_append_string(data, args->bgp_asns_str));
+		ARG_TO_JSON(BgpAsns, string, args->bgp_asns_str);
 		ret += 1;
 	}
 	if (args->client_gateway_ids) {
@@ -11467,16 +10112,12 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 		for (as = args->client_gateway_ids; *as > 0; ++as) {
 			if (as != args->client_gateway_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->client_gateway_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ClientGatewayIds\":" ));
-                STRY(osc_str_append_string(data, args->client_gateway_ids_str));
+		ARG_TO_JSON(ClientGatewayIds, string, args->client_gateway_ids_str);
 		ret += 1;
 	}
 	if (args->connection_types) {
@@ -11487,16 +10128,12 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 		for (as = args->connection_types; *as > 0; ++as) {
 			if (as != args->connection_types)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->connection_types_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ConnectionTypes\":" ));
-                STRY(osc_str_append_string(data, args->connection_types_str));
+		ARG_TO_JSON(ConnectionTypes, string, args->connection_types_str);
 		ret += 1;
 	}
 	if (args->route_destination_ip_ranges) {
@@ -11507,16 +10144,12 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 		for (as = args->route_destination_ip_ranges; *as > 0; ++as) {
 			if (as != args->route_destination_ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->route_destination_ip_ranges_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RouteDestinationIpRanges\":" ));
-                STRY(osc_str_append_string(data, args->route_destination_ip_ranges_str));
+		ARG_TO_JSON(RouteDestinationIpRanges, string, args->route_destination_ip_ranges_str);
 		ret += 1;
 	}
 	if (args->states) {
@@ -11527,22 +10160,16 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 		for (as = args->states; *as > 0; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->states_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"States\":" ));
-                STRY(osc_str_append_string(data, args->states_str));
+		ARG_TO_JSON(States, string, args->states_str);
 		ret += 1;
 	}
 	if (args->is_set_static_routes_only) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"StaticRoutesOnly\":" ));
-                STRY(osc_str_append_bool(data, args->static_routes_only));
+		ARG_TO_JSON(StaticRoutesOnly, bool, args->static_routes_only);
 	   	ret += 1;
 	}
 	if (args->tag_keys) {
@@ -11553,16 +10180,12 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 		for (as = args->tag_keys; *as > 0; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_keys_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagKeys\":" ));
-                STRY(osc_str_append_string(data, args->tag_keys_str));
+		ARG_TO_JSON(TagKeys, string, args->tag_keys_str);
 		ret += 1;
 	}
 	if (args->tag_values) {
@@ -11573,16 +10196,12 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 		for (as = args->tag_values; *as > 0; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tag_values_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TagValues\":" ));
-                STRY(osc_str_append_string(data, args->tag_values_str));
+		ARG_TO_JSON(TagValues, string, args->tag_values_str);
 		ret += 1;
 	}
 	if (args->tags) {
@@ -11593,16 +10212,12 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 		for (as = args->tags; *as > 0; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	if (args->virtual_gateway_ids) {
@@ -11613,16 +10228,12 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 		for (as = args->virtual_gateway_ids; *as > 0; ++as) {
 			if (as != args->virtual_gateway_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->virtual_gateway_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VirtualGatewayIds\":" ));
-                STRY(osc_str_append_string(data, args->virtual_gateway_ids_str));
+		ARG_TO_JSON(VirtualGatewayIds, string, args->virtual_gateway_ids_str);
 		ret += 1;
 	}
 	if (args->vpn_connection_ids) {
@@ -11633,16 +10244,12 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 		for (as = args->vpn_connection_ids; *as > 0; ++as) {
 			if (as != args->vpn_connection_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vpn_connection_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VpnConnectionIds\":" ));
-                STRY(osc_str_append_string(data, args->vpn_connection_ids_str));
+		ARG_TO_JSON(VpnConnectionIds, string, args->vpn_connection_ids_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -11651,51 +10258,37 @@ static int flexible_gpu_setter(struct flexible_gpu *args, struct osc_str *data) 
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_delete_on_vm_deletion) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeleteOnVmDeletion\":" ));
-                STRY(osc_str_append_bool(data, args->delete_on_vm_deletion));
+		ARG_TO_JSON(DeleteOnVmDeletion, bool, args->delete_on_vm_deletion);
 	   	ret += 1;
 	}
 	if (args->flexible_gpu_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"FlexibleGpuId\":\"" ));
-                STRY(osc_str_append_string(data, args->flexible_gpu_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"FlexibleGpuId\":", args->flexible_gpu_id);
 	   	ret += 1;
 	}
 	if (args->generation) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Generation\":\"" ));
-                STRY(osc_str_append_string(data, args->generation));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Generation\":", args->generation);
 	   	ret += 1;
 	}
 	if (args->model_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ModelName\":\"" ));
-                STRY(osc_str_append_string(data, args->model_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ModelName\":", args->model_name);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	if (args->subregion_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubregionName\":\"" ));
-                STRY(osc_str_append_string(data, args->subregion_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubregionName\":", args->subregion_name);
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmId\":", args->vm_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -11711,41 +10304,29 @@ static int flexible_gpu_catalog_setter(struct flexible_gpu_catalog *args, struct
 		for (as = args->generations; *as > 0; ++as) {
 			if (as != args->generations)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->generations_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Generations\":" ));
-                STRY(osc_str_append_string(data, args->generations_str));
+		ARG_TO_JSON(Generations, string, args->generations_str);
 		ret += 1;
 	}
 	if (args->is_set_max_cpu || args->max_cpu) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MaxCpu\":" ));
-                STRY(osc_str_append_int(data, args->max_cpu));
+		ARG_TO_JSON(MaxCpu, int, args->max_cpu);
 	   	ret += 1;
 	}
 	if (args->is_set_max_ram || args->max_ram) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MaxRam\":" ));
-                STRY(osc_str_append_int(data, args->max_ram));
+		ARG_TO_JSON(MaxRam, int, args->max_ram);
 	   	ret += 1;
 	}
 	if (args->model_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ModelName\":\"" ));
-                STRY(osc_str_append_string(data, args->model_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ModelName\":", args->model_name);
 	   	ret += 1;
 	}
 	if (args->is_set_vram || args->vram) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VRam\":" ));
-                STRY(osc_str_append_int(data, args->vram));
+		ARG_TO_JSON(VRam, int, args->vram);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -11754,47 +10335,33 @@ static int health_check_setter(struct health_check *args, struct osc_str *data) 
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_check_interval || args->check_interval) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CheckInterval\":" ));
-                STRY(osc_str_append_int(data, args->check_interval));
+		ARG_TO_JSON(CheckInterval, int, args->check_interval);
 	   	ret += 1;
 	}
 	if (args->is_set_healthy_threshold || args->healthy_threshold) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"HealthyThreshold\":" ));
-                STRY(osc_str_append_int(data, args->healthy_threshold));
+		ARG_TO_JSON(HealthyThreshold, int, args->healthy_threshold);
 	   	ret += 1;
 	}
 	if (args->path) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Path\":\"" ));
-                STRY(osc_str_append_string(data, args->path));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Path\":", args->path);
 	   	ret += 1;
 	}
 	if (args->is_set_port || args->port) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Port\":" ));
-                STRY(osc_str_append_int(data, args->port));
+		ARG_TO_JSON(Port, int, args->port);
 	   	ret += 1;
 	}
 	if (args->protocol) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Protocol\":\"" ));
-                STRY(osc_str_append_string(data, args->protocol));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Protocol\":", args->protocol);
 	   	ret += 1;
 	}
 	if (args->is_set_timeout || args->timeout) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Timeout\":" ));
-                STRY(osc_str_append_int(data, args->timeout));
+		ARG_TO_JSON(Timeout, int, args->timeout);
 	   	ret += 1;
 	}
 	if (args->is_set_unhealthy_threshold || args->unhealthy_threshold) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"UnhealthyThreshold\":" ));
-                STRY(osc_str_append_int(data, args->unhealthy_threshold));
+		ARG_TO_JSON(UnhealthyThreshold, int, args->unhealthy_threshold);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -11803,24 +10370,18 @@ static int image_setter(struct image *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->account_alias) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccountAlias\":\"" ));
-                STRY(osc_str_append_string(data, args->account_alias));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"AccountAlias\":", args->account_alias);
 	   	ret += 1;
 	}
 	if (args->account_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
-                STRY(osc_str_append_string(data, args->account_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"AccountId\":", args->account_id);
 	   	ret += 1;
 	}
 	if (args->architecture) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Architecture\":\"" ));
-                STRY(osc_str_append_string(data, args->architecture));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Architecture\":", args->architecture);
 	   	ret += 1;
 	}
         if (args->block_device_mappings) {
@@ -11838,57 +10399,41 @@ static int image_setter(struct image *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->block_device_mappings_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BlockDeviceMappings\":" ));
-                STRY(osc_str_append_string(data, args->block_device_mappings_str));
+		ARG_TO_JSON(BlockDeviceMappings, string, args->block_device_mappings_str);
 		ret += 1;
 	}
 	if (args->creation_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CreationDate\":\"" ));
-                STRY(osc_str_append_string(data, args->creation_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CreationDate\":", args->creation_date);
 	   	ret += 1;
 	}
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->file_location) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"FileLocation\":\"" ));
-                STRY(osc_str_append_string(data, args->file_location));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"FileLocation\":", args->file_location);
 	   	ret += 1;
 	}
 	if (args->image_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ImageId\":\"" ));
-                STRY(osc_str_append_string(data, args->image_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ImageId\":", args->image_id);
 	   	ret += 1;
 	}
 	if (args->image_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ImageName\":\"" ));
-                STRY(osc_str_append_string(data, args->image_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ImageName\":", args->image_name);
 	   	ret += 1;
 	}
 	if (args->image_type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ImageType\":\"" ));
-                STRY(osc_str_append_string(data, args->image_type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ImageType\":", args->image_type);
 	   	ret += 1;
 	}
 	if (args->permissions_to_launch_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PermissionsToLaunch\":" ));
-                STRY(osc_str_append_string(data, args->permissions_to_launch_str));
+		ARG_TO_JSON(PermissionsToLaunch, string, args->permissions_to_launch_str);
 		ret += 1;
 	} else if (args->is_set_permissions_to_launch) {
 	       TRY_APPEND_COL(count_args, data);
@@ -11905,43 +10450,31 @@ static int image_setter(struct image *args, struct osc_str *data) {
 		for (as = args->product_codes; *as > 0; ++as) {
 			if (as != args->product_codes)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->product_codes_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ProductCodes\":" ));
-                STRY(osc_str_append_string(data, args->product_codes_str));
+		ARG_TO_JSON(ProductCodes, string, args->product_codes_str);
 		ret += 1;
 	}
 	if (args->root_device_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RootDeviceName\":\"" ));
-                STRY(osc_str_append_string(data, args->root_device_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"RootDeviceName\":", args->root_device_name);
 	   	ret += 1;
 	}
 	if (args->root_device_type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RootDeviceType\":\"" ));
-                STRY(osc_str_append_string(data, args->root_device_type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"RootDeviceType\":", args->root_device_type);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	if (args->state_comment_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"StateComment\":" ));
-                STRY(osc_str_append_string(data, args->state_comment_str));
+		ARG_TO_JSON(StateComment, string, args->state_comment_str);
 		ret += 1;
 	} else if (args->is_set_state_comment) {
 	       TRY_APPEND_COL(count_args, data);
@@ -11965,9 +10498,7 @@ static int image_setter(struct image *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -11976,23 +10507,17 @@ static int image_export_task_setter(struct image_export_task *args, struct osc_s
        int count_args = 0;
        int ret = 0;
 	if (args->comment) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Comment\":\"" ));
-                STRY(osc_str_append_string(data, args->comment));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Comment\":", args->comment);
 	   	ret += 1;
 	}
 	if (args->image_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ImageId\":\"" ));
-                STRY(osc_str_append_string(data, args->image_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ImageId\":", args->image_id);
 	   	ret += 1;
 	}
 	if (args->osu_export_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OsuExport\":" ));
-                STRY(osc_str_append_string(data, args->osu_export_str));
+		ARG_TO_JSON(OsuExport, string, args->osu_export_str);
 		ret += 1;
 	} else if (args->is_set_osu_export) {
 	       TRY_APPEND_COL(count_args, data);
@@ -12002,16 +10527,12 @@ static int image_export_task_setter(struct image_export_task *args, struct osc_s
 	       ret += 1;
 	}
 	if (args->is_set_progress || args->progress) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Progress\":" ));
-                STRY(osc_str_append_int(data, args->progress));
+		ARG_TO_JSON(Progress, int, args->progress);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
         if (args->tags) {
@@ -12029,16 +10550,12 @@ static int image_export_task_setter(struct image_export_task *args, struct osc_s
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	if (args->task_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TaskId\":\"" ));
-                STRY(osc_str_append_string(data, args->task_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"TaskId\":", args->task_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -12047,24 +10564,18 @@ static int internet_service_setter(struct internet_service *args, struct osc_str
        int count_args = 0;
        int ret = 0;
 	if (args->internet_service_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"InternetServiceId\":\"" ));
-                STRY(osc_str_append_string(data, args->internet_service_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"InternetServiceId\":", args->internet_service_id);
 	   	ret += 1;
 	}
 	if (args->net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
         if (args->tags) {
@@ -12082,9 +10593,7 @@ static int internet_service_setter(struct internet_service *args, struct osc_str
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -12093,17 +10602,13 @@ static int keypair_setter(struct keypair *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->keypair_fingerprint) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"KeypairFingerprint\":\"" ));
-                STRY(osc_str_append_string(data, args->keypair_fingerprint));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"KeypairFingerprint\":", args->keypair_fingerprint);
 	   	ret += 1;
 	}
 	if (args->keypair_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"KeypairName\":\"" ));
-                STRY(osc_str_append_string(data, args->keypair_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"KeypairName\":", args->keypair_name);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -12112,24 +10617,18 @@ static int keypair_created_setter(struct keypair_created *args, struct osc_str *
        int count_args = 0;
        int ret = 0;
 	if (args->keypair_fingerprint) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"KeypairFingerprint\":\"" ));
-                STRY(osc_str_append_string(data, args->keypair_fingerprint));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"KeypairFingerprint\":", args->keypair_fingerprint);
 	   	ret += 1;
 	}
 	if (args->keypair_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"KeypairName\":\"" ));
-                STRY(osc_str_append_string(data, args->keypair_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"KeypairName\":", args->keypair_name);
 	   	ret += 1;
 	}
 	if (args->private_key) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateKey\":\"" ));
-                STRY(osc_str_append_string(data, args->private_key));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PrivateKey\":", args->private_key);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -12138,43 +10637,31 @@ static int link_nic_setter(struct link_nic *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_delete_on_vm_deletion) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeleteOnVmDeletion\":" ));
-                STRY(osc_str_append_bool(data, args->delete_on_vm_deletion));
+		ARG_TO_JSON(DeleteOnVmDeletion, bool, args->delete_on_vm_deletion);
 	   	ret += 1;
 	}
 	if (args->is_set_device_number || args->device_number) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeviceNumber\":" ));
-                STRY(osc_str_append_int(data, args->device_number));
+		ARG_TO_JSON(DeviceNumber, int, args->device_number);
 	   	ret += 1;
 	}
 	if (args->link_nic_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkNicId\":\"" ));
-                STRY(osc_str_append_string(data, args->link_nic_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LinkNicId\":", args->link_nic_id);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	if (args->vm_account_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmAccountId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_account_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmAccountId\":", args->vm_account_id);
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmId\":", args->vm_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -12183,29 +10670,21 @@ static int link_nic_light_setter(struct link_nic_light *args, struct osc_str *da
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_delete_on_vm_deletion) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeleteOnVmDeletion\":" ));
-                STRY(osc_str_append_bool(data, args->delete_on_vm_deletion));
+		ARG_TO_JSON(DeleteOnVmDeletion, bool, args->delete_on_vm_deletion);
 	   	ret += 1;
 	}
 	if (args->is_set_device_number || args->device_number) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeviceNumber\":" ));
-                STRY(osc_str_append_int(data, args->device_number));
+		ARG_TO_JSON(DeviceNumber, int, args->device_number);
 	   	ret += 1;
 	}
 	if (args->link_nic_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkNicId\":\"" ));
-                STRY(osc_str_append_string(data, args->link_nic_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LinkNicId\":", args->link_nic_id);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -12214,16 +10693,12 @@ static int link_nic_to_update_setter(struct link_nic_to_update *args, struct osc
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_delete_on_vm_deletion) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeleteOnVmDeletion\":" ));
-                STRY(osc_str_append_bool(data, args->delete_on_vm_deletion));
+		ARG_TO_JSON(DeleteOnVmDeletion, bool, args->delete_on_vm_deletion);
 	   	ret += 1;
 	}
 	if (args->link_nic_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkNicId\":\"" ));
-                STRY(osc_str_append_string(data, args->link_nic_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LinkNicId\":", args->link_nic_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -12232,38 +10707,28 @@ static int link_public_ip_setter(struct link_public_ip *args, struct osc_str *da
        int count_args = 0;
        int ret = 0;
 	if (args->link_public_ip_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkPublicIpId\":\"" ));
-                STRY(osc_str_append_string(data, args->link_public_ip_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LinkPublicIpId\":", args->link_public_ip_id);
 	   	ret += 1;
 	}
 	if (args->public_dns_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicDnsName\":\"" ));
-                STRY(osc_str_append_string(data, args->public_dns_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicDnsName\":", args->public_dns_name);
 	   	ret += 1;
 	}
 	if (args->public_ip) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
-                STRY(osc_str_append_string(data, args->public_ip));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicIp\":", args->public_ip);
 	   	ret += 1;
 	}
 	if (args->public_ip_account_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIpAccountId\":\"" ));
-                STRY(osc_str_append_string(data, args->public_ip_account_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicIpAccountId\":", args->public_ip_account_id);
 	   	ret += 1;
 	}
 	if (args->public_ip_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIpId\":\"" ));
-                STRY(osc_str_append_string(data, args->public_ip_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicIpId\":", args->public_ip_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -12272,24 +10737,18 @@ static int link_public_ip_light_for_vm_setter(struct link_public_ip_light_for_vm
        int count_args = 0;
        int ret = 0;
 	if (args->public_dns_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicDnsName\":\"" ));
-                STRY(osc_str_append_string(data, args->public_dns_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicDnsName\":", args->public_dns_name);
 	   	ret += 1;
 	}
 	if (args->public_ip) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
-                STRY(osc_str_append_string(data, args->public_ip));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicIp\":", args->public_ip);
 	   	ret += 1;
 	}
 	if (args->public_ip_account_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIpAccountId\":\"" ));
-                STRY(osc_str_append_string(data, args->public_ip_account_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicIpAccountId\":", args->public_ip_account_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -12298,30 +10757,22 @@ static int link_route_table_setter(struct link_route_table *args, struct osc_str
        int count_args = 0;
        int ret = 0;
 	if (args->link_route_table_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkRouteTableId\":\"" ));
-                STRY(osc_str_append_string(data, args->link_route_table_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LinkRouteTableId\":", args->link_route_table_id);
 	   	ret += 1;
 	}
 	if (args->is_set_main) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Main\":" ));
-                STRY(osc_str_append_bool(data, args->main));
+		ARG_TO_JSON(Main, bool, args->main);
 	   	ret += 1;
 	}
 	if (args->route_table_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RouteTableId\":\"" ));
-                STRY(osc_str_append_string(data, args->route_table_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"RouteTableId\":", args->route_table_id);
 	   	ret += 1;
 	}
 	if (args->subnet_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
-                STRY(osc_str_append_string(data, args->subnet_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubnetId\":", args->subnet_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -12330,37 +10781,27 @@ static int linked_volume_setter(struct linked_volume *args, struct osc_str *data
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_delete_on_vm_deletion) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeleteOnVmDeletion\":" ));
-                STRY(osc_str_append_bool(data, args->delete_on_vm_deletion));
+		ARG_TO_JSON(DeleteOnVmDeletion, bool, args->delete_on_vm_deletion);
 	   	ret += 1;
 	}
 	if (args->device_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeviceName\":\"" ));
-                STRY(osc_str_append_string(data, args->device_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DeviceName\":", args->device_name);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmId\":", args->vm_id);
 	   	ret += 1;
 	}
 	if (args->volume_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeId\":\"" ));
-                STRY(osc_str_append_string(data, args->volume_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VolumeId\":", args->volume_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -12369,29 +10810,21 @@ static int listener_setter(struct listener *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_backend_port || args->backend_port) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BackendPort\":" ));
-                STRY(osc_str_append_int(data, args->backend_port));
+		ARG_TO_JSON(BackendPort, int, args->backend_port);
 	   	ret += 1;
 	}
 	if (args->backend_protocol) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BackendProtocol\":\"" ));
-                STRY(osc_str_append_string(data, args->backend_protocol));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"BackendProtocol\":", args->backend_protocol);
 	   	ret += 1;
 	}
 	if (args->is_set_load_balancer_port || args->load_balancer_port) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerPort\":" ));
-                STRY(osc_str_append_int(data, args->load_balancer_port));
+		ARG_TO_JSON(LoadBalancerPort, int, args->load_balancer_port);
 	   	ret += 1;
 	}
 	if (args->load_balancer_protocol) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerProtocol\":\"" ));
-                STRY(osc_str_append_string(data, args->load_balancer_protocol));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LoadBalancerProtocol\":", args->load_balancer_protocol);
 	   	ret += 1;
 	}
 	if (args->policy_names) {
@@ -12402,23 +10835,17 @@ static int listener_setter(struct listener *args, struct osc_str *data) {
 		for (as = args->policy_names; *as > 0; ++as) {
 			if (as != args->policy_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->policy_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PolicyNames\":" ));
-                STRY(osc_str_append_string(data, args->policy_names_str));
+		ARG_TO_JSON(PolicyNames, string, args->policy_names_str);
 		ret += 1;
 	}
 	if (args->server_certificate_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ServerCertificateId\":\"" ));
-                STRY(osc_str_append_string(data, args->server_certificate_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ServerCertificateId\":", args->server_certificate_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -12427,36 +10854,26 @@ static int listener_for_creation_setter(struct listener_for_creation *args, stru
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_backend_port || args->backend_port) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BackendPort\":" ));
-                STRY(osc_str_append_int(data, args->backend_port));
+		ARG_TO_JSON(BackendPort, int, args->backend_port);
 	   	ret += 1;
 	}
 	if (args->backend_protocol) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BackendProtocol\":\"" ));
-                STRY(osc_str_append_string(data, args->backend_protocol));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"BackendProtocol\":", args->backend_protocol);
 	   	ret += 1;
 	}
 	if (args->is_set_load_balancer_port || args->load_balancer_port) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerPort\":" ));
-                STRY(osc_str_append_int(data, args->load_balancer_port));
+		ARG_TO_JSON(LoadBalancerPort, int, args->load_balancer_port);
 	   	ret += 1;
 	}
 	if (args->load_balancer_protocol) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerProtocol\":\"" ));
-                STRY(osc_str_append_string(data, args->load_balancer_protocol));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LoadBalancerProtocol\":", args->load_balancer_protocol);
 	   	ret += 1;
 	}
 	if (args->server_certificate_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ServerCertificateId\":\"" ));
-                STRY(osc_str_append_string(data, args->server_certificate_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ServerCertificateId\":", args->server_certificate_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -12465,49 +10882,35 @@ static int listener_rule_setter(struct listener_rule *args, struct osc_str *data
        int count_args = 0;
        int ret = 0;
 	if (args->action) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Action\":\"" ));
-                STRY(osc_str_append_string(data, args->action));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Action\":", args->action);
 	   	ret += 1;
 	}
 	if (args->host_name_pattern) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"HostNamePattern\":\"" ));
-                STRY(osc_str_append_string(data, args->host_name_pattern));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"HostNamePattern\":", args->host_name_pattern);
 	   	ret += 1;
 	}
 	if (args->is_set_listener_id || args->listener_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ListenerId\":" ));
-                STRY(osc_str_append_int(data, args->listener_id));
+		ARG_TO_JSON(ListenerId, int, args->listener_id);
 	   	ret += 1;
 	}
 	if (args->is_set_listener_rule_id || args->listener_rule_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ListenerRuleId\":" ));
-                STRY(osc_str_append_int(data, args->listener_rule_id));
+		ARG_TO_JSON(ListenerRuleId, int, args->listener_rule_id);
 	   	ret += 1;
 	}
 	if (args->listener_rule_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ListenerRuleName\":\"" ));
-                STRY(osc_str_append_string(data, args->listener_rule_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ListenerRuleName\":", args->listener_rule_name);
 	   	ret += 1;
 	}
 	if (args->path_pattern) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PathPattern\":\"" ));
-                STRY(osc_str_append_string(data, args->path_pattern));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PathPattern\":", args->path_pattern);
 	   	ret += 1;
 	}
 	if (args->is_set_priority || args->priority) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Priority\":" ));
-                STRY(osc_str_append_int(data, args->priority));
+		ARG_TO_JSON(Priority, int, args->priority);
 	   	ret += 1;
 	}
 	if (args->vm_ids) {
@@ -12518,16 +10921,12 @@ static int listener_rule_setter(struct listener_rule *args, struct osc_str *data
 		for (as = args->vm_ids; *as > 0; ++as) {
 			if (as != args->vm_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmIds\":" ));
-                STRY(osc_str_append_string(data, args->vm_ids_str));
+		ARG_TO_JSON(VmIds, string, args->vm_ids_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -12536,37 +10935,27 @@ static int listener_rule_for_creation_setter(struct listener_rule_for_creation *
        int count_args = 0;
        int ret = 0;
 	if (args->action) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Action\":\"" ));
-                STRY(osc_str_append_string(data, args->action));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Action\":", args->action);
 	   	ret += 1;
 	}
 	if (args->host_name_pattern) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"HostNamePattern\":\"" ));
-                STRY(osc_str_append_string(data, args->host_name_pattern));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"HostNamePattern\":", args->host_name_pattern);
 	   	ret += 1;
 	}
 	if (args->listener_rule_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ListenerRuleName\":\"" ));
-                STRY(osc_str_append_string(data, args->listener_rule_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ListenerRuleName\":", args->listener_rule_name);
 	   	ret += 1;
 	}
 	if (args->path_pattern) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PathPattern\":\"" ));
-                STRY(osc_str_append_string(data, args->path_pattern));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PathPattern\":", args->path_pattern);
 	   	ret += 1;
 	}
 	if (args->is_set_priority || args->priority) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Priority\":" ));
-                STRY(osc_str_append_int(data, args->priority));
+		ARG_TO_JSON(Priority, int, args->priority);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -12575,9 +10964,7 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
        int count_args = 0;
        int ret = 0;
 	if (args->access_log_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccessLog\":" ));
-                STRY(osc_str_append_string(data, args->access_log_str));
+		ARG_TO_JSON(AccessLog, string, args->access_log_str);
 		ret += 1;
 	} else if (args->is_set_access_log) {
 	       TRY_APPEND_COL(count_args, data);
@@ -12601,9 +10988,7 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 		ret += 1;
 	} else
 	if (args->application_sticky_cookie_policies_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ApplicationStickyCookiePolicies\":" ));
-                STRY(osc_str_append_string(data, args->application_sticky_cookie_policies_str));
+		ARG_TO_JSON(ApplicationStickyCookiePolicies, string, args->application_sticky_cookie_policies_str);
 		ret += 1;
 	}
 	if (args->backend_ips) {
@@ -12614,16 +10999,12 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 		for (as = args->backend_ips; *as > 0; ++as) {
 			if (as != args->backend_ips)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->backend_ips_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BackendIps\":" ));
-                STRY(osc_str_append_string(data, args->backend_ips_str));
+		ARG_TO_JSON(BackendIps, string, args->backend_ips_str);
 		ret += 1;
 	}
 	if (args->backend_vm_ids) {
@@ -12634,29 +11015,21 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 		for (as = args->backend_vm_ids; *as > 0; ++as) {
 			if (as != args->backend_vm_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->backend_vm_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BackendVmIds\":" ));
-                STRY(osc_str_append_string(data, args->backend_vm_ids_str));
+		ARG_TO_JSON(BackendVmIds, string, args->backend_vm_ids_str);
 		ret += 1;
 	}
 	if (args->dns_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DnsName\":\"" ));
-                STRY(osc_str_append_string(data, args->dns_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DnsName\":", args->dns_name);
 	   	ret += 1;
 	}
 	if (args->health_check_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"HealthCheck\":" ));
-                STRY(osc_str_append_string(data, args->health_check_str));
+		ARG_TO_JSON(HealthCheck, string, args->health_check_str);
 		ret += 1;
 	} else if (args->is_set_health_check) {
 	       TRY_APPEND_COL(count_args, data);
@@ -12680,16 +11053,12 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 		ret += 1;
 	} else
 	if (args->listeners_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Listeners\":" ));
-                STRY(osc_str_append_string(data, args->listeners_str));
+		ARG_TO_JSON(Listeners, string, args->listeners_str);
 		ret += 1;
 	}
 	if (args->load_balancer_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
-                STRY(osc_str_append_string(data, args->load_balancer_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LoadBalancerName\":", args->load_balancer_name);
 	   	ret += 1;
 	}
         if (args->load_balancer_sticky_cookie_policies) {
@@ -12707,36 +11076,26 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 		ret += 1;
 	} else
 	if (args->load_balancer_sticky_cookie_policies_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerStickyCookiePolicies\":" ));
-                STRY(osc_str_append_string(data, args->load_balancer_sticky_cookie_policies_str));
+		ARG_TO_JSON(LoadBalancerStickyCookiePolicies, string, args->load_balancer_sticky_cookie_policies_str);
 		ret += 1;
 	}
 	if (args->load_balancer_type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerType\":\"" ));
-                STRY(osc_str_append_string(data, args->load_balancer_type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LoadBalancerType\":", args->load_balancer_type);
 	   	ret += 1;
 	}
 	if (args->net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
 	if (args->public_ip) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
-                STRY(osc_str_append_string(data, args->public_ip));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicIp\":", args->public_ip);
 	   	ret += 1;
 	}
 	if (args->is_set_secured_cookies) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecuredCookies\":" ));
-                STRY(osc_str_append_bool(data, args->secured_cookies));
+		ARG_TO_JSON(SecuredCookies, bool, args->secured_cookies);
 	   	ret += 1;
 	}
 	if (args->security_groups) {
@@ -12747,22 +11106,16 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 		for (as = args->security_groups; *as > 0; ++as) {
 			if (as != args->security_groups)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_groups_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroups\":" ));
-                STRY(osc_str_append_string(data, args->security_groups_str));
+		ARG_TO_JSON(SecurityGroups, string, args->security_groups_str);
 		ret += 1;
 	}
 	if (args->source_security_group_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SourceSecurityGroup\":" ));
-                STRY(osc_str_append_string(data, args->source_security_group_str));
+		ARG_TO_JSON(SourceSecurityGroup, string, args->source_security_group_str);
 		ret += 1;
 	} else if (args->is_set_source_security_group) {
 	       TRY_APPEND_COL(count_args, data);
@@ -12779,16 +11132,12 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 		for (as = args->subnets; *as > 0; ++as) {
 			if (as != args->subnets)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subnets_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Subnets\":" ));
-                STRY(osc_str_append_string(data, args->subnets_str));
+		ARG_TO_JSON(Subnets, string, args->subnets_str);
 		ret += 1;
 	}
 	if (args->subregion_names) {
@@ -12799,16 +11148,12 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 		for (as = args->subregion_names; *as > 0; ++as) {
 			if (as != args->subregion_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subregion_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubregionNames\":" ));
-                STRY(osc_str_append_string(data, args->subregion_names_str));
+		ARG_TO_JSON(SubregionNames, string, args->subregion_names_str);
 		ret += 1;
 	}
         if (args->tags) {
@@ -12826,9 +11171,7 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -12837,16 +11180,12 @@ static int load_balancer_light_setter(struct load_balancer_light *args, struct o
        int count_args = 0;
        int ret = 0;
 	if (args->load_balancer_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
-                STRY(osc_str_append_string(data, args->load_balancer_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LoadBalancerName\":", args->load_balancer_name);
 	   	ret += 1;
 	}
 	if (args->is_set_load_balancer_port || args->load_balancer_port) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerPort\":" ));
-                STRY(osc_str_append_int(data, args->load_balancer_port));
+		ARG_TO_JSON(LoadBalancerPort, int, args->load_balancer_port);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -12855,16 +11194,12 @@ static int load_balancer_sticky_cookie_policy_setter(struct load_balancer_sticky
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_cookie_expiration_period || args->cookie_expiration_period) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CookieExpirationPeriod\":" ));
-                STRY(osc_str_append_int(data, args->cookie_expiration_period));
+		ARG_TO_JSON(CookieExpirationPeriod, int, args->cookie_expiration_period);
 	   	ret += 1;
 	}
 	if (args->policy_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PolicyName\":\"" ));
-                STRY(osc_str_append_string(data, args->policy_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PolicyName\":", args->policy_name);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -12873,24 +11208,18 @@ static int load_balancer_tag_setter(struct load_balancer_tag *args, struct osc_s
        int count_args = 0;
        int ret = 0;
 	if (args->key) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Key\":\"" ));
-                STRY(osc_str_append_string(data, args->key));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Key\":", args->key);
 	   	ret += 1;
 	}
 	if (args->load_balancer_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
-                STRY(osc_str_append_string(data, args->load_balancer_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LoadBalancerName\":", args->load_balancer_name);
 	   	ret += 1;
 	}
 	if (args->value) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Value\":\"" ));
-                STRY(osc_str_append_string(data, args->value));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Value\":", args->value);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -12899,17 +11228,13 @@ static int location_setter(struct location *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->code) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Code\":\"" ));
-                STRY(osc_str_append_string(data, args->code));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Code\":", args->code);
 	   	ret += 1;
 	}
 	if (args->name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Name\":\"" ));
-                STRY(osc_str_append_string(data, args->name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Name\":", args->name);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -12918,110 +11243,78 @@ static int log_setter(struct log *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->account_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
-                STRY(osc_str_append_string(data, args->account_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"AccountId\":", args->account_id);
 	   	ret += 1;
 	}
 	if (args->is_set_call_duration || args->call_duration) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CallDuration\":" ));
-                STRY(osc_str_append_int(data, args->call_duration));
+		ARG_TO_JSON(CallDuration, int, args->call_duration);
 	   	ret += 1;
 	}
 	if (args->query_access_key) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryAccessKey\":\"" ));
-                STRY(osc_str_append_string(data, args->query_access_key));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"QueryAccessKey\":", args->query_access_key);
 	   	ret += 1;
 	}
 	if (args->query_api_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryApiName\":\"" ));
-                STRY(osc_str_append_string(data, args->query_api_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"QueryApiName\":", args->query_api_name);
 	   	ret += 1;
 	}
 	if (args->query_api_version) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryApiVersion\":\"" ));
-                STRY(osc_str_append_string(data, args->query_api_version));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"QueryApiVersion\":", args->query_api_version);
 	   	ret += 1;
 	}
 	if (args->query_call_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryCallName\":\"" ));
-                STRY(osc_str_append_string(data, args->query_call_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"QueryCallName\":", args->query_call_name);
 	   	ret += 1;
 	}
 	if (args->query_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryDate\":\"" ));
-                STRY(osc_str_append_string(data, args->query_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"QueryDate\":", args->query_date);
 	   	ret += 1;
 	}
 	if (args->query_header_raw) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryHeaderRaw\":\"" ));
-                STRY(osc_str_append_string(data, args->query_header_raw));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"QueryHeaderRaw\":", args->query_header_raw);
 	   	ret += 1;
 	}
 	if (args->is_set_query_header_size || args->query_header_size) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryHeaderSize\":" ));
-                STRY(osc_str_append_int(data, args->query_header_size));
+		ARG_TO_JSON(QueryHeaderSize, int, args->query_header_size);
 	   	ret += 1;
 	}
 	if (args->query_ip_address) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryIpAddress\":\"" ));
-                STRY(osc_str_append_string(data, args->query_ip_address));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"QueryIpAddress\":", args->query_ip_address);
 	   	ret += 1;
 	}
 	if (args->query_payload_raw) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryPayloadRaw\":\"" ));
-                STRY(osc_str_append_string(data, args->query_payload_raw));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"QueryPayloadRaw\":", args->query_payload_raw);
 	   	ret += 1;
 	}
 	if (args->is_set_query_payload_size || args->query_payload_size) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryPayloadSize\":" ));
-                STRY(osc_str_append_int(data, args->query_payload_size));
+		ARG_TO_JSON(QueryPayloadSize, int, args->query_payload_size);
 	   	ret += 1;
 	}
 	if (args->query_user_agent) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryUserAgent\":\"" ));
-                STRY(osc_str_append_string(data, args->query_user_agent));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"QueryUserAgent\":", args->query_user_agent);
 	   	ret += 1;
 	}
 	if (args->request_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RequestId\":\"" ));
-                STRY(osc_str_append_string(data, args->request_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"RequestId\":", args->request_id);
 	   	ret += 1;
 	}
 	if (args->is_set_response_size || args->response_size) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ResponseSize\":" ));
-                STRY(osc_str_append_int(data, args->response_size));
+		ARG_TO_JSON(ResponseSize, int, args->response_size);
 	   	ret += 1;
 	}
 	if (args->is_set_response_status_code || args->response_status_code) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ResponseStatusCode\":" ));
-                STRY(osc_str_append_int(data, args->response_status_code));
+		ARG_TO_JSON(ResponseStatusCode, int, args->response_status_code);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -13030,31 +11323,23 @@ static int maintenance_event_setter(struct maintenance_event *args, struct osc_s
        int count_args = 0;
        int ret = 0;
 	if (args->code) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Code\":\"" ));
-                STRY(osc_str_append_string(data, args->code));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Code\":", args->code);
 	   	ret += 1;
 	}
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->not_after) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NotAfter\":\"" ));
-                STRY(osc_str_append_string(data, args->not_after));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NotAfter\":", args->not_after);
 	   	ret += 1;
 	}
 	if (args->not_before) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NotBefore\":\"" ));
-                STRY(osc_str_append_string(data, args->not_before));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NotBefore\":", args->not_before);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -13063,17 +11348,13 @@ static int nat_service_setter(struct nat_service *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->nat_service_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NatServiceId\":\"" ));
-                STRY(osc_str_append_string(data, args->nat_service_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NatServiceId\":", args->nat_service_id);
 	   	ret += 1;
 	}
 	if (args->net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
         if (args->public_ips) {
@@ -13091,23 +11372,17 @@ static int nat_service_setter(struct nat_service *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->public_ips_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIps\":" ));
-                STRY(osc_str_append_string(data, args->public_ips_str));
+		ARG_TO_JSON(PublicIps, string, args->public_ips_str);
 		ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	if (args->subnet_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
-                STRY(osc_str_append_string(data, args->subnet_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubnetId\":", args->subnet_id);
 	   	ret += 1;
 	}
         if (args->tags) {
@@ -13125,9 +11400,7 @@ static int nat_service_setter(struct nat_service *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -13136,31 +11409,23 @@ static int net_setter(struct net *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->dhcp_options_set_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DhcpOptionsSetId\":\"" ));
-                STRY(osc_str_append_string(data, args->dhcp_options_set_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DhcpOptionsSetId\":", args->dhcp_options_set_id);
 	   	ret += 1;
 	}
 	if (args->ip_range) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IpRange\":\"" ));
-                STRY(osc_str_append_string(data, args->ip_range));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"IpRange\":", args->ip_range);
 	   	ret += 1;
 	}
 	if (args->net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
         if (args->tags) {
@@ -13178,16 +11443,12 @@ static int net_setter(struct net *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	if (args->tenancy) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tenancy\":\"" ));
-                STRY(osc_str_append_string(data, args->tenancy));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Tenancy\":", args->tenancy);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -13196,17 +11457,13 @@ static int net_access_point_setter(struct net_access_point *args, struct osc_str
        int count_args = 0;
        int ret = 0;
 	if (args->net_access_point_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetAccessPointId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_access_point_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetAccessPointId\":", args->net_access_point_id);
 	   	ret += 1;
 	}
 	if (args->net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
 	if (args->route_table_ids) {
@@ -13217,30 +11474,22 @@ static int net_access_point_setter(struct net_access_point *args, struct osc_str
 		for (as = args->route_table_ids; *as > 0; ++as) {
 			if (as != args->route_table_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->route_table_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RouteTableIds\":" ));
-                STRY(osc_str_append_string(data, args->route_table_ids_str));
+		ARG_TO_JSON(RouteTableIds, string, args->route_table_ids_str);
 		ret += 1;
 	}
 	if (args->service_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ServiceName\":\"" ));
-                STRY(osc_str_append_string(data, args->service_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ServiceName\":", args->service_name);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
         if (args->tags) {
@@ -13258,9 +11507,7 @@ static int net_access_point_setter(struct net_access_point *args, struct osc_str
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -13269,9 +11516,7 @@ static int net_peering_setter(struct net_peering *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->accepter_net_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccepterNet\":" ));
-                STRY(osc_str_append_string(data, args->accepter_net_str));
+		ARG_TO_JSON(AccepterNet, string, args->accepter_net_str);
 		ret += 1;
 	} else if (args->is_set_accepter_net) {
 	       TRY_APPEND_COL(count_args, data);
@@ -13281,16 +11526,12 @@ static int net_peering_setter(struct net_peering *args, struct osc_str *data) {
 	       ret += 1;
 	}
 	if (args->net_peering_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetPeeringId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_peering_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetPeeringId\":", args->net_peering_id);
 	   	ret += 1;
 	}
 	if (args->source_net_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SourceNet\":" ));
-                STRY(osc_str_append_string(data, args->source_net_str));
+		ARG_TO_JSON(SourceNet, string, args->source_net_str);
 		ret += 1;
 	} else if (args->is_set_source_net) {
 	       TRY_APPEND_COL(count_args, data);
@@ -13300,9 +11541,7 @@ static int net_peering_setter(struct net_peering *args, struct osc_str *data) {
 	       ret += 1;
 	}
 	if (args->state_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":" ));
-                STRY(osc_str_append_string(data, args->state_str));
+		ARG_TO_JSON(State, string, args->state_str);
 		ret += 1;
 	} else if (args->is_set_state) {
 	       TRY_APPEND_COL(count_args, data);
@@ -13326,9 +11565,7 @@ static int net_peering_setter(struct net_peering *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -13337,17 +11574,13 @@ static int net_peering_state_setter(struct net_peering_state *args, struct osc_s
        int count_args = 0;
        int ret = 0;
 	if (args->message) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Message\":\"" ));
-                STRY(osc_str_append_string(data, args->message));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Message\":", args->message);
 	   	ret += 1;
 	}
 	if (args->name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Name\":\"" ));
-                STRY(osc_str_append_string(data, args->name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Name\":", args->name);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -13356,17 +11589,13 @@ static int net_to_virtual_gateway_link_setter(struct net_to_virtual_gateway_link
        int count_args = 0;
        int ret = 0;
 	if (args->net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -13375,29 +11604,21 @@ static int nic_setter(struct nic *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->account_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
-                STRY(osc_str_append_string(data, args->account_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"AccountId\":", args->account_id);
 	   	ret += 1;
 	}
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->is_set_is_source_dest_checked) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IsSourceDestChecked\":" ));
-                STRY(osc_str_append_bool(data, args->is_source_dest_checked));
+		ARG_TO_JSON(IsSourceDestChecked, bool, args->is_source_dest_checked);
 	   	ret += 1;
 	}
 	if (args->link_nic_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkNic\":" ));
-                STRY(osc_str_append_string(data, args->link_nic_str));
+		ARG_TO_JSON(LinkNic, string, args->link_nic_str);
 		ret += 1;
 	} else if (args->is_set_link_nic) {
 	       TRY_APPEND_COL(count_args, data);
@@ -13407,9 +11628,7 @@ static int nic_setter(struct nic *args, struct osc_str *data) {
 	       ret += 1;
 	}
 	if (args->link_public_ip_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkPublicIp\":" ));
-                STRY(osc_str_append_string(data, args->link_public_ip_str));
+		ARG_TO_JSON(LinkPublicIp, string, args->link_public_ip_str);
 		ret += 1;
 	} else if (args->is_set_link_public_ip) {
 	       TRY_APPEND_COL(count_args, data);
@@ -13419,31 +11638,23 @@ static int nic_setter(struct nic *args, struct osc_str *data) {
 	       ret += 1;
 	}
 	if (args->mac_address) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MacAddress\":\"" ));
-                STRY(osc_str_append_string(data, args->mac_address));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"MacAddress\":", args->mac_address);
 	   	ret += 1;
 	}
 	if (args->net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
 	if (args->nic_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
-                STRY(osc_str_append_string(data, args->nic_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NicId\":", args->nic_id);
 	   	ret += 1;
 	}
 	if (args->private_dns_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateDnsName\":\"" ));
-                STRY(osc_str_append_string(data, args->private_dns_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PrivateDnsName\":", args->private_dns_name);
 	   	ret += 1;
 	}
         if (args->private_ips) {
@@ -13461,9 +11672,7 @@ static int nic_setter(struct nic *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->private_ips_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateIps\":" ));
-                STRY(osc_str_append_string(data, args->private_ips_str));
+		ARG_TO_JSON(PrivateIps, string, args->private_ips_str);
 		ret += 1;
 	}
         if (args->security_groups) {
@@ -13481,30 +11690,22 @@ static int nic_setter(struct nic *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->security_groups_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroups\":" ));
-                STRY(osc_str_append_string(data, args->security_groups_str));
+		ARG_TO_JSON(SecurityGroups, string, args->security_groups_str);
 		ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	if (args->subnet_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
-                STRY(osc_str_append_string(data, args->subnet_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubnetId\":", args->subnet_id);
 	   	ret += 1;
 	}
 	if (args->subregion_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubregionName\":\"" ));
-                STRY(osc_str_append_string(data, args->subregion_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubregionName\":", args->subregion_name);
 	   	ret += 1;
 	}
         if (args->tags) {
@@ -13522,9 +11723,7 @@ static int nic_setter(struct nic *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -13533,29 +11732,21 @@ static int nic_for_vm_creation_setter(struct nic_for_vm_creation *args, struct o
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_delete_on_vm_deletion) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeleteOnVmDeletion\":" ));
-                STRY(osc_str_append_bool(data, args->delete_on_vm_deletion));
+		ARG_TO_JSON(DeleteOnVmDeletion, bool, args->delete_on_vm_deletion);
 	   	ret += 1;
 	}
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->is_set_device_number || args->device_number) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeviceNumber\":" ));
-                STRY(osc_str_append_int(data, args->device_number));
+		ARG_TO_JSON(DeviceNumber, int, args->device_number);
 	   	ret += 1;
 	}
 	if (args->nic_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
-                STRY(osc_str_append_string(data, args->nic_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NicId\":", args->nic_id);
 	   	ret += 1;
 	}
         if (args->private_ips) {
@@ -13573,15 +11764,11 @@ static int nic_for_vm_creation_setter(struct nic_for_vm_creation *args, struct o
 		ret += 1;
 	} else
 	if (args->private_ips_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateIps\":" ));
-                STRY(osc_str_append_string(data, args->private_ips_str));
+		ARG_TO_JSON(PrivateIps, string, args->private_ips_str);
 		ret += 1;
 	}
 	if (args->is_set_secondary_private_ip_count || args->secondary_private_ip_count) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecondaryPrivateIpCount\":" ));
-                STRY(osc_str_append_int(data, args->secondary_private_ip_count));
+		ARG_TO_JSON(SecondaryPrivateIpCount, int, args->secondary_private_ip_count);
 	   	ret += 1;
 	}
 	if (args->security_group_ids) {
@@ -13592,23 +11779,17 @@ static int nic_for_vm_creation_setter(struct nic_for_vm_creation *args, struct o
 		for (as = args->security_group_ids; *as > 0; ++as) {
 			if (as != args->security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_group_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":" ));
-                STRY(osc_str_append_string(data, args->security_group_ids_str));
+		ARG_TO_JSON(SecurityGroupIds, string, args->security_group_ids_str);
 		ret += 1;
 	}
 	if (args->subnet_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
-                STRY(osc_str_append_string(data, args->subnet_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubnetId\":", args->subnet_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -13617,29 +11798,21 @@ static int nic_light_setter(struct nic_light *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->account_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
-                STRY(osc_str_append_string(data, args->account_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"AccountId\":", args->account_id);
 	   	ret += 1;
 	}
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->is_set_is_source_dest_checked) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IsSourceDestChecked\":" ));
-                STRY(osc_str_append_bool(data, args->is_source_dest_checked));
+		ARG_TO_JSON(IsSourceDestChecked, bool, args->is_source_dest_checked);
 	   	ret += 1;
 	}
 	if (args->link_nic_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkNic\":" ));
-                STRY(osc_str_append_string(data, args->link_nic_str));
+		ARG_TO_JSON(LinkNic, string, args->link_nic_str);
 		ret += 1;
 	} else if (args->is_set_link_nic) {
 	       TRY_APPEND_COL(count_args, data);
@@ -13649,9 +11822,7 @@ static int nic_light_setter(struct nic_light *args, struct osc_str *data) {
 	       ret += 1;
 	}
 	if (args->link_public_ip_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkPublicIp\":" ));
-                STRY(osc_str_append_string(data, args->link_public_ip_str));
+		ARG_TO_JSON(LinkPublicIp, string, args->link_public_ip_str);
 		ret += 1;
 	} else if (args->is_set_link_public_ip) {
 	       TRY_APPEND_COL(count_args, data);
@@ -13661,31 +11832,23 @@ static int nic_light_setter(struct nic_light *args, struct osc_str *data) {
 	       ret += 1;
 	}
 	if (args->mac_address) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MacAddress\":\"" ));
-                STRY(osc_str_append_string(data, args->mac_address));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"MacAddress\":", args->mac_address);
 	   	ret += 1;
 	}
 	if (args->net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
 	if (args->nic_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
-                STRY(osc_str_append_string(data, args->nic_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NicId\":", args->nic_id);
 	   	ret += 1;
 	}
 	if (args->private_dns_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateDnsName\":\"" ));
-                STRY(osc_str_append_string(data, args->private_dns_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PrivateDnsName\":", args->private_dns_name);
 	   	ret += 1;
 	}
         if (args->private_ips) {
@@ -13703,9 +11866,7 @@ static int nic_light_setter(struct nic_light *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->private_ips_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateIps\":" ));
-                STRY(osc_str_append_string(data, args->private_ips_str));
+		ARG_TO_JSON(PrivateIps, string, args->private_ips_str);
 		ret += 1;
 	}
         if (args->security_groups) {
@@ -13723,23 +11884,17 @@ static int nic_light_setter(struct nic_light *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->security_groups_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroups\":" ));
-                STRY(osc_str_append_string(data, args->security_groups_str));
+		ARG_TO_JSON(SecurityGroups, string, args->security_groups_str);
 		ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	if (args->subnet_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
-                STRY(osc_str_append_string(data, args->subnet_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubnetId\":", args->subnet_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -13748,17 +11903,13 @@ static int osu_api_key_setter(struct osu_api_key *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->api_key_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ApiKeyId\":\"" ));
-                STRY(osc_str_append_string(data, args->api_key_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ApiKeyId\":", args->api_key_id);
 	   	ret += 1;
 	}
 	if (args->secret_key) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecretKey\":\"" ));
-                STRY(osc_str_append_string(data, args->secret_key));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SecretKey\":", args->secret_key);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -13767,31 +11918,23 @@ static int osu_export_image_export_task_setter(struct osu_export_image_export_ta
        int count_args = 0;
        int ret = 0;
 	if (args->disk_image_format) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DiskImageFormat\":\"" ));
-                STRY(osc_str_append_string(data, args->disk_image_format));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DiskImageFormat\":", args->disk_image_format);
 	   	ret += 1;
 	}
 	if (args->osu_bucket) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OsuBucket\":\"" ));
-                STRY(osc_str_append_string(data, args->osu_bucket));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"OsuBucket\":", args->osu_bucket);
 	   	ret += 1;
 	}
 	if (args->osu_manifest_url) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OsuManifestUrl\":\"" ));
-                STRY(osc_str_append_string(data, args->osu_manifest_url));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"OsuManifestUrl\":", args->osu_manifest_url);
 	   	ret += 1;
 	}
 	if (args->osu_prefix) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OsuPrefix\":\"" ));
-                STRY(osc_str_append_string(data, args->osu_prefix));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"OsuPrefix\":", args->osu_prefix);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -13800,24 +11943,18 @@ static int osu_export_snapshot_export_task_setter(struct osu_export_snapshot_exp
        int count_args = 0;
        int ret = 0;
 	if (args->disk_image_format) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DiskImageFormat\":\"" ));
-                STRY(osc_str_append_string(data, args->disk_image_format));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DiskImageFormat\":", args->disk_image_format);
 	   	ret += 1;
 	}
 	if (args->osu_bucket) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OsuBucket\":\"" ));
-                STRY(osc_str_append_string(data, args->osu_bucket));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"OsuBucket\":", args->osu_bucket);
 	   	ret += 1;
 	}
 	if (args->osu_prefix) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OsuPrefix\":\"" ));
-                STRY(osc_str_append_string(data, args->osu_prefix));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"OsuPrefix\":", args->osu_prefix);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -13826,16 +11963,12 @@ static int osu_export_to_create_setter(struct osu_export_to_create *args, struct
        int count_args = 0;
        int ret = 0;
 	if (args->disk_image_format) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DiskImageFormat\":\"" ));
-                STRY(osc_str_append_string(data, args->disk_image_format));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DiskImageFormat\":", args->disk_image_format);
 	   	ret += 1;
 	}
 	if (args->osu_api_key_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OsuApiKey\":" ));
-                STRY(osc_str_append_string(data, args->osu_api_key_str));
+		ARG_TO_JSON(OsuApiKey, string, args->osu_api_key_str);
 		ret += 1;
 	} else if (args->is_set_osu_api_key) {
 	       TRY_APPEND_COL(count_args, data);
@@ -13845,24 +11978,18 @@ static int osu_export_to_create_setter(struct osu_export_to_create *args, struct
 	       ret += 1;
 	}
 	if (args->osu_bucket) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OsuBucket\":\"" ));
-                STRY(osc_str_append_string(data, args->osu_bucket));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"OsuBucket\":", args->osu_bucket);
 	   	ret += 1;
 	}
 	if (args->osu_manifest_url) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OsuManifestUrl\":\"" ));
-                STRY(osc_str_append_string(data, args->osu_manifest_url));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"OsuManifestUrl\":", args->osu_manifest_url);
 	   	ret += 1;
 	}
 	if (args->osu_prefix) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OsuPrefix\":\"" ));
-                STRY(osc_str_append_string(data, args->osu_prefix));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"OsuPrefix\":", args->osu_prefix);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -13878,22 +12005,16 @@ static int permissions_on_resource_setter(struct permissions_on_resource *args, 
 		for (as = args->account_ids; *as > 0; ++as) {
 			if (as != args->account_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->account_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccountIds\":" ));
-                STRY(osc_str_append_string(data, args->account_ids_str));
+		ARG_TO_JSON(AccountIds, string, args->account_ids_str);
 		ret += 1;
 	}
 	if (args->is_set_global_permission) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"GlobalPermission\":" ));
-                STRY(osc_str_append_bool(data, args->global_permission));
+		ARG_TO_JSON(GlobalPermission, bool, args->global_permission);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -13902,9 +12023,7 @@ static int permissions_on_resource_creation_setter(struct permissions_on_resourc
        int count_args = 0;
        int ret = 0;
 	if (args->additions_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Additions\":" ));
-                STRY(osc_str_append_string(data, args->additions_str));
+		ARG_TO_JSON(Additions, string, args->additions_str);
 		ret += 1;
 	} else if (args->is_set_additions) {
 	       TRY_APPEND_COL(count_args, data);
@@ -13914,9 +12033,7 @@ static int permissions_on_resource_creation_setter(struct permissions_on_resourc
 	       ret += 1;
 	}
 	if (args->removals_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Removals\":" ));
-                STRY(osc_str_append_string(data, args->removals_str));
+		ARG_TO_JSON(Removals, string, args->removals_str);
 		ret += 1;
 	} else if (args->is_set_removals) {
 	       TRY_APPEND_COL(count_args, data);
@@ -13931,16 +12048,12 @@ static int phase1_options_setter(struct phase1_options *args, struct osc_str *da
        int count_args = 0;
        int ret = 0;
 	if (args->dpd_timeout_action) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DpdTimeoutAction\":\"" ));
-                STRY(osc_str_append_string(data, args->dpd_timeout_action));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DpdTimeoutAction\":", args->dpd_timeout_action);
 	   	ret += 1;
 	}
 	if (args->is_set_dpd_timeout_seconds || args->dpd_timeout_seconds) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DpdTimeoutSeconds\":" ));
-                STRY(osc_str_append_int(data, args->dpd_timeout_seconds));
+		ARG_TO_JSON(DpdTimeoutSeconds, int, args->dpd_timeout_seconds);
 	   	ret += 1;
 	}
 	if (args->ike_versions) {
@@ -13951,16 +12064,12 @@ static int phase1_options_setter(struct phase1_options *args, struct osc_str *da
 		for (as = args->ike_versions; *as > 0; ++as) {
 			if (as != args->ike_versions)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ike_versions_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IkeVersions\":" ));
-                STRY(osc_str_append_string(data, args->ike_versions_str));
+		ARG_TO_JSON(IkeVersions, string, args->ike_versions_str);
 		ret += 1;
 	}
 	if (args->phase1_dh_group_numbers) {
@@ -13976,9 +12085,7 @@ static int phase1_options_setter(struct phase1_options *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->phase1_dh_group_numbers_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Phase1DhGroupNumbers\":" ));
-                STRY(osc_str_append_string(data, args->phase1_dh_group_numbers_str));
+		ARG_TO_JSON(Phase1DhGroupNumbers, string, args->phase1_dh_group_numbers_str);
 		ret += 1;
 	}
 	if (args->phase1_encryption_algorithms) {
@@ -13989,16 +12096,12 @@ static int phase1_options_setter(struct phase1_options *args, struct osc_str *da
 		for (as = args->phase1_encryption_algorithms; *as > 0; ++as) {
 			if (as != args->phase1_encryption_algorithms)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->phase1_encryption_algorithms_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Phase1EncryptionAlgorithms\":" ));
-                STRY(osc_str_append_string(data, args->phase1_encryption_algorithms_str));
+		ARG_TO_JSON(Phase1EncryptionAlgorithms, string, args->phase1_encryption_algorithms_str);
 		ret += 1;
 	}
 	if (args->phase1_integrity_algorithms) {
@@ -14009,35 +12112,25 @@ static int phase1_options_setter(struct phase1_options *args, struct osc_str *da
 		for (as = args->phase1_integrity_algorithms; *as > 0; ++as) {
 			if (as != args->phase1_integrity_algorithms)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->phase1_integrity_algorithms_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Phase1IntegrityAlgorithms\":" ));
-                STRY(osc_str_append_string(data, args->phase1_integrity_algorithms_str));
+		ARG_TO_JSON(Phase1IntegrityAlgorithms, string, args->phase1_integrity_algorithms_str);
 		ret += 1;
 	}
 	if (args->is_set_phase1_lifetime_seconds || args->phase1_lifetime_seconds) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Phase1LifetimeSeconds\":" ));
-                STRY(osc_str_append_int(data, args->phase1_lifetime_seconds));
+		ARG_TO_JSON(Phase1LifetimeSeconds, int, args->phase1_lifetime_seconds);
 	   	ret += 1;
 	}
 	if (args->is_set_replay_window_size || args->replay_window_size) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ReplayWindowSize\":" ));
-                STRY(osc_str_append_int(data, args->replay_window_size));
+		ARG_TO_JSON(ReplayWindowSize, int, args->replay_window_size);
 	   	ret += 1;
 	}
 	if (args->startup_action) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"StartupAction\":\"" ));
-                STRY(osc_str_append_string(data, args->startup_action));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"StartupAction\":", args->startup_action);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -14058,9 +12151,7 @@ static int phase2_options_setter(struct phase2_options *args, struct osc_str *da
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->phase2_dh_group_numbers_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Phase2DhGroupNumbers\":" ));
-                STRY(osc_str_append_string(data, args->phase2_dh_group_numbers_str));
+		ARG_TO_JSON(Phase2DhGroupNumbers, string, args->phase2_dh_group_numbers_str);
 		ret += 1;
 	}
 	if (args->phase2_encryption_algorithms) {
@@ -14071,16 +12162,12 @@ static int phase2_options_setter(struct phase2_options *args, struct osc_str *da
 		for (as = args->phase2_encryption_algorithms; *as > 0; ++as) {
 			if (as != args->phase2_encryption_algorithms)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->phase2_encryption_algorithms_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Phase2EncryptionAlgorithms\":" ));
-                STRY(osc_str_append_string(data, args->phase2_encryption_algorithms_str));
+		ARG_TO_JSON(Phase2EncryptionAlgorithms, string, args->phase2_encryption_algorithms_str);
 		ret += 1;
 	}
 	if (args->phase2_integrity_algorithms) {
@@ -14091,29 +12178,21 @@ static int phase2_options_setter(struct phase2_options *args, struct osc_str *da
 		for (as = args->phase2_integrity_algorithms; *as > 0; ++as) {
 			if (as != args->phase2_integrity_algorithms)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->phase2_integrity_algorithms_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Phase2IntegrityAlgorithms\":" ));
-                STRY(osc_str_append_string(data, args->phase2_integrity_algorithms_str));
+		ARG_TO_JSON(Phase2IntegrityAlgorithms, string, args->phase2_integrity_algorithms_str);
 		ret += 1;
 	}
 	if (args->is_set_phase2_lifetime_seconds || args->phase2_lifetime_seconds) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Phase2LifetimeSeconds\":" ));
-                STRY(osc_str_append_int(data, args->phase2_lifetime_seconds));
+		ARG_TO_JSON(Phase2LifetimeSeconds, int, args->phase2_lifetime_seconds);
 	   	ret += 1;
 	}
 	if (args->pre_shared_key) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PreSharedKey\":\"" ));
-                STRY(osc_str_append_string(data, args->pre_shared_key));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PreSharedKey\":", args->pre_shared_key);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -14122,17 +12201,13 @@ static int placement_setter(struct placement *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->subregion_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubregionName\":\"" ));
-                STRY(osc_str_append_string(data, args->subregion_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubregionName\":", args->subregion_name);
 	   	ret += 1;
 	}
 	if (args->tenancy) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tenancy\":\"" ));
-                STRY(osc_str_append_string(data, args->tenancy));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Tenancy\":", args->tenancy);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -14141,15 +12216,11 @@ static int private_ip_setter(struct private_ip *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_is_primary) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IsPrimary\":" ));
-                STRY(osc_str_append_bool(data, args->is_primary));
+		ARG_TO_JSON(IsPrimary, bool, args->is_primary);
 	   	ret += 1;
 	}
 	if (args->link_public_ip_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkPublicIp\":" ));
-                STRY(osc_str_append_string(data, args->link_public_ip_str));
+		ARG_TO_JSON(LinkPublicIp, string, args->link_public_ip_str);
 		ret += 1;
 	} else if (args->is_set_link_public_ip) {
 	       TRY_APPEND_COL(count_args, data);
@@ -14159,17 +12230,13 @@ static int private_ip_setter(struct private_ip *args, struct osc_str *data) {
 	       ret += 1;
 	}
 	if (args->private_dns_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateDnsName\":\"" ));
-                STRY(osc_str_append_string(data, args->private_dns_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PrivateDnsName\":", args->private_dns_name);
 	   	ret += 1;
 	}
 	if (args->private_ip) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateIp\":\"" ));
-                STRY(osc_str_append_string(data, args->private_ip));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PrivateIp\":", args->private_ip);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -14178,16 +12245,12 @@ static int private_ip_light_setter(struct private_ip_light *args, struct osc_str
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_is_primary) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IsPrimary\":" ));
-                STRY(osc_str_append_bool(data, args->is_primary));
+		ARG_TO_JSON(IsPrimary, bool, args->is_primary);
 	   	ret += 1;
 	}
 	if (args->private_ip) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateIp\":\"" ));
-                STRY(osc_str_append_string(data, args->private_ip));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PrivateIp\":", args->private_ip);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -14196,15 +12259,11 @@ static int private_ip_light_for_vm_setter(struct private_ip_light_for_vm *args, 
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_is_primary) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IsPrimary\":" ));
-                STRY(osc_str_append_bool(data, args->is_primary));
+		ARG_TO_JSON(IsPrimary, bool, args->is_primary);
 	   	ret += 1;
 	}
 	if (args->link_public_ip_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkPublicIp\":" ));
-                STRY(osc_str_append_string(data, args->link_public_ip_str));
+		ARG_TO_JSON(LinkPublicIp, string, args->link_public_ip_str);
 		ret += 1;
 	} else if (args->is_set_link_public_ip) {
 	       TRY_APPEND_COL(count_args, data);
@@ -14214,17 +12273,13 @@ static int private_ip_light_for_vm_setter(struct private_ip_light_for_vm *args, 
 	       ret += 1;
 	}
 	if (args->private_dns_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateDnsName\":\"" ));
-                STRY(osc_str_append_string(data, args->private_dns_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PrivateDnsName\":", args->private_dns_name);
 	   	ret += 1;
 	}
 	if (args->private_ip) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateIp\":\"" ));
-                STRY(osc_str_append_string(data, args->private_ip));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PrivateIp\":", args->private_ip);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -14233,24 +12288,18 @@ static int product_type_setter(struct product_type *args, struct osc_str *data) 
        int count_args = 0;
        int ret = 0;
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->product_type_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ProductTypeId\":\"" ));
-                STRY(osc_str_append_string(data, args->product_type_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ProductTypeId\":", args->product_type_id);
 	   	ret += 1;
 	}
 	if (args->vendor) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Vendor\":\"" ));
-                STRY(osc_str_append_string(data, args->vendor));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Vendor\":", args->vendor);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -14259,45 +12308,33 @@ static int public_ip_setter(struct public_ip *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->link_public_ip_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkPublicIpId\":\"" ));
-                STRY(osc_str_append_string(data, args->link_public_ip_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LinkPublicIpId\":", args->link_public_ip_id);
 	   	ret += 1;
 	}
 	if (args->nic_account_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NicAccountId\":\"" ));
-                STRY(osc_str_append_string(data, args->nic_account_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NicAccountId\":", args->nic_account_id);
 	   	ret += 1;
 	}
 	if (args->nic_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
-                STRY(osc_str_append_string(data, args->nic_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NicId\":", args->nic_id);
 	   	ret += 1;
 	}
 	if (args->private_ip) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateIp\":\"" ));
-                STRY(osc_str_append_string(data, args->private_ip));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PrivateIp\":", args->private_ip);
 	   	ret += 1;
 	}
 	if (args->public_ip) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
-                STRY(osc_str_append_string(data, args->public_ip));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicIp\":", args->public_ip);
 	   	ret += 1;
 	}
 	if (args->public_ip_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIpId\":\"" ));
-                STRY(osc_str_append_string(data, args->public_ip_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicIpId\":", args->public_ip_id);
 	   	ret += 1;
 	}
         if (args->tags) {
@@ -14315,16 +12352,12 @@ static int public_ip_setter(struct public_ip *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	if (args->vm_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmId\":", args->vm_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -14333,17 +12366,13 @@ static int public_ip_light_setter(struct public_ip_light *args, struct osc_str *
        int count_args = 0;
        int ret = 0;
 	if (args->public_ip) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
-                STRY(osc_str_append_string(data, args->public_ip));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicIp\":", args->public_ip);
 	   	ret += 1;
 	}
 	if (args->public_ip_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIpId\":\"" ));
-                STRY(osc_str_append_string(data, args->public_ip_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicIpId\":", args->public_ip_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -14352,50 +12381,36 @@ static int quota_setter(struct quota *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->account_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
-                STRY(osc_str_append_string(data, args->account_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"AccountId\":", args->account_id);
 	   	ret += 1;
 	}
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->is_set_max_value || args->max_value) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MaxValue\":" ));
-                STRY(osc_str_append_int(data, args->max_value));
+		ARG_TO_JSON(MaxValue, int, args->max_value);
 	   	ret += 1;
 	}
 	if (args->name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Name\":\"" ));
-                STRY(osc_str_append_string(data, args->name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Name\":", args->name);
 	   	ret += 1;
 	}
 	if (args->quota_collection) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QuotaCollection\":\"" ));
-                STRY(osc_str_append_string(data, args->quota_collection));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"QuotaCollection\":", args->quota_collection);
 	   	ret += 1;
 	}
 	if (args->short_description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ShortDescription\":\"" ));
-                STRY(osc_str_append_string(data, args->short_description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ShortDescription\":", args->short_description);
 	   	ret += 1;
 	}
 	if (args->is_set_used_value || args->used_value) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"UsedValue\":" ));
-                STRY(osc_str_append_int(data, args->used_value));
+		ARG_TO_JSON(UsedValue, int, args->used_value);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -14404,10 +12419,8 @@ static int quota_types_setter(struct quota_types *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->quota_type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QuotaType\":\"" ));
-                STRY(osc_str_append_string(data, args->quota_type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"QuotaType\":", args->quota_type);
 	   	ret += 1;
 	}
         if (args->quotas) {
@@ -14425,9 +12438,7 @@ static int quota_types_setter(struct quota_types *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->quotas_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Quotas\":" ));
-                STRY(osc_str_append_string(data, args->quotas_str));
+		ARG_TO_JSON(Quotas, string, args->quotas_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -14436,17 +12447,13 @@ static int region_setter(struct region *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->endpoint) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Endpoint\":\"" ));
-                STRY(osc_str_append_string(data, args->endpoint));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Endpoint\":", args->endpoint);
 	   	ret += 1;
 	}
 	if (args->region_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RegionName\":\"" ));
-                STRY(osc_str_append_string(data, args->region_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"RegionName\":", args->region_name);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -14455,10 +12462,8 @@ static int resource_load_balancer_tag_setter(struct resource_load_balancer_tag *
        int count_args = 0;
        int ret = 0;
 	if (args->key) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Key\":\"" ));
-                STRY(osc_str_append_string(data, args->key));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Key\":", args->key);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -14467,17 +12472,13 @@ static int resource_tag_setter(struct resource_tag *args, struct osc_str *data) 
        int count_args = 0;
        int ret = 0;
 	if (args->key) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Key\":\"" ));
-                STRY(osc_str_append_string(data, args->key));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Key\":", args->key);
 	   	ret += 1;
 	}
 	if (args->value) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Value\":\"" ));
-                STRY(osc_str_append_string(data, args->value));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Value\":", args->value);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -14486,80 +12487,58 @@ static int route_setter(struct route *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->creation_method) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CreationMethod\":\"" ));
-                STRY(osc_str_append_string(data, args->creation_method));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CreationMethod\":", args->creation_method);
 	   	ret += 1;
 	}
 	if (args->destination_ip_range) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DestinationIpRange\":\"" ));
-                STRY(osc_str_append_string(data, args->destination_ip_range));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DestinationIpRange\":", args->destination_ip_range);
 	   	ret += 1;
 	}
 	if (args->destination_service_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DestinationServiceId\":\"" ));
-                STRY(osc_str_append_string(data, args->destination_service_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DestinationServiceId\":", args->destination_service_id);
 	   	ret += 1;
 	}
 	if (args->gateway_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"GatewayId\":\"" ));
-                STRY(osc_str_append_string(data, args->gateway_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"GatewayId\":", args->gateway_id);
 	   	ret += 1;
 	}
 	if (args->nat_service_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NatServiceId\":\"" ));
-                STRY(osc_str_append_string(data, args->nat_service_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NatServiceId\":", args->nat_service_id);
 	   	ret += 1;
 	}
 	if (args->net_access_point_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetAccessPointId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_access_point_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetAccessPointId\":", args->net_access_point_id);
 	   	ret += 1;
 	}
 	if (args->net_peering_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetPeeringId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_peering_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetPeeringId\":", args->net_peering_id);
 	   	ret += 1;
 	}
 	if (args->nic_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
-                STRY(osc_str_append_string(data, args->nic_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NicId\":", args->nic_id);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	if (args->vm_account_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmAccountId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_account_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmAccountId\":", args->vm_account_id);
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmId\":", args->vm_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -14568,24 +12547,18 @@ static int route_light_setter(struct route_light *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->destination_ip_range) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DestinationIpRange\":\"" ));
-                STRY(osc_str_append_string(data, args->destination_ip_range));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DestinationIpRange\":", args->destination_ip_range);
 	   	ret += 1;
 	}
 	if (args->route_type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RouteType\":\"" ));
-                STRY(osc_str_append_string(data, args->route_type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"RouteType\":", args->route_type);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -14594,10 +12567,8 @@ static int route_propagating_virtual_gateway_setter(struct route_propagating_vir
        int count_args = 0;
        int ret = 0;
 	if (args->virtual_gateway_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VirtualGatewayId\":\"" ));
-                STRY(osc_str_append_string(data, args->virtual_gateway_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VirtualGatewayId\":", args->virtual_gateway_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -14620,16 +12591,12 @@ static int route_table_setter(struct route_table *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->link_route_tables_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkRouteTables\":" ));
-                STRY(osc_str_append_string(data, args->link_route_tables_str));
+		ARG_TO_JSON(LinkRouteTables, string, args->link_route_tables_str);
 		ret += 1;
 	}
 	if (args->net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
         if (args->route_propagating_virtual_gateways) {
@@ -14647,16 +12614,12 @@ static int route_table_setter(struct route_table *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->route_propagating_virtual_gateways_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RoutePropagatingVirtualGateways\":" ));
-                STRY(osc_str_append_string(data, args->route_propagating_virtual_gateways_str));
+		ARG_TO_JSON(RoutePropagatingVirtualGateways, string, args->route_propagating_virtual_gateways_str);
 		ret += 1;
 	}
 	if (args->route_table_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RouteTableId\":\"" ));
-                STRY(osc_str_append_string(data, args->route_table_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"RouteTableId\":", args->route_table_id);
 	   	ret += 1;
 	}
         if (args->routes) {
@@ -14674,9 +12637,7 @@ static int route_table_setter(struct route_table *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->routes_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Routes\":" ));
-                STRY(osc_str_append_string(data, args->routes_str));
+		ARG_TO_JSON(Routes, string, args->routes_str);
 		ret += 1;
 	}
         if (args->tags) {
@@ -14694,9 +12655,7 @@ static int route_table_setter(struct route_table *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -14705,17 +12664,13 @@ static int security_group_setter(struct security_group *args, struct osc_str *da
        int count_args = 0;
        int ret = 0;
 	if (args->account_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
-                STRY(osc_str_append_string(data, args->account_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"AccountId\":", args->account_id);
 	   	ret += 1;
 	}
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
         if (args->inbound_rules) {
@@ -14733,16 +12688,12 @@ static int security_group_setter(struct security_group *args, struct osc_str *da
 		ret += 1;
 	} else
 	if (args->inbound_rules_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"InboundRules\":" ));
-                STRY(osc_str_append_string(data, args->inbound_rules_str));
+		ARG_TO_JSON(InboundRules, string, args->inbound_rules_str);
 		ret += 1;
 	}
 	if (args->net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
         if (args->outbound_rules) {
@@ -14760,23 +12711,17 @@ static int security_group_setter(struct security_group *args, struct osc_str *da
 		ret += 1;
 	} else
 	if (args->outbound_rules_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OutboundRules\":" ));
-                STRY(osc_str_append_string(data, args->outbound_rules_str));
+		ARG_TO_JSON(OutboundRules, string, args->outbound_rules_str);
 		ret += 1;
 	}
 	if (args->security_group_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupId\":\"" ));
-                STRY(osc_str_append_string(data, args->security_group_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SecurityGroupId\":", args->security_group_id);
 	   	ret += 1;
 	}
 	if (args->security_group_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupName\":\"" ));
-                STRY(osc_str_append_string(data, args->security_group_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SecurityGroupName\":", args->security_group_name);
 	   	ret += 1;
 	}
         if (args->tags) {
@@ -14794,9 +12739,7 @@ static int security_group_setter(struct security_group *args, struct osc_str *da
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -14805,17 +12748,13 @@ static int security_group_light_setter(struct security_group_light *args, struct
        int count_args = 0;
        int ret = 0;
 	if (args->security_group_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupId\":\"" ));
-                STRY(osc_str_append_string(data, args->security_group_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SecurityGroupId\":", args->security_group_id);
 	   	ret += 1;
 	}
 	if (args->security_group_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupName\":\"" ));
-                STRY(osc_str_append_string(data, args->security_group_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SecurityGroupName\":", args->security_group_name);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -14824,16 +12763,12 @@ static int security_group_rule_setter(struct security_group_rule *args, struct o
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_from_port_range || args->from_port_range) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"FromPortRange\":" ));
-                STRY(osc_str_append_int(data, args->from_port_range));
+		ARG_TO_JSON(FromPortRange, int, args->from_port_range);
 	   	ret += 1;
 	}
 	if (args->ip_protocol) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IpProtocol\":\"" ));
-                STRY(osc_str_append_string(data, args->ip_protocol));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"IpProtocol\":", args->ip_protocol);
 	   	ret += 1;
 	}
 	if (args->ip_ranges) {
@@ -14844,16 +12779,12 @@ static int security_group_rule_setter(struct security_group_rule *args, struct o
 		for (as = args->ip_ranges; *as > 0; ++as) {
 			if (as != args->ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ip_ranges_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IpRanges\":" ));
-                STRY(osc_str_append_string(data, args->ip_ranges_str));
+		ARG_TO_JSON(IpRanges, string, args->ip_ranges_str);
 		ret += 1;
 	}
         if (args->security_groups_members) {
@@ -14871,9 +12802,7 @@ static int security_group_rule_setter(struct security_group_rule *args, struct o
 		ret += 1;
 	} else
 	if (args->security_groups_members_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupsMembers\":" ));
-                STRY(osc_str_append_string(data, args->security_groups_members_str));
+		ARG_TO_JSON(SecurityGroupsMembers, string, args->security_groups_members_str);
 		ret += 1;
 	}
 	if (args->service_ids) {
@@ -14884,22 +12813,16 @@ static int security_group_rule_setter(struct security_group_rule *args, struct o
 		for (as = args->service_ids; *as > 0; ++as) {
 			if (as != args->service_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->service_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ServiceIds\":" ));
-                STRY(osc_str_append_string(data, args->service_ids_str));
+		ARG_TO_JSON(ServiceIds, string, args->service_ids_str);
 		ret += 1;
 	}
 	if (args->is_set_to_port_range || args->to_port_range) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ToPortRange\":" ));
-                STRY(osc_str_append_int(data, args->to_port_range));
+		ARG_TO_JSON(ToPortRange, int, args->to_port_range);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -14908,24 +12831,18 @@ static int security_groups_member_setter(struct security_groups_member *args, st
        int count_args = 0;
        int ret = 0;
 	if (args->account_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
-                STRY(osc_str_append_string(data, args->account_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"AccountId\":", args->account_id);
 	   	ret += 1;
 	}
 	if (args->security_group_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupId\":\"" ));
-                STRY(osc_str_append_string(data, args->security_group_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SecurityGroupId\":", args->security_group_id);
 	   	ret += 1;
 	}
 	if (args->security_group_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupName\":\"" ));
-                STRY(osc_str_append_string(data, args->security_group_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SecurityGroupName\":", args->security_group_name);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -14934,45 +12851,33 @@ static int server_certificate_setter(struct server_certificate *args, struct osc
        int count_args = 0;
        int ret = 0;
 	if (args->expiration_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ExpirationDate\":\"" ));
-                STRY(osc_str_append_string(data, args->expiration_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ExpirationDate\":", args->expiration_date);
 	   	ret += 1;
 	}
 	if (args->id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Id\":\"" ));
-                STRY(osc_str_append_string(data, args->id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Id\":", args->id);
 	   	ret += 1;
 	}
 	if (args->name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Name\":\"" ));
-                STRY(osc_str_append_string(data, args->name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Name\":", args->name);
 	   	ret += 1;
 	}
 	if (args->orn) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Orn\":\"" ));
-                STRY(osc_str_append_string(data, args->orn));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Orn\":", args->orn);
 	   	ret += 1;
 	}
 	if (args->path) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Path\":\"" ));
-                STRY(osc_str_append_string(data, args->path));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Path\":", args->path);
 	   	ret += 1;
 	}
 	if (args->upload_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"UploadDate\":\"" ));
-                STRY(osc_str_append_string(data, args->upload_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UploadDate\":", args->upload_date);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -14988,30 +12893,22 @@ static int service_setter(struct service *args, struct osc_str *data) {
 		for (as = args->ip_ranges; *as > 0; ++as) {
 			if (as != args->ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ip_ranges_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IpRanges\":" ));
-                STRY(osc_str_append_string(data, args->ip_ranges_str));
+		ARG_TO_JSON(IpRanges, string, args->ip_ranges_str);
 		ret += 1;
 	}
 	if (args->service_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ServiceId\":\"" ));
-                STRY(osc_str_append_string(data, args->service_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ServiceId\":", args->service_id);
 	   	ret += 1;
 	}
 	if (args->service_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ServiceName\":\"" ));
-                STRY(osc_str_append_string(data, args->service_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ServiceName\":", args->service_name);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -15020,37 +12917,27 @@ static int snapshot_setter(struct snapshot *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->account_alias) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccountAlias\":\"" ));
-                STRY(osc_str_append_string(data, args->account_alias));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"AccountAlias\":", args->account_alias);
 	   	ret += 1;
 	}
 	if (args->account_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
-                STRY(osc_str_append_string(data, args->account_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"AccountId\":", args->account_id);
 	   	ret += 1;
 	}
 	if (args->creation_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CreationDate\":\"" ));
-                STRY(osc_str_append_string(data, args->creation_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CreationDate\":", args->creation_date);
 	   	ret += 1;
 	}
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->permissions_to_create_volume_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PermissionsToCreateVolume\":" ));
-                STRY(osc_str_append_string(data, args->permissions_to_create_volume_str));
+		ARG_TO_JSON(PermissionsToCreateVolume, string, args->permissions_to_create_volume_str);
 		ret += 1;
 	} else if (args->is_set_permissions_to_create_volume) {
 	       TRY_APPEND_COL(count_args, data);
@@ -15060,23 +12947,17 @@ static int snapshot_setter(struct snapshot *args, struct osc_str *data) {
 	       ret += 1;
 	}
 	if (args->is_set_progress || args->progress) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Progress\":" ));
-                STRY(osc_str_append_int(data, args->progress));
+		ARG_TO_JSON(Progress, int, args->progress);
 	   	ret += 1;
 	}
 	if (args->snapshot_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SnapshotId\":\"" ));
-                STRY(osc_str_append_string(data, args->snapshot_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SnapshotId\":", args->snapshot_id);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
         if (args->tags) {
@@ -15094,22 +12975,16 @@ static int snapshot_setter(struct snapshot *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	if (args->volume_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeId\":\"" ));
-                STRY(osc_str_append_string(data, args->volume_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VolumeId\":", args->volume_id);
 	   	ret += 1;
 	}
 	if (args->is_set_volume_size || args->volume_size) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeSize\":" ));
-                STRY(osc_str_append_int(data, args->volume_size));
+		ARG_TO_JSON(VolumeSize, int, args->volume_size);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -15118,16 +12993,12 @@ static int snapshot_export_task_setter(struct snapshot_export_task *args, struct
        int count_args = 0;
        int ret = 0;
 	if (args->comment) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Comment\":\"" ));
-                STRY(osc_str_append_string(data, args->comment));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Comment\":", args->comment);
 	   	ret += 1;
 	}
 	if (args->osu_export_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OsuExport\":" ));
-                STRY(osc_str_append_string(data, args->osu_export_str));
+		ARG_TO_JSON(OsuExport, string, args->osu_export_str);
 		ret += 1;
 	} else if (args->is_set_osu_export) {
 	       TRY_APPEND_COL(count_args, data);
@@ -15137,23 +13008,17 @@ static int snapshot_export_task_setter(struct snapshot_export_task *args, struct
 	       ret += 1;
 	}
 	if (args->is_set_progress || args->progress) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Progress\":" ));
-                STRY(osc_str_append_int(data, args->progress));
+		ARG_TO_JSON(Progress, int, args->progress);
 	   	ret += 1;
 	}
 	if (args->snapshot_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SnapshotId\":\"" ));
-                STRY(osc_str_append_string(data, args->snapshot_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SnapshotId\":", args->snapshot_id);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
         if (args->tags) {
@@ -15171,16 +13036,12 @@ static int snapshot_export_task_setter(struct snapshot_export_task *args, struct
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	if (args->task_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TaskId\":\"" ));
-                STRY(osc_str_append_string(data, args->task_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"TaskId\":", args->task_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -15189,24 +13050,18 @@ static int source_net_setter(struct source_net *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->account_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccountId\":\"" ));
-                STRY(osc_str_append_string(data, args->account_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"AccountId\":", args->account_id);
 	   	ret += 1;
 	}
 	if (args->ip_range) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IpRange\":\"" ));
-                STRY(osc_str_append_string(data, args->ip_range));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"IpRange\":", args->ip_range);
 	   	ret += 1;
 	}
 	if (args->net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -15215,17 +13070,13 @@ static int source_security_group_setter(struct source_security_group *args, stru
        int count_args = 0;
        int ret = 0;
 	if (args->security_group_account_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupAccountId\":\"" ));
-                STRY(osc_str_append_string(data, args->security_group_account_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SecurityGroupAccountId\":", args->security_group_account_id);
 	   	ret += 1;
 	}
 	if (args->security_group_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupName\":\"" ));
-                STRY(osc_str_append_string(data, args->security_group_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SecurityGroupName\":", args->security_group_name);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -15234,17 +13085,13 @@ static int state_comment_setter(struct state_comment *args, struct osc_str *data
        int count_args = 0;
        int ret = 0;
 	if (args->state_code) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"StateCode\":\"" ));
-                STRY(osc_str_append_string(data, args->state_code));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"StateCode\":", args->state_code);
 	   	ret += 1;
 	}
 	if (args->state_message) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"StateMessage\":\"" ));
-                STRY(osc_str_append_string(data, args->state_message));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"StateMessage\":", args->state_message);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -15253,50 +13100,36 @@ static int subnet_setter(struct subnet *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_available_ips_count || args->available_ips_count) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AvailableIpsCount\":" ));
-                STRY(osc_str_append_int(data, args->available_ips_count));
+		ARG_TO_JSON(AvailableIpsCount, int, args->available_ips_count);
 	   	ret += 1;
 	}
 	if (args->ip_range) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IpRange\":\"" ));
-                STRY(osc_str_append_string(data, args->ip_range));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"IpRange\":", args->ip_range);
 	   	ret += 1;
 	}
 	if (args->is_set_map_public_ip_on_launch) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MapPublicIpOnLaunch\":" ));
-                STRY(osc_str_append_bool(data, args->map_public_ip_on_launch));
+		ARG_TO_JSON(MapPublicIpOnLaunch, bool, args->map_public_ip_on_launch);
 	   	ret += 1;
 	}
 	if (args->net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	if (args->subnet_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
-                STRY(osc_str_append_string(data, args->subnet_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubnetId\":", args->subnet_id);
 	   	ret += 1;
 	}
 	if (args->subregion_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubregionName\":\"" ));
-                STRY(osc_str_append_string(data, args->subregion_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubregionName\":", args->subregion_name);
 	   	ret += 1;
 	}
         if (args->tags) {
@@ -15314,9 +13147,7 @@ static int subnet_setter(struct subnet *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -15325,31 +13156,23 @@ static int subregion_setter(struct subregion *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->location_code) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LocationCode\":\"" ));
-                STRY(osc_str_append_string(data, args->location_code));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LocationCode\":", args->location_code);
 	   	ret += 1;
 	}
 	if (args->region_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RegionName\":\"" ));
-                STRY(osc_str_append_string(data, args->region_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"RegionName\":", args->region_name);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	if (args->subregion_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubregionName\":\"" ));
-                STRY(osc_str_append_string(data, args->subregion_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubregionName\":", args->subregion_name);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -15358,31 +13181,23 @@ static int tag_setter(struct tag *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->key) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Key\":\"" ));
-                STRY(osc_str_append_string(data, args->key));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Key\":", args->key);
 	   	ret += 1;
 	}
 	if (args->resource_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ResourceId\":\"" ));
-                STRY(osc_str_append_string(data, args->resource_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ResourceId\":", args->resource_id);
 	   	ret += 1;
 	}
 	if (args->resource_type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ResourceType\":\"" ));
-                STRY(osc_str_append_string(data, args->resource_type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ResourceType\":", args->resource_type);
 	   	ret += 1;
 	}
 	if (args->value) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Value\":\"" ));
-                STRY(osc_str_append_string(data, args->value));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Value\":", args->value);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -15391,24 +13206,18 @@ static int user_setter(struct user *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->path) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Path\":\"" ));
-                STRY(osc_str_append_string(data, args->path));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Path\":", args->path);
 	   	ret += 1;
 	}
 	if (args->user_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"UserId\":\"" ));
-                STRY(osc_str_append_string(data, args->user_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserId\":", args->user_id);
 	   	ret += 1;
 	}
 	if (args->user_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"UserName\":\"" ));
-                STRY(osc_str_append_string(data, args->user_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserName\":", args->user_name);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -15417,37 +13226,27 @@ static int vgw_telemetry_setter(struct vgw_telemetry *args, struct osc_str *data
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_accepted_route_count || args->accepted_route_count) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AcceptedRouteCount\":" ));
-                STRY(osc_str_append_int(data, args->accepted_route_count));
+		ARG_TO_JSON(AcceptedRouteCount, int, args->accepted_route_count);
 	   	ret += 1;
 	}
 	if (args->last_state_change_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LastStateChangeDate\":\"" ));
-                STRY(osc_str_append_string(data, args->last_state_change_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LastStateChangeDate\":", args->last_state_change_date);
 	   	ret += 1;
 	}
 	if (args->outside_ip_address) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OutsideIpAddress\":\"" ));
-                STRY(osc_str_append_string(data, args->outside_ip_address));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"OutsideIpAddress\":", args->outside_ip_address);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	if (args->state_description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"StateDescription\":\"" ));
-                STRY(osc_str_append_string(data, args->state_description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"StateDescription\":", args->state_description);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -15456,10 +13255,8 @@ static int virtual_gateway_setter(struct virtual_gateway *args, struct osc_str *
        int count_args = 0;
        int ret = 0;
 	if (args->connection_type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ConnectionType\":\"" ));
-                STRY(osc_str_append_string(data, args->connection_type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ConnectionType\":", args->connection_type);
 	   	ret += 1;
 	}
         if (args->net_to_virtual_gateway_links) {
@@ -15477,16 +13274,12 @@ static int virtual_gateway_setter(struct virtual_gateway *args, struct osc_str *
 		ret += 1;
 	} else
 	if (args->net_to_virtual_gateway_links_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetToVirtualGatewayLinks\":" ));
-                STRY(osc_str_append_string(data, args->net_to_virtual_gateway_links_str));
+		ARG_TO_JSON(NetToVirtualGatewayLinks, string, args->net_to_virtual_gateway_links_str);
 		ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
         if (args->tags) {
@@ -15504,16 +13297,12 @@ static int virtual_gateway_setter(struct virtual_gateway *args, struct osc_str *
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	if (args->virtual_gateway_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VirtualGatewayId\":\"" ));
-                STRY(osc_str_append_string(data, args->virtual_gateway_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VirtualGatewayId\":", args->virtual_gateway_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -15522,10 +13311,8 @@ static int vm_setter(struct vm *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->architecture) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Architecture\":\"" ));
-                STRY(osc_str_append_string(data, args->architecture));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Architecture\":", args->architecture);
 	   	ret += 1;
 	}
         if (args->block_device_mappings) {
@@ -15543,81 +13330,57 @@ static int vm_setter(struct vm *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->block_device_mappings_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BlockDeviceMappings\":" ));
-                STRY(osc_str_append_string(data, args->block_device_mappings_str));
+		ARG_TO_JSON(BlockDeviceMappings, string, args->block_device_mappings_str);
 		ret += 1;
 	}
 	if (args->is_set_bsu_optimized) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BsuOptimized\":" ));
-                STRY(osc_str_append_bool(data, args->bsu_optimized));
+		ARG_TO_JSON(BsuOptimized, bool, args->bsu_optimized);
 	   	ret += 1;
 	}
 	if (args->client_token) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ClientToken\":\"" ));
-                STRY(osc_str_append_string(data, args->client_token));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ClientToken\":", args->client_token);
 	   	ret += 1;
 	}
 	if (args->creation_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CreationDate\":\"" ));
-                STRY(osc_str_append_string(data, args->creation_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CreationDate\":", args->creation_date);
 	   	ret += 1;
 	}
 	if (args->is_set_deletion_protection) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeletionProtection\":" ));
-                STRY(osc_str_append_bool(data, args->deletion_protection));
+		ARG_TO_JSON(DeletionProtection, bool, args->deletion_protection);
 	   	ret += 1;
 	}
 	if (args->hypervisor) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Hypervisor\":\"" ));
-                STRY(osc_str_append_string(data, args->hypervisor));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Hypervisor\":", args->hypervisor);
 	   	ret += 1;
 	}
 	if (args->image_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ImageId\":\"" ));
-                STRY(osc_str_append_string(data, args->image_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ImageId\":", args->image_id);
 	   	ret += 1;
 	}
 	if (args->is_set_is_source_dest_checked) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IsSourceDestChecked\":" ));
-                STRY(osc_str_append_bool(data, args->is_source_dest_checked));
+		ARG_TO_JSON(IsSourceDestChecked, bool, args->is_source_dest_checked);
 	   	ret += 1;
 	}
 	if (args->keypair_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"KeypairName\":\"" ));
-                STRY(osc_str_append_string(data, args->keypair_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"KeypairName\":", args->keypair_name);
 	   	ret += 1;
 	}
 	if (args->is_set_launch_number || args->launch_number) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LaunchNumber\":" ));
-                STRY(osc_str_append_int(data, args->launch_number));
+		ARG_TO_JSON(LaunchNumber, int, args->launch_number);
 	   	ret += 1;
 	}
 	if (args->is_set_nested_virtualization) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NestedVirtualization\":" ));
-                STRY(osc_str_append_bool(data, args->nested_virtualization));
+		ARG_TO_JSON(NestedVirtualization, bool, args->nested_virtualization);
 	   	ret += 1;
 	}
 	if (args->net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
         if (args->nics) {
@@ -15635,29 +13398,21 @@ static int vm_setter(struct vm *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->nics_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Nics\":" ));
-                STRY(osc_str_append_string(data, args->nics_str));
+		ARG_TO_JSON(Nics, string, args->nics_str);
 		ret += 1;
 	}
 	if (args->os_family) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OsFamily\":\"" ));
-                STRY(osc_str_append_string(data, args->os_family));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"OsFamily\":", args->os_family);
 	   	ret += 1;
 	}
 	if (args->performance) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Performance\":\"" ));
-                STRY(osc_str_append_string(data, args->performance));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Performance\":", args->performance);
 	   	ret += 1;
 	}
 	if (args->placement_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Placement\":" ));
-                STRY(osc_str_append_string(data, args->placement_str));
+		ARG_TO_JSON(Placement, string, args->placement_str);
 		ret += 1;
 	} else if (args->is_set_placement) {
 	       TRY_APPEND_COL(count_args, data);
@@ -15667,17 +13422,13 @@ static int vm_setter(struct vm *args, struct osc_str *data) {
 	       ret += 1;
 	}
 	if (args->private_dns_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateDnsName\":\"" ));
-                STRY(osc_str_append_string(data, args->private_dns_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PrivateDnsName\":", args->private_dns_name);
 	   	ret += 1;
 	}
 	if (args->private_ip) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateIp\":\"" ));
-                STRY(osc_str_append_string(data, args->private_ip));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PrivateIp\":", args->private_ip);
 	   	ret += 1;
 	}
 	if (args->product_codes) {
@@ -15688,51 +13439,37 @@ static int vm_setter(struct vm *args, struct osc_str *data) {
 		for (as = args->product_codes; *as > 0; ++as) {
 			if (as != args->product_codes)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->product_codes_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ProductCodes\":" ));
-                STRY(osc_str_append_string(data, args->product_codes_str));
+		ARG_TO_JSON(ProductCodes, string, args->product_codes_str);
 		ret += 1;
 	}
 	if (args->public_dns_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicDnsName\":\"" ));
-                STRY(osc_str_append_string(data, args->public_dns_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicDnsName\":", args->public_dns_name);
 	   	ret += 1;
 	}
 	if (args->public_ip) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
-                STRY(osc_str_append_string(data, args->public_ip));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicIp\":", args->public_ip);
 	   	ret += 1;
 	}
 	if (args->reservation_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ReservationId\":\"" ));
-                STRY(osc_str_append_string(data, args->reservation_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ReservationId\":", args->reservation_id);
 	   	ret += 1;
 	}
 	if (args->root_device_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RootDeviceName\":\"" ));
-                STRY(osc_str_append_string(data, args->root_device_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"RootDeviceName\":", args->root_device_name);
 	   	ret += 1;
 	}
 	if (args->root_device_type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RootDeviceType\":\"" ));
-                STRY(osc_str_append_string(data, args->root_device_type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"RootDeviceType\":", args->root_device_type);
 	   	ret += 1;
 	}
         if (args->security_groups) {
@@ -15750,30 +13487,22 @@ static int vm_setter(struct vm *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->security_groups_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroups\":" ));
-                STRY(osc_str_append_string(data, args->security_groups_str));
+		ARG_TO_JSON(SecurityGroups, string, args->security_groups_str);
 		ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	if (args->state_reason) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"StateReason\":\"" ));
-                STRY(osc_str_append_string(data, args->state_reason));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"StateReason\":", args->state_reason);
 	   	ret += 1;
 	}
 	if (args->subnet_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
-                STRY(osc_str_append_string(data, args->subnet_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubnetId\":", args->subnet_id);
 	   	ret += 1;
 	}
         if (args->tags) {
@@ -15791,37 +13520,27 @@ static int vm_setter(struct vm *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	if (args->user_data) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"UserData\":\"" ));
-                STRY(osc_str_append_string(data, args->user_data));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserData\":", args->user_data);
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmId\":", args->vm_id);
 	   	ret += 1;
 	}
 	if (args->vm_initiated_shutdown_behavior) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmInitiatedShutdownBehavior\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_initiated_shutdown_behavior));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmInitiatedShutdownBehavior\":", args->vm_initiated_shutdown_behavior);
 	   	ret += 1;
 	}
 	if (args->vm_type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmType\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmType\":", args->vm_type);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -15830,24 +13549,18 @@ static int vm_group_setter(struct vm_group *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->creation_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CreationDate\":\"" ));
-                STRY(osc_str_append_string(data, args->creation_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CreationDate\":", args->creation_date);
 	   	ret += 1;
 	}
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->positioning_strategy) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PositioningStrategy\":\"" ));
-                STRY(osc_str_append_string(data, args->positioning_strategy));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PositioningStrategy\":", args->positioning_strategy);
 	   	ret += 1;
 	}
 	if (args->security_group_ids) {
@@ -15858,30 +13571,22 @@ static int vm_group_setter(struct vm_group *args, struct osc_str *data) {
 		for (as = args->security_group_ids; *as > 0; ++as) {
 			if (as != args->security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_group_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":" ));
-                STRY(osc_str_append_string(data, args->security_group_ids_str));
+		ARG_TO_JSON(SecurityGroupIds, string, args->security_group_ids_str);
 		ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	if (args->subnet_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
-                STRY(osc_str_append_string(data, args->subnet_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubnetId\":", args->subnet_id);
 	   	ret += 1;
 	}
         if (args->tags) {
@@ -15899,29 +13604,21 @@ static int vm_group_setter(struct vm_group *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	if (args->is_set_vm_count || args->vm_count) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmCount\":" ));
-                STRY(osc_str_append_int(data, args->vm_count));
+		ARG_TO_JSON(VmCount, int, args->vm_count);
 	   	ret += 1;
 	}
 	if (args->vm_group_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmGroupId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_group_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmGroupId\":", args->vm_group_id);
 	   	ret += 1;
 	}
 	if (args->vm_group_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmGroupName\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_group_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmGroupName\":", args->vm_group_name);
 	   	ret += 1;
 	}
 	if (args->vm_ids) {
@@ -15932,23 +13629,17 @@ static int vm_group_setter(struct vm_group *args, struct osc_str *data) {
 		for (as = args->vm_ids; *as > 0; ++as) {
 			if (as != args->vm_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmIds\":" ));
-                STRY(osc_str_append_string(data, args->vm_ids_str));
+		ARG_TO_JSON(VmIds, string, args->vm_ids_str);
 		ret += 1;
 	}
 	if (args->vm_template_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmTemplateId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_template_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmTemplateId\":", args->vm_template_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -15957,24 +13648,18 @@ static int vm_state_setter(struct vm_state *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->current_state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CurrentState\":\"" ));
-                STRY(osc_str_append_string(data, args->current_state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CurrentState\":", args->current_state);
 	   	ret += 1;
 	}
 	if (args->previous_state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PreviousState\":\"" ));
-                STRY(osc_str_append_string(data, args->previous_state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PreviousState\":", args->previous_state);
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmId\":", args->vm_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -15997,30 +13682,22 @@ static int vm_states_setter(struct vm_states *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->maintenance_events_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MaintenanceEvents\":" ));
-                STRY(osc_str_append_string(data, args->maintenance_events_str));
+		ARG_TO_JSON(MaintenanceEvents, string, args->maintenance_events_str);
 		ret += 1;
 	}
 	if (args->subregion_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubregionName\":\"" ));
-                STRY(osc_str_append_string(data, args->subregion_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubregionName\":", args->subregion_name);
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmId\":", args->vm_id);
 	   	ret += 1;
 	}
 	if (args->vm_state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmState\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmState\":", args->vm_state);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -16029,57 +13706,41 @@ static int vm_template_setter(struct vm_template *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_cpu_cores || args->cpu_cores) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CpuCores\":" ));
-                STRY(osc_str_append_int(data, args->cpu_cores));
+		ARG_TO_JSON(CpuCores, int, args->cpu_cores);
 	   	ret += 1;
 	}
 	if (args->cpu_generation) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CpuGeneration\":\"" ));
-                STRY(osc_str_append_string(data, args->cpu_generation));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CpuGeneration\":", args->cpu_generation);
 	   	ret += 1;
 	}
 	if (args->cpu_performance) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CpuPerformance\":\"" ));
-                STRY(osc_str_append_string(data, args->cpu_performance));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CpuPerformance\":", args->cpu_performance);
 	   	ret += 1;
 	}
 	if (args->creation_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CreationDate\":\"" ));
-                STRY(osc_str_append_string(data, args->creation_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CreationDate\":", args->creation_date);
 	   	ret += 1;
 	}
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->image_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ImageId\":\"" ));
-                STRY(osc_str_append_string(data, args->image_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ImageId\":", args->image_id);
 	   	ret += 1;
 	}
 	if (args->keypair_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"KeypairName\":\"" ));
-                STRY(osc_str_append_string(data, args->keypair_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"KeypairName\":", args->keypair_name);
 	   	ret += 1;
 	}
 	if (args->is_set_ram || args->ram) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Ram\":" ));
-                STRY(osc_str_append_int(data, args->ram));
+		ARG_TO_JSON(Ram, int, args->ram);
 	   	ret += 1;
 	}
         if (args->tags) {
@@ -16097,23 +13758,17 @@ static int vm_template_setter(struct vm_template *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	if (args->vm_template_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmTemplateId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_template_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmTemplateId\":", args->vm_template_id);
 	   	ret += 1;
 	}
 	if (args->vm_template_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmTemplateName\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_template_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmTemplateName\":", args->vm_template_name);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -16122,46 +13777,32 @@ static int vm_type_setter(struct vm_type *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_bsu_optimized) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BsuOptimized\":" ));
-                STRY(osc_str_append_bool(data, args->bsu_optimized));
+		ARG_TO_JSON(BsuOptimized, bool, args->bsu_optimized);
 	   	ret += 1;
 	}
 	if (args->is_set_max_private_ips || args->max_private_ips) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MaxPrivateIps\":" ));
-                STRY(osc_str_append_int(data, args->max_private_ips));
+		ARG_TO_JSON(MaxPrivateIps, int, args->max_private_ips);
 	   	ret += 1;
 	}
 	if (args->is_set_memory_size || args->memory_size) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MemorySize\":" ));
-                STRY(osc_str_append_double(data, args->memory_size));
+		ARG_TO_JSON(MemorySize, double, args->memory_size);
 	   	ret += 1;
 	}
 	if (args->is_set_vcore_count || args->vcore_count) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VcoreCount\":" ));
-                STRY(osc_str_append_int(data, args->vcore_count));
+		ARG_TO_JSON(VcoreCount, int, args->vcore_count);
 	   	ret += 1;
 	}
 	if (args->vm_type_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmTypeName\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_type_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmTypeName\":", args->vm_type_name);
 	   	ret += 1;
 	}
 	if (args->is_set_volume_count || args->volume_count) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeCount\":" ));
-                STRY(osc_str_append_int(data, args->volume_count));
+		ARG_TO_JSON(VolumeCount, int, args->volume_count);
 	   	ret += 1;
 	}
 	if (args->is_set_volume_size || args->volume_size) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeSize\":" ));
-                STRY(osc_str_append_int(data, args->volume_size));
+		ARG_TO_JSON(VolumeSize, int, args->volume_size);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -16170,16 +13811,12 @@ static int volume_setter(struct volume *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->creation_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CreationDate\":\"" ));
-                STRY(osc_str_append_string(data, args->creation_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CreationDate\":", args->creation_date);
 	   	ret += 1;
 	}
 	if (args->is_set_iops || args->iops) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Iops\":" ));
-                STRY(osc_str_append_int(data, args->iops));
+		ARG_TO_JSON(Iops, int, args->iops);
 	   	ret += 1;
 	}
         if (args->linked_volumes) {
@@ -16197,36 +13834,26 @@ static int volume_setter(struct volume *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->linked_volumes_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkedVolumes\":" ));
-                STRY(osc_str_append_string(data, args->linked_volumes_str));
+		ARG_TO_JSON(LinkedVolumes, string, args->linked_volumes_str);
 		ret += 1;
 	}
 	if (args->is_set_size || args->size) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Size\":" ));
-                STRY(osc_str_append_int(data, args->size));
+		ARG_TO_JSON(Size, int, args->size);
 	   	ret += 1;
 	}
 	if (args->snapshot_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SnapshotId\":\"" ));
-                STRY(osc_str_append_string(data, args->snapshot_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SnapshotId\":", args->snapshot_id);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	if (args->subregion_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubregionName\":\"" ));
-                STRY(osc_str_append_string(data, args->subregion_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubregionName\":", args->subregion_name);
 	   	ret += 1;
 	}
         if (args->tags) {
@@ -16244,23 +13871,17 @@ static int volume_setter(struct volume *args, struct osc_str *data) {
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	if (args->volume_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeId\":\"" ));
-                STRY(osc_str_append_string(data, args->volume_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VolumeId\":", args->volume_id);
 	   	ret += 1;
 	}
 	if (args->volume_type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeType\":\"" ));
-                STRY(osc_str_append_string(data, args->volume_type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VolumeType\":", args->volume_type);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -16269,24 +13890,18 @@ static int vpn_connection_setter(struct vpn_connection *args, struct osc_str *da
        int count_args = 0;
        int ret = 0;
 	if (args->client_gateway_configuration) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ClientGatewayConfiguration\":\"" ));
-                STRY(osc_str_append_string(data, args->client_gateway_configuration));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ClientGatewayConfiguration\":", args->client_gateway_configuration);
 	   	ret += 1;
 	}
 	if (args->client_gateway_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ClientGatewayId\":\"" ));
-                STRY(osc_str_append_string(data, args->client_gateway_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ClientGatewayId\":", args->client_gateway_id);
 	   	ret += 1;
 	}
 	if (args->connection_type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ConnectionType\":\"" ));
-                STRY(osc_str_append_string(data, args->connection_type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ConnectionType\":", args->connection_type);
 	   	ret += 1;
 	}
         if (args->routes) {
@@ -16304,22 +13919,16 @@ static int vpn_connection_setter(struct vpn_connection *args, struct osc_str *da
 		ret += 1;
 	} else
 	if (args->routes_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Routes\":" ));
-                STRY(osc_str_append_string(data, args->routes_str));
+		ARG_TO_JSON(Routes, string, args->routes_str);
 		ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	if (args->is_set_static_routes_only) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"StaticRoutesOnly\":" ));
-                STRY(osc_str_append_bool(data, args->static_routes_only));
+		ARG_TO_JSON(StaticRoutesOnly, bool, args->static_routes_only);
 	   	ret += 1;
 	}
         if (args->tags) {
@@ -16337,9 +13946,7 @@ static int vpn_connection_setter(struct vpn_connection *args, struct osc_str *da
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
         if (args->vgw_telemetries) {
@@ -16357,29 +13964,21 @@ static int vpn_connection_setter(struct vpn_connection *args, struct osc_str *da
 		ret += 1;
 	} else
 	if (args->vgw_telemetries_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VgwTelemetries\":" ));
-                STRY(osc_str_append_string(data, args->vgw_telemetries_str));
+		ARG_TO_JSON(VgwTelemetries, string, args->vgw_telemetries_str);
 		ret += 1;
 	}
 	if (args->virtual_gateway_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VirtualGatewayId\":\"" ));
-                STRY(osc_str_append_string(data, args->virtual_gateway_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VirtualGatewayId\":", args->virtual_gateway_id);
 	   	ret += 1;
 	}
 	if (args->vpn_connection_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VpnConnectionId\":\"" ));
-                STRY(osc_str_append_string(data, args->vpn_connection_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VpnConnectionId\":", args->vpn_connection_id);
 	   	ret += 1;
 	}
 	if (args->vpn_options_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VpnOptions\":" ));
-                STRY(osc_str_append_string(data, args->vpn_options_str));
+		ARG_TO_JSON(VpnOptions, string, args->vpn_options_str);
 		ret += 1;
 	} else if (args->is_set_vpn_options) {
 	       TRY_APPEND_COL(count_args, data);
@@ -16394,9 +13993,7 @@ static int vpn_options_setter(struct vpn_options *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->phase1_options_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Phase1Options\":" ));
-                STRY(osc_str_append_string(data, args->phase1_options_str));
+		ARG_TO_JSON(Phase1Options, string, args->phase1_options_str);
 		ret += 1;
 	} else if (args->is_set_phase1_options) {
 	       TRY_APPEND_COL(count_args, data);
@@ -16406,9 +14003,7 @@ static int vpn_options_setter(struct vpn_options *args, struct osc_str *data) {
 	       ret += 1;
 	}
 	if (args->phase2_options_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Phase2Options\":" ));
-                STRY(osc_str_append_string(data, args->phase2_options_str));
+		ARG_TO_JSON(Phase2Options, string, args->phase2_options_str);
 		ret += 1;
 	} else if (args->is_set_phase2_options) {
 	       TRY_APPEND_COL(count_args, data);
@@ -16418,10 +14013,8 @@ static int vpn_options_setter(struct vpn_options *args, struct osc_str *data) {
 	       ret += 1;
 	}
 	if (args->tunnel_inside_ip_range) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TunnelInsideIpRange\":\"" ));
-                STRY(osc_str_append_string(data, args->tunnel_inside_ip_range));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"TunnelInsideIpRange\":", args->tunnel_inside_ip_range);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -16430,99 +14023,67 @@ static int with_setter(struct with *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
 	if (args->is_set_account_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccountId\":" ));
-                STRY(osc_str_append_bool(data, args->account_id));
+		ARG_TO_JSON(AccountId, bool, args->account_id);
 	   	ret += 1;
 	}
 	if (args->is_set_call_duration) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CallDuration\":" ));
-                STRY(osc_str_append_bool(data, args->call_duration));
+		ARG_TO_JSON(CallDuration, bool, args->call_duration);
 	   	ret += 1;
 	}
 	if (args->is_set_query_access_key) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryAccessKey\":" ));
-                STRY(osc_str_append_bool(data, args->query_access_key));
+		ARG_TO_JSON(QueryAccessKey, bool, args->query_access_key);
 	   	ret += 1;
 	}
 	if (args->is_set_query_api_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryApiName\":" ));
-                STRY(osc_str_append_bool(data, args->query_api_name));
+		ARG_TO_JSON(QueryApiName, bool, args->query_api_name);
 	   	ret += 1;
 	}
 	if (args->is_set_query_api_version) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryApiVersion\":" ));
-                STRY(osc_str_append_bool(data, args->query_api_version));
+		ARG_TO_JSON(QueryApiVersion, bool, args->query_api_version);
 	   	ret += 1;
 	}
 	if (args->is_set_query_call_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryCallName\":" ));
-                STRY(osc_str_append_bool(data, args->query_call_name));
+		ARG_TO_JSON(QueryCallName, bool, args->query_call_name);
 	   	ret += 1;
 	}
 	if (args->is_set_query_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryDate\":" ));
-                STRY(osc_str_append_bool(data, args->query_date));
+		ARG_TO_JSON(QueryDate, bool, args->query_date);
 	   	ret += 1;
 	}
 	if (args->is_set_query_header_raw) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryHeaderRaw\":" ));
-                STRY(osc_str_append_bool(data, args->query_header_raw));
+		ARG_TO_JSON(QueryHeaderRaw, bool, args->query_header_raw);
 	   	ret += 1;
 	}
 	if (args->is_set_query_header_size) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryHeaderSize\":" ));
-                STRY(osc_str_append_bool(data, args->query_header_size));
+		ARG_TO_JSON(QueryHeaderSize, bool, args->query_header_size);
 	   	ret += 1;
 	}
 	if (args->is_set_query_ip_address) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryIpAddress\":" ));
-                STRY(osc_str_append_bool(data, args->query_ip_address));
+		ARG_TO_JSON(QueryIpAddress, bool, args->query_ip_address);
 	   	ret += 1;
 	}
 	if (args->is_set_query_payload_raw) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryPayloadRaw\":" ));
-                STRY(osc_str_append_bool(data, args->query_payload_raw));
+		ARG_TO_JSON(QueryPayloadRaw, bool, args->query_payload_raw);
 	   	ret += 1;
 	}
 	if (args->is_set_query_payload_size) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryPayloadSize\":" ));
-                STRY(osc_str_append_bool(data, args->query_payload_size));
+		ARG_TO_JSON(QueryPayloadSize, bool, args->query_payload_size);
 	   	ret += 1;
 	}
 	if (args->is_set_query_user_agent) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"QueryUserAgent\":" ));
-                STRY(osc_str_append_bool(data, args->query_user_agent));
+		ARG_TO_JSON(QueryUserAgent, bool, args->query_user_agent);
 	   	ret += 1;
 	}
 	if (args->is_set_request_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RequestId\":" ));
-                STRY(osc_str_append_bool(data, args->request_id));
+		ARG_TO_JSON(RequestId, bool, args->request_id);
 	   	ret += 1;
 	}
 	if (args->is_set_response_size) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ResponseSize\":" ));
-                STRY(osc_str_append_bool(data, args->response_size));
+		ARG_TO_JSON(ResponseSize, bool, args->response_size);
 	   	ret += 1;
 	}
 	if (args->is_set_response_status_code) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ResponseStatusCode\":" ));
-                STRY(osc_str_append_bool(data, args->response_status_code));
+		ARG_TO_JSON(ResponseStatusCode, bool, args->response_status_code);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -16537,36 +14098,26 @@ static  int update_vpn_connection_data(struct osc_update_vpn_connection_arg *arg
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->client_gateway_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ClientGatewayId\":\"" ));
-                STRY(osc_str_append_string(data, args->client_gateway_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ClientGatewayId\":", args->client_gateway_id);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->virtual_gateway_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VirtualGatewayId\":\"" ));
-                STRY(osc_str_append_string(data, args->virtual_gateway_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VirtualGatewayId\":", args->virtual_gateway_id);
 	   	ret += 1;
 	}
 	if (args->vpn_connection_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VpnConnectionId\":\"" ));
-                STRY(osc_str_append_string(data, args->vpn_connection_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VpnConnectionId\":", args->vpn_connection_id);
 	   	ret += 1;
 	}
 	if (args->vpn_options_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VpnOptions\":" ));
-                STRY(osc_str_append_string(data, args->vpn_options_str));
+		ARG_TO_JSON(VpnOptions, string, args->vpn_options_str);
 		ret += 1;
 	} else if (args->is_set_vpn_options) {
 	       TRY_APPEND_COL(count_args, data);
@@ -16615,35 +14166,25 @@ static  int update_volume_data(struct osc_update_volume_arg *args, struct osc_st
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->is_set_iops || args->iops) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Iops\":" ));
-                STRY(osc_str_append_int(data, args->iops));
+		ARG_TO_JSON(Iops, int, args->iops);
 	   	ret += 1;
 	}
 	if (args->is_set_size || args->size) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Size\":" ));
-                STRY(osc_str_append_int(data, args->size));
+		ARG_TO_JSON(Size, int, args->size);
 	   	ret += 1;
 	}
 	if (args->volume_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeId\":\"" ));
-                STRY(osc_str_append_string(data, args->volume_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VolumeId\":", args->volume_id);
 	   	ret += 1;
 	}
 	if (args->volume_type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeType\":\"" ));
-                STRY(osc_str_append_string(data, args->volume_type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VolumeType\":", args->volume_type);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -16686,16 +14227,12 @@ static  int update_vm_template_data(struct osc_update_vm_template_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
         if (args->tags) {
@@ -16713,23 +14250,17 @@ static  int update_vm_template_data(struct osc_update_vm_template_arg *args, str
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	if (args->vm_template_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmTemplateId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_template_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmTemplateId\":", args->vm_template_id);
 	   	ret += 1;
 	}
 	if (args->vm_template_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmTemplateName\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_template_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmTemplateName\":", args->vm_template_name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -16772,16 +14303,12 @@ static  int update_vm_group_data(struct osc_update_vm_group_arg *args, struct os
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
         if (args->tags) {
@@ -16799,30 +14326,22 @@ static  int update_vm_group_data(struct osc_update_vm_group_arg *args, struct os
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	if (args->vm_group_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmGroupId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_group_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmGroupId\":", args->vm_group_id);
 	   	ret += 1;
 	}
 	if (args->vm_group_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmGroupName\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_group_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmGroupName\":", args->vm_group_name);
 	   	ret += 1;
 	}
 	if (args->vm_template_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmTemplateId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_template_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmTemplateId\":", args->vm_template_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -16879,53 +14398,37 @@ static  int update_vm_data(struct osc_update_vm_arg *args, struct osc_str *data)
 		ret += 1;
 	} else
 	if (args->block_device_mappings_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BlockDeviceMappings\":" ));
-                STRY(osc_str_append_string(data, args->block_device_mappings_str));
+		ARG_TO_JSON(BlockDeviceMappings, string, args->block_device_mappings_str);
 		ret += 1;
 	}
 	if (args->is_set_bsu_optimized) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BsuOptimized\":" ));
-                STRY(osc_str_append_bool(data, args->bsu_optimized));
+		ARG_TO_JSON(BsuOptimized, bool, args->bsu_optimized);
 	   	ret += 1;
 	}
 	if (args->is_set_deletion_protection) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeletionProtection\":" ));
-                STRY(osc_str_append_bool(data, args->deletion_protection));
+		ARG_TO_JSON(DeletionProtection, bool, args->deletion_protection);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->is_set_is_source_dest_checked) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IsSourceDestChecked\":" ));
-                STRY(osc_str_append_bool(data, args->is_source_dest_checked));
+		ARG_TO_JSON(IsSourceDestChecked, bool, args->is_source_dest_checked);
 	   	ret += 1;
 	}
 	if (args->keypair_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"KeypairName\":\"" ));
-                STRY(osc_str_append_string(data, args->keypair_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"KeypairName\":", args->keypair_name);
 	   	ret += 1;
 	}
 	if (args->is_set_nested_virtualization) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NestedVirtualization\":" ));
-                STRY(osc_str_append_bool(data, args->nested_virtualization));
+		ARG_TO_JSON(NestedVirtualization, bool, args->nested_virtualization);
 	   	ret += 1;
 	}
 	if (args->performance) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Performance\":\"" ));
-                STRY(osc_str_append_string(data, args->performance));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Performance\":", args->performance);
 	   	ret += 1;
 	}
 	if (args->security_group_ids) {
@@ -16936,44 +14439,32 @@ static  int update_vm_data(struct osc_update_vm_arg *args, struct osc_str *data)
 		for (as = args->security_group_ids; *as > 0; ++as) {
 			if (as != args->security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_group_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":" ));
-                STRY(osc_str_append_string(data, args->security_group_ids_str));
+		ARG_TO_JSON(SecurityGroupIds, string, args->security_group_ids_str);
 		ret += 1;
 	}
 	if (args->user_data) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"UserData\":\"" ));
-                STRY(osc_str_append_string(data, args->user_data));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserData\":", args->user_data);
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmId\":", args->vm_id);
 	   	ret += 1;
 	}
 	if (args->vm_initiated_shutdown_behavior) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmInitiatedShutdownBehavior\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_initiated_shutdown_behavior));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmInitiatedShutdownBehavior\":", args->vm_initiated_shutdown_behavior);
 	   	ret += 1;
 	}
 	if (args->vm_type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmType\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmType\":", args->vm_type);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -17016,30 +14507,22 @@ static  int update_user_data(struct osc_update_user_arg *args, struct osc_str *d
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->new_path) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NewPath\":\"" ));
-                STRY(osc_str_append_string(data, args->new_path));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NewPath\":", args->new_path);
 	   	ret += 1;
 	}
 	if (args->new_user_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NewUserName\":\"" ));
-                STRY(osc_str_append_string(data, args->new_user_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NewUserName\":", args->new_user_name);
 	   	ret += 1;
 	}
 	if (args->user_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"UserName\":\"" ));
-                STRY(osc_str_append_string(data, args->user_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserName\":", args->user_name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -17082,22 +14565,16 @@ static  int update_subnet_data(struct osc_update_subnet_arg *args, struct osc_st
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->is_set_map_public_ip_on_launch) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MapPublicIpOnLaunch\":" ));
-                STRY(osc_str_append_bool(data, args->map_public_ip_on_launch));
+		ARG_TO_JSON(MapPublicIpOnLaunch, bool, args->map_public_ip_on_launch);
 	   	ret += 1;
 	}
 	if (args->subnet_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
-                STRY(osc_str_append_string(data, args->subnet_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubnetId\":", args->subnet_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -17140,15 +14617,11 @@ static  int update_snapshot_data(struct osc_update_snapshot_arg *args, struct os
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->permissions_to_create_volume_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PermissionsToCreateVolume\":" ));
-                STRY(osc_str_append_string(data, args->permissions_to_create_volume_str));
+		ARG_TO_JSON(PermissionsToCreateVolume, string, args->permissions_to_create_volume_str);
 		ret += 1;
 	} else if (args->is_set_permissions_to_create_volume) {
 	       TRY_APPEND_COL(count_args, data);
@@ -17158,10 +14631,8 @@ static  int update_snapshot_data(struct osc_update_snapshot_arg *args, struct os
 	       ret += 1;
 	}
 	if (args->snapshot_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SnapshotId\":\"" ));
-                STRY(osc_str_append_string(data, args->snapshot_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SnapshotId\":", args->snapshot_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -17204,30 +14675,22 @@ static  int update_server_certificate_data(struct osc_update_server_certificate_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Name\":\"" ));
-                STRY(osc_str_append_string(data, args->name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Name\":", args->name);
 	   	ret += 1;
 	}
 	if (args->new_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NewName\":\"" ));
-                STRY(osc_str_append_string(data, args->new_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NewName\":", args->new_name);
 	   	ret += 1;
 	}
 	if (args->new_path) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NewPath\":\"" ));
-                STRY(osc_str_append_string(data, args->new_path));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NewPath\":", args->new_path);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -17270,29 +14733,21 @@ static  int update_route_propagation_data(struct osc_update_route_propagation_ar
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->is_set_enable) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Enable\":" ));
-                STRY(osc_str_append_bool(data, args->enable));
+		ARG_TO_JSON(Enable, bool, args->enable);
 	   	ret += 1;
 	}
 	if (args->route_table_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RouteTableId\":\"" ));
-                STRY(osc_str_append_string(data, args->route_table_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"RouteTableId\":", args->route_table_id);
 	   	ret += 1;
 	}
 	if (args->virtual_gateway_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VirtualGatewayId\":\"" ));
-                STRY(osc_str_append_string(data, args->virtual_gateway_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VirtualGatewayId\":", args->virtual_gateway_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -17335,58 +14790,42 @@ static  int update_route_data(struct osc_update_route_arg *args, struct osc_str 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->destination_ip_range) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DestinationIpRange\":\"" ));
-                STRY(osc_str_append_string(data, args->destination_ip_range));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DestinationIpRange\":", args->destination_ip_range);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->gateway_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"GatewayId\":\"" ));
-                STRY(osc_str_append_string(data, args->gateway_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"GatewayId\":", args->gateway_id);
 	   	ret += 1;
 	}
 	if (args->nat_service_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NatServiceId\":\"" ));
-                STRY(osc_str_append_string(data, args->nat_service_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NatServiceId\":", args->nat_service_id);
 	   	ret += 1;
 	}
 	if (args->net_peering_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetPeeringId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_peering_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetPeeringId\":", args->net_peering_id);
 	   	ret += 1;
 	}
 	if (args->nic_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
-                STRY(osc_str_append_string(data, args->nic_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NicId\":", args->nic_id);
 	   	ret += 1;
 	}
 	if (args->route_table_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RouteTableId\":\"" ));
-                STRY(osc_str_append_string(data, args->route_table_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"RouteTableId\":", args->route_table_id);
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmId\":", args->vm_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -17429,22 +14868,16 @@ static  int update_nic_data(struct osc_update_nic_arg *args, struct osc_str *dat
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->link_nic_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkNic\":" ));
-                STRY(osc_str_append_string(data, args->link_nic_str));
+		ARG_TO_JSON(LinkNic, string, args->link_nic_str);
 		ret += 1;
 	} else if (args->is_set_link_nic) {
 	       TRY_APPEND_COL(count_args, data);
@@ -17454,10 +14887,8 @@ static  int update_nic_data(struct osc_update_nic_arg *args, struct osc_str *dat
 	       ret += 1;
 	}
 	if (args->nic_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
-                STRY(osc_str_append_string(data, args->nic_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NicId\":", args->nic_id);
 	   	ret += 1;
 	}
 	if (args->security_group_ids) {
@@ -17468,16 +14899,12 @@ static  int update_nic_data(struct osc_update_nic_arg *args, struct osc_str *dat
 		for (as = args->security_group_ids; *as > 0; ++as) {
 			if (as != args->security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_group_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":" ));
-                STRY(osc_str_append_string(data, args->security_group_ids_str));
+		ARG_TO_JSON(SecurityGroupIds, string, args->security_group_ids_str);
 		ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -17527,29 +14954,21 @@ static  int update_net_access_point_data(struct osc_update_net_access_point_arg 
 		for (as = args->add_route_table_ids; *as > 0; ++as) {
 			if (as != args->add_route_table_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->add_route_table_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AddRouteTableIds\":" ));
-                STRY(osc_str_append_string(data, args->add_route_table_ids_str));
+		ARG_TO_JSON(AddRouteTableIds, string, args->add_route_table_ids_str);
 		ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->net_access_point_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetAccessPointId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_access_point_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetAccessPointId\":", args->net_access_point_id);
 	   	ret += 1;
 	}
 	if (args->remove_route_table_ids) {
@@ -17560,16 +14979,12 @@ static  int update_net_access_point_data(struct osc_update_net_access_point_arg 
 		for (as = args->remove_route_table_ids; *as > 0; ++as) {
 			if (as != args->remove_route_table_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->remove_route_table_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RemoveRouteTableIds\":" ));
-                STRY(osc_str_append_string(data, args->remove_route_table_ids_str));
+		ARG_TO_JSON(RemoveRouteTableIds, string, args->remove_route_table_ids_str);
 		ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -17612,23 +15027,17 @@ static  int update_net_data(struct osc_update_net_arg *args, struct osc_str *dat
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->dhcp_options_set_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DhcpOptionsSetId\":\"" ));
-                STRY(osc_str_append_string(data, args->dhcp_options_set_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DhcpOptionsSetId\":", args->dhcp_options_set_id);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -17671,9 +15080,7 @@ static  int update_load_balancer_data(struct osc_update_load_balancer_arg *args,
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->access_log_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccessLog\":" ));
-                STRY(osc_str_append_string(data, args->access_log_str));
+		ARG_TO_JSON(AccessLog, string, args->access_log_str);
 		ret += 1;
 	} else if (args->is_set_access_log) {
 	       TRY_APPEND_COL(count_args, data);
@@ -17683,15 +15090,11 @@ static  int update_load_balancer_data(struct osc_update_load_balancer_arg *args,
 	       ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->health_check_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"HealthCheck\":" ));
-                STRY(osc_str_append_string(data, args->health_check_str));
+		ARG_TO_JSON(HealthCheck, string, args->health_check_str);
 		ret += 1;
 	} else if (args->is_set_health_check) {
 	       TRY_APPEND_COL(count_args, data);
@@ -17701,16 +15104,12 @@ static  int update_load_balancer_data(struct osc_update_load_balancer_arg *args,
 	       ret += 1;
 	}
 	if (args->load_balancer_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
-                STRY(osc_str_append_string(data, args->load_balancer_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LoadBalancerName\":", args->load_balancer_name);
 	   	ret += 1;
 	}
 	if (args->is_set_load_balancer_port || args->load_balancer_port) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerPort\":" ));
-                STRY(osc_str_append_int(data, args->load_balancer_port));
+		ARG_TO_JSON(LoadBalancerPort, int, args->load_balancer_port);
 	   	ret += 1;
 	}
 	if (args->policy_names) {
@@ -17721,29 +15120,21 @@ static  int update_load_balancer_data(struct osc_update_load_balancer_arg *args,
 		for (as = args->policy_names; *as > 0; ++as) {
 			if (as != args->policy_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->policy_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PolicyNames\":" ));
-                STRY(osc_str_append_string(data, args->policy_names_str));
+		ARG_TO_JSON(PolicyNames, string, args->policy_names_str);
 		ret += 1;
 	}
 	if (args->public_ip) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
-                STRY(osc_str_append_string(data, args->public_ip));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicIp\":", args->public_ip);
 	   	ret += 1;
 	}
 	if (args->is_set_secured_cookies) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecuredCookies\":" ));
-                STRY(osc_str_append_bool(data, args->secured_cookies));
+		ARG_TO_JSON(SecuredCookies, bool, args->secured_cookies);
 	   	ret += 1;
 	}
 	if (args->security_groups) {
@@ -17754,23 +15145,17 @@ static  int update_load_balancer_data(struct osc_update_load_balancer_arg *args,
 		for (as = args->security_groups; *as > 0; ++as) {
 			if (as != args->security_groups)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_groups_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroups\":" ));
-                STRY(osc_str_append_string(data, args->security_groups_str));
+		ARG_TO_JSON(SecurityGroups, string, args->security_groups_str);
 		ret += 1;
 	}
 	if (args->server_certificate_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ServerCertificateId\":\"" ));
-                STRY(osc_str_append_string(data, args->server_certificate_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ServerCertificateId\":", args->server_certificate_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -17813,30 +15198,22 @@ static  int update_listener_rule_data(struct osc_update_listener_rule_arg *args,
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->host_pattern) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"HostPattern\":\"" ));
-                STRY(osc_str_append_string(data, args->host_pattern));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"HostPattern\":", args->host_pattern);
 	   	ret += 1;
 	}
 	if (args->listener_rule_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ListenerRuleName\":\"" ));
-                STRY(osc_str_append_string(data, args->listener_rule_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ListenerRuleName\":", args->listener_rule_name);
 	   	ret += 1;
 	}
 	if (args->path_pattern) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PathPattern\":\"" ));
-                STRY(osc_str_append_string(data, args->path_pattern));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PathPattern\":", args->path_pattern);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -17879,22 +15256,16 @@ static  int update_image_data(struct osc_update_image_arg *args, struct osc_str 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->image_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ImageId\":\"" ));
-                STRY(osc_str_append_string(data, args->image_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ImageId\":", args->image_id);
 	   	ret += 1;
 	}
 	if (args->permissions_to_launch_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PermissionsToLaunch\":" ));
-                STRY(osc_str_append_string(data, args->permissions_to_launch_str));
+		ARG_TO_JSON(PermissionsToLaunch, string, args->permissions_to_launch_str);
 		ret += 1;
 	} else if (args->is_set_permissions_to_launch) {
 	       TRY_APPEND_COL(count_args, data);
@@ -17943,22 +15314,16 @@ static  int update_flexible_gpu_data(struct osc_update_flexible_gpu_arg *args, s
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_delete_on_vm_deletion) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeleteOnVmDeletion\":" ));
-                STRY(osc_str_append_bool(data, args->delete_on_vm_deletion));
+		ARG_TO_JSON(DeleteOnVmDeletion, bool, args->delete_on_vm_deletion);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->flexible_gpu_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"FlexibleGpuId\":\"" ));
-                STRY(osc_str_append_string(data, args->flexible_gpu_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"FlexibleGpuId\":", args->flexible_gpu_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -18001,22 +15366,16 @@ static  int update_direct_link_interface_data(struct osc_update_direct_link_inte
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->direct_link_interface_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DirectLinkInterfaceId\":\"" ));
-                STRY(osc_str_append_string(data, args->direct_link_interface_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DirectLinkInterfaceId\":", args->direct_link_interface_id);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->is_set_mtu || args->mtu) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Mtu\":" ));
-                STRY(osc_str_append_int(data, args->mtu));
+		ARG_TO_JSON(Mtu, int, args->mtu);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -18059,23 +15418,17 @@ static  int update_ca_data(struct osc_update_ca_arg *args, struct osc_str *data)
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->ca_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CaId\":\"" ));
-                STRY(osc_str_append_string(data, args->ca_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CaId\":", args->ca_id);
 	   	ret += 1;
 	}
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -18118,10 +15471,8 @@ static  int update_api_access_rule_data(struct osc_update_api_access_rule_arg *a
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->api_access_rule_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ApiAccessRuleId\":\"" ));
-                STRY(osc_str_append_string(data, args->api_access_rule_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ApiAccessRuleId\":", args->api_access_rule_id);
 	   	ret += 1;
 	}
 	if (args->ca_ids) {
@@ -18132,16 +15483,12 @@ static  int update_api_access_rule_data(struct osc_update_api_access_rule_arg *a
 		for (as = args->ca_ids; *as > 0; ++as) {
 			if (as != args->ca_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ca_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CaIds\":" ));
-                STRY(osc_str_append_string(data, args->ca_ids_str));
+		ARG_TO_JSON(CaIds, string, args->ca_ids_str);
 		ret += 1;
 	}
 	if (args->cns) {
@@ -18152,29 +15499,21 @@ static  int update_api_access_rule_data(struct osc_update_api_access_rule_arg *a
 		for (as = args->cns; *as > 0; ++as) {
 			if (as != args->cns)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->cns_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Cns\":" ));
-                STRY(osc_str_append_string(data, args->cns_str));
+		ARG_TO_JSON(Cns, string, args->cns_str);
 		ret += 1;
 	}
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->ip_ranges) {
@@ -18185,16 +15524,12 @@ static  int update_api_access_rule_data(struct osc_update_api_access_rule_arg *a
 		for (as = args->ip_ranges; *as > 0; ++as) {
 			if (as != args->ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ip_ranges_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IpRanges\":" ));
-                STRY(osc_str_append_string(data, args->ip_ranges_str));
+		ARG_TO_JSON(IpRanges, string, args->ip_ranges_str);
 		ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -18237,21 +15572,15 @@ static  int update_api_access_policy_data(struct osc_update_api_access_policy_ar
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->is_set_max_access_key_expiration_seconds || args->max_access_key_expiration_seconds) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MaxAccessKeyExpirationSeconds\":" ));
-                STRY(osc_str_append_int(data, args->max_access_key_expiration_seconds));
+		ARG_TO_JSON(MaxAccessKeyExpirationSeconds, int, args->max_access_key_expiration_seconds);
 	   	ret += 1;
 	}
 	if (args->is_set_require_trusted_env) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RequireTrustedEnv\":" ));
-                STRY(osc_str_append_bool(data, args->require_trusted_env));
+		ARG_TO_JSON(RequireTrustedEnv, bool, args->require_trusted_env);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -18301,106 +15630,76 @@ static  int update_account_data(struct osc_update_account_arg *args, struct osc_
 		for (as = args->additional_emails; *as > 0; ++as) {
 			if (as != args->additional_emails)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->additional_emails_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AdditionalEmails\":" ));
-                STRY(osc_str_append_string(data, args->additional_emails_str));
+		ARG_TO_JSON(AdditionalEmails, string, args->additional_emails_str);
 		ret += 1;
 	}
 	if (args->city) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"City\":\"" ));
-                STRY(osc_str_append_string(data, args->city));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"City\":", args->city);
 	   	ret += 1;
 	}
 	if (args->company_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CompanyName\":\"" ));
-                STRY(osc_str_append_string(data, args->company_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CompanyName\":", args->company_name);
 	   	ret += 1;
 	}
 	if (args->country) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Country\":\"" ));
-                STRY(osc_str_append_string(data, args->country));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Country\":", args->country);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->email) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Email\":\"" ));
-                STRY(osc_str_append_string(data, args->email));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Email\":", args->email);
 	   	ret += 1;
 	}
 	if (args->first_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"FirstName\":\"" ));
-                STRY(osc_str_append_string(data, args->first_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"FirstName\":", args->first_name);
 	   	ret += 1;
 	}
 	if (args->job_title) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"JobTitle\":\"" ));
-                STRY(osc_str_append_string(data, args->job_title));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"JobTitle\":", args->job_title);
 	   	ret += 1;
 	}
 	if (args->last_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LastName\":\"" ));
-                STRY(osc_str_append_string(data, args->last_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LastName\":", args->last_name);
 	   	ret += 1;
 	}
 	if (args->mobile_number) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MobileNumber\":\"" ));
-                STRY(osc_str_append_string(data, args->mobile_number));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"MobileNumber\":", args->mobile_number);
 	   	ret += 1;
 	}
 	if (args->phone_number) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PhoneNumber\":\"" ));
-                STRY(osc_str_append_string(data, args->phone_number));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PhoneNumber\":", args->phone_number);
 	   	ret += 1;
 	}
 	if (args->state_province) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"StateProvince\":\"" ));
-                STRY(osc_str_append_string(data, args->state_province));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"StateProvince\":", args->state_province);
 	   	ret += 1;
 	}
 	if (args->vat_number) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VatNumber\":\"" ));
-                STRY(osc_str_append_string(data, args->vat_number));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VatNumber\":", args->vat_number);
 	   	ret += 1;
 	}
 	if (args->zip_code) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ZipCode\":\"" ));
-                STRY(osc_str_append_string(data, args->zip_code));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ZipCode\":", args->zip_code);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -18443,37 +15742,27 @@ static  int update_access_key_data(struct osc_update_access_key_arg *args, struc
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->access_key_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccessKeyId\":\"" ));
-                STRY(osc_str_append_string(data, args->access_key_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"AccessKeyId\":", args->access_key_id);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->expiration_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ExpirationDate\":\"" ));
-                STRY(osc_str_append_string(data, args->expiration_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ExpirationDate\":", args->expiration_date);
 	   	ret += 1;
 	}
 	if (args->state) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"State\":\"" ));
-                STRY(osc_str_append_string(data, args->state));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
 	if (args->user_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"UserName\":\"" ));
-                STRY(osc_str_append_string(data, args->user_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserName\":", args->user_name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -18516,22 +15805,16 @@ static  int unlink_volume_data(struct osc_unlink_volume_arg *args, struct osc_st
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->is_set_force_unlink) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ForceUnlink\":" ));
-                STRY(osc_str_append_bool(data, args->force_unlink));
+		ARG_TO_JSON(ForceUnlink, bool, args->force_unlink);
 	   	ret += 1;
 	}
 	if (args->volume_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeId\":\"" ));
-                STRY(osc_str_append_string(data, args->volume_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VolumeId\":", args->volume_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -18574,23 +15857,17 @@ static  int unlink_virtual_gateway_data(struct osc_unlink_virtual_gateway_arg *a
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
 	if (args->virtual_gateway_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VirtualGatewayId\":\"" ));
-                STRY(osc_str_append_string(data, args->virtual_gateway_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VirtualGatewayId\":", args->virtual_gateway_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -18633,16 +15910,12 @@ static  int unlink_route_table_data(struct osc_unlink_route_table_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->link_route_table_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkRouteTableId\":\"" ));
-                STRY(osc_str_append_string(data, args->link_route_table_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LinkRouteTableId\":", args->link_route_table_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -18685,23 +15958,17 @@ static  int unlink_public_ip_data(struct osc_unlink_public_ip_arg *args, struct 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->link_public_ip_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkPublicIpId\":\"" ));
-                STRY(osc_str_append_string(data, args->link_public_ip_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LinkPublicIpId\":", args->link_public_ip_id);
 	   	ret += 1;
 	}
 	if (args->public_ip) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
-                STRY(osc_str_append_string(data, args->public_ip));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicIp\":", args->public_ip);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -18744,16 +16011,12 @@ static  int unlink_private_ips_data(struct osc_unlink_private_ips_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->nic_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
-                STRY(osc_str_append_string(data, args->nic_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NicId\":", args->nic_id);
 	   	ret += 1;
 	}
 	if (args->private_ips) {
@@ -18764,16 +16027,12 @@ static  int unlink_private_ips_data(struct osc_unlink_private_ips_arg *args, str
 		for (as = args->private_ips; *as > 0; ++as) {
 			if (as != args->private_ips)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->private_ips_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateIps\":" ));
-                STRY(osc_str_append_string(data, args->private_ips_str));
+		ARG_TO_JSON(PrivateIps, string, args->private_ips_str);
 		ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -18816,16 +16075,12 @@ static  int unlink_nic_data(struct osc_unlink_nic_arg *args, struct osc_str *dat
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->link_nic_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LinkNicId\":\"" ));
-                STRY(osc_str_append_string(data, args->link_nic_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LinkNicId\":", args->link_nic_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -18875,16 +16130,12 @@ static  int unlink_load_balancer_backend_machines_data(struct osc_unlink_load_ba
 		for (as = args->backend_ips; *as > 0; ++as) {
 			if (as != args->backend_ips)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->backend_ips_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BackendIps\":" ));
-                STRY(osc_str_append_string(data, args->backend_ips_str));
+		ARG_TO_JSON(BackendIps, string, args->backend_ips_str);
 		ret += 1;
 	}
 	if (args->backend_vm_ids) {
@@ -18895,29 +16146,21 @@ static  int unlink_load_balancer_backend_machines_data(struct osc_unlink_load_ba
 		for (as = args->backend_vm_ids; *as > 0; ++as) {
 			if (as != args->backend_vm_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->backend_vm_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BackendVmIds\":" ));
-                STRY(osc_str_append_string(data, args->backend_vm_ids_str));
+		ARG_TO_JSON(BackendVmIds, string, args->backend_vm_ids_str);
 		ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->load_balancer_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
-                STRY(osc_str_append_string(data, args->load_balancer_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LoadBalancerName\":", args->load_balancer_name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -18960,23 +16203,17 @@ static  int unlink_internet_service_data(struct osc_unlink_internet_service_arg 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->internet_service_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"InternetServiceId\":\"" ));
-                STRY(osc_str_append_string(data, args->internet_service_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"InternetServiceId\":", args->internet_service_id);
 	   	ret += 1;
 	}
 	if (args->net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -19019,16 +16256,12 @@ static  int unlink_flexible_gpu_data(struct osc_unlink_flexible_gpu_arg *args, s
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->flexible_gpu_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"FlexibleGpuId\":\"" ));
-                STRY(osc_str_append_string(data, args->flexible_gpu_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"FlexibleGpuId\":", args->flexible_gpu_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -19071,15 +16304,11 @@ static  int stop_vms_data(struct osc_stop_vms_arg *args, struct osc_str *data)
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->is_set_force_stop) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ForceStop\":" ));
-                STRY(osc_str_append_bool(data, args->force_stop));
+		ARG_TO_JSON(ForceStop, bool, args->force_stop);
 	   	ret += 1;
 	}
 	if (args->vm_ids) {
@@ -19090,16 +16319,12 @@ static  int stop_vms_data(struct osc_stop_vms_arg *args, struct osc_str *data)
 		for (as = args->vm_ids; *as > 0; ++as) {
 			if (as != args->vm_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmIds\":" ));
-                STRY(osc_str_append_string(data, args->vm_ids_str));
+		ARG_TO_JSON(VmIds, string, args->vm_ids_str);
 		ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -19142,9 +16367,7 @@ static  int start_vms_data(struct osc_start_vms_arg *args, struct osc_str *data)
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->vm_ids) {
@@ -19155,16 +16378,12 @@ static  int start_vms_data(struct osc_start_vms_arg *args, struct osc_str *data)
 		for (as = args->vm_ids; *as > 0; ++as) {
 			if (as != args->vm_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmIds\":" ));
-                STRY(osc_str_append_string(data, args->vm_ids_str));
+		ARG_TO_JSON(VmIds, string, args->vm_ids_str);
 		ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -19207,16 +16426,12 @@ static  int send_reset_password_email_data(struct osc_send_reset_password_email_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->email) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Email\":\"" ));
-                STRY(osc_str_append_string(data, args->email));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Email\":", args->email);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -19259,22 +16474,16 @@ static  int scale_up_vm_group_data(struct osc_scale_up_vm_group_arg *args, struc
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->is_set_vm_addition || args->vm_addition) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmAddition\":" ));
-                STRY(osc_str_append_int(data, args->vm_addition));
+		ARG_TO_JSON(VmAddition, int, args->vm_addition);
 	   	ret += 1;
 	}
 	if (args->vm_group_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmGroupId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_group_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmGroupId\":", args->vm_group_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -19317,22 +16526,16 @@ static  int scale_down_vm_group_data(struct osc_scale_down_vm_group_arg *args, s
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->vm_group_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmGroupId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_group_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmGroupId\":", args->vm_group_id);
 	   	ret += 1;
 	}
 	if (args->is_set_vm_subtraction || args->vm_subtraction) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmSubtraction\":" ));
-                STRY(osc_str_append_int(data, args->vm_subtraction));
+		ARG_TO_JSON(VmSubtraction, int, args->vm_subtraction);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -19375,23 +16578,17 @@ static  int reset_account_password_data(struct osc_reset_account_password_arg *a
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->password) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Password\":\"" ));
-                STRY(osc_str_append_string(data, args->password));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Password\":", args->password);
 	   	ret += 1;
 	}
 	if (args->token) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Token\":\"" ));
-                STRY(osc_str_append_string(data, args->token));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Token\":", args->token);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -19434,16 +16631,12 @@ static  int reject_net_peering_data(struct osc_reject_net_peering_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->net_peering_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetPeeringId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_peering_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetPeeringId\":", args->net_peering_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -19493,29 +16686,21 @@ static  int register_vms_in_load_balancer_data(struct osc_register_vms_in_load_b
 		for (as = args->backend_vm_ids; *as > 0; ++as) {
 			if (as != args->backend_vm_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->backend_vm_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BackendVmIds\":" ));
-                STRY(osc_str_append_string(data, args->backend_vm_ids_str));
+		ARG_TO_JSON(BackendVmIds, string, args->backend_vm_ids_str);
 		ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->load_balancer_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
-                STRY(osc_str_append_string(data, args->load_balancer_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LoadBalancerName\":", args->load_balancer_name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -19558,9 +16743,7 @@ static  int reboot_vms_data(struct osc_reboot_vms_arg *args, struct osc_str *dat
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->vm_ids) {
@@ -19571,16 +16754,12 @@ static  int reboot_vms_data(struct osc_reboot_vms_arg *args, struct osc_str *dat
 		for (as = args->vm_ids; *as > 0; ++as) {
 			if (as != args->vm_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmIds\":" ));
-                STRY(osc_str_append_string(data, args->vm_ids_str));
+		ARG_TO_JSON(VmIds, string, args->vm_ids_str);
 		ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -19623,15 +16802,11 @@ static  int read_vpn_connections_data(struct osc_read_vpn_connections_arg *args,
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -19680,15 +16855,11 @@ static  int read_volumes_data(struct osc_read_volumes_arg *args, struct osc_str 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -19737,21 +16908,15 @@ static  int read_vms_state_data(struct osc_read_vms_state_arg *args, struct osc_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_all_vms) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AllVms\":" ));
-                STRY(osc_str_append_bool(data, args->all_vms));
+		ARG_TO_JSON(AllVms, bool, args->all_vms);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -19807,29 +16972,21 @@ static  int read_vms_health_data(struct osc_read_vms_health_arg *args, struct os
 		for (as = args->backend_vm_ids; *as > 0; ++as) {
 			if (as != args->backend_vm_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->backend_vm_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BackendVmIds\":" ));
-                STRY(osc_str_append_string(data, args->backend_vm_ids_str));
+		ARG_TO_JSON(BackendVmIds, string, args->backend_vm_ids_str);
 		ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->load_balancer_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
-                STRY(osc_str_append_string(data, args->load_balancer_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LoadBalancerName\":", args->load_balancer_name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -19872,15 +17029,11 @@ static  int read_vms_data(struct osc_read_vms_arg *args, struct osc_str *data)
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -19929,15 +17082,11 @@ static  int read_vm_types_data(struct osc_read_vm_types_arg *args, struct osc_st
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -19986,15 +17135,11 @@ static  int read_vm_templates_data(struct osc_read_vm_templates_arg *args, struc
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -20043,15 +17188,11 @@ static  int read_vm_groups_data(struct osc_read_vm_groups_arg *args, struct osc_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -20100,15 +17241,11 @@ static  int read_virtual_gateways_data(struct osc_read_virtual_gateways_arg *arg
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -20157,9 +17294,7 @@ static  int read_users_data(struct osc_read_users_arg *args, struct osc_str *dat
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -20202,15 +17337,11 @@ static  int read_tags_data(struct osc_read_tags_arg *args, struct osc_str *data)
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -20259,15 +17390,11 @@ static  int read_subregions_data(struct osc_read_subregions_arg *args, struct os
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -20316,15 +17443,11 @@ static  int read_subnets_data(struct osc_read_subnets_arg *args, struct osc_str 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -20373,15 +17496,11 @@ static  int read_snapshots_data(struct osc_read_snapshots_arg *args, struct osc_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -20430,15 +17549,11 @@ static  int read_snapshot_export_tasks_data(struct osc_read_snapshot_export_task
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -20487,15 +17602,11 @@ static  int read_server_certificates_data(struct osc_read_server_certificates_ar
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -20544,15 +17655,11 @@ static  int read_security_groups_data(struct osc_read_security_groups_arg *args,
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -20601,16 +17708,12 @@ static  int read_secret_access_key_data(struct osc_read_secret_access_key_arg *a
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->access_key_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccessKeyId\":\"" ));
-                STRY(osc_str_append_string(data, args->access_key_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"AccessKeyId\":", args->access_key_id);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -20653,15 +17756,11 @@ static  int read_route_tables_data(struct osc_read_route_tables_arg *args, struc
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -20710,9 +17809,7 @@ static  int read_regions_data(struct osc_read_regions_arg *args, struct osc_str 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -20755,15 +17852,11 @@ static  int read_quotas_data(struct osc_read_quotas_arg *args, struct osc_str *d
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -20812,15 +17905,11 @@ static  int read_public_ips_data(struct osc_read_public_ips_arg *args, struct os
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -20869,9 +17958,7 @@ static  int read_public_ip_ranges_data(struct osc_read_public_ip_ranges_arg *arg
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -20914,9 +18001,7 @@ static  int read_public_catalog_data(struct osc_read_public_catalog_arg *args, s
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -20959,15 +18044,11 @@ static  int read_product_types_data(struct osc_read_product_types_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -21016,15 +18097,11 @@ static  int read_nics_data(struct osc_read_nics_arg *args, struct osc_str *data)
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -21073,15 +18150,11 @@ static  int read_nets_data(struct osc_read_nets_arg *args, struct osc_str *data)
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -21130,15 +18203,11 @@ static  int read_net_peerings_data(struct osc_read_net_peerings_arg *args, struc
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -21187,15 +18256,11 @@ static  int read_net_access_points_data(struct osc_read_net_access_points_arg *a
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -21244,15 +18309,11 @@ static  int read_net_access_point_services_data(struct osc_read_net_access_point
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -21301,15 +18362,11 @@ static  int read_nat_services_data(struct osc_read_nat_services_arg *args, struc
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -21358,9 +18415,7 @@ static  int read_locations_data(struct osc_read_locations_arg *args, struct osc_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -21403,15 +18458,11 @@ static  int read_load_balancers_data(struct osc_read_load_balancers_arg *args, s
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -21460,9 +18511,7 @@ static  int read_load_balancer_tags_data(struct osc_read_load_balancer_tags_arg 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->load_balancer_names) {
@@ -21473,16 +18522,12 @@ static  int read_load_balancer_tags_data(struct osc_read_load_balancer_tags_arg 
 		for (as = args->load_balancer_names; *as > 0; ++as) {
 			if (as != args->load_balancer_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->load_balancer_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerNames\":" ));
-                STRY(osc_str_append_string(data, args->load_balancer_names_str));
+		ARG_TO_JSON(LoadBalancerNames, string, args->load_balancer_names_str);
 		ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -21525,15 +18570,11 @@ static  int read_listener_rules_data(struct osc_read_listener_rules_arg *args, s
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -21582,15 +18623,11 @@ static  int read_keypairs_data(struct osc_read_keypairs_arg *args, struct osc_st
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -21639,15 +18676,11 @@ static  int read_internet_services_data(struct osc_read_internet_services_arg *a
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -21696,15 +18729,11 @@ static  int read_images_data(struct osc_read_images_arg *args, struct osc_str *d
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -21753,15 +18782,11 @@ static  int read_image_export_tasks_data(struct osc_read_image_export_tasks_arg 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -21810,15 +18835,11 @@ static  int read_flexible_gpus_data(struct osc_read_flexible_gpus_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -21867,9 +18888,7 @@ static  int read_flexible_gpu_catalog_data(struct osc_read_flexible_gpu_catalog_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -21912,15 +18931,11 @@ static  int read_direct_links_data(struct osc_read_direct_links_arg *args, struc
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -21969,15 +18984,11 @@ static  int read_direct_link_interfaces_data(struct osc_read_direct_link_interfa
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -22026,15 +19037,11 @@ static  int read_dhcp_options_data(struct osc_read_dhcp_options_arg *args, struc
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -22083,29 +19090,21 @@ static  int read_consumption_account_data(struct osc_read_consumption_account_ar
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->from_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"FromDate\":\"" ));
-                STRY(osc_str_append_string(data, args->from_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"FromDate\":", args->from_date);
 	   	ret += 1;
 	}
 	if (args->is_set_overall) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Overall\":" ));
-                STRY(osc_str_append_bool(data, args->overall));
+		ARG_TO_JSON(Overall, bool, args->overall);
 	   	ret += 1;
 	}
 	if (args->to_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ToDate\":\"" ));
-                STRY(osc_str_append_string(data, args->to_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ToDate\":", args->to_date);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -22148,16 +19147,12 @@ static  int read_console_output_data(struct osc_read_console_output_arg *args, s
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmId\":", args->vm_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -22200,15 +19195,11 @@ static  int read_client_gateways_data(struct osc_read_client_gateways_arg *args,
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -22257,15 +19248,11 @@ static  int read_catalogs_data(struct osc_read_catalogs_arg *args, struct osc_st
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -22314,9 +19301,7 @@ static  int read_catalog_data(struct osc_read_catalog_arg *args, struct osc_str 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -22359,15 +19344,11 @@ static  int read_cas_data(struct osc_read_cas_arg *args, struct osc_str *data)
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -22416,15 +19397,11 @@ static  int read_api_logs_data(struct osc_read_api_logs_arg *args, struct osc_st
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -22434,22 +19411,16 @@ static  int read_api_logs_data(struct osc_read_api_logs_arg *args, struct osc_st
 	       ret += 1;
 	}
 	if (args->next_page_token) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NextPageToken\":\"" ));
-                STRY(osc_str_append_string(data, args->next_page_token));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NextPageToken\":", args->next_page_token);
 	   	ret += 1;
 	}
 	if (args->is_set_results_per_page || args->results_per_page) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ResultsPerPage\":" ));
-                STRY(osc_str_append_int(data, args->results_per_page));
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
 	   	ret += 1;
 	}
 	if (args->with_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"With\":" ));
-                STRY(osc_str_append_string(data, args->with_str));
+		ARG_TO_JSON(With, string, args->with_str);
 		ret += 1;
 	} else if (args->is_set_with) {
 	       TRY_APPEND_COL(count_args, data);
@@ -22498,15 +19469,11 @@ static  int read_api_access_rules_data(struct osc_read_api_access_rules_arg *arg
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -22555,9 +19522,7 @@ static  int read_api_access_policy_data(struct osc_read_api_access_policy_arg *a
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -22600,16 +19565,12 @@ static  int read_admin_password_data(struct osc_read_admin_password_arg *args, s
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmId\":", args->vm_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -22652,9 +19613,7 @@ static  int read_accounts_data(struct osc_read_accounts_arg *args, struct osc_st
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -22697,15 +19656,11 @@ static  int read_access_keys_data(struct osc_read_access_keys_arg *args, struct 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->filters_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Filters\":" ));
-                STRY(osc_str_append_string(data, args->filters_str));
+		ARG_TO_JSON(Filters, string, args->filters_str);
 		ret += 1;
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
@@ -22715,10 +19670,8 @@ static  int read_access_keys_data(struct osc_read_access_keys_arg *args, struct 
 	       ret += 1;
 	}
 	if (args->user_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"UserName\":\"" ));
-                STRY(osc_str_append_string(data, args->user_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserName\":", args->user_name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -22761,30 +19714,22 @@ static  int link_volume_data(struct osc_link_volume_arg *args, struct osc_str *d
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->device_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeviceName\":\"" ));
-                STRY(osc_str_append_string(data, args->device_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DeviceName\":", args->device_name);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmId\":", args->vm_id);
 	   	ret += 1;
 	}
 	if (args->volume_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeId\":\"" ));
-                STRY(osc_str_append_string(data, args->volume_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VolumeId\":", args->volume_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -22827,23 +19772,17 @@ static  int link_virtual_gateway_data(struct osc_link_virtual_gateway_arg *args,
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
 	if (args->virtual_gateway_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VirtualGatewayId\":\"" ));
-                STRY(osc_str_append_string(data, args->virtual_gateway_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VirtualGatewayId\":", args->virtual_gateway_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -22886,23 +19825,17 @@ static  int link_route_table_data(struct osc_link_route_table_arg *args, struct 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->route_table_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RouteTableId\":\"" ));
-                STRY(osc_str_append_string(data, args->route_table_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"RouteTableId\":", args->route_table_id);
 	   	ret += 1;
 	}
 	if (args->subnet_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
-                STRY(osc_str_append_string(data, args->subnet_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubnetId\":", args->subnet_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -22945,50 +19878,36 @@ static  int link_public_ip_data(struct osc_link_public_ip_arg *args, struct osc_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_allow_relink) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AllowRelink\":" ));
-                STRY(osc_str_append_bool(data, args->allow_relink));
+		ARG_TO_JSON(AllowRelink, bool, args->allow_relink);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->nic_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
-                STRY(osc_str_append_string(data, args->nic_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NicId\":", args->nic_id);
 	   	ret += 1;
 	}
 	if (args->private_ip) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateIp\":\"" ));
-                STRY(osc_str_append_string(data, args->private_ip));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PrivateIp\":", args->private_ip);
 	   	ret += 1;
 	}
 	if (args->public_ip) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
-                STRY(osc_str_append_string(data, args->public_ip));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicIp\":", args->public_ip);
 	   	ret += 1;
 	}
 	if (args->public_ip_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIpId\":\"" ));
-                STRY(osc_str_append_string(data, args->public_ip_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicIpId\":", args->public_ip_id);
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmId\":", args->vm_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -23031,22 +19950,16 @@ static  int link_private_ips_data(struct osc_link_private_ips_arg *args, struct 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_allow_relink) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AllowRelink\":" ));
-                STRY(osc_str_append_bool(data, args->allow_relink));
+		ARG_TO_JSON(AllowRelink, bool, args->allow_relink);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->nic_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
-                STRY(osc_str_append_string(data, args->nic_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NicId\":", args->nic_id);
 	   	ret += 1;
 	}
 	if (args->private_ips) {
@@ -23057,22 +19970,16 @@ static  int link_private_ips_data(struct osc_link_private_ips_arg *args, struct 
 		for (as = args->private_ips; *as > 0; ++as) {
 			if (as != args->private_ips)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->private_ips_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateIps\":" ));
-                STRY(osc_str_append_string(data, args->private_ips_str));
+		ARG_TO_JSON(PrivateIps, string, args->private_ips_str);
 		ret += 1;
 	}
 	if (args->is_set_secondary_private_ip_count || args->secondary_private_ip_count) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecondaryPrivateIpCount\":" ));
-                STRY(osc_str_append_int(data, args->secondary_private_ip_count));
+		ARG_TO_JSON(SecondaryPrivateIpCount, int, args->secondary_private_ip_count);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -23115,29 +20022,21 @@ static  int link_nic_data(struct osc_link_nic_arg *args, struct osc_str *data)
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_device_number || args->device_number) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeviceNumber\":" ));
-                STRY(osc_str_append_int(data, args->device_number));
+		ARG_TO_JSON(DeviceNumber, int, args->device_number);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->nic_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
-                STRY(osc_str_append_string(data, args->nic_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NicId\":", args->nic_id);
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmId\":", args->vm_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -23187,16 +20086,12 @@ static  int link_load_balancer_backend_machines_data(struct osc_link_load_balanc
 		for (as = args->backend_ips; *as > 0; ++as) {
 			if (as != args->backend_ips)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->backend_ips_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BackendIps\":" ));
-                STRY(osc_str_append_string(data, args->backend_ips_str));
+		ARG_TO_JSON(BackendIps, string, args->backend_ips_str);
 		ret += 1;
 	}
 	if (args->backend_vm_ids) {
@@ -23207,29 +20102,21 @@ static  int link_load_balancer_backend_machines_data(struct osc_link_load_balanc
 		for (as = args->backend_vm_ids; *as > 0; ++as) {
 			if (as != args->backend_vm_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->backend_vm_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BackendVmIds\":" ));
-                STRY(osc_str_append_string(data, args->backend_vm_ids_str));
+		ARG_TO_JSON(BackendVmIds, string, args->backend_vm_ids_str);
 		ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->load_balancer_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
-                STRY(osc_str_append_string(data, args->load_balancer_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LoadBalancerName\":", args->load_balancer_name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -23272,23 +20159,17 @@ static  int link_internet_service_data(struct osc_link_internet_service_arg *arg
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->internet_service_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"InternetServiceId\":\"" ));
-                STRY(osc_str_append_string(data, args->internet_service_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"InternetServiceId\":", args->internet_service_id);
 	   	ret += 1;
 	}
 	if (args->net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -23331,23 +20212,17 @@ static  int link_flexible_gpu_data(struct osc_link_flexible_gpu_arg *args, struc
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->flexible_gpu_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"FlexibleGpuId\":\"" ));
-                STRY(osc_str_append_string(data, args->flexible_gpu_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"FlexibleGpuId\":", args->flexible_gpu_id);
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmId\":", args->vm_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -23397,29 +20272,21 @@ static  int deregister_vms_in_load_balancer_data(struct osc_deregister_vms_in_lo
 		for (as = args->backend_vm_ids; *as > 0; ++as) {
 			if (as != args->backend_vm_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->backend_vm_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BackendVmIds\":" ));
-                STRY(osc_str_append_string(data, args->backend_vm_ids_str));
+		ARG_TO_JSON(BackendVmIds, string, args->backend_vm_ids_str);
 		ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->load_balancer_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
-                STRY(osc_str_append_string(data, args->load_balancer_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LoadBalancerName\":", args->load_balancer_name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -23462,23 +20329,17 @@ static  int delete_vpn_connection_route_data(struct osc_delete_vpn_connection_ro
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->destination_ip_range) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DestinationIpRange\":\"" ));
-                STRY(osc_str_append_string(data, args->destination_ip_range));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DestinationIpRange\":", args->destination_ip_range);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->vpn_connection_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VpnConnectionId\":\"" ));
-                STRY(osc_str_append_string(data, args->vpn_connection_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VpnConnectionId\":", args->vpn_connection_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -23521,16 +20382,12 @@ static  int delete_vpn_connection_data(struct osc_delete_vpn_connection_arg *arg
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->vpn_connection_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VpnConnectionId\":\"" ));
-                STRY(osc_str_append_string(data, args->vpn_connection_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VpnConnectionId\":", args->vpn_connection_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -23573,16 +20430,12 @@ static  int delete_volume_data(struct osc_delete_volume_arg *args, struct osc_st
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->volume_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeId\":\"" ));
-                STRY(osc_str_append_string(data, args->volume_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VolumeId\":", args->volume_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -23625,9 +20478,7 @@ static  int delete_vms_data(struct osc_delete_vms_arg *args, struct osc_str *dat
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->vm_ids) {
@@ -23638,16 +20489,12 @@ static  int delete_vms_data(struct osc_delete_vms_arg *args, struct osc_str *dat
 		for (as = args->vm_ids; *as > 0; ++as) {
 			if (as != args->vm_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmIds\":" ));
-                STRY(osc_str_append_string(data, args->vm_ids_str));
+		ARG_TO_JSON(VmIds, string, args->vm_ids_str);
 		ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -23690,16 +20537,12 @@ static  int delete_vm_template_data(struct osc_delete_vm_template_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->vm_template_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmTemplateId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_template_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmTemplateId\":", args->vm_template_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -23742,16 +20585,12 @@ static  int delete_vm_group_data(struct osc_delete_vm_group_arg *args, struct os
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->vm_group_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmGroupId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_group_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmGroupId\":", args->vm_group_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -23794,16 +20633,12 @@ static  int delete_virtual_gateway_data(struct osc_delete_virtual_gateway_arg *a
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->virtual_gateway_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VirtualGatewayId\":\"" ));
-                STRY(osc_str_append_string(data, args->virtual_gateway_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VirtualGatewayId\":", args->virtual_gateway_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -23846,16 +20681,12 @@ static  int delete_user_data(struct osc_delete_user_arg *args, struct osc_str *d
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->user_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"UserName\":\"" ));
-                STRY(osc_str_append_string(data, args->user_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserName\":", args->user_name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -23898,9 +20729,7 @@ static  int delete_tags_data(struct osc_delete_tags_arg *args, struct osc_str *d
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->resource_ids) {
@@ -23911,16 +20740,12 @@ static  int delete_tags_data(struct osc_delete_tags_arg *args, struct osc_str *d
 		for (as = args->resource_ids; *as > 0; ++as) {
 			if (as != args->resource_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->resource_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ResourceIds\":" ));
-                STRY(osc_str_append_string(data, args->resource_ids_str));
+		ARG_TO_JSON(ResourceIds, string, args->resource_ids_str);
 		ret += 1;
 	}
         if (args->tags) {
@@ -23938,9 +20763,7 @@ static  int delete_tags_data(struct osc_delete_tags_arg *args, struct osc_str *d
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -23983,16 +20806,12 @@ static  int delete_subnet_data(struct osc_delete_subnet_arg *args, struct osc_st
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->subnet_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
-                STRY(osc_str_append_string(data, args->subnet_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubnetId\":", args->subnet_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -24035,16 +20854,12 @@ static  int delete_snapshot_data(struct osc_delete_snapshot_arg *args, struct os
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->snapshot_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SnapshotId\":\"" ));
-                STRY(osc_str_append_string(data, args->snapshot_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SnapshotId\":", args->snapshot_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -24087,16 +20902,12 @@ static  int delete_server_certificate_data(struct osc_delete_server_certificate_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Name\":\"" ));
-                STRY(osc_str_append_string(data, args->name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Name\":", args->name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -24139,36 +20950,26 @@ static  int delete_security_group_rule_data(struct osc_delete_security_group_rul
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->flow) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Flow\":\"" ));
-                STRY(osc_str_append_string(data, args->flow));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Flow\":", args->flow);
 	   	ret += 1;
 	}
 	if (args->is_set_from_port_range || args->from_port_range) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"FromPortRange\":" ));
-                STRY(osc_str_append_int(data, args->from_port_range));
+		ARG_TO_JSON(FromPortRange, int, args->from_port_range);
 	   	ret += 1;
 	}
 	if (args->ip_protocol) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IpProtocol\":\"" ));
-                STRY(osc_str_append_string(data, args->ip_protocol));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"IpProtocol\":", args->ip_protocol);
 	   	ret += 1;
 	}
 	if (args->ip_range) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IpRange\":\"" ));
-                STRY(osc_str_append_string(data, args->ip_range));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"IpRange\":", args->ip_range);
 	   	ret += 1;
 	}
         if (args->rules) {
@@ -24186,36 +20987,26 @@ static  int delete_security_group_rule_data(struct osc_delete_security_group_rul
 		ret += 1;
 	} else
 	if (args->rules_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Rules\":" ));
-                STRY(osc_str_append_string(data, args->rules_str));
+		ARG_TO_JSON(Rules, string, args->rules_str);
 		ret += 1;
 	}
 	if (args->security_group_account_id_to_unlink) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupAccountIdToUnlink\":\"" ));
-                STRY(osc_str_append_string(data, args->security_group_account_id_to_unlink));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SecurityGroupAccountIdToUnlink\":", args->security_group_account_id_to_unlink);
 	   	ret += 1;
 	}
 	if (args->security_group_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupId\":\"" ));
-                STRY(osc_str_append_string(data, args->security_group_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SecurityGroupId\":", args->security_group_id);
 	   	ret += 1;
 	}
 	if (args->security_group_name_to_unlink) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupNameToUnlink\":\"" ));
-                STRY(osc_str_append_string(data, args->security_group_name_to_unlink));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SecurityGroupNameToUnlink\":", args->security_group_name_to_unlink);
 	   	ret += 1;
 	}
 	if (args->is_set_to_port_range || args->to_port_range) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ToPortRange\":" ));
-                STRY(osc_str_append_int(data, args->to_port_range));
+		ARG_TO_JSON(ToPortRange, int, args->to_port_range);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -24258,23 +21049,17 @@ static  int delete_security_group_data(struct osc_delete_security_group_arg *arg
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->security_group_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupId\":\"" ));
-                STRY(osc_str_append_string(data, args->security_group_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SecurityGroupId\":", args->security_group_id);
 	   	ret += 1;
 	}
 	if (args->security_group_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupName\":\"" ));
-                STRY(osc_str_append_string(data, args->security_group_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SecurityGroupName\":", args->security_group_name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -24317,16 +21102,12 @@ static  int delete_route_table_data(struct osc_delete_route_table_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->route_table_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RouteTableId\":\"" ));
-                STRY(osc_str_append_string(data, args->route_table_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"RouteTableId\":", args->route_table_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -24369,23 +21150,17 @@ static  int delete_route_data(struct osc_delete_route_arg *args, struct osc_str 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->destination_ip_range) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DestinationIpRange\":\"" ));
-                STRY(osc_str_append_string(data, args->destination_ip_range));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DestinationIpRange\":", args->destination_ip_range);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->route_table_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RouteTableId\":\"" ));
-                STRY(osc_str_append_string(data, args->route_table_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"RouteTableId\":", args->route_table_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -24428,23 +21203,17 @@ static  int delete_public_ip_data(struct osc_delete_public_ip_arg *args, struct 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->public_ip) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
-                STRY(osc_str_append_string(data, args->public_ip));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicIp\":", args->public_ip);
 	   	ret += 1;
 	}
 	if (args->public_ip_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIpId\":\"" ));
-                STRY(osc_str_append_string(data, args->public_ip_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicIpId\":", args->public_ip_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -24487,16 +21256,12 @@ static  int delete_nic_data(struct osc_delete_nic_arg *args, struct osc_str *dat
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->nic_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
-                STRY(osc_str_append_string(data, args->nic_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NicId\":", args->nic_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -24539,16 +21304,12 @@ static  int delete_net_peering_data(struct osc_delete_net_peering_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->net_peering_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetPeeringId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_peering_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetPeeringId\":", args->net_peering_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -24591,16 +21352,12 @@ static  int delete_net_access_point_data(struct osc_delete_net_access_point_arg 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->net_access_point_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetAccessPointId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_access_point_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetAccessPointId\":", args->net_access_point_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -24643,16 +21400,12 @@ static  int delete_net_data(struct osc_delete_net_arg *args, struct osc_str *dat
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -24695,16 +21448,12 @@ static  int delete_nat_service_data(struct osc_delete_nat_service_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->nat_service_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NatServiceId\":\"" ));
-                STRY(osc_str_append_string(data, args->nat_service_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NatServiceId\":", args->nat_service_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -24747,9 +21496,7 @@ static  int delete_load_balancer_tags_data(struct osc_delete_load_balancer_tags_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->load_balancer_names) {
@@ -24760,16 +21507,12 @@ static  int delete_load_balancer_tags_data(struct osc_delete_load_balancer_tags_
 		for (as = args->load_balancer_names; *as > 0; ++as) {
 			if (as != args->load_balancer_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->load_balancer_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerNames\":" ));
-                STRY(osc_str_append_string(data, args->load_balancer_names_str));
+		ARG_TO_JSON(LoadBalancerNames, string, args->load_balancer_names_str);
 		ret += 1;
 	}
         if (args->tags) {
@@ -24787,9 +21530,7 @@ static  int delete_load_balancer_tags_data(struct osc_delete_load_balancer_tags_
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -24832,23 +21573,17 @@ static  int delete_load_balancer_policy_data(struct osc_delete_load_balancer_pol
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->load_balancer_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
-                STRY(osc_str_append_string(data, args->load_balancer_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LoadBalancerName\":", args->load_balancer_name);
 	   	ret += 1;
 	}
 	if (args->policy_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PolicyName\":\"" ));
-                STRY(osc_str_append_string(data, args->policy_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PolicyName\":", args->policy_name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -24891,16 +21626,12 @@ static  int delete_load_balancer_listeners_data(struct osc_delete_load_balancer_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->load_balancer_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
-                STRY(osc_str_append_string(data, args->load_balancer_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LoadBalancerName\":", args->load_balancer_name);
 	   	ret += 1;
 	}
 	if (args->load_balancer_ports) {
@@ -24916,9 +21647,7 @@ static  int delete_load_balancer_listeners_data(struct osc_delete_load_balancer_
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->load_balancer_ports_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerPorts\":" ));
-                STRY(osc_str_append_string(data, args->load_balancer_ports_str));
+		ARG_TO_JSON(LoadBalancerPorts, string, args->load_balancer_ports_str);
 		ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -24961,16 +21690,12 @@ static  int delete_load_balancer_data(struct osc_delete_load_balancer_arg *args,
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->load_balancer_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
-                STRY(osc_str_append_string(data, args->load_balancer_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LoadBalancerName\":", args->load_balancer_name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -25013,16 +21738,12 @@ static  int delete_listener_rule_data(struct osc_delete_listener_rule_arg *args,
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->listener_rule_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ListenerRuleName\":\"" ));
-                STRY(osc_str_append_string(data, args->listener_rule_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ListenerRuleName\":", args->listener_rule_name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -25065,16 +21786,12 @@ static  int delete_keypair_data(struct osc_delete_keypair_arg *args, struct osc_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->keypair_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"KeypairName\":\"" ));
-                STRY(osc_str_append_string(data, args->keypair_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"KeypairName\":", args->keypair_name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -25117,16 +21834,12 @@ static  int delete_internet_service_data(struct osc_delete_internet_service_arg 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->internet_service_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"InternetServiceId\":\"" ));
-                STRY(osc_str_append_string(data, args->internet_service_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"InternetServiceId\":", args->internet_service_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -25169,16 +21882,12 @@ static  int delete_image_data(struct osc_delete_image_arg *args, struct osc_str 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->image_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ImageId\":\"" ));
-                STRY(osc_str_append_string(data, args->image_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ImageId\":", args->image_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -25221,16 +21930,12 @@ static  int delete_flexible_gpu_data(struct osc_delete_flexible_gpu_arg *args, s
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->flexible_gpu_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"FlexibleGpuId\":\"" ));
-                STRY(osc_str_append_string(data, args->flexible_gpu_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"FlexibleGpuId\":", args->flexible_gpu_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -25273,16 +21978,12 @@ static  int delete_export_task_data(struct osc_delete_export_task_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->export_task_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ExportTaskId\":\"" ));
-                STRY(osc_str_append_string(data, args->export_task_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ExportTaskId\":", args->export_task_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -25325,16 +22026,12 @@ static  int delete_direct_link_interface_data(struct osc_delete_direct_link_inte
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->direct_link_interface_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DirectLinkInterfaceId\":\"" ));
-                STRY(osc_str_append_string(data, args->direct_link_interface_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DirectLinkInterfaceId\":", args->direct_link_interface_id);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -25377,16 +22074,12 @@ static  int delete_direct_link_data(struct osc_delete_direct_link_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->direct_link_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DirectLinkId\":\"" ));
-                STRY(osc_str_append_string(data, args->direct_link_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DirectLinkId\":", args->direct_link_id);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -25429,16 +22122,12 @@ static  int delete_dhcp_options_data(struct osc_delete_dhcp_options_arg *args, s
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->dhcp_options_set_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DhcpOptionsSetId\":\"" ));
-                STRY(osc_str_append_string(data, args->dhcp_options_set_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DhcpOptionsSetId\":", args->dhcp_options_set_id);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -25481,16 +22170,12 @@ static  int delete_client_gateway_data(struct osc_delete_client_gateway_arg *arg
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->client_gateway_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ClientGatewayId\":\"" ));
-                STRY(osc_str_append_string(data, args->client_gateway_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ClientGatewayId\":", args->client_gateway_id);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -25533,16 +22218,12 @@ static  int delete_ca_data(struct osc_delete_ca_arg *args, struct osc_str *data)
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->ca_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CaId\":\"" ));
-                STRY(osc_str_append_string(data, args->ca_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CaId\":", args->ca_id);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -25585,16 +22266,12 @@ static  int delete_api_access_rule_data(struct osc_delete_api_access_rule_arg *a
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->api_access_rule_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ApiAccessRuleId\":\"" ));
-                STRY(osc_str_append_string(data, args->api_access_rule_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ApiAccessRuleId\":", args->api_access_rule_id);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -25637,23 +22314,17 @@ static  int delete_access_key_data(struct osc_delete_access_key_arg *args, struc
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->access_key_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccessKeyId\":\"" ));
-                STRY(osc_str_append_string(data, args->access_key_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"AccessKeyId\":", args->access_key_id);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->user_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"UserName\":\"" ));
-                STRY(osc_str_append_string(data, args->user_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserName\":", args->user_name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -25696,23 +22367,17 @@ static  int create_vpn_connection_route_data(struct osc_create_vpn_connection_ro
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->destination_ip_range) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DestinationIpRange\":\"" ));
-                STRY(osc_str_append_string(data, args->destination_ip_range));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DestinationIpRange\":", args->destination_ip_range);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->vpn_connection_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VpnConnectionId\":\"" ));
-                STRY(osc_str_append_string(data, args->vpn_connection_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VpnConnectionId\":", args->vpn_connection_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -25755,36 +22420,26 @@ static  int create_vpn_connection_data(struct osc_create_vpn_connection_arg *arg
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->client_gateway_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ClientGatewayId\":\"" ));
-                STRY(osc_str_append_string(data, args->client_gateway_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ClientGatewayId\":", args->client_gateway_id);
 	   	ret += 1;
 	}
 	if (args->connection_type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ConnectionType\":\"" ));
-                STRY(osc_str_append_string(data, args->connection_type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ConnectionType\":", args->connection_type);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->is_set_static_routes_only) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"StaticRoutesOnly\":" ));
-                STRY(osc_str_append_bool(data, args->static_routes_only));
+		ARG_TO_JSON(StaticRoutesOnly, bool, args->static_routes_only);
 	   	ret += 1;
 	}
 	if (args->virtual_gateway_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VirtualGatewayId\":\"" ));
-                STRY(osc_str_append_string(data, args->virtual_gateway_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VirtualGatewayId\":", args->virtual_gateway_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -25827,42 +22482,30 @@ static  int create_volume_data(struct osc_create_volume_arg *args, struct osc_st
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->is_set_iops || args->iops) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Iops\":" ));
-                STRY(osc_str_append_int(data, args->iops));
+		ARG_TO_JSON(Iops, int, args->iops);
 	   	ret += 1;
 	}
 	if (args->is_set_size || args->size) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Size\":" ));
-                STRY(osc_str_append_int(data, args->size));
+		ARG_TO_JSON(Size, int, args->size);
 	   	ret += 1;
 	}
 	if (args->snapshot_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SnapshotId\":\"" ));
-                STRY(osc_str_append_string(data, args->snapshot_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SnapshotId\":", args->snapshot_id);
 	   	ret += 1;
 	}
 	if (args->subregion_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubregionName\":\"" ));
-                STRY(osc_str_append_string(data, args->subregion_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubregionName\":", args->subregion_name);
 	   	ret += 1;
 	}
 	if (args->volume_type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeType\":\"" ));
-                STRY(osc_str_append_string(data, args->volume_type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VolumeType\":", args->volume_type);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -25919,72 +22562,50 @@ static  int create_vms_data(struct osc_create_vms_arg *args, struct osc_str *dat
 		ret += 1;
 	} else
 	if (args->block_device_mappings_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BlockDeviceMappings\":" ));
-                STRY(osc_str_append_string(data, args->block_device_mappings_str));
+		ARG_TO_JSON(BlockDeviceMappings, string, args->block_device_mappings_str);
 		ret += 1;
 	}
 	if (args->is_set_boot_on_creation) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BootOnCreation\":" ));
-                STRY(osc_str_append_bool(data, args->boot_on_creation));
+		ARG_TO_JSON(BootOnCreation, bool, args->boot_on_creation);
 	   	ret += 1;
 	}
 	if (args->is_set_bsu_optimized) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BsuOptimized\":" ));
-                STRY(osc_str_append_bool(data, args->bsu_optimized));
+		ARG_TO_JSON(BsuOptimized, bool, args->bsu_optimized);
 	   	ret += 1;
 	}
 	if (args->client_token) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ClientToken\":\"" ));
-                STRY(osc_str_append_string(data, args->client_token));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ClientToken\":", args->client_token);
 	   	ret += 1;
 	}
 	if (args->is_set_deletion_protection) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeletionProtection\":" ));
-                STRY(osc_str_append_bool(data, args->deletion_protection));
+		ARG_TO_JSON(DeletionProtection, bool, args->deletion_protection);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->image_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ImageId\":\"" ));
-                STRY(osc_str_append_string(data, args->image_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ImageId\":", args->image_id);
 	   	ret += 1;
 	}
 	if (args->keypair_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"KeypairName\":\"" ));
-                STRY(osc_str_append_string(data, args->keypair_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"KeypairName\":", args->keypair_name);
 	   	ret += 1;
 	}
 	if (args->is_set_max_vms_count || args->max_vms_count) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MaxVmsCount\":" ));
-                STRY(osc_str_append_int(data, args->max_vms_count));
+		ARG_TO_JSON(MaxVmsCount, int, args->max_vms_count);
 	   	ret += 1;
 	}
 	if (args->is_set_min_vms_count || args->min_vms_count) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MinVmsCount\":" ));
-                STRY(osc_str_append_int(data, args->min_vms_count));
+		ARG_TO_JSON(MinVmsCount, int, args->min_vms_count);
 	   	ret += 1;
 	}
 	if (args->is_set_nested_virtualization) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NestedVirtualization\":" ));
-                STRY(osc_str_append_bool(data, args->nested_virtualization));
+		ARG_TO_JSON(NestedVirtualization, bool, args->nested_virtualization);
 	   	ret += 1;
 	}
         if (args->nics) {
@@ -26002,22 +22623,16 @@ static  int create_vms_data(struct osc_create_vms_arg *args, struct osc_str *dat
 		ret += 1;
 	} else
 	if (args->nics_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Nics\":" ));
-                STRY(osc_str_append_string(data, args->nics_str));
+		ARG_TO_JSON(Nics, string, args->nics_str);
 		ret += 1;
 	}
 	if (args->performance) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Performance\":\"" ));
-                STRY(osc_str_append_string(data, args->performance));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Performance\":", args->performance);
 	   	ret += 1;
 	}
 	if (args->placement_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Placement\":" ));
-                STRY(osc_str_append_string(data, args->placement_str));
+		ARG_TO_JSON(Placement, string, args->placement_str);
 		ret += 1;
 	} else if (args->is_set_placement) {
 	       TRY_APPEND_COL(count_args, data);
@@ -26034,16 +22649,12 @@ static  int create_vms_data(struct osc_create_vms_arg *args, struct osc_str *dat
 		for (as = args->private_ips; *as > 0; ++as) {
 			if (as != args->private_ips)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->private_ips_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateIps\":" ));
-                STRY(osc_str_append_string(data, args->private_ips_str));
+		ARG_TO_JSON(PrivateIps, string, args->private_ips_str);
 		ret += 1;
 	}
 	if (args->security_group_ids) {
@@ -26054,16 +22665,12 @@ static  int create_vms_data(struct osc_create_vms_arg *args, struct osc_str *dat
 		for (as = args->security_group_ids; *as > 0; ++as) {
 			if (as != args->security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_group_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":" ));
-                STRY(osc_str_append_string(data, args->security_group_ids_str));
+		ARG_TO_JSON(SecurityGroupIds, string, args->security_group_ids_str);
 		ret += 1;
 	}
 	if (args->security_groups) {
@@ -26074,44 +22681,32 @@ static  int create_vms_data(struct osc_create_vms_arg *args, struct osc_str *dat
 		for (as = args->security_groups; *as > 0; ++as) {
 			if (as != args->security_groups)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_groups_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroups\":" ));
-                STRY(osc_str_append_string(data, args->security_groups_str));
+		ARG_TO_JSON(SecurityGroups, string, args->security_groups_str);
 		ret += 1;
 	}
 	if (args->subnet_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
-                STRY(osc_str_append_string(data, args->subnet_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubnetId\":", args->subnet_id);
 	   	ret += 1;
 	}
 	if (args->user_data) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"UserData\":\"" ));
-                STRY(osc_str_append_string(data, args->user_data));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserData\":", args->user_data);
 	   	ret += 1;
 	}
 	if (args->vm_initiated_shutdown_behavior) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmInitiatedShutdownBehavior\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_initiated_shutdown_behavior));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmInitiatedShutdownBehavior\":", args->vm_initiated_shutdown_behavior);
 	   	ret += 1;
 	}
 	if (args->vm_type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmType\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmType\":", args->vm_type);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -26154,56 +22749,40 @@ static  int create_vm_template_data(struct osc_create_vm_template_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_cpu_cores || args->cpu_cores) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CpuCores\":" ));
-                STRY(osc_str_append_int(data, args->cpu_cores));
+		ARG_TO_JSON(CpuCores, int, args->cpu_cores);
 	   	ret += 1;
 	}
 	if (args->cpu_generation) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CpuGeneration\":\"" ));
-                STRY(osc_str_append_string(data, args->cpu_generation));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CpuGeneration\":", args->cpu_generation);
 	   	ret += 1;
 	}
 	if (args->cpu_performance) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CpuPerformance\":\"" ));
-                STRY(osc_str_append_string(data, args->cpu_performance));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CpuPerformance\":", args->cpu_performance);
 	   	ret += 1;
 	}
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->image_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ImageId\":\"" ));
-                STRY(osc_str_append_string(data, args->image_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ImageId\":", args->image_id);
 	   	ret += 1;
 	}
 	if (args->keypair_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"KeypairName\":\"" ));
-                STRY(osc_str_append_string(data, args->keypair_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"KeypairName\":", args->keypair_name);
 	   	ret += 1;
 	}
 	if (args->is_set_ram || args->ram) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Ram\":" ));
-                STRY(osc_str_append_int(data, args->ram));
+		ARG_TO_JSON(Ram, int, args->ram);
 	   	ret += 1;
 	}
         if (args->tags) {
@@ -26221,16 +22800,12 @@ static  int create_vm_template_data(struct osc_create_vm_template_arg *args, str
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	if (args->vm_template_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmTemplateName\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_template_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmTemplateName\":", args->vm_template_name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -26273,23 +22848,17 @@ static  int create_vm_group_data(struct osc_create_vm_group_arg *args, struct os
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->positioning_strategy) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PositioningStrategy\":\"" ));
-                STRY(osc_str_append_string(data, args->positioning_strategy));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PositioningStrategy\":", args->positioning_strategy);
 	   	ret += 1;
 	}
 	if (args->security_group_ids) {
@@ -26300,23 +22869,17 @@ static  int create_vm_group_data(struct osc_create_vm_group_arg *args, struct os
 		for (as = args->security_group_ids; *as > 0; ++as) {
 			if (as != args->security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_group_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":" ));
-                STRY(osc_str_append_string(data, args->security_group_ids_str));
+		ARG_TO_JSON(SecurityGroupIds, string, args->security_group_ids_str);
 		ret += 1;
 	}
 	if (args->subnet_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
-                STRY(osc_str_append_string(data, args->subnet_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubnetId\":", args->subnet_id);
 	   	ret += 1;
 	}
         if (args->tags) {
@@ -26334,29 +22897,21 @@ static  int create_vm_group_data(struct osc_create_vm_group_arg *args, struct os
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	if (args->is_set_vm_count || args->vm_count) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmCount\":" ));
-                STRY(osc_str_append_int(data, args->vm_count));
+		ARG_TO_JSON(VmCount, int, args->vm_count);
 	   	ret += 1;
 	}
 	if (args->vm_group_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmGroupName\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_group_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmGroupName\":", args->vm_group_name);
 	   	ret += 1;
 	}
 	if (args->vm_template_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmTemplateId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_template_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmTemplateId\":", args->vm_template_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -26399,16 +22954,12 @@ static  int create_virtual_gateway_data(struct osc_create_virtual_gateway_arg *a
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->connection_type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ConnectionType\":\"" ));
-                STRY(osc_str_append_string(data, args->connection_type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ConnectionType\":", args->connection_type);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -26451,23 +23002,17 @@ static  int create_user_data(struct osc_create_user_arg *args, struct osc_str *d
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->path) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Path\":\"" ));
-                STRY(osc_str_append_string(data, args->path));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Path\":", args->path);
 	   	ret += 1;
 	}
 	if (args->user_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"UserName\":\"" ));
-                STRY(osc_str_append_string(data, args->user_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserName\":", args->user_name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -26510,9 +23055,7 @@ static  int create_tags_data(struct osc_create_tags_arg *args, struct osc_str *d
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->resource_ids) {
@@ -26523,16 +23066,12 @@ static  int create_tags_data(struct osc_create_tags_arg *args, struct osc_str *d
 		for (as = args->resource_ids; *as > 0; ++as) {
 			if (as != args->resource_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->resource_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ResourceIds\":" ));
-                STRY(osc_str_append_string(data, args->resource_ids_str));
+		ARG_TO_JSON(ResourceIds, string, args->resource_ids_str);
 		ret += 1;
 	}
         if (args->tags) {
@@ -26550,9 +23089,7 @@ static  int create_tags_data(struct osc_create_tags_arg *args, struct osc_str *d
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -26595,30 +23132,22 @@ static  int create_subnet_data(struct osc_create_subnet_arg *args, struct osc_st
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->ip_range) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IpRange\":\"" ));
-                STRY(osc_str_append_string(data, args->ip_range));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"IpRange\":", args->ip_range);
 	   	ret += 1;
 	}
 	if (args->net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
 	if (args->subregion_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubregionName\":\"" ));
-                STRY(osc_str_append_string(data, args->subregion_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubregionName\":", args->subregion_name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -26661,15 +23190,11 @@ static  int create_snapshot_export_task_data(struct osc_create_snapshot_export_t
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->osu_export_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OsuExport\":" ));
-                STRY(osc_str_append_string(data, args->osu_export_str));
+		ARG_TO_JSON(OsuExport, string, args->osu_export_str);
 		ret += 1;
 	} else if (args->is_set_osu_export) {
 	       TRY_APPEND_COL(count_args, data);
@@ -26679,10 +23204,8 @@ static  int create_snapshot_export_task_data(struct osc_create_snapshot_export_t
 	       ret += 1;
 	}
 	if (args->snapshot_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SnapshotId\":\"" ));
-                STRY(osc_str_append_string(data, args->snapshot_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SnapshotId\":", args->snapshot_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -26725,50 +23248,36 @@ static  int create_snapshot_data(struct osc_create_snapshot_arg *args, struct os
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->file_location) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"FileLocation\":\"" ));
-                STRY(osc_str_append_string(data, args->file_location));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"FileLocation\":", args->file_location);
 	   	ret += 1;
 	}
 	if (args->is_set_snapshot_size || args->snapshot_size) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SnapshotSize\":" ));
-                STRY(osc_str_append_int(data, args->snapshot_size));
+		ARG_TO_JSON(SnapshotSize, int, args->snapshot_size);
 	   	ret += 1;
 	}
 	if (args->source_region_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SourceRegionName\":\"" ));
-                STRY(osc_str_append_string(data, args->source_region_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SourceRegionName\":", args->source_region_name);
 	   	ret += 1;
 	}
 	if (args->source_snapshot_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SourceSnapshotId\":\"" ));
-                STRY(osc_str_append_string(data, args->source_snapshot_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SourceSnapshotId\":", args->source_snapshot_id);
 	   	ret += 1;
 	}
 	if (args->volume_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VolumeId\":\"" ));
-                STRY(osc_str_append_string(data, args->volume_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VolumeId\":", args->volume_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -26811,44 +23320,32 @@ static  int create_server_certificate_data(struct osc_create_server_certificate_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->body) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Body\":\"" ));
-                STRY(osc_str_append_string(data, args->body));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Body\":", args->body);
 	   	ret += 1;
 	}
 	if (args->chain) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Chain\":\"" ));
-                STRY(osc_str_append_string(data, args->chain));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Chain\":", args->chain);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Name\":\"" ));
-                STRY(osc_str_append_string(data, args->name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Name\":", args->name);
 	   	ret += 1;
 	}
 	if (args->path) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Path\":\"" ));
-                STRY(osc_str_append_string(data, args->path));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Path\":", args->path);
 	   	ret += 1;
 	}
 	if (args->private_key) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateKey\":\"" ));
-                STRY(osc_str_append_string(data, args->private_key));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PrivateKey\":", args->private_key);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -26891,36 +23388,26 @@ static  int create_security_group_rule_data(struct osc_create_security_group_rul
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->flow) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Flow\":\"" ));
-                STRY(osc_str_append_string(data, args->flow));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Flow\":", args->flow);
 	   	ret += 1;
 	}
 	if (args->is_set_from_port_range || args->from_port_range) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"FromPortRange\":" ));
-                STRY(osc_str_append_int(data, args->from_port_range));
+		ARG_TO_JSON(FromPortRange, int, args->from_port_range);
 	   	ret += 1;
 	}
 	if (args->ip_protocol) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IpProtocol\":\"" ));
-                STRY(osc_str_append_string(data, args->ip_protocol));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"IpProtocol\":", args->ip_protocol);
 	   	ret += 1;
 	}
 	if (args->ip_range) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IpRange\":\"" ));
-                STRY(osc_str_append_string(data, args->ip_range));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"IpRange\":", args->ip_range);
 	   	ret += 1;
 	}
         if (args->rules) {
@@ -26938,36 +23425,26 @@ static  int create_security_group_rule_data(struct osc_create_security_group_rul
 		ret += 1;
 	} else
 	if (args->rules_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Rules\":" ));
-                STRY(osc_str_append_string(data, args->rules_str));
+		ARG_TO_JSON(Rules, string, args->rules_str);
 		ret += 1;
 	}
 	if (args->security_group_account_id_to_link) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupAccountIdToLink\":\"" ));
-                STRY(osc_str_append_string(data, args->security_group_account_id_to_link));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SecurityGroupAccountIdToLink\":", args->security_group_account_id_to_link);
 	   	ret += 1;
 	}
 	if (args->security_group_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupId\":\"" ));
-                STRY(osc_str_append_string(data, args->security_group_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SecurityGroupId\":", args->security_group_id);
 	   	ret += 1;
 	}
 	if (args->security_group_name_to_link) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupNameToLink\":\"" ));
-                STRY(osc_str_append_string(data, args->security_group_name_to_link));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SecurityGroupNameToLink\":", args->security_group_name_to_link);
 	   	ret += 1;
 	}
 	if (args->is_set_to_port_range || args->to_port_range) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ToPortRange\":" ));
-                STRY(osc_str_append_int(data, args->to_port_range));
+		ARG_TO_JSON(ToPortRange, int, args->to_port_range);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -27010,30 +23487,22 @@ static  int create_security_group_data(struct osc_create_security_group_arg *arg
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
 	if (args->security_group_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupName\":\"" ));
-                STRY(osc_str_append_string(data, args->security_group_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SecurityGroupName\":", args->security_group_name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -27076,16 +23545,12 @@ static  int create_route_table_data(struct osc_create_route_table_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -27128,58 +23593,42 @@ static  int create_route_data(struct osc_create_route_arg *args, struct osc_str 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->destination_ip_range) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DestinationIpRange\":\"" ));
-                STRY(osc_str_append_string(data, args->destination_ip_range));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DestinationIpRange\":", args->destination_ip_range);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->gateway_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"GatewayId\":\"" ));
-                STRY(osc_str_append_string(data, args->gateway_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"GatewayId\":", args->gateway_id);
 	   	ret += 1;
 	}
 	if (args->nat_service_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NatServiceId\":\"" ));
-                STRY(osc_str_append_string(data, args->nat_service_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NatServiceId\":", args->nat_service_id);
 	   	ret += 1;
 	}
 	if (args->net_peering_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetPeeringId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_peering_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetPeeringId\":", args->net_peering_id);
 	   	ret += 1;
 	}
 	if (args->nic_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NicId\":\"" ));
-                STRY(osc_str_append_string(data, args->nic_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NicId\":", args->nic_id);
 	   	ret += 1;
 	}
 	if (args->route_table_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RouteTableId\":\"" ));
-                STRY(osc_str_append_string(data, args->route_table_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"RouteTableId\":", args->route_table_id);
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmId\":", args->vm_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -27222,9 +23671,7 @@ static  int create_public_ip_data(struct osc_create_public_ip_arg *args, struct 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -27267,16 +23714,12 @@ static  int create_nic_data(struct osc_create_nic_arg *args, struct osc_str *dat
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
         if (args->private_ips) {
@@ -27294,9 +23737,7 @@ static  int create_nic_data(struct osc_create_nic_arg *args, struct osc_str *dat
 		ret += 1;
 	} else
 	if (args->private_ips_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PrivateIps\":" ));
-                STRY(osc_str_append_string(data, args->private_ips_str));
+		ARG_TO_JSON(PrivateIps, string, args->private_ips_str);
 		ret += 1;
 	}
 	if (args->security_group_ids) {
@@ -27307,23 +23748,17 @@ static  int create_nic_data(struct osc_create_nic_arg *args, struct osc_str *dat
 		for (as = args->security_group_ids; *as > 0; ++as) {
 			if (as != args->security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_group_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":" ));
-                STRY(osc_str_append_string(data, args->security_group_ids_str));
+		ARG_TO_JSON(SecurityGroupIds, string, args->security_group_ids_str);
 		ret += 1;
 	}
 	if (args->subnet_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
-                STRY(osc_str_append_string(data, args->subnet_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubnetId\":", args->subnet_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -27366,23 +23801,17 @@ static  int create_net_peering_data(struct osc_create_net_peering_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->accepter_net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AccepterNetId\":\"" ));
-                STRY(osc_str_append_string(data, args->accepter_net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"AccepterNetId\":", args->accepter_net_id);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->source_net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SourceNetId\":\"" ));
-                STRY(osc_str_append_string(data, args->source_net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SourceNetId\":", args->source_net_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -27425,16 +23854,12 @@ static  int create_net_access_point_data(struct osc_create_net_access_point_arg 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->net_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
 	if (args->route_table_ids) {
@@ -27445,23 +23870,17 @@ static  int create_net_access_point_data(struct osc_create_net_access_point_arg 
 		for (as = args->route_table_ids; *as > 0; ++as) {
 			if (as != args->route_table_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->route_table_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RouteTableIds\":" ));
-                STRY(osc_str_append_string(data, args->route_table_ids_str));
+		ARG_TO_JSON(RouteTableIds, string, args->route_table_ids_str);
 		ret += 1;
 	}
 	if (args->service_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ServiceName\":\"" ));
-                STRY(osc_str_append_string(data, args->service_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ServiceName\":", args->service_name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -27504,23 +23923,17 @@ static  int create_net_data(struct osc_create_net_arg *args, struct osc_str *dat
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->ip_range) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IpRange\":\"" ));
-                STRY(osc_str_append_string(data, args->ip_range));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"IpRange\":", args->ip_range);
 	   	ret += 1;
 	}
 	if (args->tenancy) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tenancy\":\"" ));
-                STRY(osc_str_append_string(data, args->tenancy));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Tenancy\":", args->tenancy);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -27563,23 +23976,17 @@ static  int create_nat_service_data(struct osc_create_nat_service_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->public_ip_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIpId\":\"" ));
-                STRY(osc_str_append_string(data, args->public_ip_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicIpId\":", args->public_ip_id);
 	   	ret += 1;
 	}
 	if (args->subnet_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubnetId\":\"" ));
-                STRY(osc_str_append_string(data, args->subnet_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubnetId\":", args->subnet_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -27622,9 +24029,7 @@ static  int create_load_balancer_tags_data(struct osc_create_load_balancer_tags_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->load_balancer_names) {
@@ -27635,16 +24040,12 @@ static  int create_load_balancer_tags_data(struct osc_create_load_balancer_tags_
 		for (as = args->load_balancer_names; *as > 0; ++as) {
 			if (as != args->load_balancer_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->load_balancer_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerNames\":" ));
-                STRY(osc_str_append_string(data, args->load_balancer_names_str));
+		ARG_TO_JSON(LoadBalancerNames, string, args->load_balancer_names_str);
 		ret += 1;
 	}
         if (args->tags) {
@@ -27662,9 +24063,7 @@ static  int create_load_balancer_tags_data(struct osc_create_load_balancer_tags_
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -27707,43 +24106,31 @@ static  int create_load_balancer_policy_data(struct osc_create_load_balancer_pol
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_cookie_expiration_period || args->cookie_expiration_period) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CookieExpirationPeriod\":" ));
-                STRY(osc_str_append_int(data, args->cookie_expiration_period));
+		ARG_TO_JSON(CookieExpirationPeriod, int, args->cookie_expiration_period);
 	   	ret += 1;
 	}
 	if (args->cookie_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CookieName\":\"" ));
-                STRY(osc_str_append_string(data, args->cookie_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CookieName\":", args->cookie_name);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->load_balancer_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
-                STRY(osc_str_append_string(data, args->load_balancer_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LoadBalancerName\":", args->load_balancer_name);
 	   	ret += 1;
 	}
 	if (args->policy_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PolicyName\":\"" ));
-                STRY(osc_str_append_string(data, args->policy_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PolicyName\":", args->policy_name);
 	   	ret += 1;
 	}
 	if (args->policy_type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PolicyType\":\"" ));
-                STRY(osc_str_append_string(data, args->policy_type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PolicyType\":", args->policy_type);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -27786,9 +24173,7 @@ static  int create_load_balancer_listeners_data(struct osc_create_load_balancer_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
         if (args->listeners) {
@@ -27806,16 +24191,12 @@ static  int create_load_balancer_listeners_data(struct osc_create_load_balancer_
 		ret += 1;
 	} else
 	if (args->listeners_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Listeners\":" ));
-                STRY(osc_str_append_string(data, args->listeners_str));
+		ARG_TO_JSON(Listeners, string, args->listeners_str);
 		ret += 1;
 	}
 	if (args->load_balancer_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
-                STRY(osc_str_append_string(data, args->load_balancer_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LoadBalancerName\":", args->load_balancer_name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -27858,9 +24239,7 @@ static  int create_load_balancer_data(struct osc_create_load_balancer_arg *args,
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
         if (args->listeners) {
@@ -27878,30 +24257,22 @@ static  int create_load_balancer_data(struct osc_create_load_balancer_arg *args,
 		ret += 1;
 	} else
 	if (args->listeners_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Listeners\":" ));
-                STRY(osc_str_append_string(data, args->listeners_str));
+		ARG_TO_JSON(Listeners, string, args->listeners_str);
 		ret += 1;
 	}
 	if (args->load_balancer_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerName\":\"" ));
-                STRY(osc_str_append_string(data, args->load_balancer_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LoadBalancerName\":", args->load_balancer_name);
 	   	ret += 1;
 	}
 	if (args->load_balancer_type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LoadBalancerType\":\"" ));
-                STRY(osc_str_append_string(data, args->load_balancer_type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LoadBalancerType\":", args->load_balancer_type);
 	   	ret += 1;
 	}
 	if (args->public_ip) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
-                STRY(osc_str_append_string(data, args->public_ip));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicIp\":", args->public_ip);
 	   	ret += 1;
 	}
 	if (args->security_groups) {
@@ -27912,16 +24283,12 @@ static  int create_load_balancer_data(struct osc_create_load_balancer_arg *args,
 		for (as = args->security_groups; *as > 0; ++as) {
 			if (as != args->security_groups)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->security_groups_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SecurityGroups\":" ));
-                STRY(osc_str_append_string(data, args->security_groups_str));
+		ARG_TO_JSON(SecurityGroups, string, args->security_groups_str);
 		ret += 1;
 	}
 	if (args->subnets) {
@@ -27932,16 +24299,12 @@ static  int create_load_balancer_data(struct osc_create_load_balancer_arg *args,
 		for (as = args->subnets; *as > 0; ++as) {
 			if (as != args->subnets)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subnets_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Subnets\":" ));
-                STRY(osc_str_append_string(data, args->subnets_str));
+		ARG_TO_JSON(Subnets, string, args->subnets_str);
 		ret += 1;
 	}
 	if (args->subregion_names) {
@@ -27952,16 +24315,12 @@ static  int create_load_balancer_data(struct osc_create_load_balancer_arg *args,
 		for (as = args->subregion_names; *as > 0; ++as) {
 			if (as != args->subregion_names)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->subregion_names_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubregionNames\":" ));
-                STRY(osc_str_append_string(data, args->subregion_names_str));
+		ARG_TO_JSON(SubregionNames, string, args->subregion_names_str);
 		ret += 1;
 	}
         if (args->tags) {
@@ -27979,9 +24338,7 @@ static  int create_load_balancer_data(struct osc_create_load_balancer_arg *args,
 		ret += 1;
 	} else
 	if (args->tags_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Tags\":" ));
-                STRY(osc_str_append_string(data, args->tags_str));
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -28024,15 +24381,11 @@ static  int create_listener_rule_data(struct osc_create_listener_rule_arg *args,
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->listener_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Listener\":" ));
-                STRY(osc_str_append_string(data, args->listener_str));
+		ARG_TO_JSON(Listener, string, args->listener_str);
 		ret += 1;
 	} else if (args->is_set_listener) {
 	       TRY_APPEND_COL(count_args, data);
@@ -28042,9 +24395,7 @@ static  int create_listener_rule_data(struct osc_create_listener_rule_arg *args,
 	       ret += 1;
 	}
 	if (args->listener_rule_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ListenerRule\":" ));
-                STRY(osc_str_append_string(data, args->listener_rule_str));
+		ARG_TO_JSON(ListenerRule, string, args->listener_rule_str);
 		ret += 1;
 	} else if (args->is_set_listener_rule) {
 	       TRY_APPEND_COL(count_args, data);
@@ -28061,16 +24412,12 @@ static  int create_listener_rule_data(struct osc_create_listener_rule_arg *args,
 		for (as = args->vm_ids; *as > 0; ++as) {
 			if (as != args->vm_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->vm_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmIds\":" ));
-                STRY(osc_str_append_string(data, args->vm_ids_str));
+		ARG_TO_JSON(VmIds, string, args->vm_ids_str);
 		ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -28113,23 +24460,17 @@ static  int create_keypair_data(struct osc_create_keypair_arg *args, struct osc_
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->keypair_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"KeypairName\":\"" ));
-                STRY(osc_str_append_string(data, args->keypair_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"KeypairName\":", args->keypair_name);
 	   	ret += 1;
 	}
 	if (args->public_key) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicKey\":\"" ));
-                STRY(osc_str_append_string(data, args->public_key));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicKey\":", args->public_key);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -28172,9 +24513,7 @@ static  int create_internet_service_data(struct osc_create_internet_service_arg 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -28217,22 +24556,16 @@ static  int create_image_export_task_data(struct osc_create_image_export_task_ar
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->image_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ImageId\":\"" ));
-                STRY(osc_str_append_string(data, args->image_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ImageId\":", args->image_id);
 	   	ret += 1;
 	}
 	if (args->osu_export_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"OsuExport\":" ));
-                STRY(osc_str_append_string(data, args->osu_export_str));
+		ARG_TO_JSON(OsuExport, string, args->osu_export_str);
 		ret += 1;
 	} else if (args->is_set_osu_export) {
 	       TRY_APPEND_COL(count_args, data);
@@ -28281,10 +24614,8 @@ static  int create_image_data(struct osc_create_image_arg *args, struct osc_str 
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->architecture) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Architecture\":\"" ));
-                STRY(osc_str_append_string(data, args->architecture));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Architecture\":", args->architecture);
 	   	ret += 1;
 	}
         if (args->block_device_mappings) {
@@ -28302,42 +24633,30 @@ static  int create_image_data(struct osc_create_image_arg *args, struct osc_str 
 		ret += 1;
 	} else
 	if (args->block_device_mappings_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BlockDeviceMappings\":" ));
-                STRY(osc_str_append_string(data, args->block_device_mappings_str));
+		ARG_TO_JSON(BlockDeviceMappings, string, args->block_device_mappings_str);
 		ret += 1;
 	}
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->file_location) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"FileLocation\":\"" ));
-                STRY(osc_str_append_string(data, args->file_location));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"FileLocation\":", args->file_location);
 	   	ret += 1;
 	}
 	if (args->image_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ImageName\":\"" ));
-                STRY(osc_str_append_string(data, args->image_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ImageName\":", args->image_name);
 	   	ret += 1;
 	}
 	if (args->is_set_no_reboot) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NoReboot\":" ));
-                STRY(osc_str_append_bool(data, args->no_reboot));
+		ARG_TO_JSON(NoReboot, bool, args->no_reboot);
 	   	ret += 1;
 	}
 	if (args->product_codes) {
@@ -28348,44 +24667,32 @@ static  int create_image_data(struct osc_create_image_arg *args, struct osc_str 
 		for (as = args->product_codes; *as > 0; ++as) {
 			if (as != args->product_codes)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->product_codes_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ProductCodes\":" ));
-                STRY(osc_str_append_string(data, args->product_codes_str));
+		ARG_TO_JSON(ProductCodes, string, args->product_codes_str);
 		ret += 1;
 	}
 	if (args->root_device_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"RootDeviceName\":\"" ));
-                STRY(osc_str_append_string(data, args->root_device_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"RootDeviceName\":", args->root_device_name);
 	   	ret += 1;
 	}
 	if (args->source_image_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SourceImageId\":\"" ));
-                STRY(osc_str_append_string(data, args->source_image_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SourceImageId\":", args->source_image_id);
 	   	ret += 1;
 	}
 	if (args->source_region_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SourceRegionName\":\"" ));
-                STRY(osc_str_append_string(data, args->source_region_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SourceRegionName\":", args->source_region_name);
 	   	ret += 1;
 	}
 	if (args->vm_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmId\":\"" ));
-                STRY(osc_str_append_string(data, args->vm_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmId\":", args->vm_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -28428,36 +24735,26 @@ static  int create_flexible_gpu_data(struct osc_create_flexible_gpu_arg *args, s
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_delete_on_vm_deletion) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DeleteOnVmDeletion\":" ));
-                STRY(osc_str_append_bool(data, args->delete_on_vm_deletion));
+		ARG_TO_JSON(DeleteOnVmDeletion, bool, args->delete_on_vm_deletion);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->generation) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Generation\":\"" ));
-                STRY(osc_str_append_string(data, args->generation));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Generation\":", args->generation);
 	   	ret += 1;
 	}
 	if (args->model_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ModelName\":\"" ));
-                STRY(osc_str_append_string(data, args->model_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ModelName\":", args->model_name);
 	   	ret += 1;
 	}
 	if (args->subregion_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubregionName\":\"" ));
-                STRY(osc_str_append_string(data, args->subregion_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SubregionName\":", args->subregion_name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -28500,16 +24797,12 @@ static  int create_direct_link_interface_data(struct osc_create_direct_link_inte
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->direct_link_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DirectLinkId\":\"" ));
-                STRY(osc_str_append_string(data, args->direct_link_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DirectLinkId\":", args->direct_link_id);
 	   	ret += 1;
 	}
 	if (args->direct_link_interface_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DirectLinkInterface\":" ));
-                STRY(osc_str_append_string(data, args->direct_link_interface_str));
+		ARG_TO_JSON(DirectLinkInterface, string, args->direct_link_interface_str);
 		ret += 1;
 	} else if (args->is_set_direct_link_interface) {
 	       TRY_APPEND_COL(count_args, data);
@@ -28519,9 +24812,7 @@ static  int create_direct_link_interface_data(struct osc_create_direct_link_inte
 	       ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -28564,30 +24855,22 @@ static  int create_direct_link_data(struct osc_create_direct_link_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->bandwidth) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Bandwidth\":\"" ));
-                STRY(osc_str_append_string(data, args->bandwidth));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Bandwidth\":", args->bandwidth);
 	   	ret += 1;
 	}
 	if (args->direct_link_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DirectLinkName\":\"" ));
-                STRY(osc_str_append_string(data, args->direct_link_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DirectLinkName\":", args->direct_link_name);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->location) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Location\":\"" ));
-                STRY(osc_str_append_string(data, args->location));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Location\":", args->location);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -28630,10 +24913,8 @@ static  int create_dhcp_options_data(struct osc_create_dhcp_options_arg *args, s
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->domain_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DomainName\":\"" ));
-                STRY(osc_str_append_string(data, args->domain_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DomainName\":", args->domain_name);
 	   	ret += 1;
 	}
 	if (args->domain_name_servers) {
@@ -28644,22 +24925,16 @@ static  int create_dhcp_options_data(struct osc_create_dhcp_options_arg *args, s
 		for (as = args->domain_name_servers; *as > 0; ++as) {
 			if (as != args->domain_name_servers)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->domain_name_servers_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DomainNameServers\":" ));
-                STRY(osc_str_append_string(data, args->domain_name_servers_str));
+		ARG_TO_JSON(DomainNameServers, string, args->domain_name_servers_str);
 		ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->log_servers) {
@@ -28670,16 +24945,12 @@ static  int create_dhcp_options_data(struct osc_create_dhcp_options_arg *args, s
 		for (as = args->log_servers; *as > 0; ++as) {
 			if (as != args->log_servers)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->log_servers_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LogServers\":" ));
-                STRY(osc_str_append_string(data, args->log_servers_str));
+		ARG_TO_JSON(LogServers, string, args->log_servers_str);
 		ret += 1;
 	}
 	if (args->ntp_servers) {
@@ -28690,16 +24961,12 @@ static  int create_dhcp_options_data(struct osc_create_dhcp_options_arg *args, s
 		for (as = args->ntp_servers; *as > 0; ++as) {
 			if (as != args->ntp_servers)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ntp_servers_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NtpServers\":" ));
-                STRY(osc_str_append_string(data, args->ntp_servers_str));
+		ARG_TO_JSON(NtpServers, string, args->ntp_servers_str);
 		ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -28742,29 +25009,21 @@ static  int create_client_gateway_data(struct osc_create_client_gateway_arg *arg
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_bgp_asn || args->bgp_asn) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"BgpAsn\":" ));
-                STRY(osc_str_append_int(data, args->bgp_asn));
+		ARG_TO_JSON(BgpAsn, int, args->bgp_asn);
 	   	ret += 1;
 	}
 	if (args->connection_type) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ConnectionType\":\"" ));
-                STRY(osc_str_append_string(data, args->connection_type));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ConnectionType\":", args->connection_type);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->public_ip) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PublicIp\":\"" ));
-                STRY(osc_str_append_string(data, args->public_ip));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PublicIp\":", args->public_ip);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -28807,23 +25066,17 @@ static  int create_ca_data(struct osc_create_ca_arg *args, struct osc_str *data)
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->ca_pem) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CaPem\":\"" ));
-                STRY(osc_str_append_string(data, args->ca_pem));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CaPem\":", args->ca_pem);
 	   	ret += 1;
 	}
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -28873,16 +25126,12 @@ static  int create_api_access_rule_data(struct osc_create_api_access_rule_arg *a
 		for (as = args->ca_ids; *as > 0; ++as) {
 			if (as != args->ca_ids)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ca_ids_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CaIds\":" ));
-                STRY(osc_str_append_string(data, args->ca_ids_str));
+		ARG_TO_JSON(CaIds, string, args->ca_ids_str);
 		ret += 1;
 	}
 	if (args->cns) {
@@ -28893,29 +25142,21 @@ static  int create_api_access_rule_data(struct osc_create_api_access_rule_arg *a
 		for (as = args->cns; *as > 0; ++as) {
 			if (as != args->cns)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->cns_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Cns\":" ));
-                STRY(osc_str_append_string(data, args->cns_str));
+		ARG_TO_JSON(Cns, string, args->cns_str);
 		ret += 1;
 	}
 	if (args->description) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Description\":\"" ));
-                STRY(osc_str_append_string(data, args->description));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->ip_ranges) {
@@ -28926,16 +25167,12 @@ static  int create_api_access_rule_data(struct osc_create_api_access_rule_arg *a
 		for (as = args->ip_ranges; *as > 0; ++as) {
 			if (as != args->ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->ip_ranges_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"IpRanges\":" ));
-                STRY(osc_str_append_string(data, args->ip_ranges_str));
+		ARG_TO_JSON(IpRanges, string, args->ip_ranges_str);
 		ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -28985,113 +25222,81 @@ static  int create_account_data(struct osc_create_account_arg *args, struct osc_
 		for (as = args->additional_emails; *as > 0; ++as) {
 			if (as != args->additional_emails)
 				STRY(osc_str_append_string(data, "," ));
-			STRY(osc_str_append_string(data, "\"" ));
-			STRY(osc_str_append_string(data, *as));
-			STRY(osc_str_append_string(data, "\"" ));
+			ARG_TO_JSON_STR("", *as);
 		}
 		STRY(osc_str_append_string(data, "]" ));
 		ret += 1;
 	} else if (args->additional_emails_str) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"AdditionalEmails\":" ));
-                STRY(osc_str_append_string(data, args->additional_emails_str));
+		ARG_TO_JSON(AdditionalEmails, string, args->additional_emails_str);
 		ret += 1;
 	}
 	if (args->city) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"City\":\"" ));
-                STRY(osc_str_append_string(data, args->city));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"City\":", args->city);
 	   	ret += 1;
 	}
 	if (args->company_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CompanyName\":\"" ));
-                STRY(osc_str_append_string(data, args->company_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CompanyName\":", args->company_name);
 	   	ret += 1;
 	}
 	if (args->country) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Country\":\"" ));
-                STRY(osc_str_append_string(data, args->country));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Country\":", args->country);
 	   	ret += 1;
 	}
 	if (args->customer_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"CustomerId\":\"" ));
-                STRY(osc_str_append_string(data, args->customer_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CustomerId\":", args->customer_id);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->email) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Email\":\"" ));
-                STRY(osc_str_append_string(data, args->email));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Email\":", args->email);
 	   	ret += 1;
 	}
 	if (args->first_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"FirstName\":\"" ));
-                STRY(osc_str_append_string(data, args->first_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"FirstName\":", args->first_name);
 	   	ret += 1;
 	}
 	if (args->job_title) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"JobTitle\":\"" ));
-                STRY(osc_str_append_string(data, args->job_title));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"JobTitle\":", args->job_title);
 	   	ret += 1;
 	}
 	if (args->last_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"LastName\":\"" ));
-                STRY(osc_str_append_string(data, args->last_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LastName\":", args->last_name);
 	   	ret += 1;
 	}
 	if (args->mobile_number) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MobileNumber\":\"" ));
-                STRY(osc_str_append_string(data, args->mobile_number));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"MobileNumber\":", args->mobile_number);
 	   	ret += 1;
 	}
 	if (args->phone_number) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"PhoneNumber\":\"" ));
-                STRY(osc_str_append_string(data, args->phone_number));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PhoneNumber\":", args->phone_number);
 	   	ret += 1;
 	}
 	if (args->state_province) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"StateProvince\":\"" ));
-                STRY(osc_str_append_string(data, args->state_province));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"StateProvince\":", args->state_province);
 	   	ret += 1;
 	}
 	if (args->vat_number) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VatNumber\":\"" ));
-                STRY(osc_str_append_string(data, args->vat_number));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VatNumber\":", args->vat_number);
 	   	ret += 1;
 	}
 	if (args->zip_code) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ZipCode\":\"" ));
-                STRY(osc_str_append_string(data, args->zip_code));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ZipCode\":", args->zip_code);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -29134,23 +25339,17 @@ static  int create_access_key_data(struct osc_create_access_key_arg *args, struc
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->expiration_date) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"ExpirationDate\":\"" ));
-                STRY(osc_str_append_string(data, args->expiration_date));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ExpirationDate\":", args->expiration_date);
 	   	ret += 1;
 	}
 	if (args->user_name) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"UserName\":\"" ));
-                STRY(osc_str_append_string(data, args->user_name));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserName\":", args->user_name);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -29193,23 +25392,17 @@ static  int check_authentication_data(struct osc_check_authentication_arg *args,
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->login) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Login\":\"" ));
-                STRY(osc_str_append_string(data, args->login));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Login\":", args->login);
 	   	ret += 1;
 	}
 	if (args->password) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"Password\":\"" ));
-                STRY(osc_str_append_string(data, args->password));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Password\":", args->password);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -29252,16 +25445,12 @@ static  int accept_net_peering_data(struct osc_accept_net_peering_arg *args, str
 		return 0;
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"DryRun\":" ));
-                STRY(osc_str_append_bool(data, args->dry_run));
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
 	if (args->net_peering_id) {
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"NetPeeringId\":\"" ));
-                STRY(osc_str_append_string(data, args->net_peering_id));
-		STRY(osc_str_append_string(data, "\"" ));
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NetPeeringId\":", args->net_peering_id);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");

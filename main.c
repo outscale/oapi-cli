@@ -51,6 +51,11 @@
 
 #define OAPI_CLI_UAGENT "oapi-cli/"OAPI_CLI_VERSION"; osc-sdk-c/"
 
+#define STRY(f, args...)					\
+	do {							\
+		if (f) {return 1;}				\
+	} while(0)
+
 #define TRY(f, args...)						\
 	do {							\
 		if (f) {fprintf(stderr, args);  return 1;}	\
@@ -73,6 +78,58 @@ static int argcmp(const char *s1, const char *s2)
 {
 	return argcmp2(s1, s2, '.');
 }
+
+#define MAX_FILES_PER_CMD 64
+
+static void files_cnt_cleanup(char * (*files_cnt_ptr)[64])
+{
+	for (int i = 0; i < MAX_FILES_PER_CMD && *files_cnt_ptr[i]; ++i) {
+		free((*files_cnt_ptr)[i]);
+	}
+}
+
+char *read_file(char *files_cnt[static MAX_FILES_PER_CMD], char *file_name)
+{
+	int dest = -1;
+	for (int i = 0; i < MAX_FILES_PER_CMD; ++i) {
+		if (!file_name[i]) {
+			dest = i;
+			break;
+		}
+	}
+	if (dest < 0) {
+		fprintf(stderr, "--file option used too much");
+		return NULL;
+	}
+	FILE *f = fopen(file_name, "rb");
+	if (!f) {
+		fprintf(stderr, "--file failt to open %s", file_name);
+		return NULL;
+	}
+	if (fseek(f, 0, SEEK_END) < 0) {
+		fprintf(stderr, "--file fseek fail for %s", file_name);
+		return NULL;
+	}
+	long fsize = ftell(f);
+	if (fseek(f, 0, SEEK_SET) < 0) {
+		fprintf(stderr, "--file fseek fail for %s", file_name);
+		return NULL;
+	}
+
+	files_cnt[dest] = malloc(fsize + 1);
+	if (!files_cnt[dest]) {
+		fprintf(stderr, "--file malloc fail for %s", file_name);
+		return NULL;
+	}
+	if (fread(files_cnt[dest], fsize, 1, f) < 0) {
+		fprintf(stderr, "--file fread fail for %s", file_name);
+		return NULL;
+	}
+	fclose(f);
+	files_cnt[dest][fsize] = 0;
+	return files_cnt[dest];
+}
+
 
 static void *cascade_struct;
 static int (*cascade_parser)(void *, char *, char *, struct ptr_array *);
@@ -251,6 +308,7 @@ int accepter_net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'AccepterNet'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -285,6 +343,7 @@ int access_key_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'AccessKey'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -324,6 +383,7 @@ int access_key_secret_key_parser(void *v_s, char *str, char *aa, struct ptr_arra
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'AccessKeySecretKey'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -358,6 +418,7 @@ int access_log_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'AccessLog'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -444,6 +505,7 @@ int account_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Account'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -468,6 +530,7 @@ int api_access_policy_parser(void *v_s, char *str, char *aa, struct ptr_array *p
         } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'ApiAccessPolicy'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -508,6 +571,7 @@ int api_access_rule_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'ApiAccessRule'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -527,6 +591,7 @@ int application_sticky_cookie_policy_parser(void *v_s, char *str, char *aa, stru
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'ApplicationStickyCookiePolicy'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -556,6 +621,7 @@ int backend_vm_health_parser(void *v_s, char *str, char *aa, struct ptr_array *p
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'BackendVmHealth'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -574,7 +640,7 @@ int block_device_mapping_created_parser(void *v_s, char *str, char *aa, struct p
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    bsu_created_parser(&s->bsu, dot_pos, aa, pa);
+            	    STRY(bsu_created_parser(&s->bsu, dot_pos, aa, pa));
             	    s->is_set_bsu = 1;
              } else {
                    s->bsu_str = aa;
@@ -587,6 +653,7 @@ int block_device_mapping_created_parser(void *v_s, char *str, char *aa, struct p
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'BlockDeviceMappingCreated'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -605,7 +672,7 @@ int block_device_mapping_image_parser(void *v_s, char *str, char *aa, struct ptr
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    bsu_to_create_parser(&s->bsu, dot_pos, aa, pa);
+            	    STRY(bsu_to_create_parser(&s->bsu, dot_pos, aa, pa));
             	    s->is_set_bsu = 1;
              } else {
                    s->bsu_str = aa;
@@ -623,6 +690,7 @@ int block_device_mapping_image_parser(void *v_s, char *str, char *aa, struct ptr
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'BlockDeviceMappingImage'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -641,7 +709,7 @@ int block_device_mapping_vm_creation_parser(void *v_s, char *str, char *aa, stru
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    bsu_to_create_parser(&s->bsu, dot_pos, aa, pa);
+            	    STRY(bsu_to_create_parser(&s->bsu, dot_pos, aa, pa));
             	    s->is_set_bsu = 1;
              } else {
                    s->bsu_str = aa;
@@ -664,6 +732,7 @@ int block_device_mapping_vm_creation_parser(void *v_s, char *str, char *aa, stru
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'BlockDeviceMappingVmCreation'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -682,7 +751,7 @@ int block_device_mapping_vm_update_parser(void *v_s, char *str, char *aa, struct
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    bsu_to_update_vm_parser(&s->bsu, dot_pos, aa, pa);
+            	    STRY(bsu_to_update_vm_parser(&s->bsu, dot_pos, aa, pa));
             	    s->is_set_bsu = 1;
              } else {
                    s->bsu_str = aa;
@@ -705,6 +774,7 @@ int block_device_mapping_vm_update_parser(void *v_s, char *str, char *aa, struct
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'BlockDeviceMappingVmUpdate'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -739,6 +809,7 @@ int bsu_created_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'BsuCreated'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -778,6 +849,7 @@ int bsu_to_create_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'BsuToCreate'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -802,6 +874,7 @@ int bsu_to_update_vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'BsuToUpdateVm'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -826,6 +899,7 @@ int ca_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Ca'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -852,7 +926,7 @@ int catalog_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      catalog_entry_parser(&s->entries[pos], endptr + 1, aa, pa);
+            	      STRY(catalog_entry_parser(&s->entries[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Entries argument missing\n");
             	s->entries_str = aa; // array ref CatalogEntry ref
@@ -860,6 +934,7 @@ int catalog_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Catalog'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -909,6 +984,7 @@ int catalog_entry_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'CatalogEntry'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -935,7 +1011,7 @@ int catalogs_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      catalog_entry_parser(&s->entries[pos], endptr + 1, aa, pa);
+            	      STRY(catalog_entry_parser(&s->entries[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Entries argument missing\n");
             	s->entries_str = aa; // array ref CatalogEntry ref
@@ -958,6 +1034,7 @@ int catalogs_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Catalogs'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -1009,7 +1086,7 @@ int client_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Tags argument missing\n");
             	s->tags_str = aa; // array ref ResourceTag ref
@@ -1017,6 +1094,7 @@ int client_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'ClientGateway'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -1081,6 +1159,7 @@ int consumption_entry_parser(void *v_s, char *str, char *aa, struct ptr_array *p
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'ConsumptionEntry'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -1148,7 +1227,7 @@ int dhcp_options_set_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Tags argument missing\n");
             	s->tags_str = aa; // array ref ResourceTag ref
@@ -1156,6 +1235,7 @@ int dhcp_options_set_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'DhcpOptionsSet'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -1200,6 +1280,7 @@ int direct_link_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'DirectLink'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -1244,6 +1325,7 @@ int direct_link_interface_parser(void *v_s, char *str, char *aa, struct ptr_arra
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'DirectLinkInterface'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -1323,6 +1405,7 @@ int direct_link_interfaces_parser(void *v_s, char *str, char *aa, struct ptr_arr
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'DirectLinkInterfaces'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -1347,6 +1430,7 @@ int errors_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Errors'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -1370,6 +1454,7 @@ int filters_access_keys_parser(void *v_s, char *str, char *aa, struct ptr_array 
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersAccessKeys'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -1414,6 +1499,7 @@ int filters_api_access_rule_parser(void *v_s, char *str, char *aa, struct ptr_ar
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersApiAccessRule'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -1482,6 +1568,7 @@ int filters_api_log_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersApiLog'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -1512,6 +1599,7 @@ int filters_ca_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersCa'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -1541,6 +1629,7 @@ int filters_catalogs_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersCatalogs'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -1606,6 +1695,7 @@ int filters_client_gateway_parser(void *v_s, char *str, char *aa, struct ptr_arr
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersClientGateway'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -1681,6 +1771,7 @@ int filters_dhcp_options_parser(void *v_s, char *str, char *aa, struct ptr_array
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersDhcpOptions'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -1697,6 +1788,7 @@ int filters_direct_link_parser(void *v_s, char *str, char *aa, struct ptr_array 
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersDirectLink'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -1720,6 +1812,7 @@ int filters_direct_link_interface_parser(void *v_s, char *str, char *aa, struct 
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersDirectLinkInterface'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -1736,6 +1829,7 @@ int filters_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array 
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersExportTask'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -1797,6 +1891,7 @@ int filters_flexible_gpu_parser(void *v_s, char *str, char *aa, struct ptr_array
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersFlexibleGpu'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -1973,6 +2068,7 @@ int filters_image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersImage'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -2024,6 +2120,7 @@ int filters_internet_service_parser(void *v_s, char *str, char *aa, struct ptr_a
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersInternetService'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -2047,6 +2144,7 @@ int filters_keypair_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersKeypair'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -2063,6 +2161,7 @@ int filters_listener_rule_parser(void *v_s, char *str, char *aa, struct ptr_arra
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersListenerRule'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -2079,6 +2178,7 @@ int filters_load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_arra
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersLoadBalancer'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -2137,6 +2237,7 @@ int filters_nat_service_parser(void *v_s, char *str, char *aa, struct ptr_array 
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersNatService'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -2205,6 +2306,7 @@ int filters_net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersNet'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -2263,6 +2365,7 @@ int filters_net_access_point_parser(void *v_s, char *str, char *aa, struct ptr_a
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersNetAccessPoint'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -2356,6 +2459,7 @@ int filters_net_peering_parser(void *v_s, char *str, char *aa, struct ptr_array 
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersNetPeering'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -2570,6 +2674,7 @@ int filters_nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersNic'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -2586,6 +2691,7 @@ int filters_product_type_parser(void *v_s, char *str, char *aa, struct ptr_array
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersProductType'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -2672,6 +2778,7 @@ int filters_public_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *p
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersPublicIp'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -2709,6 +2816,7 @@ int filters_quota_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersQuota'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -2840,6 +2948,7 @@ int filters_route_table_parser(void *v_s, char *str, char *aa, struct ptr_array 
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersRouteTable'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -3003,6 +3112,7 @@ int filters_security_group_parser(void *v_s, char *str, char *aa, struct ptr_arr
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersSecurityGroup'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -3019,6 +3129,7 @@ int filters_server_certificate_parser(void *v_s, char *str, char *aa, struct ptr
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersServerCertificate'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -3042,6 +3153,7 @@ int filters_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersService'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -3155,6 +3267,7 @@ int filters_snapshot_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersSnapshot'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -3227,6 +3340,7 @@ int filters_subnet_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersSubnet'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -3243,6 +3357,7 @@ int filters_subregion_parser(void *v_s, char *str, char *aa, struct ptr_array *p
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersSubregion'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -3280,6 +3395,7 @@ int filters_tag_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersTag'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -3345,6 +3461,7 @@ int filters_virtual_gateway_parser(void *v_s, char *str, char *aa, struct ptr_ar
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersVirtualGateway'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -3382,6 +3499,7 @@ int filters_vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersVm'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -3461,6 +3579,7 @@ int filters_vm_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersVmGroup'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -3554,6 +3673,7 @@ int filters_vm_template_parser(void *v_s, char *str, char *aa, struct ptr_array 
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersVmTemplate'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -3608,6 +3728,7 @@ int filters_vm_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersVmType'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -3666,6 +3787,7 @@ int filters_vms_state_parser(void *v_s, char *str, char *aa, struct ptr_array *p
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersVmsState'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -3783,6 +3905,7 @@ int filters_volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersVolume'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -3872,6 +3995,7 @@ int filters_vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_arr
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersVpnConnection'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -3921,6 +4045,7 @@ int flexible_gpu_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FlexibleGpu'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -3957,6 +4082,7 @@ int flexible_gpu_catalog_parser(void *v_s, char *str, char *aa, struct ptr_array
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FlexibleGpuCatalog'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -4001,6 +4127,7 @@ int health_check_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'HealthCheck'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -4042,7 +4169,7 @@ int image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      block_device_mapping_image_parser(&s->block_device_mappings[pos], endptr + 1, aa, pa);
+            	      STRY(block_device_mapping_image_parser(&s->block_device_mappings[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "BlockDeviceMappings argument missing\n");
             	s->block_device_mappings_str = aa; // array ref BlockDeviceMappingImage ref
@@ -4089,7 +4216,7 @@ int image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    permissions_on_resource_parser(&s->permissions_to_launch, dot_pos, aa, pa);
+            	    STRY(permissions_on_resource_parser(&s->permissions_to_launch, dot_pos, aa, pa));
             	    s->is_set_permissions_to_launch = 1;
              } else {
                    s->permissions_to_launch_str = aa;
@@ -4128,7 +4255,7 @@ int image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    state_comment_parser(&s->state_comment, dot_pos, aa, pa);
+            	    STRY(state_comment_parser(&s->state_comment, dot_pos, aa, pa));
             	    s->is_set_state_comment = 1;
              } else {
                    s->state_comment_str = aa;
@@ -4153,7 +4280,7 @@ int image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Tags argument missing\n");
             	s->tags_str = aa; // array ref ResourceTag ref
@@ -4161,6 +4288,7 @@ int image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Image'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -4189,7 +4317,7 @@ int image_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array *p
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    osu_export_image_export_task_parser(&s->osu_export, dot_pos, aa, pa);
+            	    STRY(osu_export_image_export_task_parser(&s->osu_export, dot_pos, aa, pa));
             	    s->is_set_osu_export = 1;
              } else {
                    s->osu_export_str = aa;
@@ -4224,7 +4352,7 @@ int image_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array *p
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Tags argument missing\n");
             	s->tags_str = aa; // array ref ResourceTag ref
@@ -4237,6 +4365,7 @@ int image_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array *p
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'ImageExportTask'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -4278,7 +4407,7 @@ int internet_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Tags argument missing\n");
             	s->tags_str = aa; // array ref ResourceTag ref
@@ -4286,6 +4415,7 @@ int internet_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'InternetService'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -4305,6 +4435,7 @@ int keypair_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Keypair'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -4329,6 +4460,7 @@ int keypair_created_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'KeypairCreated'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -4373,6 +4505,7 @@ int link_nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'LinkNic'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -4407,6 +4540,7 @@ int link_nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'LinkNicLight'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -4431,6 +4565,7 @@ int link_nic_to_update_parser(void *v_s, char *str, char *aa, struct ptr_array *
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'LinkNicToUpdate'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -4465,6 +4600,7 @@ int link_public_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'LinkPublicIp'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -4489,6 +4625,7 @@ int link_public_ip_light_for_vm_parser(void *v_s, char *str, char *aa, struct pt
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'LinkPublicIpLightForVm'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -4523,6 +4660,7 @@ int link_route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'LinkRouteTable'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -4562,6 +4700,7 @@ int linked_volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'LinkedVolume'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -4603,6 +4742,7 @@ int listener_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Listener'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -4637,6 +4777,7 @@ int listener_for_creation_parser(void *v_s, char *str, char *aa, struct ptr_arra
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'ListenerForCreation'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -4688,6 +4829,7 @@ int listener_rule_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'ListenerRule'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -4722,6 +4864,7 @@ int listener_rule_for_creation_parser(void *v_s, char *str, char *aa, struct ptr
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'ListenerRuleForCreation'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -4740,7 +4883,7 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    access_log_parser(&s->access_log, dot_pos, aa, pa);
+            	    STRY(access_log_parser(&s->access_log, dot_pos, aa, pa));
             	    s->is_set_access_log = 1;
              } else {
                    s->access_log_str = aa;
@@ -4765,7 +4908,7 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      application_sticky_cookie_policy_parser(&s->application_sticky_cookie_policies[pos], endptr + 1, aa, pa);
+            	      STRY(application_sticky_cookie_policy_parser(&s->application_sticky_cookie_policies[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "ApplicationStickyCookiePolicies argument missing\n");
             	s->application_sticky_cookie_policies_str = aa; // array ref ApplicationStickyCookiePolicy ref
@@ -4801,7 +4944,7 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    health_check_parser(&s->health_check, dot_pos, aa, pa);
+            	    STRY(health_check_parser(&s->health_check, dot_pos, aa, pa));
             	    s->is_set_health_check = 1;
              } else {
                    s->health_check_str = aa;
@@ -4826,7 +4969,7 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      listener_parser(&s->listeners[pos], endptr + 1, aa, pa);
+            	      STRY(listener_parser(&s->listeners[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Listeners argument missing\n");
             	s->listeners_str = aa; // array ref Listener ref
@@ -4856,7 +4999,7 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      load_balancer_sticky_cookie_policy_parser(&s->load_balancer_sticky_cookie_policies[pos], endptr + 1, aa, pa);
+            	      STRY(load_balancer_sticky_cookie_policy_parser(&s->load_balancer_sticky_cookie_policies[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "LoadBalancerStickyCookiePolicies argument missing\n");
             	s->load_balancer_sticky_cookie_policies_str = aa; // array ref LoadBalancerStickyCookiePolicy ref
@@ -4905,7 +5048,7 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    source_security_group_parser(&s->source_security_group, dot_pos, aa, pa);
+            	    STRY(source_security_group_parser(&s->source_security_group, dot_pos, aa, pa));
             	    s->is_set_source_security_group = 1;
              } else {
                    s->source_security_group_str = aa;
@@ -4944,7 +5087,7 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Tags argument missing\n");
             	s->tags_str = aa; // array ref ResourceTag ref
@@ -4952,6 +5095,7 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'LoadBalancer'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -4971,6 +5115,7 @@ int load_balancer_light_parser(void *v_s, char *str, char *aa, struct ptr_array 
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'LoadBalancerLight'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -4990,6 +5135,7 @@ int load_balancer_sticky_cookie_policy_parser(void *v_s, char *str, char *aa, st
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'LoadBalancerStickyCookiePolicy'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -5014,6 +5160,7 @@ int load_balancer_tag_parser(void *v_s, char *str, char *aa, struct ptr_array *p
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'LoadBalancerTag'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -5033,6 +5180,7 @@ int location_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Location'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -5122,6 +5270,7 @@ int log_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Log'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -5151,6 +5300,7 @@ int maintenance_event_parser(void *v_s, char *str, char *aa, struct ptr_array *p
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'MaintenanceEvent'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -5187,7 +5337,7 @@ int nat_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      public_ip_light_parser(&s->public_ips[pos], endptr + 1, aa, pa);
+            	      STRY(public_ip_light_parser(&s->public_ips[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "PublicIps argument missing\n");
             	s->public_ips_str = aa; // array ref PublicIpLight ref
@@ -5222,7 +5372,7 @@ int nat_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Tags argument missing\n");
             	s->tags_str = aa; // array ref ResourceTag ref
@@ -5230,6 +5380,7 @@ int nat_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'NatService'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -5276,7 +5427,7 @@ int net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Tags argument missing\n");
             	s->tags_str = aa; // array ref ResourceTag ref
@@ -5289,6 +5440,7 @@ int net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Net'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -5342,7 +5494,7 @@ int net_access_point_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Tags argument missing\n");
             	s->tags_str = aa; // array ref ResourceTag ref
@@ -5350,6 +5502,7 @@ int net_access_point_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'NetAccessPoint'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -5368,7 +5521,7 @@ int net_peering_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    accepter_net_parser(&s->accepter_net, dot_pos, aa, pa);
+            	    STRY(accepter_net_parser(&s->accepter_net, dot_pos, aa, pa));
             	    s->is_set_accepter_net = 1;
              } else {
                    s->accepter_net_str = aa;
@@ -5390,7 +5543,7 @@ int net_peering_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    source_net_parser(&s->source_net, dot_pos, aa, pa);
+            	    STRY(source_net_parser(&s->source_net, dot_pos, aa, pa));
             	    s->is_set_source_net = 1;
              } else {
                    s->source_net_str = aa;
@@ -5407,7 +5560,7 @@ int net_peering_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    net_peering_state_parser(&s->state, dot_pos, aa, pa);
+            	    STRY(net_peering_state_parser(&s->state, dot_pos, aa, pa));
             	    s->is_set_state = 1;
              } else {
                    s->state_str = aa;
@@ -5432,7 +5585,7 @@ int net_peering_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Tags argument missing\n");
             	s->tags_str = aa; // array ref ResourceTag ref
@@ -5440,6 +5593,7 @@ int net_peering_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'NetPeering'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -5459,6 +5613,7 @@ int net_peering_state_parser(void *v_s, char *str, char *aa, struct ptr_array *p
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'NetPeeringState'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -5478,6 +5633,7 @@ int net_to_virtual_gateway_link_parser(void *v_s, char *str, char *aa, struct pt
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'NetToVirtualGatewayLink'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -5516,7 +5672,7 @@ int nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    link_nic_parser(&s->link_nic, dot_pos, aa, pa);
+            	    STRY(link_nic_parser(&s->link_nic, dot_pos, aa, pa));
             	    s->is_set_link_nic = 1;
              } else {
                    s->link_nic_str = aa;
@@ -5533,7 +5689,7 @@ int nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    link_public_ip_parser(&s->link_public_ip, dot_pos, aa, pa);
+            	    STRY(link_public_ip_parser(&s->link_public_ip, dot_pos, aa, pa));
             	    s->is_set_link_public_ip = 1;
              } else {
                    s->link_public_ip_str = aa;
@@ -5578,7 +5734,7 @@ int nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      private_ip_parser(&s->private_ips[pos], endptr + 1, aa, pa);
+            	      STRY(private_ip_parser(&s->private_ips[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "PrivateIps argument missing\n");
             	s->private_ips_str = aa; // array ref PrivateIp ref
@@ -5603,7 +5759,7 @@ int nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      security_group_light_parser(&s->security_groups[pos], endptr + 1, aa, pa);
+            	      STRY(security_group_light_parser(&s->security_groups[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "SecurityGroups argument missing\n");
             	s->security_groups_str = aa; // array ref SecurityGroupLight ref
@@ -5643,7 +5799,7 @@ int nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Tags argument missing\n");
             	s->tags_str = aa; // array ref ResourceTag ref
@@ -5651,6 +5807,7 @@ int nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Nic'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -5702,7 +5859,7 @@ int nic_for_vm_creation_parser(void *v_s, char *str, char *aa, struct ptr_array 
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      private_ip_light_parser(&s->private_ips[pos], endptr + 1, aa, pa);
+            	      STRY(private_ip_light_parser(&s->private_ips[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "PrivateIps argument missing\n");
             	s->private_ips_str = aa; // array ref PrivateIpLight ref
@@ -5727,6 +5884,7 @@ int nic_for_vm_creation_parser(void *v_s, char *str, char *aa, struct ptr_array 
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'NicForVmCreation'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -5765,7 +5923,7 @@ int nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    link_nic_light_parser(&s->link_nic, dot_pos, aa, pa);
+            	    STRY(link_nic_light_parser(&s->link_nic, dot_pos, aa, pa));
             	    s->is_set_link_nic = 1;
              } else {
                    s->link_nic_str = aa;
@@ -5782,7 +5940,7 @@ int nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    link_public_ip_light_for_vm_parser(&s->link_public_ip, dot_pos, aa, pa);
+            	    STRY(link_public_ip_light_for_vm_parser(&s->link_public_ip, dot_pos, aa, pa));
             	    s->is_set_link_public_ip = 1;
              } else {
                    s->link_public_ip_str = aa;
@@ -5827,7 +5985,7 @@ int nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      private_ip_light_for_vm_parser(&s->private_ips[pos], endptr + 1, aa, pa);
+            	      STRY(private_ip_light_for_vm_parser(&s->private_ips[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "PrivateIps argument missing\n");
             	s->private_ips_str = aa; // array ref PrivateIpLightForVm ref
@@ -5852,7 +6010,7 @@ int nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      security_group_light_parser(&s->security_groups[pos], endptr + 1, aa, pa);
+            	      STRY(security_group_light_parser(&s->security_groups[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "SecurityGroups argument missing\n");
             	s->security_groups_str = aa; // array ref SecurityGroupLight ref
@@ -5870,6 +6028,7 @@ int nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'NicLight'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -5889,6 +6048,7 @@ int osu_api_key_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'OsuApiKey'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -5918,6 +6078,7 @@ int osu_export_image_export_task_parser(void *v_s, char *str, char *aa, struct p
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'OsuExportImageExportTask'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -5942,6 +6103,7 @@ int osu_export_snapshot_export_task_parser(void *v_s, char *str, char *aa, struc
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'OsuExportSnapshotExportTask'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -5965,7 +6127,7 @@ int osu_export_to_create_parser(void *v_s, char *str, char *aa, struct ptr_array
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    osu_api_key_parser(&s->osu_api_key, dot_pos, aa, pa);
+            	    STRY(osu_api_key_parser(&s->osu_api_key, dot_pos, aa, pa));
             	    s->is_set_osu_api_key = 1;
              } else {
                    s->osu_api_key_str = aa;
@@ -5988,6 +6150,7 @@ int osu_export_to_create_parser(void *v_s, char *str, char *aa, struct ptr_array
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'OsuExportToCreate'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -6014,6 +6177,7 @@ int permissions_on_resource_parser(void *v_s, char *str, char *aa, struct ptr_ar
         } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'PermissionsOnResource'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -6032,7 +6196,7 @@ int permissions_on_resource_creation_parser(void *v_s, char *str, char *aa, stru
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    permissions_on_resource_parser(&s->additions, dot_pos, aa, pa);
+            	    STRY(permissions_on_resource_parser(&s->additions, dot_pos, aa, pa));
             	    s->is_set_additions = 1;
              } else {
                    s->additions_str = aa;
@@ -6049,7 +6213,7 @@ int permissions_on_resource_creation_parser(void *v_s, char *str, char *aa, stru
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    permissions_on_resource_parser(&s->removals, dot_pos, aa, pa);
+            	    STRY(permissions_on_resource_parser(&s->removals, dot_pos, aa, pa));
             	    s->is_set_removals = 1;
              } else {
                    s->removals_str = aa;
@@ -6057,6 +6221,7 @@ int permissions_on_resource_creation_parser(void *v_s, char *str, char *aa, stru
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'PermissionsOnResourceCreation'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -6119,6 +6284,7 @@ int phase1_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Phase1Options'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -6159,6 +6325,7 @@ int phase2_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Phase2Options'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -6178,6 +6345,7 @@ int placement_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Placement'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -6206,7 +6374,7 @@ int private_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    link_public_ip_parser(&s->link_public_ip, dot_pos, aa, pa);
+            	    STRY(link_public_ip_parser(&s->link_public_ip, dot_pos, aa, pa));
             	    s->is_set_link_public_ip = 1;
              } else {
                    s->link_public_ip_str = aa;
@@ -6224,6 +6392,7 @@ int private_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'PrivateIp'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -6248,6 +6417,7 @@ int private_ip_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'PrivateIpLight'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -6276,7 +6446,7 @@ int private_ip_light_for_vm_parser(void *v_s, char *str, char *aa, struct ptr_ar
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    link_public_ip_light_for_vm_parser(&s->link_public_ip, dot_pos, aa, pa);
+            	    STRY(link_public_ip_light_for_vm_parser(&s->link_public_ip, dot_pos, aa, pa));
             	    s->is_set_link_public_ip = 1;
              } else {
                    s->link_public_ip_str = aa;
@@ -6294,6 +6464,7 @@ int private_ip_light_for_vm_parser(void *v_s, char *str, char *aa, struct ptr_ar
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'PrivateIpLightForVm'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -6318,6 +6489,7 @@ int product_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'ProductType'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -6374,7 +6546,7 @@ int public_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Tags argument missing\n");
             	s->tags_str = aa; // array ref ResourceTag ref
@@ -6387,6 +6559,7 @@ int public_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'PublicIp'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -6406,6 +6579,7 @@ int public_ip_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'PublicIpLight'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -6450,6 +6624,7 @@ int quota_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Quota'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -6481,7 +6656,7 @@ int quota_types_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      quota_parser(&s->quotas[pos], endptr + 1, aa, pa);
+            	      STRY(quota_parser(&s->quotas[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Quotas argument missing\n");
             	s->quotas_str = aa; // array ref Quota ref
@@ -6489,6 +6664,7 @@ int quota_types_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'QuotaTypes'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -6508,6 +6684,7 @@ int region_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Region'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -6522,6 +6699,7 @@ int resource_load_balancer_tag_parser(void *v_s, char *str, char *aa, struct ptr
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'ResourceLoadBalancerTag'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -6541,6 +6719,7 @@ int resource_tag_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'ResourceTag'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -6605,6 +6784,7 @@ int route_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Route'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -6629,6 +6809,7 @@ int route_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'RouteLight'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -6643,6 +6824,7 @@ int route_propagating_virtual_gateway_parser(void *v_s, char *str, char *aa, str
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'RoutePropagatingVirtualGateway'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -6669,7 +6851,7 @@ int route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      link_route_table_parser(&s->link_route_tables[pos], endptr + 1, aa, pa);
+            	      STRY(link_route_table_parser(&s->link_route_tables[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "LinkRouteTables argument missing\n");
             	s->link_route_tables_str = aa; // array ref LinkRouteTable ref
@@ -6699,7 +6881,7 @@ int route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      route_propagating_virtual_gateway_parser(&s->route_propagating_virtual_gateways[pos], endptr + 1, aa, pa);
+            	      STRY(route_propagating_virtual_gateway_parser(&s->route_propagating_virtual_gateways[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "RoutePropagatingVirtualGateways argument missing\n");
             	s->route_propagating_virtual_gateways_str = aa; // array ref RoutePropagatingVirtualGateway ref
@@ -6729,7 +6911,7 @@ int route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      route_parser(&s->routes[pos], endptr + 1, aa, pa);
+            	      STRY(route_parser(&s->routes[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Routes argument missing\n");
             	s->routes_str = aa; // array ref Route ref
@@ -6754,7 +6936,7 @@ int route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Tags argument missing\n");
             	s->tags_str = aa; // array ref ResourceTag ref
@@ -6762,6 +6944,7 @@ int route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'RouteTable'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -6798,7 +6981,7 @@ int security_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      security_group_rule_parser(&s->inbound_rules[pos], endptr + 1, aa, pa);
+            	      STRY(security_group_rule_parser(&s->inbound_rules[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "InboundRules argument missing\n");
             	s->inbound_rules_str = aa; // array ref SecurityGroupRule ref
@@ -6828,7 +7011,7 @@ int security_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      security_group_rule_parser(&s->outbound_rules[pos], endptr + 1, aa, pa);
+            	      STRY(security_group_rule_parser(&s->outbound_rules[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "OutboundRules argument missing\n");
             	s->outbound_rules_str = aa; // array ref SecurityGroupRule ref
@@ -6863,7 +7046,7 @@ int security_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Tags argument missing\n");
             	s->tags_str = aa; // array ref ResourceTag ref
@@ -6871,6 +7054,7 @@ int security_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'SecurityGroup'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -6890,6 +7074,7 @@ int security_group_light_parser(void *v_s, char *str, char *aa, struct ptr_array
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'SecurityGroupLight'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -6933,7 +7118,7 @@ int security_group_rule_parser(void *v_s, char *str, char *aa, struct ptr_array 
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      security_groups_member_parser(&s->security_groups_members[pos], endptr + 1, aa, pa);
+            	      STRY(security_groups_member_parser(&s->security_groups_members[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "SecurityGroupsMembers argument missing\n");
             	s->security_groups_members_str = aa; // array ref SecurityGroupsMember ref
@@ -6953,6 +7138,7 @@ int security_group_rule_parser(void *v_s, char *str, char *aa, struct ptr_array 
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'SecurityGroupRule'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -6977,6 +7163,7 @@ int security_groups_member_parser(void *v_s, char *str, char *aa, struct ptr_arr
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'SecurityGroupsMember'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -7016,6 +7203,7 @@ int server_certificate_parser(void *v_s, char *str, char *aa, struct ptr_array *
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'ServerCertificate'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -7042,6 +7230,7 @@ int service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Service'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -7080,7 +7269,7 @@ int snapshot_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    permissions_on_resource_parser(&s->permissions_to_create_volume, dot_pos, aa, pa);
+            	    STRY(permissions_on_resource_parser(&s->permissions_to_create_volume, dot_pos, aa, pa));
             	    s->is_set_permissions_to_create_volume = 1;
              } else {
                    s->permissions_to_create_volume_str = aa;
@@ -7120,7 +7309,7 @@ int snapshot_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Tags argument missing\n");
             	s->tags_str = aa; // array ref ResourceTag ref
@@ -7138,6 +7327,7 @@ int snapshot_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Snapshot'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -7161,7 +7351,7 @@ int snapshot_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    osu_export_snapshot_export_task_parser(&s->osu_export, dot_pos, aa, pa);
+            	    STRY(osu_export_snapshot_export_task_parser(&s->osu_export, dot_pos, aa, pa));
             	    s->is_set_osu_export = 1;
              } else {
                    s->osu_export_str = aa;
@@ -7201,7 +7391,7 @@ int snapshot_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Tags argument missing\n");
             	s->tags_str = aa; // array ref ResourceTag ref
@@ -7214,6 +7404,7 @@ int snapshot_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'SnapshotExportTask'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -7238,6 +7429,7 @@ int source_net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'SourceNet'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -7257,6 +7449,7 @@ int source_security_group_parser(void *v_s, char *str, char *aa, struct ptr_arra
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'SourceSecurityGroup'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -7276,6 +7469,7 @@ int state_comment_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'StateComment'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -7342,7 +7536,7 @@ int subnet_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Tags argument missing\n");
             	s->tags_str = aa; // array ref ResourceTag ref
@@ -7350,6 +7544,7 @@ int subnet_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Subnet'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -7379,6 +7574,7 @@ int subregion_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Subregion'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -7408,6 +7604,7 @@ int tag_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Tag'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -7432,6 +7629,7 @@ int user_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'User'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -7466,6 +7664,7 @@ int vgw_telemetry_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'VgwTelemetry'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -7497,7 +7696,7 @@ int virtual_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      net_to_virtual_gateway_link_parser(&s->net_to_virtual_gateway_links[pos], endptr + 1, aa, pa);
+            	      STRY(net_to_virtual_gateway_link_parser(&s->net_to_virtual_gateway_links[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "NetToVirtualGatewayLinks argument missing\n");
             	s->net_to_virtual_gateway_links_str = aa; // array ref NetToVirtualGatewayLink ref
@@ -7527,7 +7726,7 @@ int virtual_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Tags argument missing\n");
             	s->tags_str = aa; // array ref ResourceTag ref
@@ -7540,6 +7739,7 @@ int virtual_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'VirtualGateway'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -7571,7 +7771,7 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      block_device_mapping_created_parser(&s->block_device_mappings[pos], endptr + 1, aa, pa);
+            	      STRY(block_device_mapping_created_parser(&s->block_device_mappings[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "BlockDeviceMappings argument missing\n");
             	s->block_device_mappings_str = aa; // array ref BlockDeviceMappingCreated ref
@@ -7671,7 +7871,7 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      nic_light_parser(&s->nics[pos], endptr + 1, aa, pa);
+            	      STRY(nic_light_parser(&s->nics[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Nics argument missing\n");
             	s->nics_str = aa; // array ref NicLight ref
@@ -7698,7 +7898,7 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    placement_parser(&s->placement, dot_pos, aa, pa);
+            	    STRY(placement_parser(&s->placement, dot_pos, aa, pa));
             	    s->is_set_placement = 1;
              } else {
                    s->placement_str = aa;
@@ -7765,7 +7965,7 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      security_group_light_parser(&s->security_groups[pos], endptr + 1, aa, pa);
+            	      STRY(security_group_light_parser(&s->security_groups[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "SecurityGroups argument missing\n");
             	s->security_groups_str = aa; // array ref SecurityGroupLight ref
@@ -7805,7 +8005,7 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Tags argument missing\n");
             	s->tags_str = aa; // array ref ResourceTag ref
@@ -7833,6 +8033,7 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Vm'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -7891,7 +8092,7 @@ int vm_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Tags argument missing\n");
             	s->tags_str = aa; // array ref ResourceTag ref
@@ -7926,6 +8127,7 @@ int vm_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'VmGroup'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -7950,6 +8152,7 @@ int vm_state_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'VmState'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -7976,7 +8179,7 @@ int vm_states_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      maintenance_event_parser(&s->maintenance_events[pos], endptr + 1, aa, pa);
+            	      STRY(maintenance_event_parser(&s->maintenance_events[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "MaintenanceEvents argument missing\n");
             	s->maintenance_events_str = aa; // array ref MaintenanceEvent ref
@@ -7999,6 +8202,7 @@ int vm_states_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'VmStates'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -8065,7 +8269,7 @@ int vm_template_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Tags argument missing\n");
             	s->tags_str = aa; // array ref ResourceTag ref
@@ -8083,6 +8287,7 @@ int vm_template_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'VmTemplate'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -8132,6 +8337,7 @@ int vm_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'VmType'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -8168,7 +8374,7 @@ int volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      linked_volume_parser(&s->linked_volumes[pos], endptr + 1, aa, pa);
+            	      STRY(linked_volume_parser(&s->linked_volumes[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "LinkedVolumes argument missing\n");
             	s->linked_volumes_str = aa; // array ref LinkedVolume ref
@@ -8213,7 +8419,7 @@ int volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Tags argument missing\n");
             	s->tags_str = aa; // array ref ResourceTag ref
@@ -8231,6 +8437,7 @@ int volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Volume'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -8272,7 +8479,7 @@ int vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      route_light_parser(&s->routes[pos], endptr + 1, aa, pa);
+            	      STRY(route_light_parser(&s->routes[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Routes argument missing\n");
             	s->routes_str = aa; // array ref RouteLight ref
@@ -8312,7 +8519,7 @@ int vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "Tags argument missing\n");
             	s->tags_str = aa; // array ref ResourceTag ref
@@ -8337,7 +8544,7 @@ int vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             	      if (endptr[1] == '.') {
             		     ++endptr;
             	      }
-            	      vgw_telemetry_parser(&s->vgw_telemetries[pos], endptr + 1, aa, pa);
+            	      STRY(vgw_telemetry_parser(&s->vgw_telemetries[pos], endptr + 1, aa, pa));
              } else {
             	TRY(!aa, "VgwTelemetries argument missing\n");
             	s->vgw_telemetries_str = aa; // array ref VgwTelemetry ref
@@ -8364,7 +8571,7 @@ int vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    vpn_options_parser(&s->vpn_options, dot_pos, aa, pa);
+            	    STRY(vpn_options_parser(&s->vpn_options, dot_pos, aa, pa));
             	    s->is_set_vpn_options = 1;
              } else {
                    s->vpn_options_str = aa;
@@ -8372,6 +8579,7 @@ int vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'VpnConnection'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -8390,7 +8598,7 @@ int vpn_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    phase1_options_parser(&s->phase1_options, dot_pos, aa, pa);
+            	    STRY(phase1_options_parser(&s->phase1_options, dot_pos, aa, pa));
             	    s->is_set_phase1_options = 1;
              } else {
                    s->phase1_options_str = aa;
@@ -8407,7 +8615,7 @@ int vpn_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	    if (*dot_pos == '.') {
             		++dot_pos;
             	    }
-            	    phase2_options_parser(&s->phase2_options, dot_pos, aa, pa);
+            	    STRY(phase2_options_parser(&s->phase2_options, dot_pos, aa, pa));
             	    s->is_set_phase2_options = 1;
              } else {
                    s->phase2_options_str = aa;
@@ -8420,6 +8628,7 @@ int vpn_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'VpnOptions'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -8589,6 +8798,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
         } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'With'\n", str);
+		return -1;
 	}
 	return 0;
 }
@@ -8820,6 +9030,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_vpn_connection_arg a = {0};
 		     struct osc_update_vpn_connection_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -8841,7 +9052,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto update_vpn_connection_arg;
 		      }
@@ -8854,8 +9065,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "ClientGatewayId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -8923,7 +9141,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    vpn_options_parser(&s->vpn_options, dot_pos, aa, pa);
+				          	    STRY(vpn_options_parser(&s->vpn_options, dot_pos, aa, pa));
 				          	    s->is_set_vpn_options = 1;
 				           } else {
 				                 s->vpn_options_str = aa;
@@ -8955,6 +9173,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_volume_arg a = {0};
 		     struct osc_update_volume_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -8976,7 +9195,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto update_volume_arg;
 		      }
@@ -8989,8 +9208,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -9078,6 +9304,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_vm_template_arg a = {0};
 		     struct osc_update_vm_template_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -9099,7 +9326,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto update_vm_template_arg;
 		      }
@@ -9112,8 +9339,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -9167,7 +9401,7 @@ int main(int ac, char **av)
 				          	      if (endptr[1] == '.') {
 				          		     ++endptr;
 				          	      }
-				          	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+				          	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
 				           } else {
 				          	TRY(!aa, "Tags argument missing\n");
 				          	s->tags_str = aa; // array ref ResourceTag ref
@@ -9221,6 +9455,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_vm_group_arg a = {0};
 		     struct osc_update_vm_group_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -9242,7 +9477,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto update_vm_group_arg;
 		      }
@@ -9255,8 +9490,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -9310,7 +9552,7 @@ int main(int ac, char **av)
 				          	      if (endptr[1] == '.') {
 				          		     ++endptr;
 				          	      }
-				          	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+				          	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
 				           } else {
 				          	TRY(!aa, "Tags argument missing\n");
 				          	s->tags_str = aa; // array ref ResourceTag ref
@@ -9375,6 +9617,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_vm_arg a = {0};
 		     struct osc_update_vm_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -9396,7 +9639,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto update_vm_arg;
 		      }
@@ -9409,8 +9652,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "BlockDeviceMappings")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -9437,7 +9687,7 @@ int main(int ac, char **av)
 				          	      if (endptr[1] == '.') {
 				          		     ++endptr;
 				          	      }
-				          	      block_device_mapping_vm_update_parser(&s->block_device_mappings[pos], endptr + 1, aa, pa);
+				          	      STRY(block_device_mapping_vm_update_parser(&s->block_device_mappings[pos], endptr + 1, aa, pa));
 				           } else {
 				          	TRY(!aa, "BlockDeviceMappings argument missing\n");
 				          	s->block_device_mappings_str = aa; // array ref BlockDeviceMappingVmUpdate ref
@@ -9628,6 +9878,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_user_arg a = {0};
 		     struct osc_update_user_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -9649,7 +9900,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto update_user_arg;
 		      }
@@ -9662,8 +9913,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -9740,6 +9998,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_subnet_arg a = {0};
 		     struct osc_update_subnet_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -9761,7 +10020,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto update_subnet_arg;
 		      }
@@ -9774,8 +10033,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -9846,6 +10112,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_snapshot_arg a = {0};
 		     struct osc_update_snapshot_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -9867,7 +10134,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto update_snapshot_arg;
 		      }
@@ -9880,8 +10147,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -9916,7 +10190,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    permissions_on_resource_creation_parser(&s->permissions_to_create_volume, dot_pos, aa, pa);
+				          	    STRY(permissions_on_resource_creation_parser(&s->permissions_to_create_volume, dot_pos, aa, pa));
 				          	    s->is_set_permissions_to_create_volume = 1;
 				           } else {
 				                 s->permissions_to_create_volume_str = aa;
@@ -9959,6 +10233,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_server_certificate_arg a = {0};
 		     struct osc_update_server_certificate_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -9980,7 +10255,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto update_server_certificate_arg;
 		      }
@@ -9993,8 +10268,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -10071,6 +10353,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_route_propagation_arg a = {0};
 		     struct osc_update_route_propagation_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -10092,7 +10375,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto update_route_propagation_arg;
 		      }
@@ -10105,8 +10388,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -10188,6 +10478,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_route_arg a = {0};
 		     struct osc_update_route_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -10209,7 +10500,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto update_route_arg;
 		      }
@@ -10222,8 +10513,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DestinationIpRange")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -10344,6 +10642,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_nic_arg a = {0};
 		     struct osc_update_nic_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -10365,7 +10664,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto update_nic_arg;
 		      }
@@ -10378,8 +10677,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -10425,7 +10731,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    link_nic_to_update_parser(&s->link_nic, dot_pos, aa, pa);
+				          	    STRY(link_nic_to_update_parser(&s->link_nic, dot_pos, aa, pa));
 				          	    s->is_set_link_nic = 1;
 				           } else {
 				                 s->link_nic_str = aa;
@@ -10481,6 +10787,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_net_access_point_arg a = {0};
 		     struct osc_update_net_access_point_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -10502,7 +10809,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto update_net_access_point_arg;
 		      }
@@ -10515,8 +10822,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "AddRouteTableIds")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -10597,6 +10911,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_net_arg a = {0};
 		     struct osc_update_net_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -10618,7 +10933,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto update_net_arg;
 		      }
@@ -10631,8 +10946,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DhcpOptionsSetId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -10698,6 +11020,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_load_balancer_arg a = {0};
 		     struct osc_update_load_balancer_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -10719,7 +11042,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto update_load_balancer_arg;
 		      }
@@ -10732,8 +11055,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "AccessLog")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -10752,7 +11082,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    access_log_parser(&s->access_log, dot_pos, aa, pa);
+				          	    STRY(access_log_parser(&s->access_log, dot_pos, aa, pa));
 				          	    s->is_set_access_log = 1;
 				           } else {
 				                 s->access_log_str = aa;
@@ -10791,7 +11121,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    health_check_parser(&s->health_check, dot_pos, aa, pa);
+				          	    STRY(health_check_parser(&s->health_check, dot_pos, aa, pa));
 				          	    s->is_set_health_check = 1;
 				           } else {
 				                 s->health_check_str = aa;
@@ -10909,6 +11239,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_listener_rule_arg a = {0};
 		     struct osc_update_listener_rule_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -10930,7 +11261,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto update_listener_rule_arg;
 		      }
@@ -10943,8 +11274,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -11021,6 +11359,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_image_arg a = {0};
 		     struct osc_update_image_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -11042,7 +11381,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto update_image_arg;
 		      }
@@ -11055,8 +11394,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -11102,7 +11448,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    permissions_on_resource_creation_parser(&s->permissions_to_launch, dot_pos, aa, pa);
+				          	    STRY(permissions_on_resource_creation_parser(&s->permissions_to_launch, dot_pos, aa, pa));
 				          	    s->is_set_permissions_to_launch = 1;
 				           } else {
 				                 s->permissions_to_launch_str = aa;
@@ -11134,6 +11480,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_flexible_gpu_arg a = {0};
 		     struct osc_update_flexible_gpu_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -11155,7 +11502,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto update_flexible_gpu_arg;
 		      }
@@ -11168,8 +11515,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DeleteOnVmDeletion")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -11240,6 +11594,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_direct_link_interface_arg a = {0};
 		     struct osc_update_direct_link_interface_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -11261,7 +11616,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto update_direct_link_interface_arg;
 		      }
@@ -11274,8 +11629,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DirectLinkInterfaceId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -11341,6 +11703,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_ca_arg a = {0};
 		     struct osc_update_ca_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -11362,7 +11725,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto update_ca_arg;
 		      }
@@ -11375,8 +11738,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "CaId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -11442,6 +11812,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_api_access_rule_arg a = {0};
 		     struct osc_update_api_access_rule_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -11463,7 +11834,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto update_api_access_rule_arg;
 		      }
@@ -11476,8 +11847,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "ApiAccessRuleId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -11582,6 +11960,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_api_access_policy_arg a = {0};
 		     struct osc_update_api_access_policy_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -11603,7 +11982,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto update_api_access_policy_arg;
 		      }
@@ -11616,8 +11995,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -11688,6 +12074,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_account_arg a = {0};
 		     struct osc_update_account_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -11709,7 +12096,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto update_account_arg;
 		      }
@@ -11722,8 +12109,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "AdditionalEmails")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -11912,6 +12306,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_access_key_arg a = {0};
 		     struct osc_update_access_key_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -11933,7 +12328,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto update_access_key_arg;
 		      }
@@ -11946,8 +12341,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "AccessKeyId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -12035,6 +12437,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_volume_arg a = {0};
 		     struct osc_unlink_volume_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -12056,7 +12459,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto unlink_volume_arg;
 		      }
@@ -12069,8 +12472,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -12141,6 +12551,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_virtual_gateway_arg a = {0};
 		     struct osc_unlink_virtual_gateway_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -12162,7 +12573,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto unlink_virtual_gateway_arg;
 		      }
@@ -12175,8 +12586,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -12242,6 +12660,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_route_table_arg a = {0};
 		     struct osc_unlink_route_table_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -12263,7 +12682,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto unlink_route_table_arg;
 		      }
@@ -12276,8 +12695,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -12332,6 +12758,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_public_ip_arg a = {0};
 		     struct osc_unlink_public_ip_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -12353,7 +12780,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto unlink_public_ip_arg;
 		      }
@@ -12366,8 +12793,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -12433,6 +12867,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_private_ips_arg a = {0};
 		     struct osc_unlink_private_ips_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -12454,7 +12889,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto unlink_private_ips_arg;
 		      }
@@ -12467,8 +12902,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -12536,6 +12978,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_nic_arg a = {0};
 		     struct osc_unlink_nic_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -12557,7 +13000,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto unlink_nic_arg;
 		      }
@@ -12570,8 +13013,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -12626,6 +13076,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_load_balancer_backend_machines_arg a = {0};
 		     struct osc_unlink_load_balancer_backend_machines_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -12647,7 +13098,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto unlink_load_balancer_backend_machines_arg;
 		      }
@@ -12660,8 +13111,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "BackendIps")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -12742,6 +13200,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_internet_service_arg a = {0};
 		     struct osc_unlink_internet_service_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -12763,7 +13222,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto unlink_internet_service_arg;
 		      }
@@ -12776,8 +13235,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -12843,6 +13309,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_flexible_gpu_arg a = {0};
 		     struct osc_unlink_flexible_gpu_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -12864,7 +13331,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto unlink_flexible_gpu_arg;
 		      }
@@ -12877,8 +13344,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -12933,6 +13407,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_stop_vms_arg a = {0};
 		     struct osc_stop_vms_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -12954,7 +13429,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto stop_vms_arg;
 		      }
@@ -12967,8 +13442,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -13041,6 +13523,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_start_vms_arg a = {0};
 		     struct osc_start_vms_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -13062,7 +13545,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto start_vms_arg;
 		      }
@@ -13075,8 +13558,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -13133,6 +13623,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_send_reset_password_email_arg a = {0};
 		     struct osc_send_reset_password_email_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -13154,7 +13645,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto send_reset_password_email_arg;
 		      }
@@ -13167,8 +13658,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -13223,6 +13721,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_scale_up_vm_group_arg a = {0};
 		     struct osc_scale_up_vm_group_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -13244,7 +13743,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto scale_up_vm_group_arg;
 		      }
@@ -13257,8 +13756,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -13324,6 +13830,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_scale_down_vm_group_arg a = {0};
 		     struct osc_scale_down_vm_group_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -13345,7 +13852,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto scale_down_vm_group_arg;
 		      }
@@ -13358,8 +13865,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -13425,6 +13939,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_reset_account_password_arg a = {0};
 		     struct osc_reset_account_password_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -13446,7 +13961,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto reset_account_password_arg;
 		      }
@@ -13459,8 +13974,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -13526,6 +14048,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_reject_net_peering_arg a = {0};
 		     struct osc_reject_net_peering_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -13547,7 +14070,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto reject_net_peering_arg;
 		      }
@@ -13560,8 +14083,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -13616,6 +14146,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_register_vms_in_load_balancer_arg a = {0};
 		     struct osc_register_vms_in_load_balancer_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -13637,7 +14168,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto register_vms_in_load_balancer_arg;
 		      }
@@ -13650,8 +14181,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "BackendVmIds")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -13719,6 +14257,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_reboot_vms_arg a = {0};
 		     struct osc_reboot_vms_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -13740,7 +14279,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto reboot_vms_arg;
 		      }
@@ -13753,8 +14292,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -13811,6 +14357,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_vpn_connections_arg a = {0};
 		     struct osc_read_vpn_connections_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -13832,7 +14379,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_vpn_connections_arg;
 		      }
@@ -13845,8 +14392,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -13881,7 +14435,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_vpn_connection_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_vpn_connection_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -13913,6 +14467,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_volumes_arg a = {0};
 		     struct osc_read_volumes_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -13934,7 +14489,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_volumes_arg;
 		      }
@@ -13947,8 +14502,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -13983,7 +14545,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_volume_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_volume_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -14015,6 +14577,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_vms_state_arg a = {0};
 		     struct osc_read_vms_state_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -14036,7 +14599,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_vms_state_arg;
 		      }
@@ -14049,8 +14612,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "AllVms")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -14101,7 +14671,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_vms_state_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_vms_state_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -14133,6 +14703,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_vms_health_arg a = {0};
 		     struct osc_read_vms_health_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -14154,7 +14725,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_vms_health_arg;
 		      }
@@ -14167,8 +14738,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "BackendVmIds")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -14236,6 +14814,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_vms_arg a = {0};
 		     struct osc_read_vms_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -14257,7 +14836,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_vms_arg;
 		      }
@@ -14270,8 +14849,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -14306,7 +14892,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_vm_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_vm_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -14338,6 +14924,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_vm_types_arg a = {0};
 		     struct osc_read_vm_types_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -14359,7 +14946,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_vm_types_arg;
 		      }
@@ -14372,8 +14959,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -14408,7 +15002,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_vm_type_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_vm_type_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -14440,6 +15034,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_vm_templates_arg a = {0};
 		     struct osc_read_vm_templates_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -14461,7 +15056,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_vm_templates_arg;
 		      }
@@ -14474,8 +15069,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -14510,7 +15112,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_vm_template_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_vm_template_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -14542,6 +15144,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_vm_groups_arg a = {0};
 		     struct osc_read_vm_groups_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -14563,7 +15166,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_vm_groups_arg;
 		      }
@@ -14576,8 +15179,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -14612,7 +15222,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_vm_group_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_vm_group_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -14644,6 +15254,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_virtual_gateways_arg a = {0};
 		     struct osc_read_virtual_gateways_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -14665,7 +15276,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_virtual_gateways_arg;
 		      }
@@ -14678,8 +15289,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -14714,7 +15332,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_virtual_gateway_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_virtual_gateway_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -14746,6 +15364,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_users_arg a = {0};
 		     struct osc_read_users_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -14767,7 +15386,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_users_arg;
 		      }
@@ -14780,8 +15399,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -14825,6 +15451,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_tags_arg a = {0};
 		     struct osc_read_tags_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -14846,7 +15473,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_tags_arg;
 		      }
@@ -14859,8 +15486,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -14895,7 +15529,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_tag_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_tag_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -14927,6 +15561,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_subregions_arg a = {0};
 		     struct osc_read_subregions_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -14948,7 +15583,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_subregions_arg;
 		      }
@@ -14961,8 +15596,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -14997,7 +15639,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_subregion_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_subregion_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -15029,6 +15671,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_subnets_arg a = {0};
 		     struct osc_read_subnets_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -15050,7 +15693,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_subnets_arg;
 		      }
@@ -15063,8 +15706,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -15099,7 +15749,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_subnet_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_subnet_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -15131,6 +15781,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_snapshots_arg a = {0};
 		     struct osc_read_snapshots_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -15152,7 +15803,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_snapshots_arg;
 		      }
@@ -15165,8 +15816,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -15201,7 +15859,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_snapshot_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_snapshot_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -15233,6 +15891,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_snapshot_export_tasks_arg a = {0};
 		     struct osc_read_snapshot_export_tasks_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -15254,7 +15913,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_snapshot_export_tasks_arg;
 		      }
@@ -15267,8 +15926,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -15303,7 +15969,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_export_task_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_export_task_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -15335,6 +16001,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_server_certificates_arg a = {0};
 		     struct osc_read_server_certificates_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -15356,7 +16023,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_server_certificates_arg;
 		      }
@@ -15369,8 +16036,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -15405,7 +16079,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_server_certificate_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_server_certificate_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -15437,6 +16111,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_security_groups_arg a = {0};
 		     struct osc_read_security_groups_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -15458,7 +16133,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_security_groups_arg;
 		      }
@@ -15471,8 +16146,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -15507,7 +16189,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_security_group_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_security_group_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -15539,6 +16221,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_secret_access_key_arg a = {0};
 		     struct osc_read_secret_access_key_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -15560,7 +16243,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_secret_access_key_arg;
 		      }
@@ -15573,8 +16256,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "AccessKeyId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -15629,6 +16319,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_route_tables_arg a = {0};
 		     struct osc_read_route_tables_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -15650,7 +16341,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_route_tables_arg;
 		      }
@@ -15663,8 +16354,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -15699,7 +16397,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_route_table_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_route_table_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -15731,6 +16429,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_regions_arg a = {0};
 		     struct osc_read_regions_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -15752,7 +16451,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_regions_arg;
 		      }
@@ -15765,8 +16464,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -15810,6 +16516,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_quotas_arg a = {0};
 		     struct osc_read_quotas_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -15831,7 +16538,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_quotas_arg;
 		      }
@@ -15844,8 +16551,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -15880,7 +16594,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_quota_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_quota_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -15912,6 +16626,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_public_ips_arg a = {0};
 		     struct osc_read_public_ips_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -15933,7 +16648,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_public_ips_arg;
 		      }
@@ -15946,8 +16661,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -15982,7 +16704,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_public_ip_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_public_ip_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -16014,6 +16736,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_public_ip_ranges_arg a = {0};
 		     struct osc_read_public_ip_ranges_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -16035,7 +16758,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_public_ip_ranges_arg;
 		      }
@@ -16048,8 +16771,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -16093,6 +16823,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_public_catalog_arg a = {0};
 		     struct osc_read_public_catalog_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -16114,7 +16845,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_public_catalog_arg;
 		      }
@@ -16127,8 +16858,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -16172,6 +16910,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_product_types_arg a = {0};
 		     struct osc_read_product_types_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -16193,7 +16932,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_product_types_arg;
 		      }
@@ -16206,8 +16945,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -16242,7 +16988,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_product_type_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_product_type_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -16274,6 +17020,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_nics_arg a = {0};
 		     struct osc_read_nics_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -16295,7 +17042,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_nics_arg;
 		      }
@@ -16308,8 +17055,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -16344,7 +17098,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_nic_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_nic_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -16376,6 +17130,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_nets_arg a = {0};
 		     struct osc_read_nets_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -16397,7 +17152,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_nets_arg;
 		      }
@@ -16410,8 +17165,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -16446,7 +17208,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_net_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_net_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -16478,6 +17240,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_net_peerings_arg a = {0};
 		     struct osc_read_net_peerings_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -16499,7 +17262,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_net_peerings_arg;
 		      }
@@ -16512,8 +17275,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -16548,7 +17318,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_net_peering_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_net_peering_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -16580,6 +17350,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_net_access_points_arg a = {0};
 		     struct osc_read_net_access_points_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -16601,7 +17372,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_net_access_points_arg;
 		      }
@@ -16614,8 +17385,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -16650,7 +17428,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_net_access_point_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_net_access_point_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -16682,6 +17460,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_net_access_point_services_arg a = {0};
 		     struct osc_read_net_access_point_services_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -16703,7 +17482,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_net_access_point_services_arg;
 		      }
@@ -16716,8 +17495,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -16752,7 +17538,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_service_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_service_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -16784,6 +17570,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_nat_services_arg a = {0};
 		     struct osc_read_nat_services_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -16805,7 +17592,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_nat_services_arg;
 		      }
@@ -16818,8 +17605,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -16854,7 +17648,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_nat_service_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_nat_service_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -16886,6 +17680,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_locations_arg a = {0};
 		     struct osc_read_locations_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -16907,7 +17702,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_locations_arg;
 		      }
@@ -16920,8 +17715,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -16965,6 +17767,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_load_balancers_arg a = {0};
 		     struct osc_read_load_balancers_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -16986,7 +17789,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_load_balancers_arg;
 		      }
@@ -16999,8 +17802,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -17035,7 +17845,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_load_balancer_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_load_balancer_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -17067,6 +17877,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_load_balancer_tags_arg a = {0};
 		     struct osc_read_load_balancer_tags_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -17088,7 +17899,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_load_balancer_tags_arg;
 		      }
@@ -17101,8 +17912,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -17159,6 +17977,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_listener_rules_arg a = {0};
 		     struct osc_read_listener_rules_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -17180,7 +17999,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_listener_rules_arg;
 		      }
@@ -17193,8 +18012,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -17229,7 +18055,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_listener_rule_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_listener_rule_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -17261,6 +18087,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_keypairs_arg a = {0};
 		     struct osc_read_keypairs_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -17282,7 +18109,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_keypairs_arg;
 		      }
@@ -17295,8 +18122,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -17331,7 +18165,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_keypair_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_keypair_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -17363,6 +18197,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_internet_services_arg a = {0};
 		     struct osc_read_internet_services_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -17384,7 +18219,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_internet_services_arg;
 		      }
@@ -17397,8 +18232,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -17433,7 +18275,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_internet_service_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_internet_service_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -17465,6 +18307,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_images_arg a = {0};
 		     struct osc_read_images_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -17486,7 +18329,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_images_arg;
 		      }
@@ -17499,8 +18342,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -17535,7 +18385,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_image_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_image_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -17567,6 +18417,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_image_export_tasks_arg a = {0};
 		     struct osc_read_image_export_tasks_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -17588,7 +18439,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_image_export_tasks_arg;
 		      }
@@ -17601,8 +18452,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -17637,7 +18495,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_export_task_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_export_task_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -17669,6 +18527,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_flexible_gpus_arg a = {0};
 		     struct osc_read_flexible_gpus_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -17690,7 +18549,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_flexible_gpus_arg;
 		      }
@@ -17703,8 +18562,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -17739,7 +18605,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_flexible_gpu_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_flexible_gpu_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -17771,6 +18637,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_flexible_gpu_catalog_arg a = {0};
 		     struct osc_read_flexible_gpu_catalog_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -17792,7 +18659,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_flexible_gpu_catalog_arg;
 		      }
@@ -17805,8 +18672,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -17850,6 +18724,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_direct_links_arg a = {0};
 		     struct osc_read_direct_links_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -17871,7 +18746,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_direct_links_arg;
 		      }
@@ -17884,8 +18759,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -17920,7 +18802,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_direct_link_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_direct_link_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -17952,6 +18834,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_direct_link_interfaces_arg a = {0};
 		     struct osc_read_direct_link_interfaces_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -17973,7 +18856,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_direct_link_interfaces_arg;
 		      }
@@ -17986,8 +18869,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -18022,7 +18912,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_direct_link_interface_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_direct_link_interface_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -18054,6 +18944,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_dhcp_options_arg a = {0};
 		     struct osc_read_dhcp_options_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -18075,7 +18966,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_dhcp_options_arg;
 		      }
@@ -18088,8 +18979,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -18124,7 +19022,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_dhcp_options_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_dhcp_options_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -18156,6 +19054,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_consumption_account_arg a = {0};
 		     struct osc_read_consumption_account_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -18177,7 +19076,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_consumption_account_arg;
 		      }
@@ -18190,8 +19089,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -18273,6 +19179,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_console_output_arg a = {0};
 		     struct osc_read_console_output_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -18294,7 +19201,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_console_output_arg;
 		      }
@@ -18307,8 +19214,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -18363,6 +19277,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_client_gateways_arg a = {0};
 		     struct osc_read_client_gateways_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -18384,7 +19299,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_client_gateways_arg;
 		      }
@@ -18397,8 +19312,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -18433,7 +19355,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_client_gateway_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_client_gateway_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -18465,6 +19387,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_catalogs_arg a = {0};
 		     struct osc_read_catalogs_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -18486,7 +19409,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_catalogs_arg;
 		      }
@@ -18499,8 +19422,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -18535,7 +19465,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_catalogs_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_catalogs_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -18567,6 +19497,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_catalog_arg a = {0};
 		     struct osc_read_catalog_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -18588,7 +19519,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_catalog_arg;
 		      }
@@ -18601,8 +19532,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -18646,6 +19584,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_cas_arg a = {0};
 		     struct osc_read_cas_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -18667,7 +19606,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_cas_arg;
 		      }
@@ -18680,8 +19619,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -18716,7 +19662,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_ca_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_ca_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -18748,6 +19694,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_api_logs_arg a = {0};
 		     struct osc_read_api_logs_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -18769,7 +19716,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_api_logs_arg;
 		      }
@@ -18782,8 +19729,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -18818,7 +19772,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_api_log_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_api_log_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -18863,7 +19817,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    with_parser(&s->with, dot_pos, aa, pa);
+				          	    STRY(with_parser(&s->with, dot_pos, aa, pa));
 				          	    s->is_set_with = 1;
 				           } else {
 				                 s->with_str = aa;
@@ -18895,6 +19849,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_api_access_rules_arg a = {0};
 		     struct osc_read_api_access_rules_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -18916,7 +19871,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_api_access_rules_arg;
 		      }
@@ -18929,8 +19884,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -18965,7 +19927,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_api_access_rule_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_api_access_rule_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -18997,6 +19959,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_api_access_policy_arg a = {0};
 		     struct osc_read_api_access_policy_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -19018,7 +19981,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_api_access_policy_arg;
 		      }
@@ -19031,8 +19994,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -19076,6 +20046,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_admin_password_arg a = {0};
 		     struct osc_read_admin_password_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -19097,7 +20068,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_admin_password_arg;
 		      }
@@ -19110,8 +20081,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -19166,6 +20144,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_accounts_arg a = {0};
 		     struct osc_read_accounts_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -19187,7 +20166,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_accounts_arg;
 		      }
@@ -19200,8 +20179,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -19245,6 +20231,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_access_keys_arg a = {0};
 		     struct osc_read_access_keys_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -19266,7 +20253,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto read_access_keys_arg;
 		      }
@@ -19279,8 +20266,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -19315,7 +20309,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    filters_access_keys_parser(&s->filters, dot_pos, aa, pa);
+				          	    STRY(filters_access_keys_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -19358,6 +20352,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_volume_arg a = {0};
 		     struct osc_link_volume_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -19379,7 +20374,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto link_volume_arg;
 		      }
@@ -19392,8 +20387,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DeviceName")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -19470,6 +20472,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_virtual_gateway_arg a = {0};
 		     struct osc_link_virtual_gateway_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -19491,7 +20494,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto link_virtual_gateway_arg;
 		      }
@@ -19504,8 +20507,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -19571,6 +20581,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_route_table_arg a = {0};
 		     struct osc_link_route_table_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -19592,7 +20603,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto link_route_table_arg;
 		      }
@@ -19605,8 +20616,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -19672,6 +20690,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_public_ip_arg a = {0};
 		     struct osc_link_public_ip_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -19693,7 +20712,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto link_public_ip_arg;
 		      }
@@ -19706,8 +20725,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "AllowRelink")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -19822,6 +20848,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_private_ips_arg a = {0};
 		     struct osc_link_private_ips_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -19843,7 +20870,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto link_private_ips_arg;
 		      }
@@ -19856,8 +20883,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "AllowRelink")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -19952,6 +20986,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_nic_arg a = {0};
 		     struct osc_link_nic_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -19973,7 +21008,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto link_nic_arg;
 		      }
@@ -19986,8 +21021,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DeviceNumber")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -20064,6 +21106,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_load_balancer_backend_machines_arg a = {0};
 		     struct osc_link_load_balancer_backend_machines_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -20085,7 +21128,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto link_load_balancer_backend_machines_arg;
 		      }
@@ -20098,8 +21141,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "BackendIps")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -20180,6 +21230,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_internet_service_arg a = {0};
 		     struct osc_link_internet_service_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -20201,7 +21252,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto link_internet_service_arg;
 		      }
@@ -20214,8 +21265,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -20281,6 +21339,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_flexible_gpu_arg a = {0};
 		     struct osc_link_flexible_gpu_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -20302,7 +21361,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto link_flexible_gpu_arg;
 		      }
@@ -20315,8 +21374,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -20382,6 +21448,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_deregister_vms_in_load_balancer_arg a = {0};
 		     struct osc_deregister_vms_in_load_balancer_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -20403,7 +21470,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto deregister_vms_in_load_balancer_arg;
 		      }
@@ -20416,8 +21483,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "BackendVmIds")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -20485,6 +21559,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_vpn_connection_route_arg a = {0};
 		     struct osc_delete_vpn_connection_route_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -20506,7 +21581,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_vpn_connection_route_arg;
 		      }
@@ -20519,8 +21594,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DestinationIpRange")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -20586,6 +21668,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_vpn_connection_arg a = {0};
 		     struct osc_delete_vpn_connection_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -20607,7 +21690,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_vpn_connection_arg;
 		      }
@@ -20620,8 +21703,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -20676,6 +21766,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_volume_arg a = {0};
 		     struct osc_delete_volume_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -20697,7 +21788,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_volume_arg;
 		      }
@@ -20710,8 +21801,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -20766,6 +21864,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_vms_arg a = {0};
 		     struct osc_delete_vms_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -20787,7 +21886,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_vms_arg;
 		      }
@@ -20800,8 +21899,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -20858,6 +21964,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_vm_template_arg a = {0};
 		     struct osc_delete_vm_template_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -20879,7 +21986,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_vm_template_arg;
 		      }
@@ -20892,8 +21999,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -20948,6 +22062,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_vm_group_arg a = {0};
 		     struct osc_delete_vm_group_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -20969,7 +22084,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_vm_group_arg;
 		      }
@@ -20982,8 +22097,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -21038,6 +22160,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_virtual_gateway_arg a = {0};
 		     struct osc_delete_virtual_gateway_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -21059,7 +22182,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_virtual_gateway_arg;
 		      }
@@ -21072,8 +22195,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -21128,6 +22258,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_user_arg a = {0};
 		     struct osc_delete_user_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -21149,7 +22280,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_user_arg;
 		      }
@@ -21162,8 +22293,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -21218,6 +22356,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_tags_arg a = {0};
 		     struct osc_delete_tags_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -21239,7 +22378,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_tags_arg;
 		      }
@@ -21252,8 +22391,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -21309,7 +22455,7 @@ int main(int ac, char **av)
 				          	      if (endptr[1] == '.') {
 				          		     ++endptr;
 				          	      }
-				          	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+				          	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
 				           } else {
 				          	TRY(!aa, "Tags argument missing\n");
 				          	s->tags_str = aa; // array ref ResourceTag ref
@@ -21341,6 +22487,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_subnet_arg a = {0};
 		     struct osc_delete_subnet_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -21362,7 +22509,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_subnet_arg;
 		      }
@@ -21375,8 +22522,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -21431,6 +22585,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_snapshot_arg a = {0};
 		     struct osc_delete_snapshot_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -21452,7 +22607,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_snapshot_arg;
 		      }
@@ -21465,8 +22620,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -21521,6 +22683,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_server_certificate_arg a = {0};
 		     struct osc_delete_server_certificate_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -21542,7 +22705,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_server_certificate_arg;
 		      }
@@ -21555,8 +22718,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -21611,6 +22781,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_security_group_rule_arg a = {0};
 		     struct osc_delete_security_group_rule_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -21632,7 +22803,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_security_group_rule_arg;
 		      }
@@ -21645,8 +22816,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -21733,7 +22911,7 @@ int main(int ac, char **av)
 				          	      if (endptr[1] == '.') {
 				          		     ++endptr;
 				          	      }
-				          	      security_group_rule_parser(&s->rules[pos], endptr + 1, aa, pa);
+				          	      STRY(security_group_rule_parser(&s->rules[pos], endptr + 1, aa, pa));
 				           } else {
 				          	TRY(!aa, "Rules argument missing\n");
 				          	s->rules_str = aa; // array ref SecurityGroupRule ref
@@ -21809,6 +22987,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_security_group_arg a = {0};
 		     struct osc_delete_security_group_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -21830,7 +23009,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_security_group_arg;
 		      }
@@ -21843,8 +23022,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -21910,6 +23096,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_route_table_arg a = {0};
 		     struct osc_delete_route_table_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -21931,7 +23118,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_route_table_arg;
 		      }
@@ -21944,8 +23131,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -22000,6 +23194,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_route_arg a = {0};
 		     struct osc_delete_route_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -22021,7 +23216,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_route_arg;
 		      }
@@ -22034,8 +23229,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DestinationIpRange")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -22101,6 +23303,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_public_ip_arg a = {0};
 		     struct osc_delete_public_ip_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -22122,7 +23325,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_public_ip_arg;
 		      }
@@ -22135,8 +23338,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -22202,6 +23412,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_nic_arg a = {0};
 		     struct osc_delete_nic_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -22223,7 +23434,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_nic_arg;
 		      }
@@ -22236,8 +23447,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -22292,6 +23510,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_net_peering_arg a = {0};
 		     struct osc_delete_net_peering_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -22313,7 +23532,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_net_peering_arg;
 		      }
@@ -22326,8 +23545,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -22382,6 +23608,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_net_access_point_arg a = {0};
 		     struct osc_delete_net_access_point_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -22403,7 +23630,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_net_access_point_arg;
 		      }
@@ -22416,8 +23643,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -22472,6 +23706,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_net_arg a = {0};
 		     struct osc_delete_net_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -22493,7 +23728,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_net_arg;
 		      }
@@ -22506,8 +23741,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -22562,6 +23804,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_nat_service_arg a = {0};
 		     struct osc_delete_nat_service_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -22583,7 +23826,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_nat_service_arg;
 		      }
@@ -22596,8 +23839,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -22652,6 +23902,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_load_balancer_tags_arg a = {0};
 		     struct osc_delete_load_balancer_tags_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -22673,7 +23924,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_load_balancer_tags_arg;
 		      }
@@ -22686,8 +23937,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -22743,7 +24001,7 @@ int main(int ac, char **av)
 				          	      if (endptr[1] == '.') {
 				          		     ++endptr;
 				          	      }
-				          	      resource_load_balancer_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+				          	      STRY(resource_load_balancer_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
 				           } else {
 				          	TRY(!aa, "Tags argument missing\n");
 				          	s->tags_str = aa; // array ref ResourceLoadBalancerTag ref
@@ -22775,6 +24033,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_load_balancer_policy_arg a = {0};
 		     struct osc_delete_load_balancer_policy_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -22796,7 +24055,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_load_balancer_policy_arg;
 		      }
@@ -22809,8 +24068,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -22876,6 +24142,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_load_balancer_listeners_arg a = {0};
 		     struct osc_delete_load_balancer_listeners_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -22897,7 +24164,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_load_balancer_listeners_arg;
 		      }
@@ -22910,8 +24177,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -22979,6 +24253,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_load_balancer_arg a = {0};
 		     struct osc_delete_load_balancer_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -23000,7 +24275,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_load_balancer_arg;
 		      }
@@ -23013,8 +24288,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -23069,6 +24351,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_listener_rule_arg a = {0};
 		     struct osc_delete_listener_rule_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -23090,7 +24373,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_listener_rule_arg;
 		      }
@@ -23103,8 +24386,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -23159,6 +24449,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_keypair_arg a = {0};
 		     struct osc_delete_keypair_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -23180,7 +24471,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_keypair_arg;
 		      }
@@ -23193,8 +24484,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -23249,6 +24547,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_internet_service_arg a = {0};
 		     struct osc_delete_internet_service_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -23270,7 +24569,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_internet_service_arg;
 		      }
@@ -23283,8 +24582,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -23339,6 +24645,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_image_arg a = {0};
 		     struct osc_delete_image_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -23360,7 +24667,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_image_arg;
 		      }
@@ -23373,8 +24680,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -23429,6 +24743,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_flexible_gpu_arg a = {0};
 		     struct osc_delete_flexible_gpu_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -23450,7 +24765,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_flexible_gpu_arg;
 		      }
@@ -23463,8 +24778,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -23519,6 +24841,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_export_task_arg a = {0};
 		     struct osc_delete_export_task_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -23540,7 +24863,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_export_task_arg;
 		      }
@@ -23553,8 +24876,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -23609,6 +24939,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_direct_link_interface_arg a = {0};
 		     struct osc_delete_direct_link_interface_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -23630,7 +24961,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_direct_link_interface_arg;
 		      }
@@ -23643,8 +24974,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DirectLinkInterfaceId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -23699,6 +25037,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_direct_link_arg a = {0};
 		     struct osc_delete_direct_link_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -23720,7 +25059,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_direct_link_arg;
 		      }
@@ -23733,8 +25072,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DirectLinkId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -23789,6 +25135,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_dhcp_options_arg a = {0};
 		     struct osc_delete_dhcp_options_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -23810,7 +25157,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_dhcp_options_arg;
 		      }
@@ -23823,8 +25170,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DhcpOptionsSetId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -23879,6 +25233,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_client_gateway_arg a = {0};
 		     struct osc_delete_client_gateway_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -23900,7 +25255,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_client_gateway_arg;
 		      }
@@ -23913,8 +25268,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "ClientGatewayId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -23969,6 +25331,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_ca_arg a = {0};
 		     struct osc_delete_ca_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -23990,7 +25353,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_ca_arg;
 		      }
@@ -24003,8 +25366,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "CaId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -24059,6 +25429,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_api_access_rule_arg a = {0};
 		     struct osc_delete_api_access_rule_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -24080,7 +25451,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_api_access_rule_arg;
 		      }
@@ -24093,8 +25464,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "ApiAccessRuleId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -24149,6 +25527,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_access_key_arg a = {0};
 		     struct osc_delete_access_key_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -24170,7 +25549,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto delete_access_key_arg;
 		      }
@@ -24183,8 +25562,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "AccessKeyId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -24250,6 +25636,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_vpn_connection_route_arg a = {0};
 		     struct osc_create_vpn_connection_route_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -24271,7 +25658,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_vpn_connection_route_arg;
 		      }
@@ -24284,8 +25671,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DestinationIpRange")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -24351,6 +25745,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_vpn_connection_arg a = {0};
 		     struct osc_create_vpn_connection_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -24372,7 +25767,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_vpn_connection_arg;
 		      }
@@ -24385,8 +25780,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "ClientGatewayId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -24479,6 +25881,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_volume_arg a = {0};
 		     struct osc_create_volume_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -24500,7 +25903,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_volume_arg;
 		      }
@@ -24513,8 +25916,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -24613,6 +26023,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_vms_arg a = {0};
 		     struct osc_create_vms_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -24634,7 +26045,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_vms_arg;
 		      }
@@ -24647,8 +26058,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "BlockDeviceMappings")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -24675,7 +26093,7 @@ int main(int ac, char **av)
 				          	      if (endptr[1] == '.') {
 				          		     ++endptr;
 				          	      }
-				          	      block_device_mapping_vm_creation_parser(&s->block_device_mappings[pos], endptr + 1, aa, pa);
+				          	      STRY(block_device_mapping_vm_creation_parser(&s->block_device_mappings[pos], endptr + 1, aa, pa));
 				           } else {
 				          	TRY(!aa, "BlockDeviceMappings argument missing\n");
 				          	s->block_device_mappings_str = aa; // array ref BlockDeviceMappingVmCreation ref
@@ -24841,7 +26259,7 @@ int main(int ac, char **av)
 				          	      if (endptr[1] == '.') {
 				          		     ++endptr;
 				          	      }
-				          	      nic_for_vm_creation_parser(&s->nics[pos], endptr + 1, aa, pa);
+				          	      STRY(nic_for_vm_creation_parser(&s->nics[pos], endptr + 1, aa, pa));
 				           } else {
 				          	TRY(!aa, "Nics argument missing\n");
 				          	s->nics_str = aa; // array ref NicForVmCreation ref
@@ -24875,7 +26293,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    placement_parser(&s->placement, dot_pos, aa, pa);
+				          	    STRY(placement_parser(&s->placement, dot_pos, aa, pa));
 				          	    s->is_set_placement = 1;
 				           } else {
 				                 s->placement_str = aa;
@@ -24990,6 +26408,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_vm_template_arg a = {0};
 		     struct osc_create_vm_template_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -25011,7 +26430,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_vm_template_arg;
 		      }
@@ -25024,8 +26443,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "CpuCores")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -25145,7 +26571,7 @@ int main(int ac, char **av)
 				          	      if (endptr[1] == '.') {
 				          		     ++endptr;
 				          	      }
-				          	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+				          	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
 				           } else {
 				          	TRY(!aa, "Tags argument missing\n");
 				          	s->tags_str = aa; // array ref ResourceTag ref
@@ -25188,6 +26614,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_vm_group_arg a = {0};
 		     struct osc_create_vm_group_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -25209,7 +26636,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_vm_group_arg;
 		      }
@@ -25222,8 +26649,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -25312,7 +26746,7 @@ int main(int ac, char **av)
 				          	      if (endptr[1] == '.') {
 				          		     ++endptr;
 				          	      }
-				          	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+				          	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
 				           } else {
 				          	TRY(!aa, "Tags argument missing\n");
 				          	s->tags_str = aa; // array ref ResourceTag ref
@@ -25377,6 +26811,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_virtual_gateway_arg a = {0};
 		     struct osc_create_virtual_gateway_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -25398,7 +26833,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_virtual_gateway_arg;
 		      }
@@ -25411,8 +26846,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "ConnectionType")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -25467,6 +26909,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_user_arg a = {0};
 		     struct osc_create_user_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -25488,7 +26931,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_user_arg;
 		      }
@@ -25501,8 +26944,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -25568,6 +27018,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_tags_arg a = {0};
 		     struct osc_create_tags_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -25589,7 +27040,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_tags_arg;
 		      }
@@ -25602,8 +27053,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -25659,7 +27117,7 @@ int main(int ac, char **av)
 				          	      if (endptr[1] == '.') {
 				          		     ++endptr;
 				          	      }
-				          	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+				          	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
 				           } else {
 				          	TRY(!aa, "Tags argument missing\n");
 				          	s->tags_str = aa; // array ref ResourceTag ref
@@ -25691,6 +27149,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_subnet_arg a = {0};
 		     struct osc_create_subnet_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -25712,7 +27171,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_subnet_arg;
 		      }
@@ -25725,8 +27184,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -25803,6 +27269,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_snapshot_export_task_arg a = {0};
 		     struct osc_create_snapshot_export_task_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -25824,7 +27291,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_snapshot_export_task_arg;
 		      }
@@ -25837,8 +27304,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -25873,7 +27347,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    osu_export_to_create_parser(&s->osu_export, dot_pos, aa, pa);
+				          	    STRY(osu_export_to_create_parser(&s->osu_export, dot_pos, aa, pa));
 				          	    s->is_set_osu_export = 1;
 				           } else {
 				                 s->osu_export_str = aa;
@@ -25916,6 +27390,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_snapshot_arg a = {0};
 		     struct osc_create_snapshot_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -25937,7 +27412,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_snapshot_arg;
 		      }
@@ -25950,8 +27425,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -26061,6 +27543,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_server_certificate_arg a = {0};
 		     struct osc_create_server_certificate_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -26082,7 +27565,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_server_certificate_arg;
 		      }
@@ -26095,8 +27578,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "Body")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -26195,6 +27685,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_security_group_rule_arg a = {0};
 		     struct osc_create_security_group_rule_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -26216,7 +27707,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_security_group_rule_arg;
 		      }
@@ -26229,8 +27720,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -26317,7 +27815,7 @@ int main(int ac, char **av)
 				          	      if (endptr[1] == '.') {
 				          		     ++endptr;
 				          	      }
-				          	      security_group_rule_parser(&s->rules[pos], endptr + 1, aa, pa);
+				          	      STRY(security_group_rule_parser(&s->rules[pos], endptr + 1, aa, pa));
 				           } else {
 				          	TRY(!aa, "Rules argument missing\n");
 				          	s->rules_str = aa; // array ref SecurityGroupRule ref
@@ -26393,6 +27891,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_security_group_arg a = {0};
 		     struct osc_create_security_group_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -26414,7 +27913,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_security_group_arg;
 		      }
@@ -26427,8 +27926,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -26505,6 +28011,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_route_table_arg a = {0};
 		     struct osc_create_route_table_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -26526,7 +28033,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_route_table_arg;
 		      }
@@ -26539,8 +28046,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -26595,6 +28109,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_route_arg a = {0};
 		     struct osc_create_route_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -26616,7 +28131,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_route_arg;
 		      }
@@ -26629,8 +28144,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DestinationIpRange")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -26751,6 +28273,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_public_ip_arg a = {0};
 		     struct osc_create_public_ip_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -26772,7 +28295,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_public_ip_arg;
 		      }
@@ -26785,8 +28308,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -26830,6 +28360,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_nic_arg a = {0};
 		     struct osc_create_nic_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -26851,7 +28382,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_nic_arg;
 		      }
@@ -26864,8 +28395,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -26919,7 +28457,7 @@ int main(int ac, char **av)
 				          	      if (endptr[1] == '.') {
 				          		     ++endptr;
 				          	      }
-				          	      private_ip_light_parser(&s->private_ips[pos], endptr + 1, aa, pa);
+				          	      STRY(private_ip_light_parser(&s->private_ips[pos], endptr + 1, aa, pa));
 				           } else {
 				          	TRY(!aa, "PrivateIps argument missing\n");
 				          	s->private_ips_str = aa; // array ref PrivateIpLight ref
@@ -26975,6 +28513,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_net_peering_arg a = {0};
 		     struct osc_create_net_peering_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -26996,7 +28535,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_net_peering_arg;
 		      }
@@ -27009,8 +28548,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "AccepterNetId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -27076,6 +28622,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_net_access_point_arg a = {0};
 		     struct osc_create_net_access_point_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -27097,7 +28644,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_net_access_point_arg;
 		      }
@@ -27110,8 +28657,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -27190,6 +28744,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_net_arg a = {0};
 		     struct osc_create_net_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -27211,7 +28766,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_net_arg;
 		      }
@@ -27224,8 +28779,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -27291,6 +28853,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_nat_service_arg a = {0};
 		     struct osc_create_nat_service_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -27312,7 +28875,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_nat_service_arg;
 		      }
@@ -27325,8 +28888,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -27392,6 +28962,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_load_balancer_tags_arg a = {0};
 		     struct osc_create_load_balancer_tags_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -27413,7 +28984,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_load_balancer_tags_arg;
 		      }
@@ -27426,8 +28997,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -27483,7 +29061,7 @@ int main(int ac, char **av)
 				          	      if (endptr[1] == '.') {
 				          		     ++endptr;
 				          	      }
-				          	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+				          	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
 				           } else {
 				          	TRY(!aa, "Tags argument missing\n");
 				          	s->tags_str = aa; // array ref ResourceTag ref
@@ -27515,6 +29093,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_load_balancer_policy_arg a = {0};
 		     struct osc_create_load_balancer_policy_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -27536,7 +29115,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_load_balancer_policy_arg;
 		      }
@@ -27549,8 +29128,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "CookieExpirationPeriod")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -27649,6 +29235,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_load_balancer_listeners_arg a = {0};
 		     struct osc_create_load_balancer_listeners_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -27670,7 +29257,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_load_balancer_listeners_arg;
 		      }
@@ -27683,8 +29270,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -27727,7 +29321,7 @@ int main(int ac, char **av)
 				          	      if (endptr[1] == '.') {
 				          		     ++endptr;
 				          	      }
-				          	      listener_for_creation_parser(&s->listeners[pos], endptr + 1, aa, pa);
+				          	      STRY(listener_for_creation_parser(&s->listeners[pos], endptr + 1, aa, pa));
 				           } else {
 				          	TRY(!aa, "Listeners argument missing\n");
 				          	s->listeners_str = aa; // array ref ListenerForCreation ref
@@ -27770,6 +29364,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_load_balancer_arg a = {0};
 		     struct osc_create_load_balancer_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -27791,7 +29386,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_load_balancer_arg;
 		      }
@@ -27804,8 +29399,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -27848,7 +29450,7 @@ int main(int ac, char **av)
 				          	      if (endptr[1] == '.') {
 				          		     ++endptr;
 				          	      }
-				          	      listener_for_creation_parser(&s->listeners[pos], endptr + 1, aa, pa);
+				          	      STRY(listener_for_creation_parser(&s->listeners[pos], endptr + 1, aa, pa));
 				           } else {
 				          	TRY(!aa, "Listeners argument missing\n");
 				          	s->listeners_str = aa; // array ref ListenerForCreation ref
@@ -27951,7 +29553,7 @@ int main(int ac, char **av)
 				          	      if (endptr[1] == '.') {
 				          		     ++endptr;
 				          	      }
-				          	      resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa);
+				          	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
 				           } else {
 				          	TRY(!aa, "Tags argument missing\n");
 				          	s->tags_str = aa; // array ref ResourceTag ref
@@ -27983,6 +29585,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_listener_rule_arg a = {0};
 		     struct osc_create_listener_rule_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -28004,7 +29607,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_listener_rule_arg;
 		      }
@@ -28017,8 +29620,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -28053,7 +29663,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    load_balancer_light_parser(&s->listener, dot_pos, aa, pa);
+				          	    STRY(load_balancer_light_parser(&s->listener, dot_pos, aa, pa));
 				          	    s->is_set_listener = 1;
 				           } else {
 				                 s->listener_str = aa;
@@ -28076,7 +29686,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    listener_rule_for_creation_parser(&s->listener_rule, dot_pos, aa, pa);
+				          	    STRY(listener_rule_for_creation_parser(&s->listener_rule, dot_pos, aa, pa));
 				          	    s->is_set_listener_rule = 1;
 				           } else {
 				                 s->listener_rule_str = aa;
@@ -28121,6 +29731,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_keypair_arg a = {0};
 		     struct osc_create_keypair_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -28142,7 +29753,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_keypair_arg;
 		      }
@@ -28155,8 +29766,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -28222,6 +29840,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_internet_service_arg a = {0};
 		     struct osc_create_internet_service_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -28243,7 +29862,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_internet_service_arg;
 		      }
@@ -28256,8 +29875,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -28301,6 +29927,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_image_export_task_arg a = {0};
 		     struct osc_create_image_export_task_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -28322,7 +29949,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_image_export_task_arg;
 		      }
@@ -28335,8 +29962,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -28382,7 +30016,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    osu_export_to_create_parser(&s->osu_export, dot_pos, aa, pa);
+				          	    STRY(osu_export_to_create_parser(&s->osu_export, dot_pos, aa, pa));
 				          	    s->is_set_osu_export = 1;
 				           } else {
 				                 s->osu_export_str = aa;
@@ -28414,6 +30048,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_image_arg a = {0};
 		     struct osc_create_image_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -28435,7 +30070,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_image_arg;
 		      }
@@ -28448,8 +30083,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "Architecture")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -28487,7 +30129,7 @@ int main(int ac, char **av)
 				          	      if (endptr[1] == '.') {
 				          		     ++endptr;
 				          	      }
-				          	      block_device_mapping_image_parser(&s->block_device_mappings[pos], endptr + 1, aa, pa);
+				          	      STRY(block_device_mapping_image_parser(&s->block_device_mappings[pos], endptr + 1, aa, pa));
 				           } else {
 				          	TRY(!aa, "BlockDeviceMappings argument missing\n");
 				          	s->block_device_mappings_str = aa; // array ref BlockDeviceMappingImage ref
@@ -28641,6 +30283,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_flexible_gpu_arg a = {0};
 		     struct osc_create_flexible_gpu_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -28662,7 +30305,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_flexible_gpu_arg;
 		      }
@@ -28675,8 +30318,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DeleteOnVmDeletion")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -28769,6 +30419,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_direct_link_interface_arg a = {0};
 		     struct osc_create_direct_link_interface_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -28790,7 +30441,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_direct_link_interface_arg;
 		      }
@@ -28803,8 +30454,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DirectLinkId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -28834,7 +30492,7 @@ int main(int ac, char **av)
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    direct_link_interface_parser(&s->direct_link_interface, dot_pos, aa, pa);
+				          	    STRY(direct_link_interface_parser(&s->direct_link_interface, dot_pos, aa, pa));
 				          	    s->is_set_direct_link_interface = 1;
 				           } else {
 				                 s->direct_link_interface_str = aa;
@@ -28882,6 +30540,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_direct_link_arg a = {0};
 		     struct osc_create_direct_link_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -28903,7 +30562,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_direct_link_arg;
 		      }
@@ -28916,8 +30575,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "Bandwidth")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -28994,6 +30660,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_dhcp_options_arg a = {0};
 		     struct osc_create_dhcp_options_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -29015,7 +30682,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_dhcp_options_arg;
 		      }
@@ -29028,8 +30695,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DomainName")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -29123,6 +30797,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_client_gateway_arg a = {0};
 		     struct osc_create_client_gateway_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -29144,7 +30819,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_client_gateway_arg;
 		      }
@@ -29157,8 +30832,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "BgpAsn")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -29235,6 +30917,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_ca_arg a = {0};
 		     struct osc_create_ca_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -29256,7 +30939,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_ca_arg;
 		      }
@@ -29269,8 +30952,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "CaPem")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -29336,6 +31026,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_api_access_rule_arg a = {0};
 		     struct osc_create_api_access_rule_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -29357,7 +31048,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_api_access_rule_arg;
 		      }
@@ -29370,8 +31061,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "CaIds")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -29465,6 +31163,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_account_arg a = {0};
 		     struct osc_create_account_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -29486,7 +31185,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_account_arg;
 		      }
@@ -29499,8 +31198,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "AdditionalEmails")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -29700,6 +31406,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_access_key_arg a = {0};
 		     struct osc_create_access_key_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -29721,7 +31428,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto create_access_key_arg;
 		      }
@@ -29734,8 +31441,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -29801,6 +31515,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_check_authentication_arg a = {0};
 		     struct osc_check_authentication_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -29822,7 +31537,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto check_authentication_arg;
 		      }
@@ -29835,8 +31550,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -29902,6 +31624,7 @@ int main(int ac, char **av)
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_accept_net_peering_arg a = {0};
 		     struct osc_accept_net_peering_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
@@ -29923,7 +31646,7 @@ int main(int ac, char **av)
 			   } else {
 			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
 			   }
-		      	   cascade_parser(cascade_struct, next_a, aa, pa);
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
 		       	   goto accept_net_peering_arg;
 		      }
@@ -29936,8 +31659,15 @@ int main(int ac, char **av)
 			     int incr = aa ? 2 : 1;
 
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				aa = 0;
-				incr = 1;
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
