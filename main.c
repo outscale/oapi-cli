@@ -8943,11 +8943,13 @@ int main(int ac, char **av)
 
 	if (ac < 2 || (ac == 2 && !strcmp(av[1], "--help"))) {
 	show_help:
-                printf("Usage: %s [--help] CallName [options] [--Params ParamArgument]\n"
+                printf("Usage: %s [--help] CallName [options] [--Params <param_argument or --file <file_name>>]\n"
                        "options:\n"
                        "\t    --auth-method=METHODE set authentification method, password|accesskey|none\n"
                        "\t    --color               try to colorize json if json-c support it\n"
                        "\t    --config=PATH         config file path\n"
+		       "\t    --file PATH           use content of PATH as an agrument for a call, example:\n"
+		       "\t\t\t\toapi-cli CreateCa  --CaPem --file /$CA_DIR/cert.pem\n"
                        "\t-h, --help [CallName]     this, can be used with call name, example:\n\t\t\t\t%s --help ReadVms\n"
                        "\t    --list-calls          list all calls\n"
                        "\t    --insecure            doesn't verify SSL certificats\n"
