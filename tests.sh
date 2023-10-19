@@ -41,6 +41,11 @@ trap "echo [$MSG_BASE Lot of Arguments FAIL]" ERR
 ./tests-lot-arg.sh | grep RequestId > /dev/null
 echo "[$MSG_BASE Lot of Arguments OK]"
 
-trap "echo [$MSG_BASE ReadConsumptionAccount --FromDate $(date --date="-5 days" '+%F') --ToDate $(date --date="-1 days" "+%F") FAIL]" ERR
-./oapi-cli ReadConsumptionAccount --FromDate $(date --date="-5 days" '+%F') --ToDate $(date --date="-1 days" "+%F") | grep Operation > /dev/null
-echo "[$MSG_BASE ReadConsumptionAccount --FromDate $(date --date="-5 days" '+%F') --ToDate $(date --date="-1 days" "+%F") OK]"
+trap "echo [$MSG_BASE ReadVms --DryRun --file false.txt FAIL]" ERR
+echo -n false > false.txt
+./oapi-cli ReadVms --DryRun --file false.txt | grep RequestId > /dev/null
+echo "[$MSG_BASE ReadVms --DryRun --file false.txt OK]"
+
+trap "echo [$MSG_BASE ReadConsumptionAccount --FromDate $(date --date="-39 days" '+%F') --ToDate $(date --date="-38 days" "+%F") FAIL]" ERR
+./oapi-cli ReadConsumptionAccount --FromDate $(date --date="-39 days" '+%F') --ToDate $(date --date="-38 days" "+%F") | grep Operation > /dev/null
+echo "[$MSG_BASE ReadConsumptionAccount --FromDate $(date --date="-39 days" '+%F') --ToDate $(date --date="-38 days" "+%F") OK]"
