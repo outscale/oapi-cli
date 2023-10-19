@@ -92,7 +92,7 @@ char *read_file(char *files_cnt[static MAX_FILES_PER_CMD], char *file_name)
 {
 	int dest = -1;
 	for (int i = 0; i < MAX_FILES_PER_CMD; ++i) {
-		if (!file_name[i]) {
+		if (!files_cnt[i]) {
 			dest = i;
 			break;
 		}
