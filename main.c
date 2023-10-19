@@ -83,7 +83,7 @@ static int argcmp(const char *s1, const char *s2)
 
 static void files_cnt_cleanup(char * (*files_cnt_ptr)[64])
 {
-	for (int i = 0; i < MAX_FILES_PER_CMD && *files_cnt_ptr[i]; ++i) {
+	for (int i = 0; i < MAX_FILES_PER_CMD && (*files_cnt_ptr)[i]; ++i) {
 		free((*files_cnt_ptr)[i]);
 	}
 }
