@@ -25617,6 +25617,10 @@ int osc_init_sdk_ext(struct osc_env *e, const char *profile, unsigned int flag,
 	e->headers = NULL;
 	e->c = curl_easy_init();
 
+	#ifdef _WIN32
+	curl_easy_setopt(e->c, CURLOPT_SSL_OPTIONS, (long)CURLSSLOPT_NATIVE_CA);
+	#endif
+
 	/* Setting HEADERS */
 	if (flag & OSC_VERBOSE_MODE)
 		curl_easy_setopt(e->c, CURLOPT_VERBOSE, 1);
