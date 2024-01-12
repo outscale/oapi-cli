@@ -56,7 +56,7 @@ source $HOME/oapi-cli-completion.bash
 
 # Config
 
-## using `.osc/config.json`
+## using `~/.osc/config.json` on unix/macOS, or .\config.json on windows
 
 ```
 {"default":
