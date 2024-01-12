@@ -39,6 +39,7 @@
 #include <assert.h>
 #include "curl/curl.h"
 #include <time.h>
+#include <unistd.h>
 #include "osc_sdk.h"
 #include "json.h"
 
@@ -47,8 +48,6 @@
 #define TIMESTAMP_SIZE 17
 #define TIME_HDR_KEY "X-Osc-Date: "
 #define TIME_HDR_KEY_L (sizeof TIME_HDR_KEY)
-
-#define CFG_FILE "/.osc/config.json"
 
 #ifdef _WIN32
 
@@ -63,7 +62,15 @@ static inline char* stpcpy(char *dest, const char *src)
 	return dest;
 }
 
+#define CFG_FILE "config.json"
+
+#define LOAD_CFG_GET_HOME(buf)			\
+	{					\
+		strcpy(buf, CFG_FILE);		\
+	}
 #else
+
+#define CFG_FILE "/.osc/config.json"
 
 #define SAFE_C 1
 
@@ -4084,6 +4091,7 @@ static char *osc_strdup(const char *str) {
 	if (count_args++ > 0)					\
 		STRY(osc_str_append_string(data, "," ));
 
+#ifndef LOAD_CFG_GET_HOME
 #define LOAD_CFG_GET_HOME(buf)						\
 	{								\
 		const char *dest = CFG_FILE;				\
@@ -4093,6 +4101,7 @@ static char *osc_strdup(const char *str) {
 		    "home path too big");				\
 		strcpy(stpcpy(buf, home), dest);			\
 	}
+#endif
 
 #define ARG_TO_JSON_STR(separator, what) do {				\
 		auto_osc_str struct osc_str s;				\
@@ -4138,8 +4147,9 @@ int osc_load_ak_sk_from_conf(const char *profile, char **ak, char **sk)
 		*sk = NULL;
 	if (ak)
 		*ak = NULL;
+	TRY(access(cfg, R_OK), "can't open/read %s\n", cfg);
 	js = json_object_from_file(cfg);
-	TRY(!js, "can't open %s\n", cfg);
+	TRY(!js, "can't load json-file %s (json might have incorect syntaxe)\n", cfg);
 	to_free = js;
 	js = json_object_object_get(js, profile);
 	TRY(!js, "can't find profile %s\n", profile);
