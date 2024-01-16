@@ -47,7 +47,7 @@
 
 #define OAPI_RAW_OUTPUT 1
 
-#define OAPI_CLI_VERSION "0.2.0"
+#define OAPI_CLI_VERSION "0.3.0"
 
 #define OAPI_CLI_UAGENT "oapi-cli/"OAPI_CLI_VERSION"; osc-sdk-c/"
 
@@ -156,6 +156,7 @@ int catalog_entry_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int catalogs_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int client_gateway_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int consumption_entry_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int dedicated_group_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int dhcp_options_set_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int direct_link_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int direct_link_interface_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -167,6 +168,7 @@ int filters_api_log_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_ca_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_catalogs_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_client_gateway_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int filters_dedicated_group_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_dhcp_options_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_direct_link_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_direct_link_interface_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -215,6 +217,7 @@ int link_nic_to_update_parser(void *s, char *str, char *aa, struct ptr_array *pa
 int link_public_ip_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int link_public_ip_light_for_vm_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int link_route_table_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int linked_policy_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int linked_volume_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int listener_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int listener_for_creation_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -244,7 +247,10 @@ int permissions_on_resource_parser(void *s, char *str, char *aa, struct ptr_arra
 int permissions_on_resource_creation_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int phase1_options_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int phase2_options_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int phase2_options_to_update_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int placement_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int policy_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int policy_version_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int private_ip_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int private_ip_light_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int private_ip_light_for_vm_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -253,6 +259,8 @@ int public_ip_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int public_ip_light_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int quota_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int quota_types_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int read_linked_policies_filters_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int read_policies_filters_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int region_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int resource_load_balancer_tag_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int resource_tag_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -286,6 +294,7 @@ int vm_type_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int volume_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int vpn_connection_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int vpn_options_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int vpn_options_to_update_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int with_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 
 int accepter_net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
@@ -1127,6 +1136,11 @@ int consumption_entry_parser(void *v_s, char *str, char *aa, struct ptr_array *p
             s->paying_account_id = aa; // string string
 
          } else
+	if ((aret = argcmp(str, "Price")) == 0 || aret == '=') {
+            TRY(!aa, "Price argument missing\n");
+            s->is_set_price = 1;
+            s->price = atof(aa);
+         } else
 	if ((aret = argcmp(str, "Service")) == 0 || aret == '=') {
             TRY(!aa, "Service argument missing\n");
             s->service = aa; // string string
@@ -1152,6 +1166,11 @@ int consumption_entry_parser(void *v_s, char *str, char *aa, struct ptr_array *p
             s->type = aa; // string string
 
          } else
+	if ((aret = argcmp(str, "UnitPrice")) == 0 || aret == '=') {
+            TRY(!aa, "UnitPrice argument missing\n");
+            s->is_set_unit_price = 1;
+            s->unit_price = atof(aa);
+         } else
 	if ((aret = argcmp(str, "Value")) == 0 || aret == '=') {
             TRY(!aa, "Value argument missing\n");
             s->is_set_value = 1;
@@ -1159,6 +1178,55 @@ int consumption_entry_parser(void *v_s, char *str, char *aa, struct ptr_array *p
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'ConsumptionEntry'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
+int dedicated_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct dedicated_group *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccountId")) == 0 || aret == '=') {
+            TRY(!aa, "AccountId argument missing\n");
+            s->account_id = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "CpuGeneration")) == 0 || aret == '=') {
+            TRY(!aa, "CpuGeneration argument missing\n");
+            s->is_set_cpu_generation = 1;
+            s->cpu_generation = atoi(aa);
+         } else
+	if ((aret = argcmp(str, "DedicatedGroupId")) == 0 || aret == '=') {
+            TRY(!aa, "DedicatedGroupId argument missing\n");
+            s->dedicated_group_id = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "Name")) == 0 || aret == '=') {
+            TRY(!aa, "Name argument missing\n");
+            s->name = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "NetIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "NetIds argument missing\n");
+               s->net_ids_str = aa;
+         } else if (!(aret = strcmp(str, "NetIds[]")) || aret == '=') {
+               TRY(!aa, "NetIds[] argument missing\n");
+               SET_NEXT(s->net_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "SubregionName")) == 0 || aret == '=') {
+            TRY(!aa, "SubregionName argument missing\n");
+            s->subregion_name = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "VmIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "VmIds argument missing\n");
+               s->vm_ids_str = aa;
+         } else if (!(aret = strcmp(str, "VmIds[]")) || aret == '=') {
+               TRY(!aa, "VmIds[] argument missing\n");
+               SET_NEXT(s->vm_ids, (aa), pa);
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'DedicatedGroup'\n", str);
 		return -1;
 	}
 	return 0;
@@ -1700,6 +1768,44 @@ int filters_client_gateway_parser(void *v_s, char *str, char *aa, struct ptr_arr
 	return 0;
 }
 
+int filters_dedicated_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct filters_dedicated_group *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "CpuGenerations")) == 0 || aret == '=') {
+            	 TRY(!aa, "CpuGenerations argument missing\n");
+               s->cpu_generations_str = aa;
+         } else if (!(aret = strcmp(str, "CpuGenerations[]")) || aret == '=') {
+               TRY(!aa, "CpuGenerations[] argument missing\n");
+               SET_NEXT(s->cpu_generations, atoi(aa), pa);
+         } else
+	if ((aret = argcmp(str, "DedicatedGroupIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "DedicatedGroupIds argument missing\n");
+               s->dedicated_group_ids_str = aa;
+         } else if (!(aret = strcmp(str, "DedicatedGroupIds[]")) || aret == '=') {
+               TRY(!aa, "DedicatedGroupIds[] argument missing\n");
+               SET_NEXT(s->dedicated_group_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "Names")) == 0 || aret == '=') {
+            	 TRY(!aa, "Names argument missing\n");
+               s->names_str = aa;
+         } else if (!(aret = strcmp(str, "Names[]")) || aret == '=') {
+               TRY(!aa, "Names[] argument missing\n");
+               SET_NEXT(s->names, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "SubregionNames")) == 0 || aret == '=') {
+            	 TRY(!aa, "SubregionNames argument missing\n");
+               s->subregion_names_str = aa;
+         } else if (!(aret = strcmp(str, "SubregionNames[]")) || aret == '=') {
+               TRY(!aa, "SubregionNames[] argument missing\n");
+               SET_NEXT(s->subregion_names, (aa), pa);
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'FiltersDedicatedGroup'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
 int filters_dhcp_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_dhcp_options *s = v_s;
 	    int aret = 0;
@@ -2010,6 +2116,13 @@ int filters_image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("PermissionsToLaunchGlobalPermission require true/false\n");
              }
         } else
+	if ((aret = argcmp(str, "ProductCodeNames")) == 0 || aret == '=') {
+            	 TRY(!aa, "ProductCodeNames argument missing\n");
+               s->product_code_names_str = aa;
+         } else if (!(aret = strcmp(str, "ProductCodeNames[]")) || aret == '=') {
+               TRY(!aa, "ProductCodeNames[] argument missing\n");
+               SET_NEXT(s->product_code_names, (aa), pa);
+         } else
 	if ((aret = argcmp(str, "ProductCodes")) == 0 || aret == '=') {
             	 TRY(!aa, "ProductCodes argument missing\n");
                s->product_codes_str = aa;
@@ -2141,6 +2254,13 @@ int filters_keypair_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
          } else if (!(aret = strcmp(str, "KeypairNames[]")) || aret == '=') {
                TRY(!aa, "KeypairNames[] argument missing\n");
                SET_NEXT(s->keypair_names, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "KeypairTypes")) == 0 || aret == '=') {
+            	 TRY(!aa, "KeypairTypes argument missing\n");
+               s->keypair_types_str = aa;
+         } else if (!(aret = strcmp(str, "KeypairTypes[]")) || aret == '=') {
+               TRY(!aa, "KeypairTypes[] argument missing\n");
+               SET_NEXT(s->keypair_types, (aa), pa);
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersKeypair'\n", str);
@@ -2393,6 +2513,13 @@ int filters_net_peering_parser(void *v_s, char *str, char *aa, struct ptr_array 
          } else if (!(aret = strcmp(str, "AccepterNetNetIds[]")) || aret == '=') {
                TRY(!aa, "AccepterNetNetIds[] argument missing\n");
                SET_NEXT(s->accepter_net_net_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "ExpirationDates")) == 0 || aret == '=') {
+            	 TRY(!aa, "ExpirationDates argument missing\n");
+               s->expiration_dates_str = aa;
+         } else if (!(aret = strcmp(str, "ExpirationDates[]")) || aret == '=') {
+               TRY(!aa, "ExpirationDates[] argument missing\n");
+               SET_NEXT(s->expiration_dates, (aa), pa);
          } else
 	if ((aret = argcmp(str, "NetPeeringIds")) == 0 || aret == '=') {
             	 TRY(!aa, "NetPeeringIds argument missing\n");
@@ -2956,13 +3083,6 @@ int filters_route_table_parser(void *v_s, char *str, char *aa, struct ptr_array 
 int filters_security_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_security_group *s = v_s;
 	    int aret = 0;
-	if ((aret = argcmp(str, "AccountIds")) == 0 || aret == '=') {
-            	 TRY(!aa, "AccountIds argument missing\n");
-               s->account_ids_str = aa;
-         } else if (!(aret = strcmp(str, "AccountIds[]")) || aret == '=') {
-               TRY(!aa, "AccountIds[] argument missing\n");
-               SET_NEXT(s->account_ids, (aa), pa);
-         } else
 	if ((aret = argcmp(str, "Descriptions")) == 0 || aret == '=') {
             	 TRY(!aa, "Descriptions argument missing\n");
                s->descriptions_str = aa;
@@ -3348,6 +3468,20 @@ int filters_subnet_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 int filters_subregion_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_subregion *s = v_s;
 	    int aret = 0;
+	if ((aret = argcmp(str, "RegionNames")) == 0 || aret == '=') {
+            	 TRY(!aa, "RegionNames argument missing\n");
+               s->region_names_str = aa;
+         } else if (!(aret = strcmp(str, "RegionNames[]")) || aret == '=') {
+               TRY(!aa, "RegionNames[] argument missing\n");
+               SET_NEXT(s->region_names, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "States")) == 0 || aret == '=') {
+            	 TRY(!aa, "States argument missing\n");
+               s->states_str = aa;
+         } else if (!(aret = strcmp(str, "States[]")) || aret == '=') {
+               TRY(!aa, "States[] argument missing\n");
+               SET_NEXT(s->states, (aa), pa);
+         } else
 	if ((aret = argcmp(str, "SubregionNames")) == 0 || aret == '=') {
             	 TRY(!aa, "SubregionNames argument missing\n");
                s->subregion_names_str = aa;
@@ -3469,6 +3603,399 @@ int filters_virtual_gateway_parser(void *v_s, char *str, char *aa, struct ptr_ar
 int filters_vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_vm *s = v_s;
 	    int aret = 0;
+	if ((aret = argcmp(str, "Architectures")) == 0 || aret == '=') {
+            	 TRY(!aa, "Architectures argument missing\n");
+               s->architectures_str = aa;
+         } else if (!(aret = strcmp(str, "Architectures[]")) || aret == '=') {
+               TRY(!aa, "Architectures[] argument missing\n");
+               SET_NEXT(s->architectures, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "BlockDeviceMappingDeleteOnVmDeletion")) == 0 || aret == '=') {
+            s->is_set_block_device_mapping_delete_on_vm_deletion = 1;
+            if (!aa || !strcasecmp(aa, "true")) {
+            		s->block_device_mapping_delete_on_vm_deletion = 1;
+             } else if (!strcasecmp(aa, "false")) {
+            		s->block_device_mapping_delete_on_vm_deletion = 0;
+             } else {
+            		BAD_RET("BlockDeviceMappingDeleteOnVmDeletion require true/false\n");
+             }
+        } else
+	if ((aret = argcmp(str, "BlockDeviceMappingDeviceNames")) == 0 || aret == '=') {
+            	 TRY(!aa, "BlockDeviceMappingDeviceNames argument missing\n");
+               s->block_device_mapping_device_names_str = aa;
+         } else if (!(aret = strcmp(str, "BlockDeviceMappingDeviceNames[]")) || aret == '=') {
+               TRY(!aa, "BlockDeviceMappingDeviceNames[] argument missing\n");
+               SET_NEXT(s->block_device_mapping_device_names, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "BlockDeviceMappingLinkDates")) == 0 || aret == '=') {
+            	 TRY(!aa, "BlockDeviceMappingLinkDates argument missing\n");
+               s->block_device_mapping_link_dates_str = aa;
+         } else if (!(aret = strcmp(str, "BlockDeviceMappingLinkDates[]")) || aret == '=') {
+               TRY(!aa, "BlockDeviceMappingLinkDates[] argument missing\n");
+               SET_NEXT(s->block_device_mapping_link_dates, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "BlockDeviceMappingStates")) == 0 || aret == '=') {
+            	 TRY(!aa, "BlockDeviceMappingStates argument missing\n");
+               s->block_device_mapping_states_str = aa;
+         } else if (!(aret = strcmp(str, "BlockDeviceMappingStates[]")) || aret == '=') {
+               TRY(!aa, "BlockDeviceMappingStates[] argument missing\n");
+               SET_NEXT(s->block_device_mapping_states, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "BlockDeviceMappingVolumeIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "BlockDeviceMappingVolumeIds argument missing\n");
+               s->block_device_mapping_volume_ids_str = aa;
+         } else if (!(aret = strcmp(str, "BlockDeviceMappingVolumeIds[]")) || aret == '=') {
+               TRY(!aa, "BlockDeviceMappingVolumeIds[] argument missing\n");
+               SET_NEXT(s->block_device_mapping_volume_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "ClientTokens")) == 0 || aret == '=') {
+            	 TRY(!aa, "ClientTokens argument missing\n");
+               s->client_tokens_str = aa;
+         } else if (!(aret = strcmp(str, "ClientTokens[]")) || aret == '=') {
+               TRY(!aa, "ClientTokens[] argument missing\n");
+               SET_NEXT(s->client_tokens, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "CreationDates")) == 0 || aret == '=') {
+            	 TRY(!aa, "CreationDates argument missing\n");
+               s->creation_dates_str = aa;
+         } else if (!(aret = strcmp(str, "CreationDates[]")) || aret == '=') {
+               TRY(!aa, "CreationDates[] argument missing\n");
+               SET_NEXT(s->creation_dates, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "ImageIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "ImageIds argument missing\n");
+               s->image_ids_str = aa;
+         } else if (!(aret = strcmp(str, "ImageIds[]")) || aret == '=') {
+               TRY(!aa, "ImageIds[] argument missing\n");
+               SET_NEXT(s->image_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "IsSourceDestChecked")) == 0 || aret == '=') {
+            s->is_set_is_source_dest_checked = 1;
+            if (!aa || !strcasecmp(aa, "true")) {
+            		s->is_source_dest_checked = 1;
+             } else if (!strcasecmp(aa, "false")) {
+            		s->is_source_dest_checked = 0;
+             } else {
+            		BAD_RET("IsSourceDestChecked require true/false\n");
+             }
+        } else
+	if ((aret = argcmp(str, "KeypairNames")) == 0 || aret == '=') {
+            	 TRY(!aa, "KeypairNames argument missing\n");
+               s->keypair_names_str = aa;
+         } else if (!(aret = strcmp(str, "KeypairNames[]")) || aret == '=') {
+               TRY(!aa, "KeypairNames[] argument missing\n");
+               SET_NEXT(s->keypair_names, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "LaunchNumbers")) == 0 || aret == '=') {
+            	 TRY(!aa, "LaunchNumbers argument missing\n");
+               s->launch_numbers_str = aa;
+         } else if (!(aret = strcmp(str, "LaunchNumbers[]")) || aret == '=') {
+               TRY(!aa, "LaunchNumbers[] argument missing\n");
+               SET_NEXT(s->launch_numbers, atoi(aa), pa);
+         } else
+	if ((aret = argcmp(str, "Lifecycles")) == 0 || aret == '=') {
+            	 TRY(!aa, "Lifecycles argument missing\n");
+               s->lifecycles_str = aa;
+         } else if (!(aret = strcmp(str, "Lifecycles[]")) || aret == '=') {
+               TRY(!aa, "Lifecycles[] argument missing\n");
+               SET_NEXT(s->lifecycles, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "NetIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "NetIds argument missing\n");
+               s->net_ids_str = aa;
+         } else if (!(aret = strcmp(str, "NetIds[]")) || aret == '=') {
+               TRY(!aa, "NetIds[] argument missing\n");
+               SET_NEXT(s->net_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "NicAccountIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "NicAccountIds argument missing\n");
+               s->nic_account_ids_str = aa;
+         } else if (!(aret = strcmp(str, "NicAccountIds[]")) || aret == '=') {
+               TRY(!aa, "NicAccountIds[] argument missing\n");
+               SET_NEXT(s->nic_account_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "NicDescriptions")) == 0 || aret == '=') {
+            	 TRY(!aa, "NicDescriptions argument missing\n");
+               s->nic_descriptions_str = aa;
+         } else if (!(aret = strcmp(str, "NicDescriptions[]")) || aret == '=') {
+               TRY(!aa, "NicDescriptions[] argument missing\n");
+               SET_NEXT(s->nic_descriptions, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "NicIsSourceDestChecked")) == 0 || aret == '=') {
+            s->is_set_nic_is_source_dest_checked = 1;
+            if (!aa || !strcasecmp(aa, "true")) {
+            		s->nic_is_source_dest_checked = 1;
+             } else if (!strcasecmp(aa, "false")) {
+            		s->nic_is_source_dest_checked = 0;
+             } else {
+            		BAD_RET("NicIsSourceDestChecked require true/false\n");
+             }
+        } else
+	if ((aret = argcmp(str, "NicLinkNicDeleteOnVmDeletion")) == 0 || aret == '=') {
+            s->is_set_nic_link_nic_delete_on_vm_deletion = 1;
+            if (!aa || !strcasecmp(aa, "true")) {
+            		s->nic_link_nic_delete_on_vm_deletion = 1;
+             } else if (!strcasecmp(aa, "false")) {
+            		s->nic_link_nic_delete_on_vm_deletion = 0;
+             } else {
+            		BAD_RET("NicLinkNicDeleteOnVmDeletion require true/false\n");
+             }
+        } else
+	if ((aret = argcmp(str, "NicLinkNicDeviceNumbers")) == 0 || aret == '=') {
+            	 TRY(!aa, "NicLinkNicDeviceNumbers argument missing\n");
+               s->nic_link_nic_device_numbers_str = aa;
+         } else if (!(aret = strcmp(str, "NicLinkNicDeviceNumbers[]")) || aret == '=') {
+               TRY(!aa, "NicLinkNicDeviceNumbers[] argument missing\n");
+               SET_NEXT(s->nic_link_nic_device_numbers, atoi(aa), pa);
+         } else
+	if ((aret = argcmp(str, "NicLinkNicLinkNicDates")) == 0 || aret == '=') {
+            	 TRY(!aa, "NicLinkNicLinkNicDates argument missing\n");
+               s->nic_link_nic_link_nic_dates_str = aa;
+         } else if (!(aret = strcmp(str, "NicLinkNicLinkNicDates[]")) || aret == '=') {
+               TRY(!aa, "NicLinkNicLinkNicDates[] argument missing\n");
+               SET_NEXT(s->nic_link_nic_link_nic_dates, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "NicLinkNicLinkNicIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "NicLinkNicLinkNicIds argument missing\n");
+               s->nic_link_nic_link_nic_ids_str = aa;
+         } else if (!(aret = strcmp(str, "NicLinkNicLinkNicIds[]")) || aret == '=') {
+               TRY(!aa, "NicLinkNicLinkNicIds[] argument missing\n");
+               SET_NEXT(s->nic_link_nic_link_nic_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "NicLinkNicStates")) == 0 || aret == '=') {
+            	 TRY(!aa, "NicLinkNicStates argument missing\n");
+               s->nic_link_nic_states_str = aa;
+         } else if (!(aret = strcmp(str, "NicLinkNicStates[]")) || aret == '=') {
+               TRY(!aa, "NicLinkNicStates[] argument missing\n");
+               SET_NEXT(s->nic_link_nic_states, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "NicLinkNicVmAccountIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "NicLinkNicVmAccountIds argument missing\n");
+               s->nic_link_nic_vm_account_ids_str = aa;
+         } else if (!(aret = strcmp(str, "NicLinkNicVmAccountIds[]")) || aret == '=') {
+               TRY(!aa, "NicLinkNicVmAccountIds[] argument missing\n");
+               SET_NEXT(s->nic_link_nic_vm_account_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "NicLinkNicVmIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "NicLinkNicVmIds argument missing\n");
+               s->nic_link_nic_vm_ids_str = aa;
+         } else if (!(aret = strcmp(str, "NicLinkNicVmIds[]")) || aret == '=') {
+               TRY(!aa, "NicLinkNicVmIds[] argument missing\n");
+               SET_NEXT(s->nic_link_nic_vm_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "NicLinkPublicIpAccountIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "NicLinkPublicIpAccountIds argument missing\n");
+               s->nic_link_public_ip_account_ids_str = aa;
+         } else if (!(aret = strcmp(str, "NicLinkPublicIpAccountIds[]")) || aret == '=') {
+               TRY(!aa, "NicLinkPublicIpAccountIds[] argument missing\n");
+               SET_NEXT(s->nic_link_public_ip_account_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "NicLinkPublicIpLinkPublicIpIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "NicLinkPublicIpLinkPublicIpIds argument missing\n");
+               s->nic_link_public_ip_link_public_ip_ids_str = aa;
+         } else if (!(aret = strcmp(str, "NicLinkPublicIpLinkPublicIpIds[]")) || aret == '=') {
+               TRY(!aa, "NicLinkPublicIpLinkPublicIpIds[] argument missing\n");
+               SET_NEXT(s->nic_link_public_ip_link_public_ip_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "NicLinkPublicIpPublicIpIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "NicLinkPublicIpPublicIpIds argument missing\n");
+               s->nic_link_public_ip_public_ip_ids_str = aa;
+         } else if (!(aret = strcmp(str, "NicLinkPublicIpPublicIpIds[]")) || aret == '=') {
+               TRY(!aa, "NicLinkPublicIpPublicIpIds[] argument missing\n");
+               SET_NEXT(s->nic_link_public_ip_public_ip_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "NicLinkPublicIpPublicIps")) == 0 || aret == '=') {
+            	 TRY(!aa, "NicLinkPublicIpPublicIps argument missing\n");
+               s->nic_link_public_ip_public_ips_str = aa;
+         } else if (!(aret = strcmp(str, "NicLinkPublicIpPublicIps[]")) || aret == '=') {
+               TRY(!aa, "NicLinkPublicIpPublicIps[] argument missing\n");
+               SET_NEXT(s->nic_link_public_ip_public_ips, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "NicMacAddresses")) == 0 || aret == '=') {
+            	 TRY(!aa, "NicMacAddresses argument missing\n");
+               s->nic_mac_addresses_str = aa;
+         } else if (!(aret = strcmp(str, "NicMacAddresses[]")) || aret == '=') {
+               TRY(!aa, "NicMacAddresses[] argument missing\n");
+               SET_NEXT(s->nic_mac_addresses, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "NicNetIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "NicNetIds argument missing\n");
+               s->nic_net_ids_str = aa;
+         } else if (!(aret = strcmp(str, "NicNetIds[]")) || aret == '=') {
+               TRY(!aa, "NicNetIds[] argument missing\n");
+               SET_NEXT(s->nic_net_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "NicNicIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "NicNicIds argument missing\n");
+               s->nic_nic_ids_str = aa;
+         } else if (!(aret = strcmp(str, "NicNicIds[]")) || aret == '=') {
+               TRY(!aa, "NicNicIds[] argument missing\n");
+               SET_NEXT(s->nic_nic_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "NicPrivateIpsLinkPublicIpAccountIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "NicPrivateIpsLinkPublicIpAccountIds argument missing\n");
+               s->nic_private_ips_link_public_ip_account_ids_str = aa;
+         } else if (!(aret = strcmp(str, "NicPrivateIpsLinkPublicIpAccountIds[]")) || aret == '=') {
+               TRY(!aa, "NicPrivateIpsLinkPublicIpAccountIds[] argument missing\n");
+               SET_NEXT(s->nic_private_ips_link_public_ip_account_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "NicPrivateIpsLinkPublicIpIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "NicPrivateIpsLinkPublicIpIds argument missing\n");
+               s->nic_private_ips_link_public_ip_ids_str = aa;
+         } else if (!(aret = strcmp(str, "NicPrivateIpsLinkPublicIpIds[]")) || aret == '=') {
+               TRY(!aa, "NicPrivateIpsLinkPublicIpIds[] argument missing\n");
+               SET_NEXT(s->nic_private_ips_link_public_ip_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "NicPrivateIpsPrimaryIp")) == 0 || aret == '=') {
+            s->is_set_nic_private_ips_primary_ip = 1;
+            if (!aa || !strcasecmp(aa, "true")) {
+            		s->nic_private_ips_primary_ip = 1;
+             } else if (!strcasecmp(aa, "false")) {
+            		s->nic_private_ips_primary_ip = 0;
+             } else {
+            		BAD_RET("NicPrivateIpsPrimaryIp require true/false\n");
+             }
+        } else
+	if ((aret = argcmp(str, "NicPrivateIpsPrivateIps")) == 0 || aret == '=') {
+            	 TRY(!aa, "NicPrivateIpsPrivateIps argument missing\n");
+               s->nic_private_ips_private_ips_str = aa;
+         } else if (!(aret = strcmp(str, "NicPrivateIpsPrivateIps[]")) || aret == '=') {
+               TRY(!aa, "NicPrivateIpsPrivateIps[] argument missing\n");
+               SET_NEXT(s->nic_private_ips_private_ips, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "NicSecurityGroupIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "NicSecurityGroupIds argument missing\n");
+               s->nic_security_group_ids_str = aa;
+         } else if (!(aret = strcmp(str, "NicSecurityGroupIds[]")) || aret == '=') {
+               TRY(!aa, "NicSecurityGroupIds[] argument missing\n");
+               SET_NEXT(s->nic_security_group_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "NicSecurityGroupNames")) == 0 || aret == '=') {
+            	 TRY(!aa, "NicSecurityGroupNames argument missing\n");
+               s->nic_security_group_names_str = aa;
+         } else if (!(aret = strcmp(str, "NicSecurityGroupNames[]")) || aret == '=') {
+               TRY(!aa, "NicSecurityGroupNames[] argument missing\n");
+               SET_NEXT(s->nic_security_group_names, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "NicStates")) == 0 || aret == '=') {
+            	 TRY(!aa, "NicStates argument missing\n");
+               s->nic_states_str = aa;
+         } else if (!(aret = strcmp(str, "NicStates[]")) || aret == '=') {
+               TRY(!aa, "NicStates[] argument missing\n");
+               SET_NEXT(s->nic_states, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "NicSubnetIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "NicSubnetIds argument missing\n");
+               s->nic_subnet_ids_str = aa;
+         } else if (!(aret = strcmp(str, "NicSubnetIds[]")) || aret == '=') {
+               TRY(!aa, "NicSubnetIds[] argument missing\n");
+               SET_NEXT(s->nic_subnet_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "NicSubregionNames")) == 0 || aret == '=') {
+            	 TRY(!aa, "NicSubregionNames argument missing\n");
+               s->nic_subregion_names_str = aa;
+         } else if (!(aret = strcmp(str, "NicSubregionNames[]")) || aret == '=') {
+               TRY(!aa, "NicSubregionNames[] argument missing\n");
+               SET_NEXT(s->nic_subregion_names, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "Platforms")) == 0 || aret == '=') {
+            	 TRY(!aa, "Platforms argument missing\n");
+               s->platforms_str = aa;
+         } else if (!(aret = strcmp(str, "Platforms[]")) || aret == '=') {
+               TRY(!aa, "Platforms[] argument missing\n");
+               SET_NEXT(s->platforms, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "PrivateIps")) == 0 || aret == '=') {
+            	 TRY(!aa, "PrivateIps argument missing\n");
+               s->private_ips_str = aa;
+         } else if (!(aret = strcmp(str, "PrivateIps[]")) || aret == '=') {
+               TRY(!aa, "PrivateIps[] argument missing\n");
+               SET_NEXT(s->private_ips, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "ProductCodes")) == 0 || aret == '=') {
+            	 TRY(!aa, "ProductCodes argument missing\n");
+               s->product_codes_str = aa;
+         } else if (!(aret = strcmp(str, "ProductCodes[]")) || aret == '=') {
+               TRY(!aa, "ProductCodes[] argument missing\n");
+               SET_NEXT(s->product_codes, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "PublicIps")) == 0 || aret == '=') {
+            	 TRY(!aa, "PublicIps argument missing\n");
+               s->public_ips_str = aa;
+         } else if (!(aret = strcmp(str, "PublicIps[]")) || aret == '=') {
+               TRY(!aa, "PublicIps[] argument missing\n");
+               SET_NEXT(s->public_ips, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "ReservationIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "ReservationIds argument missing\n");
+               s->reservation_ids_str = aa;
+         } else if (!(aret = strcmp(str, "ReservationIds[]")) || aret == '=') {
+               TRY(!aa, "ReservationIds[] argument missing\n");
+               SET_NEXT(s->reservation_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "RootDeviceNames")) == 0 || aret == '=') {
+            	 TRY(!aa, "RootDeviceNames argument missing\n");
+               s->root_device_names_str = aa;
+         } else if (!(aret = strcmp(str, "RootDeviceNames[]")) || aret == '=') {
+               TRY(!aa, "RootDeviceNames[] argument missing\n");
+               SET_NEXT(s->root_device_names, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "RootDeviceTypes")) == 0 || aret == '=') {
+            	 TRY(!aa, "RootDeviceTypes argument missing\n");
+               s->root_device_types_str = aa;
+         } else if (!(aret = strcmp(str, "RootDeviceTypes[]")) || aret == '=') {
+               TRY(!aa, "RootDeviceTypes[] argument missing\n");
+               SET_NEXT(s->root_device_types, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "SecurityGroupIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "SecurityGroupIds argument missing\n");
+               s->security_group_ids_str = aa;
+         } else if (!(aret = strcmp(str, "SecurityGroupIds[]")) || aret == '=') {
+               TRY(!aa, "SecurityGroupIds[] argument missing\n");
+               SET_NEXT(s->security_group_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "SecurityGroupNames")) == 0 || aret == '=') {
+            	 TRY(!aa, "SecurityGroupNames argument missing\n");
+               s->security_group_names_str = aa;
+         } else if (!(aret = strcmp(str, "SecurityGroupNames[]")) || aret == '=') {
+               TRY(!aa, "SecurityGroupNames[] argument missing\n");
+               SET_NEXT(s->security_group_names, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "StateReasonCodes")) == 0 || aret == '=') {
+            	 TRY(!aa, "StateReasonCodes argument missing\n");
+               s->state_reason_codes_str = aa;
+         } else if (!(aret = strcmp(str, "StateReasonCodes[]")) || aret == '=') {
+               TRY(!aa, "StateReasonCodes[] argument missing\n");
+               SET_NEXT(s->state_reason_codes, atoi(aa), pa);
+         } else
+	if ((aret = argcmp(str, "StateReasonMessages")) == 0 || aret == '=') {
+            	 TRY(!aa, "StateReasonMessages argument missing\n");
+               s->state_reason_messages_str = aa;
+         } else if (!(aret = strcmp(str, "StateReasonMessages[]")) || aret == '=') {
+               TRY(!aa, "StateReasonMessages[] argument missing\n");
+               SET_NEXT(s->state_reason_messages, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "StateReasons")) == 0 || aret == '=') {
+            	 TRY(!aa, "StateReasons argument missing\n");
+               s->state_reasons_str = aa;
+         } else if (!(aret = strcmp(str, "StateReasons[]")) || aret == '=') {
+               TRY(!aa, "StateReasons[] argument missing\n");
+               SET_NEXT(s->state_reasons, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "SubnetIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "SubnetIds argument missing\n");
+               s->subnet_ids_str = aa;
+         } else if (!(aret = strcmp(str, "SubnetIds[]")) || aret == '=') {
+               TRY(!aa, "SubnetIds[] argument missing\n");
+               SET_NEXT(s->subnet_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "SubregionNames")) == 0 || aret == '=') {
+            	 TRY(!aa, "SubregionNames argument missing\n");
+               s->subregion_names_str = aa;
+         } else if (!(aret = strcmp(str, "SubregionNames[]")) || aret == '=') {
+               TRY(!aa, "SubregionNames[] argument missing\n");
+               SET_NEXT(s->subregion_names, (aa), pa);
+         } else
 	if ((aret = argcmp(str, "TagKeys")) == 0 || aret == '=') {
             	 TRY(!aa, "TagKeys argument missing\n");
                s->tag_keys_str = aa;
@@ -3490,12 +4017,54 @@ int filters_vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                TRY(!aa, "Tags[] argument missing\n");
                SET_NEXT(s->tags, (aa), pa);
          } else
+	if ((aret = argcmp(str, "Tenancies")) == 0 || aret == '=') {
+            	 TRY(!aa, "Tenancies argument missing\n");
+               s->tenancies_str = aa;
+         } else if (!(aret = strcmp(str, "Tenancies[]")) || aret == '=') {
+               TRY(!aa, "Tenancies[] argument missing\n");
+               SET_NEXT(s->tenancies, (aa), pa);
+         } else
 	if ((aret = argcmp(str, "VmIds")) == 0 || aret == '=') {
             	 TRY(!aa, "VmIds argument missing\n");
                s->vm_ids_str = aa;
          } else if (!(aret = strcmp(str, "VmIds[]")) || aret == '=') {
                TRY(!aa, "VmIds[] argument missing\n");
                SET_NEXT(s->vm_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "VmSecurityGroupIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "VmSecurityGroupIds argument missing\n");
+               s->vm_security_group_ids_str = aa;
+         } else if (!(aret = strcmp(str, "VmSecurityGroupIds[]")) || aret == '=') {
+               TRY(!aa, "VmSecurityGroupIds[] argument missing\n");
+               SET_NEXT(s->vm_security_group_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "VmSecurityGroupNames")) == 0 || aret == '=') {
+            	 TRY(!aa, "VmSecurityGroupNames argument missing\n");
+               s->vm_security_group_names_str = aa;
+         } else if (!(aret = strcmp(str, "VmSecurityGroupNames[]")) || aret == '=') {
+               TRY(!aa, "VmSecurityGroupNames[] argument missing\n");
+               SET_NEXT(s->vm_security_group_names, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "VmStateCodes")) == 0 || aret == '=') {
+            	 TRY(!aa, "VmStateCodes argument missing\n");
+               s->vm_state_codes_str = aa;
+         } else if (!(aret = strcmp(str, "VmStateCodes[]")) || aret == '=') {
+               TRY(!aa, "VmStateCodes[] argument missing\n");
+               SET_NEXT(s->vm_state_codes, atoi(aa), pa);
+         } else
+	if ((aret = argcmp(str, "VmStateNames")) == 0 || aret == '=') {
+            	 TRY(!aa, "VmStateNames argument missing\n");
+               s->vm_state_names_str = aa;
+         } else if (!(aret = strcmp(str, "VmStateNames[]")) || aret == '=') {
+               TRY(!aa, "VmStateNames[] argument missing\n");
+               SET_NEXT(s->vm_state_names, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "VmTypes")) == 0 || aret == '=') {
+            	 TRY(!aa, "VmTypes argument missing\n");
+               s->vm_types_str = aa;
+         } else if (!(aret = strcmp(str, "VmTypes[]")) || aret == '=') {
+               TRY(!aa, "VmTypes[] argument missing\n");
+               SET_NEXT(s->vm_types, (aa), pa);
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersVm'\n", str);
@@ -3691,6 +4260,27 @@ int filters_vm_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
             		BAD_RET("BsuOptimized require true/false\n");
              }
         } else
+	if ((aret = argcmp(str, "EphemeralsTypes")) == 0 || aret == '=') {
+            	 TRY(!aa, "EphemeralsTypes argument missing\n");
+               s->ephemerals_types_str = aa;
+         } else if (!(aret = strcmp(str, "EphemeralsTypes[]")) || aret == '=') {
+               TRY(!aa, "EphemeralsTypes[] argument missing\n");
+               SET_NEXT(s->ephemerals_types, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "Eths")) == 0 || aret == '=') {
+            	 TRY(!aa, "Eths argument missing\n");
+               s->eths_str = aa;
+         } else if (!(aret = strcmp(str, "Eths[]")) || aret == '=') {
+               TRY(!aa, "Eths[] argument missing\n");
+               SET_NEXT(s->eths, atoi(aa), pa);
+         } else
+	if ((aret = argcmp(str, "Gpus")) == 0 || aret == '=') {
+            	 TRY(!aa, "Gpus argument missing\n");
+               s->gpus_str = aa;
+         } else if (!(aret = strcmp(str, "Gpus[]")) || aret == '=') {
+               TRY(!aa, "Gpus[] argument missing\n");
+               SET_NEXT(s->gpus, atoi(aa), pa);
+         } else
 	if ((aret = argcmp(str, "MemorySizes")) == 0 || aret == '=') {
             	 TRY(!aa, "MemorySizes argument missing\n");
                s->memory_sizes_str = aa;
@@ -4433,6 +5023,11 @@ int keypair_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             s->keypair_name = aa; // string string
 
          } else
+	if ((aret = argcmp(str, "KeypairType")) == 0 || aret == '=') {
+            TRY(!aa, "KeypairType argument missing\n");
+            s->keypair_type = aa; // string string
+
+         } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Keypair'\n", str);
 		return -1;
@@ -4451,6 +5046,11 @@ int keypair_created_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
 	if ((aret = argcmp(str, "KeypairName")) == 0 || aret == '=') {
             TRY(!aa, "KeypairName argument missing\n");
             s->keypair_name = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "KeypairType")) == 0 || aret == '=') {
+            TRY(!aa, "KeypairType argument missing\n");
+            s->keypair_type = aa; // string string
 
          } else
 	if ((aret = argcmp(str, "PrivateKey")) == 0 || aret == '=') {
@@ -4648,6 +5248,11 @@ int link_route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
             		BAD_RET("Main require true/false\n");
              }
         } else
+	if ((aret = argcmp(str, "NetId")) == 0 || aret == '=') {
+            TRY(!aa, "NetId argument missing\n");
+            s->net_id = aa; // string string
+
+         } else
 	if ((aret = argcmp(str, "RouteTableId")) == 0 || aret == '=') {
             TRY(!aa, "RouteTableId argument missing\n");
             s->route_table_id = aa; // string string
@@ -4660,6 +5265,41 @@ int link_route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'LinkRouteTable'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
+int linked_policy_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct linked_policy *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "CreationDate")) == 0 || aret == '=') {
+            TRY(!aa, "CreationDate argument missing\n");
+            s->creation_date = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "LastModificationDate")) == 0 || aret == '=') {
+            TRY(!aa, "LastModificationDate argument missing\n");
+            s->last_modification_date = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "Orn")) == 0 || aret == '=') {
+            TRY(!aa, "Orn argument missing\n");
+            s->orn = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "PolicyId")) == 0 || aret == '=') {
+            TRY(!aa, "PolicyId argument missing\n");
+            s->policy_id = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "PolicyName")) == 0 || aret == '=') {
+            TRY(!aa, "PolicyName argument missing\n");
+            s->policy_name = aa; // string string
+
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'LinkedPolicy'\n", str);
 		return -1;
 	}
 	return 0;
@@ -5527,6 +6167,11 @@ int net_peering_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                    s->accepter_net_str = aa;
              }
          } else
+	if ((aret = argcmp(str, "ExpirationDate")) == 0 || aret == '=') {
+            TRY(!aa, "ExpirationDate argument missing\n");
+            s->expiration_date = aa; // string string
+
+         } else
 	if ((aret = argcmp(str, "NetPeeringId")) == 0 || aret == '=') {
             TRY(!aa, "NetPeeringId argument missing\n");
             s->net_peering_id = aa; // string string
@@ -6330,6 +6975,21 @@ int phase2_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 	return 0;
 }
 
+int phase2_options_to_update_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct phase2_options_to_update *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "PreSharedKey")) == 0 || aret == '=') {
+            TRY(!aa, "PreSharedKey argument missing\n");
+            s->pre_shared_key = aa; // string string
+
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'Phase2OptionsToUpdate'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
 int placement_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct placement *s = v_s;
 	    int aret = 0;
@@ -6345,6 +7005,106 @@ int placement_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Placement'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
+int policy_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct policy *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "CreationDate")) == 0 || aret == '=') {
+            TRY(!aa, "CreationDate argument missing\n");
+            s->creation_date = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "Description")) == 0 || aret == '=') {
+            TRY(!aa, "Description argument missing\n");
+            s->description = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "IsLinkable")) == 0 || aret == '=') {
+            s->is_set_is_linkable = 1;
+            if (!aa || !strcasecmp(aa, "true")) {
+            		s->is_linkable = 1;
+             } else if (!strcasecmp(aa, "false")) {
+            		s->is_linkable = 0;
+             } else {
+            		BAD_RET("IsLinkable require true/false\n");
+             }
+        } else
+	if ((aret = argcmp(str, "LastModificationDate")) == 0 || aret == '=') {
+            TRY(!aa, "LastModificationDate argument missing\n");
+            s->last_modification_date = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "Orn")) == 0 || aret == '=') {
+            TRY(!aa, "Orn argument missing\n");
+            s->orn = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "Path")) == 0 || aret == '=') {
+            TRY(!aa, "Path argument missing\n");
+            s->path = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "PolicyDefaultVersionId")) == 0 || aret == '=') {
+            TRY(!aa, "PolicyDefaultVersionId argument missing\n");
+            s->policy_default_version_id = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "PolicyId")) == 0 || aret == '=') {
+            TRY(!aa, "PolicyId argument missing\n");
+            s->policy_id = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "PolicyName")) == 0 || aret == '=') {
+            TRY(!aa, "PolicyName argument missing\n");
+            s->policy_name = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "ResourcesCount")) == 0 || aret == '=') {
+            TRY(!aa, "ResourcesCount argument missing\n");
+            s->is_set_resources_count = 1;
+            s->resources_count = atoi(aa);
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'Policy'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
+int policy_version_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct policy_version *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "Body")) == 0 || aret == '=') {
+            TRY(!aa, "Body argument missing\n");
+            s->body = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "CreationDate")) == 0 || aret == '=') {
+            TRY(!aa, "CreationDate argument missing\n");
+            s->creation_date = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "DefaultVersion")) == 0 || aret == '=') {
+            s->is_set_default_version = 1;
+            if (!aa || !strcasecmp(aa, "true")) {
+            		s->default_version = 1;
+             } else if (!strcasecmp(aa, "false")) {
+            		s->default_version = 0;
+             } else {
+            		BAD_RET("DefaultVersion require true/false\n");
+             }
+        } else
+	if ((aret = argcmp(str, "VersionId")) == 0 || aret == '=') {
+            TRY(!aa, "VersionId argument missing\n");
+            s->version_id = aa; // string string
+
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'PolicyVersion'\n", str);
 		return -1;
 	}
 	return 0;
@@ -6664,6 +7424,51 @@ int quota_types_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'QuotaTypes'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
+int read_linked_policies_filters_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct read_linked_policies_filters *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "PathPrefix")) == 0 || aret == '=') {
+            TRY(!aa, "PathPrefix argument missing\n");
+            s->path_prefix = aa; // string string
+
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'ReadLinkedPoliciesFilters'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
+int read_policies_filters_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct read_policies_filters *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "OnlyLinked")) == 0 || aret == '=') {
+            s->is_set_only_linked = 1;
+            if (!aa || !strcasecmp(aa, "true")) {
+            		s->only_linked = 1;
+             } else if (!strcasecmp(aa, "false")) {
+            		s->only_linked = 0;
+             } else {
+            		BAD_RET("OnlyLinked require true/false\n");
+             }
+        } else
+	if ((aret = argcmp(str, "PathPrefix")) == 0 || aret == '=') {
+            TRY(!aa, "PathPrefix argument missing\n");
+            s->path_prefix = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "Scope")) == 0 || aret == '=') {
+            TRY(!aa, "Scope argument missing\n");
+            s->scope = aa; // string string
+
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'ReadPoliciesFilters'\n", str);
 		return -1;
 	}
 	return 0;
@@ -8305,6 +9110,21 @@ int vm_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             		BAD_RET("BsuOptimized require true/false\n");
              }
         } else
+	if ((aret = argcmp(str, "EphemeralsType")) == 0 || aret == '=') {
+            TRY(!aa, "EphemeralsType argument missing\n");
+            s->ephemerals_type = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "Eth")) == 0 || aret == '=') {
+            TRY(!aa, "Eth argument missing\n");
+            s->is_set_eth = 1;
+            s->eth = atoi(aa);
+         } else
+	if ((aret = argcmp(str, "Gpu")) == 0 || aret == '=') {
+            TRY(!aa, "Gpu argument missing\n");
+            s->is_set_gpu = 1;
+            s->gpu = atoi(aa);
+         } else
 	if ((aret = argcmp(str, "MaxPrivateIps")) == 0 || aret == '=') {
             TRY(!aa, "MaxPrivateIps argument missing\n");
             s->is_set_max_private_ips = 1;
@@ -8628,6 +9448,38 @@ int vpn_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'VpnOptions'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
+int vpn_options_to_update_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct vpn_options_to_update *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "Phase2Options")) == 0 || aret == '=') {
+            char *dot_pos;
+
+            TRY(!aa, "Phase2Options argument missing\n");
+            dot_pos = strchr(str, '.');
+            if (dot_pos++) {
+            	    cascade_struct = &s->phase2_options;
+            	    cascade_parser = phase2_options_to_update_parser;
+            	    if (*dot_pos == '.') {
+            		++dot_pos;
+            	    }
+            	    STRY(phase2_options_to_update_parser(&s->phase2_options, dot_pos, aa, pa));
+            	    s->is_set_phase2_options = 1;
+             } else {
+                   s->phase2_options_str = aa;
+             }
+         } else
+	if ((aret = argcmp(str, "TunnelInsideIpRange")) == 0 || aret == '=') {
+            TRY(!aa, "TunnelInsideIpRange argument missing\n");
+            s->tunnel_inside_ip_range = aa; // string string
+
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'VpnOptionsToUpdate'\n", str);
 		return -1;
 	}
 	return 0;
@@ -9139,11 +9991,11 @@ int main(int ac, char **av)
 				          dot_pos = strchr(str, '.');
 				          if (dot_pos++) {
 				          	    cascade_struct = &s->vpn_options;
-				          	    cascade_parser = vpn_options_parser;
+				          	    cascade_parser = vpn_options_to_update_parser;
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    STRY(vpn_options_parser(&s->vpn_options, dot_pos, aa, pa));
+				          	    STRY(vpn_options_to_update_parser(&s->vpn_options, dot_pos, aa, pa));
 				          	    s->is_set_vpn_options = 1;
 				           } else {
 				                 s->vpn_options_str = aa;
@@ -10337,6 +11189,115 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_server_certificate(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateServerCertificate: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("UpdateRouteTableLink", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_update_route_table_link_arg a = {0};
+		     struct osc_update_route_table_link_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     update_route_table_link_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto update_route_table_link_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "LinkRouteTableId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "LinkRouteTableId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "LinkRouteTableId argument missing\n");
+				          s->link_route_table_id = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "RouteTableId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "RouteTableId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "RouteTableId argument missing\n");
+				          s->route_table_id = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'UpdateRouteTableLink'\n", next_a);
+			    }
+		            i += incr;
+			    goto update_route_table_link_arg;
+		     }
+		     cret = osc_update_route_table_link(&e, &r, &a);
+            	     TRY(cret, "fail to call UpdateRouteTableLink: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
@@ -11699,6 +12660,115 @@ int main(int ac, char **av)
 		      }
 		     osc_deinit_str(&r);
 	      } else
+              if (!strcmp("UpdateDedicatedGroup", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_update_dedicated_group_arg a = {0};
+		     struct osc_update_dedicated_group_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     update_dedicated_group_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto update_dedicated_group_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "DedicatedGroupId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DedicatedGroupId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "DedicatedGroupId argument missing\n");
+				          s->dedicated_group_id = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "Name")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Name argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "Name argument missing\n");
+				          s->name = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'UpdateDedicatedGroup'\n", next_a);
+			    }
+		            i += incr;
+			    goto update_dedicated_group_arg;
+		     }
+		     cret = osc_update_dedicated_group(&e, &r, &a);
+            	     TRY(cret, "fail to call UpdateDedicatedGroup: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
               if (!strcmp("UpdateCa", av[i])) {
 		     json_object *jobj;
 		     auto_ptr_array struct ptr_array opa = {0};
@@ -12974,6 +14044,115 @@ int main(int ac, char **av)
 		      }
 		     osc_deinit_str(&r);
 	      } else
+              if (!strcmp("UnlinkPolicy", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_unlink_policy_arg a = {0};
+		     struct osc_unlink_policy_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     unlink_policy_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto unlink_policy_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "PolicyOrn")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PolicyOrn argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "PolicyOrn argument missing\n");
+				          s->policy_orn = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserName argument missing\n");
+				          s->user_name = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'UnlinkPolicy'\n", next_a);
+			    }
+		            i += incr;
+			    goto unlink_policy_arg;
+		     }
+		     cret = osc_unlink_policy(&e, &r, &a);
+            	     TRY(cret, "fail to call UnlinkPolicy: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
               if (!strcmp("UnlinkNic", av[i])) {
 		     json_object *jobj;
 		     auto_ptr_array struct ptr_array opa = {0};
@@ -13619,19 +14798,19 @@ int main(int ac, char **av)
 		      }
 		     osc_deinit_str(&r);
 	      } else
-              if (!strcmp("SendResetPasswordEmail", av[i])) {
+              if (!strcmp("SetDefaultPolicyVersion", av[i])) {
 		     json_object *jobj;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
-	      	     struct osc_send_reset_password_email_arg a = {0};
-		     struct osc_send_reset_password_email_arg *s = &a;
+	      	     struct osc_set_default_policy_version_arg a = {0};
+		     struct osc_set_default_policy_version_arg *s = &a;
 		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
 	             int cret;
 
 		     cascade_struct = NULL;
 		     cascade_parser = NULL;
 
-		     send_reset_password_email_arg:
+		     set_default_policy_version_arg:
 
 		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
  		           char *next_a = &av[i + 1][2];
@@ -13649,7 +14828,7 @@ int main(int ac, char **av)
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
-		       	   goto send_reset_password_email_arg;
+		       	   goto set_default_policy_version_arg;
 		      }
 
 		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
@@ -13670,41 +14849,36 @@ int main(int ac, char **av)
 					incr = 1;
 				}
 			     }
-			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      if ((aret = argcmp(next_a, "PolicyOrn")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
 			      	 if (eq_ptr) {
-				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    TRY((!*eq_ptr), "PolicyOrn argument missing\n");
 				    aa = eq_ptr + 1;
 				    incr = 1;
 				 }
-				          s->is_set_dry_run = 1;
-				          if (!aa || !strcasecmp(aa, "true")) {
-				          		s->dry_run = 1;
-				           } else if (!strcasecmp(aa, "false")) {
-				          		s->dry_run = 0;
-				           } else {
-				          		BAD_RET("DryRun require true/false\n");
-				           }
-				      } else
-			      if ((aret = argcmp(next_a, "Email")) == 0 || aret == '=' ) {
+				          TRY(!aa, "PolicyOrn argument missing\n");
+				          s->policy_orn = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "VersionId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
 			      	 if (eq_ptr) {
-				    TRY((!*eq_ptr), "Email argument missing\n");
+				    TRY((!*eq_ptr), "VersionId argument missing\n");
 				    aa = eq_ptr + 1;
 				    incr = 1;
 				 }
-				          TRY(!aa, "Email argument missing\n");
-				          s->email = aa; // string string
+				          TRY(!aa, "VersionId argument missing\n");
+				          s->version_id = aa; // string string
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'SendResetPasswordEmail'\n", next_a);
+				BAD_RET("'%s' is not a valide argument for 'SetDefaultPolicyVersion'\n", next_a);
 			    }
 		            i += incr;
-			    goto send_reset_password_email_arg;
+			    goto set_default_policy_version_arg;
 		     }
-		     cret = osc_send_reset_password_email(&e, &r, &a);
-            	     TRY(cret, "fail to call SendResetPasswordEmail: %s\n", curl_easy_strerror(cret));
+		     cret = osc_set_default_policy_version(&e, &r, &a);
+            	     TRY(cret, "fail to call SetDefaultPolicyVersion: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
@@ -13923,115 +15097,6 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_scale_down_vm_group(&e, &r, &a);
             	     TRY(cret, "fail to call ScaleDownVmGroup: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
-			     jobj = json_tokener_parse(r.buf);
-			     puts(json_object_to_json_string_ext(jobj,
-					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
-					color_flag));
-			     json_object_put(jobj);
-		      }
-		     osc_deinit_str(&r);
-	      } else
-              if (!strcmp("ResetAccountPassword", av[i])) {
-		     json_object *jobj;
-		     auto_ptr_array struct ptr_array opa = {0};
-		     struct ptr_array *pa = &opa;
-	      	     struct osc_reset_account_password_arg a = {0};
-		     struct osc_reset_account_password_arg *s = &a;
-		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
-	             int cret;
-
-		     cascade_struct = NULL;
-		     cascade_parser = NULL;
-
-		     reset_account_password_arg:
-
-		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
- 		           char *next_a = &av[i + 1][2];
-		           char *aa = i + 2 < ac ? av[i + 2] : 0;
-			   int incr = 2;
-			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   if (eq_ptr) {
-			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
-			      	  incr = 1;
-				  aa = eq_ptr + 1;
-			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
-			   }
-		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
-			   i += incr;
-		       	   goto reset_account_password_arg;
-		      }
-
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
- 		             char *next_a = &av[i + 1][2];
-			     char *str = next_a;
- 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
-			     int aret = 0;
-			     int incr = aa ? 2 : 1;
-
-			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
-			     }
-			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
-			      	 char *eq_ptr = strchr(next_a, '=');
-			      	 if (eq_ptr) {
-				    TRY((!*eq_ptr), "DryRun argument missing\n");
-				    aa = eq_ptr + 1;
-				    incr = 1;
-				 }
-				          s->is_set_dry_run = 1;
-				          if (!aa || !strcasecmp(aa, "true")) {
-				          		s->dry_run = 1;
-				           } else if (!strcasecmp(aa, "false")) {
-				          		s->dry_run = 0;
-				           } else {
-				          		BAD_RET("DryRun require true/false\n");
-				           }
-				      } else
-			      if ((aret = argcmp(next_a, "Password")) == 0 || aret == '=' ) {
-			      	 char *eq_ptr = strchr(next_a, '=');
-			      	 if (eq_ptr) {
-				    TRY((!*eq_ptr), "Password argument missing\n");
-				    aa = eq_ptr + 1;
-				    incr = 1;
-				 }
-				          TRY(!aa, "Password argument missing\n");
-				          s->password = aa; // string string
-
-				       } else
-			      if ((aret = argcmp(next_a, "Token")) == 0 || aret == '=' ) {
-			      	 char *eq_ptr = strchr(next_a, '=');
-			      	 if (eq_ptr) {
-				    TRY((!*eq_ptr), "Token argument missing\n");
-				    aa = eq_ptr + 1;
-				    incr = 1;
-				 }
-				          TRY(!aa, "Token argument missing\n");
-				          s->token = aa; // string string
-
-				       } else
-			    {
-				BAD_RET("'%s' is not a valide argument for 'ResetAccountPassword'\n", next_a);
-			    }
-		            i += incr;
-			    goto reset_account_password_arg;
-		     }
-		     cret = osc_reset_account_password(&e, &r, &a);
-            	     TRY(cret, "fail to call ResetAccountPassword: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
@@ -14443,6 +15508,28 @@ int main(int ac, char **av)
 				                 s->filters_str = aa;
 				           }
 				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
+				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadVpnConnections'\n", next_a);
 			    }
@@ -14552,6 +15639,28 @@ int main(int ac, char **av)
 				           } else {
 				                 s->filters_str = aa;
 				           }
+				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadVolumes'\n", next_a);
@@ -14899,6 +16008,28 @@ int main(int ac, char **av)
 				           } else {
 				                 s->filters_str = aa;
 				           }
+				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadVms'\n", next_a);
@@ -15339,6 +16470,28 @@ int main(int ac, char **av)
 				           } else {
 				                 s->filters_str = aa;
 				           }
+				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadVirtualGateways'\n", next_a);
@@ -16405,6 +17558,28 @@ int main(int ac, char **av)
 				                 s->filters_str = aa;
 				           }
 				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
+				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadRouteTables'\n", next_a);
 			    }
@@ -16712,6 +17887,28 @@ int main(int ac, char **av)
 				                 s->filters_str = aa;
 				           }
 				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
+				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadPublicIps'\n", next_a);
 			    }
@@ -17004,6 +18201,417 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_product_types(&e, &r, &a);
             	     TRY(cret, "fail to call ReadProductTypes: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("ReadPolicyVersions", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_read_policy_versions_arg a = {0};
+		     struct osc_read_policy_versions_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     read_policy_versions_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto read_policy_versions_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "FirstItem")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "FirstItem argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "FirstItem argument missing\n");
+				          s->is_set_first_item = 1;
+				          s->first_item = atoi(aa);
+				       } else
+			      if ((aret = argcmp(next_a, "PolicyOrn")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PolicyOrn argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "PolicyOrn argument missing\n");
+				          s->policy_orn = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'ReadPolicyVersions'\n", next_a);
+			    }
+		            i += incr;
+			    goto read_policy_versions_arg;
+		     }
+		     cret = osc_read_policy_versions(&e, &r, &a);
+            	     TRY(cret, "fail to call ReadPolicyVersions: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("ReadPolicyVersion", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_read_policy_version_arg a = {0};
+		     struct osc_read_policy_version_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     read_policy_version_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto read_policy_version_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "PolicyOrn")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PolicyOrn argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "PolicyOrn argument missing\n");
+				          s->policy_orn = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "VersionId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VersionId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "VersionId argument missing\n");
+				          s->version_id = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'ReadPolicyVersion'\n", next_a);
+			    }
+		            i += incr;
+			    goto read_policy_version_arg;
+		     }
+		     cret = osc_read_policy_version(&e, &r, &a);
+            	     TRY(cret, "fail to call ReadPolicyVersion: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("ReadPolicy", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_read_policy_arg a = {0};
+		     struct osc_read_policy_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     read_policy_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto read_policy_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "PolicyOrn")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PolicyOrn argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "PolicyOrn argument missing\n");
+				          s->policy_orn = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'ReadPolicy'\n", next_a);
+			    }
+		            i += incr;
+			    goto read_policy_arg;
+		     }
+		     cret = osc_read_policy(&e, &r, &a);
+            	     TRY(cret, "fail to call ReadPolicy: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("ReadPolicies", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_read_policies_arg a = {0};
+		     struct osc_read_policies_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     read_policies_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto read_policies_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          char *dot_pos;
+
+				          TRY(!aa, "Filters argument missing\n");
+				          dot_pos = strchr(str, '.');
+				          if (dot_pos++) {
+				          	    cascade_struct = &s->filters;
+				          	    cascade_parser = read_policies_filters_parser;
+				          	    if (*dot_pos == '.') {
+				          		++dot_pos;
+				          	    }
+				          	    STRY(read_policies_filters_parser(&s->filters, dot_pos, aa, pa));
+				          	    s->is_set_filters = 1;
+				           } else {
+				                 s->filters_str = aa;
+				           }
+				       } else
+			      if ((aret = argcmp(next_a, "FirstItem")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "FirstItem argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "FirstItem argument missing\n");
+				          s->is_set_first_item = 1;
+				          s->first_item = atoi(aa);
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'ReadPolicies'\n", next_a);
+			    }
+		            i += incr;
+			    goto read_policies_arg;
+		     }
+		     cret = osc_read_policies(&e, &r, &a);
+            	     TRY(cret, "fail to call ReadPolicies: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
@@ -17326,6 +18934,28 @@ int main(int ac, char **av)
 				                 s->filters_str = aa;
 				           }
 				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
+				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadNetPeerings'\n", next_a);
 			    }
@@ -17435,6 +19065,28 @@ int main(int ac, char **av)
 				           } else {
 				                 s->filters_str = aa;
 				           }
+				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadNetAccessPoints'\n", next_a);
@@ -17655,6 +19307,28 @@ int main(int ac, char **av)
 				           } else {
 				                 s->filters_str = aa;
 				           }
+				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadNatServices'\n", next_a);
@@ -18083,6 +19757,149 @@ int main(int ac, char **av)
 		      }
 		     osc_deinit_str(&r);
 	      } else
+              if (!strcmp("ReadLinkedPolicies", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_read_linked_policies_arg a = {0};
+		     struct osc_read_linked_policies_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     read_linked_policies_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto read_linked_policies_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          char *dot_pos;
+
+				          TRY(!aa, "Filters argument missing\n");
+				          dot_pos = strchr(str, '.');
+				          if (dot_pos++) {
+				          	    cascade_struct = &s->filters;
+				          	    cascade_parser = read_linked_policies_filters_parser;
+				          	    if (*dot_pos == '.') {
+				          		++dot_pos;
+				          	    }
+				          	    STRY(read_linked_policies_filters_parser(&s->filters, dot_pos, aa, pa));
+				          	    s->is_set_filters = 1;
+				           } else {
+				                 s->filters_str = aa;
+				           }
+				       } else
+			      if ((aret = argcmp(next_a, "FirstItem")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "FirstItem argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "FirstItem argument missing\n");
+				          s->is_set_first_item = 1;
+				          s->first_item = atoi(aa);
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
+				       } else
+			      if ((aret = argcmp(next_a, "UserName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserName argument missing\n");
+				          s->user_name = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'ReadLinkedPolicies'\n", next_a);
+			    }
+		            i += incr;
+			    goto read_linked_policies_arg;
+		     }
+		     cret = osc_read_linked_policies(&e, &r, &a);
+            	     TRY(cret, "fail to call ReadLinkedPolicies: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
               if (!strcmp("ReadKeypairs", av[i])) {
 		     json_object *jobj;
 		     auto_ptr_array struct ptr_array opa = {0};
@@ -18392,6 +20209,28 @@ int main(int ac, char **av)
 				           } else {
 				                 s->filters_str = aa;
 				           }
+				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadImages'\n", next_a);
@@ -19030,6 +20869,28 @@ int main(int ac, char **av)
 				                 s->filters_str = aa;
 				           }
 				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
+				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadDhcpOptions'\n", next_a);
 			    }
@@ -19038,6 +20899,116 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_dhcp_options(&e, &r, &a);
             	     TRY(cret, "fail to call ReadDhcpOptions: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("ReadDedicatedGroups", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_read_dedicated_groups_arg a = {0};
+		     struct osc_read_dedicated_groups_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     read_dedicated_groups_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto read_dedicated_groups_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          char *dot_pos;
+
+				          TRY(!aa, "Filters argument missing\n");
+				          dot_pos = strchr(str, '.');
+				          if (dot_pos++) {
+				          	    cascade_struct = &s->filters;
+				          	    cascade_parser = filters_dedicated_group_parser;
+				          	    if (*dot_pos == '.') {
+				          		++dot_pos;
+				          	    }
+				          	    STRY(filters_dedicated_group_parser(&s->filters, dot_pos, aa, pa));
+				          	    s->is_set_filters = 1;
+				           } else {
+				                 s->filters_str = aa;
+				           }
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'ReadDedicatedGroups'\n", next_a);
+			    }
+		            i += incr;
+			    goto read_dedicated_groups_arg;
+		     }
+		     cret = osc_read_dedicated_groups(&e, &r, &a);
+            	     TRY(cret, "fail to call ReadDedicatedGroups: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
@@ -19142,6 +21113,22 @@ int main(int ac, char **av)
 				          		s->overall = 0;
 				           } else {
 				          		BAD_RET("Overall require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "ShowPrice")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ShowPrice argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_show_price = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->show_price = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->show_price = 0;
+				           } else {
+				          		BAD_RET("ShowPrice require true/false\n");
 				           }
 				      } else
 			      if ((aret = argcmp(next_a, "ToDate")) == 0 || aret == '=' ) {
@@ -20970,6 +22957,115 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_link_private_ips(&e, &r, &a);
             	     TRY(cret, "fail to call LinkPrivateIps: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("LinkPolicy", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_link_policy_arg a = {0};
+		     struct osc_link_policy_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     link_policy_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto link_policy_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "PolicyOrn")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PolicyOrn argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "PolicyOrn argument missing\n");
+				          s->policy_orn = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserName argument missing\n");
+				          s->user_name = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'LinkPolicy'\n", next_a);
+			    }
+		            i += incr;
+			    goto link_policy_arg;
+		     }
+		     cret = osc_link_policy(&e, &r, &a);
+            	     TRY(cret, "fail to call LinkPolicy: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
@@ -23408,6 +25504,197 @@ int main(int ac, char **av)
 		      }
 		     osc_deinit_str(&r);
 	      } else
+              if (!strcmp("DeletePolicyVersion", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_delete_policy_version_arg a = {0};
+		     struct osc_delete_policy_version_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     delete_policy_version_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto delete_policy_version_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "PolicyOrn")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PolicyOrn argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "PolicyOrn argument missing\n");
+				          s->policy_orn = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "VersionId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "VersionId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "VersionId argument missing\n");
+				          s->version_id = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'DeletePolicyVersion'\n", next_a);
+			    }
+		            i += incr;
+			    goto delete_policy_version_arg;
+		     }
+		     cret = osc_delete_policy_version(&e, &r, &a);
+            	     TRY(cret, "fail to call DeletePolicyVersion: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("DeletePolicy", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_delete_policy_arg a = {0};
+		     struct osc_delete_policy_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     delete_policy_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto delete_policy_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "PolicyOrn")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PolicyOrn argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "PolicyOrn argument missing\n");
+				          s->policy_orn = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'DeletePolicy'\n", next_a);
+			    }
+		            i += incr;
+			    goto delete_policy_arg;
+		     }
+		     cret = osc_delete_policy(&e, &r, &a);
+            	     TRY(cret, "fail to call DeletePolicy: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
               if (!strcmp("DeleteNic", av[i])) {
 		     json_object *jobj;
 		     auto_ptr_array struct ptr_array opa = {0};
@@ -25217,6 +27504,120 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_dhcp_options(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteDhcpOptions: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("DeleteDedicatedGroup", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_delete_dedicated_group_arg a = {0};
+		     struct osc_delete_dedicated_group_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     delete_dedicated_group_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto delete_dedicated_group_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "DedicatedGroupId")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DedicatedGroupId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "DedicatedGroupId argument missing\n");
+				          s->dedicated_group_id = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "Force")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Force argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_force = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->force = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->force = 0;
+				           } else {
+				          		BAD_RET("Force require true/false\n");
+				           }
+				      } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'DeleteDedicatedGroup'\n", next_a);
+			    }
+		            i += incr;
+			    goto delete_dedicated_group_arg;
+		     }
+		     cret = osc_delete_dedicated_group(&e, &r, &a);
+            	     TRY(cret, "fail to call DeleteDedicatedGroup: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
@@ -28356,6 +30757,355 @@ int main(int ac, char **av)
 		      }
 		     osc_deinit_str(&r);
 	      } else
+              if (!strcmp("CreateProductType", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_create_product_type_arg a = {0};
+		     struct osc_create_product_type_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     create_product_type_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto create_product_type_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Description argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "Description argument missing\n");
+				          s->description = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "Vendor")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Vendor argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "Vendor argument missing\n");
+				          s->vendor = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'CreateProductType'\n", next_a);
+			    }
+		            i += incr;
+			    goto create_product_type_arg;
+		     }
+		     cret = osc_create_product_type(&e, &r, &a);
+            	     TRY(cret, "fail to call CreateProductType: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("CreatePolicyVersion", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_create_policy_version_arg a = {0};
+		     struct osc_create_policy_version_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     create_policy_version_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto create_policy_version_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "Document")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Document argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "Document argument missing\n");
+				          s->document = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "PolicyOrn")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PolicyOrn argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "PolicyOrn argument missing\n");
+				          s->policy_orn = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "SetAsDefault")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SetAsDefault argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_set_as_default = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->set_as_default = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->set_as_default = 0;
+				           } else {
+				          		BAD_RET("SetAsDefault require true/false\n");
+				           }
+				      } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'CreatePolicyVersion'\n", next_a);
+			    }
+		            i += incr;
+			    goto create_policy_version_arg;
+		     }
+		     cret = osc_create_policy_version(&e, &r, &a);
+            	     TRY(cret, "fail to call CreatePolicyVersion: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("CreatePolicy", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_create_policy_arg a = {0};
+		     struct osc_create_policy_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     create_policy_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto create_policy_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Description argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "Description argument missing\n");
+				          s->description = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "Document")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Document argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "Document argument missing\n");
+				          s->document = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "Path")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Path argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "Path argument missing\n");
+				          s->path = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "PolicyName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PolicyName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "PolicyName argument missing\n");
+				          s->policy_name = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'CreatePolicy'\n", next_a);
+			    }
+		            i += incr;
+			    goto create_policy_arg;
+		     }
+		     cret = osc_create_policy(&e, &r, &a);
+            	     TRY(cret, "fail to call CreatePolicy: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
               if (!strcmp("CreateNic", av[i])) {
 		     json_object *jobj;
 		     auto_ptr_array struct ptr_array opa = {0};
@@ -30781,6 +33531,126 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_create_dhcp_options(&e, &r, &a);
             	     TRY(cret, "fail to call CreateDhcpOptions: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+			     json_object_put(jobj);
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("CreateDedicatedGroup", av[i])) {
+		     json_object *jobj;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_create_dedicated_group_arg a = {0};
+		     struct osc_create_dedicated_group_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     create_dedicated_group_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto create_dedicated_group_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3]);
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "CpuGeneration")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "CpuGeneration argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "CpuGeneration argument missing\n");
+				          s->is_set_cpu_generation = 1;
+				          s->cpu_generation = atoi(aa);
+				       } else
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "Name")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Name argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "Name argument missing\n");
+				          s->name = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "SubregionName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "SubregionName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "SubregionName argument missing\n");
+				          s->subregion_name = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'CreateDedicatedGroup'\n", next_a);
+			    }
+		            i += incr;
+			    goto create_dedicated_group_arg;
+		     }
+		     cret = osc_create_dedicated_group(&e, &r, &a);
+            	     TRY(cret, "fail to call CreateDedicatedGroup: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
