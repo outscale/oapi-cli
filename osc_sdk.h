@@ -1538,8 +1538,8 @@ struct filters_net {
         /*
          * If true, the Net used is the default one.
          */
-        int is_set_is_default_arg;
-	int is_default_arg; /* bool */
+        int is_set_is_default;
+	int is_default; /* bool */
         /*
          * The IDs of the Nets.
          */

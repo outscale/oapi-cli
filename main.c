@@ -2260,11 +2260,11 @@ int filters_net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                SET_NEXT(s->ip_ranges, (aa), pa);
          } else
 	if ((aret = argcmp(str, "IsDefault")) == 0 || aret == '=') {
-            s->is_set_is_default_arg = 1;
+            s->is_set_is_default = 1;
             if (!aa || !strcasecmp(aa, "true")) {
-            		s->is_default_arg = 1;
+            		s->is_default = 1;
              } else if (!strcasecmp(aa, "false")) {
-            		s->is_default_arg = 0;
+            		s->is_default = 0;
              } else {
             		BAD_RET("IsDefault require true/false\n");
              }
