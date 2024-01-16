@@ -6874,8 +6874,8 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 		ARG_TO_JSON(IpRanges, string, args->ip_ranges_str);
 		ret += 1;
 	}
-	if (args->is_set_is_default_arg) {
-		ARG_TO_JSON(IsDefault, bool, args->is_default_arg);
+	if (args->is_set_is_default) {
+		ARG_TO_JSON(IsDefault, bool, args->is_default);
 	   	ret += 1;
 	}
 	if (args->net_ids) {
