@@ -49,3 +49,12 @@ echo "[$MSG_BASE ReadVms --DryRun --file false.txt OK]"
 trap "echo [$MSG_BASE ReadConsumptionAccount --FromDate $(date --date="-39 days" '+%F') --ToDate $(date --date="-38 days" "+%F") FAIL]" ERR
 ./oapi-cli ReadConsumptionAccount --FromDate $(date --date="-39 days" '+%F') --ToDate $(date --date="-38 days" "+%F") | grep Operation > /dev/null
 echo "[$MSG_BASE ReadConsumptionAccount --FromDate $(date --date="-39 days" '+%F') --ToDate $(date --date="-38 days" "+%F") OK]"
+
+trap "echo [$MSG_BASE CreatePolicy --PolicyName please --Document --jsonstr-file ./policy.json FAIL]" ERR
+policy_orn=$(./oapi-cli CreatePolicy --PolicyName please --Document --jsonstr-file ./policy.json)
+policy_orn=$(echo $policy_orn | jq -r .Policy.Orn)
+echo "[$MSG_BASE CreatePolicy --PolicyName please --Document --jsonstr-file ./policy.json OK]"
+
+trap "echo [$MSG_BASE ./oapi-cli DeletePolicy --PolicyOrn $policy_orn FAIL]" ERR
+./oapi-cli DeletePolicy --PolicyOrn $policy_orn | { ! grep Error; } > /dev/null
+echo "[$MSG_BASE ./oapi-cli DeletePolicy --PolicyOrn $policy_orn OK]"

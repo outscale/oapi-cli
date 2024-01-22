@@ -13066,6 +13066,9 @@ int osc_init_sdk_ext(struct osc_env *e, const char *profile,
 		     unsigned int flag, struct osc_env_conf *cfg);
 void osc_deinit_sdk(struct osc_env *e);
 
+int osc_str_append_string(struct osc_str *osc_str, const char *str);
+int osc_str_append_n_string(struct osc_str *osc_str, const char *str, int l);
+
 /*
  * osc_new_sdk/str and osc_destroy_sdk/str where made so we can use
  * C++'s std::unique_ptr with the lib.

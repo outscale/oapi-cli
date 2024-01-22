@@ -88,9 +88,34 @@ static void files_cnt_cleanup(char * (*files_cnt_ptr)[64])
 	}
 }
 
-char *read_file(char *files_cnt[static MAX_FILES_PER_CMD], char *file_name)
+char *string_to_jsonstr(char **file_str_p)
+{
+	/* no auto free, as we steal s.buf */
+	struct osc_str s;
+	char *in = *file_str_p;
+	char *double_quote;
+	char *tmp = in;
+
+	osc_init_str(&s);
+	while((double_quote = strchr(tmp, '"')) != NULL) {
+		int l = double_quote - tmp;
+
+		osc_str_append_n_string(&s, tmp, l);
+		osc_str_append_string(&s, "\\\"");
+		tmp = double_quote + 1;
+	}
+	osc_str_append_string(&s, tmp);
+
+	free(in);
+	*file_str_p = s.buf;
+	return *file_str_p;
+}
+
+char *read_file(char *files_cnt[static MAX_FILES_PER_CMD], char *file_name,
+		int is_json)
 {
 	int dest = -1;
+	const char *call_name = is_json ? "--jsonstr-file" : "--file";
 	for (int i = 0; i < MAX_FILES_PER_CMD; ++i) {
 		if (!files_cnt[i]) {
 			dest = i;
@@ -98,35 +123,37 @@ char *read_file(char *files_cnt[static MAX_FILES_PER_CMD], char *file_name)
 		}
 	}
 	if (dest < 0) {
-		fprintf(stderr, "--file option used too much");
+		fprintf(stderr, "%s option used too much", call_name);
 		return NULL;
 	}
 	FILE *f = fopen(file_name, "rb");
 	if (!f) {
-		fprintf(stderr, "--file failt to open %s", file_name);
+		fprintf(stderr, "%s fail to open %s", call_name, file_name);
 		return NULL;
 	}
 	if (fseek(f, 0, SEEK_END) < 0) {
-		fprintf(stderr, "--file fseek fail for %s", file_name);
+		fprintf(stderr, "%s fseek fail for %s", call_name, file_name);
 		return NULL;
 	}
 	long fsize = ftell(f);
 	if (fseek(f, 0, SEEK_SET) < 0) {
-		fprintf(stderr, "--file fseek fail for %s", file_name);
+		fprintf(stderr, "%s fseek fail for %s", call_name, file_name);
 		return NULL;
 	}
 
 	files_cnt[dest] = malloc(fsize + 1);
 	if (!files_cnt[dest]) {
-		fprintf(stderr, "--file malloc fail for %s", file_name);
+		fprintf(stderr, "%s malloc fail for %s", call_name, file_name);
 		return NULL;
 	}
 	if (fread(files_cnt[dest], fsize, 1, f) < 0) {
-		fprintf(stderr, "--file fread fail for %s", file_name);
+		fprintf(stderr, "%s fread fail for %s", call_name, file_name);
 		return NULL;
 	}
 	fclose(f);
 	files_cnt[dest][fsize] = 0;
+	if (is_json)
+		return string_to_jsonstr(&files_cnt[dest]);
 	return files_cnt[dest];
 }
 
@@ -9795,13 +9822,15 @@ int main(int ac, char **av)
 
 	if (ac < 2 || (ac == 2 && !strcmp(av[1], "--help"))) {
 	show_help:
-                printf("Usage: %s [--help] CallName [options] [--Params <param_argument or --file <file_name>>]\n"
+                printf("Usage: %s [--help] CallName [options] [--Params <param_argument | [--file | --jsonstr-file] <file_name>>]\n"
                        "options:\n"
                        "\t    --auth-method=METHODE set authentification method, password|accesskey|none\n"
                        "\t    --color               try to colorize json if json-c support it\n"
                        "\t    --config=PATH         config file path\n"
 		       "\t    --file PATH           use content of PATH as an agrument for a call, example:\n"
 		       "\t\t\t\toapi-cli CreateCa  --CaPem --file /$CA_DIR/cert.pem\n"
+		       "\t    --jsonstr-file PATH   same as --file, except the content is surrounded by \"\n"
+		       "\t\t\t\tand \" inside the file are escape with a \\, this option is useful for CreatePolicy\n"
                        "\t-h, --help [CallName]     this, can be used with call name, example:\n\t\t\t\t%s --help ReadVms\n"
                        "\t    --list-calls          list all calls\n"
                        "\t    --insecure            doesn't verify SSL certificats\n"
@@ -9922,8 +9951,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -10065,8 +10100,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -10196,8 +10237,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -10347,8 +10394,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -10509,8 +10562,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -10770,8 +10829,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -10890,8 +10955,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -11004,8 +11075,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -11125,8 +11202,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -11245,8 +11328,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -11354,8 +11443,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -11479,8 +11574,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -11643,8 +11744,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -11788,8 +11895,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -11912,8 +12025,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -12021,8 +12140,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -12240,8 +12365,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -12360,8 +12491,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -12481,8 +12618,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -12595,8 +12738,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -12704,8 +12853,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -12813,8 +12968,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -12922,8 +13083,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -13070,8 +13237,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -13184,8 +13357,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -13416,8 +13595,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -13547,8 +13732,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -13661,8 +13852,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -13770,8 +13967,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -13868,8 +14071,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -13977,8 +14186,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -14088,8 +14303,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -14197,8 +14418,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -14295,8 +14522,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -14419,8 +14652,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -14528,8 +14767,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -14626,8 +14871,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -14742,8 +14993,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -14842,8 +15099,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -14935,8 +15198,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -15044,8 +15313,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -15153,8 +15428,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -15251,8 +15532,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -15362,8 +15649,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -15462,8 +15755,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -15594,8 +15893,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -15726,8 +16031,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -15852,8 +16163,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -15963,8 +16280,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -16095,8 +16418,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -16205,8 +16534,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -16315,8 +16650,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -16425,8 +16766,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -16557,8 +16904,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -16644,8 +16997,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -16754,8 +17113,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -16864,8 +17229,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -16974,8 +17345,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -17084,8 +17461,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -17194,8 +17577,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -17304,8 +17693,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -17414,8 +17809,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -17512,8 +17913,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -17644,8 +18051,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -17731,8 +18144,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -17841,8 +18260,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -17973,8 +18398,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -18060,8 +18491,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -18147,8 +18584,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -18257,8 +18700,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -18361,8 +18810,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -18454,8 +18909,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -18536,8 +18997,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -18668,8 +19135,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -18778,8 +19251,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -18888,8 +19367,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -19020,8 +19505,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -19152,8 +19643,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -19262,8 +19759,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -19394,8 +19897,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -19481,8 +19990,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -19591,8 +20106,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -19691,8 +20212,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -19801,8 +20328,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -19944,8 +20477,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -20054,8 +20593,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -20164,8 +20709,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -20296,8 +20847,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -20406,8 +20963,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -20516,8 +21079,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -20603,8 +21172,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -20713,8 +21288,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -20823,8 +21404,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -20955,8 +21542,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -21065,8 +21658,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -21206,8 +21805,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -21304,8 +21909,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -21414,8 +22025,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -21524,8 +22141,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -21611,8 +22234,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -21721,8 +22350,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -21876,8 +22511,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -21986,8 +22627,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -22073,8 +22720,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -22171,8 +22824,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -22258,8 +22917,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -22379,8 +23044,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -22499,8 +23170,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -22608,8 +23285,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -22717,8 +23400,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -22875,8 +23564,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -23013,8 +23708,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -23122,8 +23823,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -23242,8 +23949,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -23366,8 +24079,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -23475,8 +24194,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -23584,8 +24309,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -23695,8 +24426,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -23804,8 +24541,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -23902,8 +24645,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -24000,8 +24749,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -24100,8 +24855,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -24198,8 +24959,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -24296,8 +25063,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -24394,8 +25167,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -24492,8 +25271,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -24623,8 +25408,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -24721,8 +25512,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -24819,8 +25616,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -24917,8 +25720,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -25123,8 +25932,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -25232,8 +26047,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -25330,8 +26151,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -25439,8 +26266,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -25548,8 +26381,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -25641,8 +26480,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -25739,8 +26584,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -25837,8 +26688,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -25935,8 +26792,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -26033,8 +26896,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -26131,8 +27000,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -26229,8 +27104,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -26360,8 +27241,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -26469,8 +27356,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -26580,8 +27473,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -26678,8 +27577,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -26776,8 +27681,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -26874,8 +27785,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -26972,8 +27889,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -27070,8 +27993,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -27168,8 +28097,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -27266,8 +28201,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -27364,8 +28305,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -27462,8 +28409,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -27560,8 +28513,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -27674,8 +28633,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -27772,8 +28737,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -27870,8 +28841,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -27968,8 +28945,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -28077,8 +29060,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -28186,8 +29175,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -28322,8 +29317,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -28464,8 +29465,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -28849,8 +29856,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -29055,8 +30068,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -29252,8 +30271,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -29350,8 +30375,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -29459,8 +30490,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -29590,8 +30627,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -29710,8 +30753,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -29831,8 +30880,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -29984,8 +31039,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -30126,8 +31187,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -30332,8 +31399,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -30452,8 +31525,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -30550,8 +31629,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -30714,8 +31799,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -30801,8 +31892,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -30910,8 +32007,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -31019,8 +32122,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -31150,8 +32259,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -31303,8 +32418,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -31412,8 +32533,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -31534,8 +32661,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -31643,8 +32776,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -31752,8 +32891,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -31883,8 +33028,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -32025,8 +33176,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -32154,8 +33311,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -32375,8 +33538,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -32521,8 +33690,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -32630,8 +33805,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -32717,8 +33898,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -32838,8 +34025,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -33073,8 +34266,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -33209,8 +34408,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -33330,8 +34535,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -33450,8 +34661,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -33587,8 +34804,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -33707,8 +34930,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -33827,8 +35056,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -33936,8 +35171,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -34073,8 +35314,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -34316,8 +35563,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -34425,8 +35678,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
@@ -34534,8 +35793,14 @@ int main(int ac, char **av)
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
 					++incr;
-					aa = read_file(files_cnt, av[i + 3]);
+					aa = read_file(files_cnt, av[i + 3], 0);
 					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+
 				} else {
 					aa = 0;
 					incr = 1;
