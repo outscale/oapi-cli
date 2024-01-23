@@ -19,11 +19,11 @@ Examples of complex argument, with DeleteTags
 ```bash
 oapi-cli DeleteTags --ResourceIds '["ID0", "ID1"]' --Tags.0.Key k0 ..Value v0 --Tags.1.Key k1 ..Value v1
 ```
-is the same as but using [] syntaxe for `ResourceIds`, and without cascade argument, but in color.
+Is the same as the line below but using [] syntax for `ResourceIds`, and without cascade argument, but in color.
 ```bash
 oapi-cli --color DeleteTags --ResourceIds[] "ID0" --ResourceIds[] "ID1"  --Tags.0.Key k0 --Tags.0.Value v0 --Tags.1.Key k1 --Tags.1.Value v1
 ```
-and the same as, using osc-cli-like notation
+and is the same as this below, using osc-cli-like notation
 ```bash
 oapi-cli DeleteTags --ResourceIds '["ID0", "ID1"]'  --Tags '[{"Key": "k0", "Value": "v0"}, {"Key": "k1", "Value": "v1"}]'
 ```
@@ -149,6 +149,9 @@ Example:
 ```
 
 using appimage-extract-and-run extract the content of the AppImage in a temporary directory and execute it, this operation is a lot slower than using fuse, and the fuse solution should be use if posible.
+
+## Arch Linux
+you can also install oapi-cli-git on Arch Linux using AUR: (yay -S oapi-cli-git)
 
 # Feedback
 Either open a github issue, or post a message here: https://github.com/outscale/oapi-cli/discussions/10
