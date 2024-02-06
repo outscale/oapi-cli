@@ -5030,7 +5030,7 @@ static int account_setter(struct account *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AdditionalEmails\":[" ));
-		for (as = args->additional_emails; *as > 0; ++as) {
+		for (as = args->additional_emails; *as; ++as) {
 			if (as != args->additional_emails)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -5134,7 +5134,7 @@ static int api_access_rule_setter(struct api_access_rule *args, struct osc_str *
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CaIds\":[" ));
-		for (as = args->ca_ids; *as > 0; ++as) {
+		for (as = args->ca_ids; *as; ++as) {
 			if (as != args->ca_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -5150,7 +5150,7 @@ static int api_access_rule_setter(struct api_access_rule *args, struct osc_str *
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Cns\":[" ));
-		for (as = args->cns; *as > 0; ++as) {
+		for (as = args->cns; *as; ++as) {
 			if (as != args->cns)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -5171,7 +5171,7 @@ static int api_access_rule_setter(struct api_access_rule *args, struct osc_str *
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRanges\":[" ));
-		for (as = args->ip_ranges; *as > 0; ++as) {
+		for (as = args->ip_ranges; *as; ++as) {
 			if (as != args->ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -5660,7 +5660,7 @@ static int dedicated_group_setter(struct dedicated_group *args, struct osc_str *
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetIds\":[" ));
-		for (as = args->net_ids; *as > 0; ++as) {
+		for (as = args->net_ids; *as; ++as) {
 			if (as != args->net_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -5681,7 +5681,7 @@ static int dedicated_group_setter(struct dedicated_group *args, struct osc_str *
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
-		for (as = args->vm_ids; *as > 0; ++as) {
+		for (as = args->vm_ids; *as; ++as) {
 			if (as != args->vm_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -5716,7 +5716,7 @@ static int dhcp_options_set_setter(struct dhcp_options_set *args, struct osc_str
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DomainNameServers\":[" ));
-		for (as = args->domain_name_servers; *as > 0; ++as) {
+		for (as = args->domain_name_servers; *as; ++as) {
 			if (as != args->domain_name_servers)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -5732,7 +5732,7 @@ static int dhcp_options_set_setter(struct dhcp_options_set *args, struct osc_str
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LogServers\":[" ));
-		for (as = args->log_servers; *as > 0; ++as) {
+		for (as = args->log_servers; *as; ++as) {
 			if (as != args->log_servers)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -5748,7 +5748,7 @@ static int dhcp_options_set_setter(struct dhcp_options_set *args, struct osc_str
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NtpServers\":[" ));
-		for (as = args->ntp_servers; *as > 0; ++as) {
+		for (as = args->ntp_servers; *as; ++as) {
 			if (as != args->ntp_servers)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -5957,7 +5957,7 @@ static int filters_access_keys_setter(struct filters_access_keys *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccessKeyIds\":[" ));
-		for (as = args->access_key_ids; *as > 0; ++as) {
+		for (as = args->access_key_ids; *as; ++as) {
 			if (as != args->access_key_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -5973,7 +5973,7 @@ static int filters_access_keys_setter(struct filters_access_keys *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
-		for (as = args->states; *as > 0; ++as) {
+		for (as = args->states; *as; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -5994,7 +5994,7 @@ static int filters_api_access_rule_setter(struct filters_api_access_rule *args, 
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ApiAccessRuleIds\":[" ));
-		for (as = args->api_access_rule_ids; *as > 0; ++as) {
+		for (as = args->api_access_rule_ids; *as; ++as) {
 			if (as != args->api_access_rule_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6010,7 +6010,7 @@ static int filters_api_access_rule_setter(struct filters_api_access_rule *args, 
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CaIds\":[" ));
-		for (as = args->ca_ids; *as > 0; ++as) {
+		for (as = args->ca_ids; *as; ++as) {
 			if (as != args->ca_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6026,7 +6026,7 @@ static int filters_api_access_rule_setter(struct filters_api_access_rule *args, 
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Cns\":[" ));
-		for (as = args->cns; *as > 0; ++as) {
+		for (as = args->cns; *as; ++as) {
 			if (as != args->cns)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6042,7 +6042,7 @@ static int filters_api_access_rule_setter(struct filters_api_access_rule *args, 
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Descriptions\":[" ));
-		for (as = args->descriptions; *as > 0; ++as) {
+		for (as = args->descriptions; *as; ++as) {
 			if (as != args->descriptions)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6058,7 +6058,7 @@ static int filters_api_access_rule_setter(struct filters_api_access_rule *args, 
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRanges\":[" ));
-		for (as = args->ip_ranges; *as > 0; ++as) {
+		for (as = args->ip_ranges; *as; ++as) {
 			if (as != args->ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6079,7 +6079,7 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryAccessKeys\":[" ));
-		for (as = args->query_access_keys; *as > 0; ++as) {
+		for (as = args->query_access_keys; *as; ++as) {
 			if (as != args->query_access_keys)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6095,7 +6095,7 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryApiNames\":[" ));
-		for (as = args->query_api_names; *as > 0; ++as) {
+		for (as = args->query_api_names; *as; ++as) {
 			if (as != args->query_api_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6111,7 +6111,7 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryCallNames\":[" ));
-		for (as = args->query_call_names; *as > 0; ++as) {
+		for (as = args->query_call_names; *as; ++as) {
 			if (as != args->query_call_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6137,7 +6137,7 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryIpAddresses\":[" ));
-		for (as = args->query_ip_addresses; *as > 0; ++as) {
+		for (as = args->query_ip_addresses; *as; ++as) {
 			if (as != args->query_ip_addresses)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6153,7 +6153,7 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QueryUserAgents\":[" ));
-		for (as = args->query_user_agents; *as > 0; ++as) {
+		for (as = args->query_user_agents; *as; ++as) {
 			if (as != args->query_user_agents)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6169,7 +6169,7 @@ static int filters_api_log_setter(struct filters_api_log *args, struct osc_str *
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RequestIds\":[" ));
-		for (as = args->request_ids; *as > 0; ++as) {
+		for (as = args->request_ids; *as; ++as) {
 			if (as != args->request_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6206,7 +6206,7 @@ static int filters_ca_setter(struct filters_ca *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CaFingerprints\":[" ));
-		for (as = args->ca_fingerprints; *as > 0; ++as) {
+		for (as = args->ca_fingerprints; *as; ++as) {
 			if (as != args->ca_fingerprints)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6222,7 +6222,7 @@ static int filters_ca_setter(struct filters_ca *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CaIds\":[" ));
-		for (as = args->ca_ids; *as > 0; ++as) {
+		for (as = args->ca_ids; *as; ++as) {
 			if (as != args->ca_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6238,7 +6238,7 @@ static int filters_ca_setter(struct filters_ca *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Descriptions\":[" ));
-		for (as = args->descriptions; *as > 0; ++as) {
+		for (as = args->descriptions; *as; ++as) {
 			if (as != args->descriptions)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6294,7 +6294,7 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ClientGatewayIds\":[" ));
-		for (as = args->client_gateway_ids; *as > 0; ++as) {
+		for (as = args->client_gateway_ids; *as; ++as) {
 			if (as != args->client_gateway_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6310,7 +6310,7 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ConnectionTypes\":[" ));
-		for (as = args->connection_types; *as > 0; ++as) {
+		for (as = args->connection_types; *as; ++as) {
 			if (as != args->connection_types)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6326,7 +6326,7 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIps\":[" ));
-		for (as = args->public_ips; *as > 0; ++as) {
+		for (as = args->public_ips; *as; ++as) {
 			if (as != args->public_ips)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6342,7 +6342,7 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
-		for (as = args->states; *as > 0; ++as) {
+		for (as = args->states; *as; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6358,7 +6358,7 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
-		for (as = args->tag_keys; *as > 0; ++as) {
+		for (as = args->tag_keys; *as; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6374,7 +6374,7 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
-		for (as = args->tag_values; *as > 0; ++as) {
+		for (as = args->tag_values; *as; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6390,7 +6390,7 @@ static int filters_client_gateway_setter(struct filters_client_gateway *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
-		for (as = args->tags; *as > 0; ++as) {
+		for (as = args->tags; *as; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6427,7 +6427,7 @@ static int filters_dedicated_group_setter(struct filters_dedicated_group *args, 
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DedicatedGroupIds\":[" ));
-		for (as = args->dedicated_group_ids; *as > 0; ++as) {
+		for (as = args->dedicated_group_ids; *as; ++as) {
 			if (as != args->dedicated_group_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6443,7 +6443,7 @@ static int filters_dedicated_group_setter(struct filters_dedicated_group *args, 
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Names\":[" ));
-		for (as = args->names; *as > 0; ++as) {
+		for (as = args->names; *as; ++as) {
 			if (as != args->names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6459,7 +6459,7 @@ static int filters_dedicated_group_setter(struct filters_dedicated_group *args, 
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":[" ));
-		for (as = args->subregion_names; *as > 0; ++as) {
+		for (as = args->subregion_names; *as; ++as) {
 			if (as != args->subregion_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6484,7 +6484,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DhcpOptionsSetIds\":[" ));
-		for (as = args->dhcp_options_set_ids; *as > 0; ++as) {
+		for (as = args->dhcp_options_set_ids; *as; ++as) {
 			if (as != args->dhcp_options_set_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6500,7 +6500,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DomainNameServers\":[" ));
-		for (as = args->domain_name_servers; *as > 0; ++as) {
+		for (as = args->domain_name_servers; *as; ++as) {
 			if (as != args->domain_name_servers)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6516,7 +6516,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DomainNames\":[" ));
-		for (as = args->domain_names; *as > 0; ++as) {
+		for (as = args->domain_names; *as; ++as) {
 			if (as != args->domain_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6532,7 +6532,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LogServers\":[" ));
-		for (as = args->log_servers; *as > 0; ++as) {
+		for (as = args->log_servers; *as; ++as) {
 			if (as != args->log_servers)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6548,7 +6548,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NtpServers\":[" ));
-		for (as = args->ntp_servers; *as > 0; ++as) {
+		for (as = args->ntp_servers; *as; ++as) {
 			if (as != args->ntp_servers)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6564,7 +6564,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
-		for (as = args->tag_keys; *as > 0; ++as) {
+		for (as = args->tag_keys; *as; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6580,7 +6580,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
-		for (as = args->tag_values; *as > 0; ++as) {
+		for (as = args->tag_values; *as; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6596,7 +6596,7 @@ static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
-		for (as = args->tags; *as > 0; ++as) {
+		for (as = args->tags; *as; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6617,7 +6617,7 @@ static int filters_direct_link_setter(struct filters_direct_link *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DirectLinkIds\":[" ));
-		for (as = args->direct_link_ids; *as > 0; ++as) {
+		for (as = args->direct_link_ids; *as; ++as) {
 			if (as != args->direct_link_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6638,7 +6638,7 @@ static int filters_direct_link_interface_setter(struct filters_direct_link_inter
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DirectLinkIds\":[" ));
-		for (as = args->direct_link_ids; *as > 0; ++as) {
+		for (as = args->direct_link_ids; *as; ++as) {
 			if (as != args->direct_link_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6654,7 +6654,7 @@ static int filters_direct_link_interface_setter(struct filters_direct_link_inter
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DirectLinkInterfaceIds\":[" ));
-		for (as = args->direct_link_interface_ids; *as > 0; ++as) {
+		for (as = args->direct_link_interface_ids; *as; ++as) {
 			if (as != args->direct_link_interface_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6675,7 +6675,7 @@ static int filters_export_task_setter(struct filters_export_task *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TaskIds\":[" ));
-		for (as = args->task_ids; *as > 0; ++as) {
+		for (as = args->task_ids; *as; ++as) {
 			if (as != args->task_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6700,7 +6700,7 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"FlexibleGpuIds\":[" ));
-		for (as = args->flexible_gpu_ids; *as > 0; ++as) {
+		for (as = args->flexible_gpu_ids; *as; ++as) {
 			if (as != args->flexible_gpu_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6716,7 +6716,7 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Generations\":[" ));
-		for (as = args->generations; *as > 0; ++as) {
+		for (as = args->generations; *as; ++as) {
 			if (as != args->generations)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6732,7 +6732,7 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ModelNames\":[" ));
-		for (as = args->model_names; *as > 0; ++as) {
+		for (as = args->model_names; *as; ++as) {
 			if (as != args->model_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6748,7 +6748,7 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
-		for (as = args->states; *as > 0; ++as) {
+		for (as = args->states; *as; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6764,7 +6764,7 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":[" ));
-		for (as = args->subregion_names; *as > 0; ++as) {
+		for (as = args->subregion_names; *as; ++as) {
 			if (as != args->subregion_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6780,7 +6780,7 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
-		for (as = args->vm_ids; *as > 0; ++as) {
+		for (as = args->vm_ids; *as; ++as) {
 			if (as != args->vm_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6801,7 +6801,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountAliases\":[" ));
-		for (as = args->account_aliases; *as > 0; ++as) {
+		for (as = args->account_aliases; *as; ++as) {
 			if (as != args->account_aliases)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6817,7 +6817,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountIds\":[" ));
-		for (as = args->account_ids; *as > 0; ++as) {
+		for (as = args->account_ids; *as; ++as) {
 			if (as != args->account_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6833,7 +6833,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Architectures\":[" ));
-		for (as = args->architectures; *as > 0; ++as) {
+		for (as = args->architectures; *as; ++as) {
 			if (as != args->architectures)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6853,7 +6853,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappingDeviceNames\":[" ));
-		for (as = args->block_device_mapping_device_names; *as > 0; ++as) {
+		for (as = args->block_device_mapping_device_names; *as; ++as) {
 			if (as != args->block_device_mapping_device_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6869,7 +6869,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappingSnapshotIds\":[" ));
-		for (as = args->block_device_mapping_snapshot_ids; *as > 0; ++as) {
+		for (as = args->block_device_mapping_snapshot_ids; *as; ++as) {
 			if (as != args->block_device_mapping_snapshot_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6901,7 +6901,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappingVolumeTypes\":[" ));
-		for (as = args->block_device_mapping_volume_types; *as > 0; ++as) {
+		for (as = args->block_device_mapping_volume_types; *as; ++as) {
 			if (as != args->block_device_mapping_volume_types)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6917,7 +6917,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Descriptions\":[" ));
-		for (as = args->descriptions; *as > 0; ++as) {
+		for (as = args->descriptions; *as; ++as) {
 			if (as != args->descriptions)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6933,7 +6933,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"FileLocations\":[" ));
-		for (as = args->file_locations; *as > 0; ++as) {
+		for (as = args->file_locations; *as; ++as) {
 			if (as != args->file_locations)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6949,7 +6949,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Hypervisors\":[" ));
-		for (as = args->hypervisors; *as > 0; ++as) {
+		for (as = args->hypervisors; *as; ++as) {
 			if (as != args->hypervisors)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6965,7 +6965,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ImageIds\":[" ));
-		for (as = args->image_ids; *as > 0; ++as) {
+		for (as = args->image_ids; *as; ++as) {
 			if (as != args->image_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6981,7 +6981,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ImageNames\":[" ));
-		for (as = args->image_names; *as > 0; ++as) {
+		for (as = args->image_names; *as; ++as) {
 			if (as != args->image_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -6997,7 +6997,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PermissionsToLaunchAccountIds\":[" ));
-		for (as = args->permissions_to_launch_account_ids; *as > 0; ++as) {
+		for (as = args->permissions_to_launch_account_ids; *as; ++as) {
 			if (as != args->permissions_to_launch_account_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7017,7 +7017,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ProductCodeNames\":[" ));
-		for (as = args->product_code_names; *as > 0; ++as) {
+		for (as = args->product_code_names; *as; ++as) {
 			if (as != args->product_code_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7033,7 +7033,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ProductCodes\":[" ));
-		for (as = args->product_codes; *as > 0; ++as) {
+		for (as = args->product_codes; *as; ++as) {
 			if (as != args->product_codes)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7049,7 +7049,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RootDeviceNames\":[" ));
-		for (as = args->root_device_names; *as > 0; ++as) {
+		for (as = args->root_device_names; *as; ++as) {
 			if (as != args->root_device_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7065,7 +7065,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RootDeviceTypes\":[" ));
-		for (as = args->root_device_types; *as > 0; ++as) {
+		for (as = args->root_device_types; *as; ++as) {
 			if (as != args->root_device_types)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7081,7 +7081,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
-		for (as = args->states; *as > 0; ++as) {
+		for (as = args->states; *as; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7097,7 +7097,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
-		for (as = args->tag_keys; *as > 0; ++as) {
+		for (as = args->tag_keys; *as; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7113,7 +7113,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
-		for (as = args->tag_values; *as > 0; ++as) {
+		for (as = args->tag_values; *as; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7129,7 +7129,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
-		for (as = args->tags; *as > 0; ++as) {
+		for (as = args->tags; *as; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7145,7 +7145,7 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VirtualizationTypes\":[" ));
-		for (as = args->virtualization_types; *as > 0; ++as) {
+		for (as = args->virtualization_types; *as; ++as) {
 			if (as != args->virtualization_types)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7166,7 +7166,7 @@ static int filters_internet_service_setter(struct filters_internet_service *args
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InternetServiceIds\":[" ));
-		for (as = args->internet_service_ids; *as > 0; ++as) {
+		for (as = args->internet_service_ids; *as; ++as) {
 			if (as != args->internet_service_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7182,7 +7182,7 @@ static int filters_internet_service_setter(struct filters_internet_service *args
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNetIds\":[" ));
-		for (as = args->link_net_ids; *as > 0; ++as) {
+		for (as = args->link_net_ids; *as; ++as) {
 			if (as != args->link_net_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7198,7 +7198,7 @@ static int filters_internet_service_setter(struct filters_internet_service *args
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkStates\":[" ));
-		for (as = args->link_states; *as > 0; ++as) {
+		for (as = args->link_states; *as; ++as) {
 			if (as != args->link_states)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7214,7 +7214,7 @@ static int filters_internet_service_setter(struct filters_internet_service *args
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
-		for (as = args->tag_keys; *as > 0; ++as) {
+		for (as = args->tag_keys; *as; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7230,7 +7230,7 @@ static int filters_internet_service_setter(struct filters_internet_service *args
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
-		for (as = args->tag_values; *as > 0; ++as) {
+		for (as = args->tag_values; *as; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7246,7 +7246,7 @@ static int filters_internet_service_setter(struct filters_internet_service *args
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
-		for (as = args->tags; *as > 0; ++as) {
+		for (as = args->tags; *as; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7267,7 +7267,7 @@ static int filters_keypair_setter(struct filters_keypair *args, struct osc_str *
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"KeypairFingerprints\":[" ));
-		for (as = args->keypair_fingerprints; *as > 0; ++as) {
+		for (as = args->keypair_fingerprints; *as; ++as) {
 			if (as != args->keypair_fingerprints)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7283,7 +7283,7 @@ static int filters_keypair_setter(struct filters_keypair *args, struct osc_str *
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"KeypairNames\":[" ));
-		for (as = args->keypair_names; *as > 0; ++as) {
+		for (as = args->keypair_names; *as; ++as) {
 			if (as != args->keypair_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7299,7 +7299,7 @@ static int filters_keypair_setter(struct filters_keypair *args, struct osc_str *
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"KeypairTypes\":[" ));
-		for (as = args->keypair_types; *as > 0; ++as) {
+		for (as = args->keypair_types; *as; ++as) {
 			if (as != args->keypair_types)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7320,7 +7320,7 @@ static int filters_listener_rule_setter(struct filters_listener_rule *args, stru
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ListenerRuleNames\":[" ));
-		for (as = args->listener_rule_names; *as > 0; ++as) {
+		for (as = args->listener_rule_names; *as; ++as) {
 			if (as != args->listener_rule_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7341,7 +7341,7 @@ static int filters_load_balancer_setter(struct filters_load_balancer *args, stru
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerNames\":[" ));
-		for (as = args->load_balancer_names; *as > 0; ++as) {
+		for (as = args->load_balancer_names; *as; ++as) {
 			if (as != args->load_balancer_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7362,7 +7362,7 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NatServiceIds\":[" ));
-		for (as = args->nat_service_ids; *as > 0; ++as) {
+		for (as = args->nat_service_ids; *as; ++as) {
 			if (as != args->nat_service_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7378,7 +7378,7 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetIds\":[" ));
-		for (as = args->net_ids; *as > 0; ++as) {
+		for (as = args->net_ids; *as; ++as) {
 			if (as != args->net_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7394,7 +7394,7 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
-		for (as = args->states; *as > 0; ++as) {
+		for (as = args->states; *as; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7410,7 +7410,7 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetIds\":[" ));
-		for (as = args->subnet_ids; *as > 0; ++as) {
+		for (as = args->subnet_ids; *as; ++as) {
 			if (as != args->subnet_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7426,7 +7426,7 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
-		for (as = args->tag_keys; *as > 0; ++as) {
+		for (as = args->tag_keys; *as; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7442,7 +7442,7 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
-		for (as = args->tag_values; *as > 0; ++as) {
+		for (as = args->tag_values; *as; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7458,7 +7458,7 @@ static int filters_nat_service_setter(struct filters_nat_service *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
-		for (as = args->tags; *as > 0; ++as) {
+		for (as = args->tags; *as; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7479,7 +7479,7 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DhcpOptionsSetIds\":[" ));
-		for (as = args->dhcp_options_set_ids; *as > 0; ++as) {
+		for (as = args->dhcp_options_set_ids; *as; ++as) {
 			if (as != args->dhcp_options_set_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7495,7 +7495,7 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRanges\":[" ));
-		for (as = args->ip_ranges; *as > 0; ++as) {
+		for (as = args->ip_ranges; *as; ++as) {
 			if (as != args->ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7515,7 +7515,7 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetIds\":[" ));
-		for (as = args->net_ids; *as > 0; ++as) {
+		for (as = args->net_ids; *as; ++as) {
 			if (as != args->net_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7531,7 +7531,7 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
-		for (as = args->states; *as > 0; ++as) {
+		for (as = args->states; *as; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7547,7 +7547,7 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
-		for (as = args->tag_keys; *as > 0; ++as) {
+		for (as = args->tag_keys; *as; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7563,7 +7563,7 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
-		for (as = args->tag_values; *as > 0; ++as) {
+		for (as = args->tag_values; *as; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7579,7 +7579,7 @@ static int filters_net_setter(struct filters_net *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
-		for (as = args->tags; *as > 0; ++as) {
+		for (as = args->tags; *as; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7600,7 +7600,7 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetAccessPointIds\":[" ));
-		for (as = args->net_access_point_ids; *as > 0; ++as) {
+		for (as = args->net_access_point_ids; *as; ++as) {
 			if (as != args->net_access_point_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7616,7 +7616,7 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetIds\":[" ));
-		for (as = args->net_ids; *as > 0; ++as) {
+		for (as = args->net_ids; *as; ++as) {
 			if (as != args->net_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7632,7 +7632,7 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ServiceNames\":[" ));
-		for (as = args->service_names; *as > 0; ++as) {
+		for (as = args->service_names; *as; ++as) {
 			if (as != args->service_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7648,7 +7648,7 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
-		for (as = args->states; *as > 0; ++as) {
+		for (as = args->states; *as; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7664,7 +7664,7 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
-		for (as = args->tag_keys; *as > 0; ++as) {
+		for (as = args->tag_keys; *as; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7680,7 +7680,7 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
-		for (as = args->tag_values; *as > 0; ++as) {
+		for (as = args->tag_values; *as; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7696,7 +7696,7 @@ static int filters_net_access_point_setter(struct filters_net_access_point *args
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
-		for (as = args->tags; *as > 0; ++as) {
+		for (as = args->tags; *as; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7717,7 +7717,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccepterNetAccountIds\":[" ));
-		for (as = args->accepter_net_account_ids; *as > 0; ++as) {
+		for (as = args->accepter_net_account_ids; *as; ++as) {
 			if (as != args->accepter_net_account_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7733,7 +7733,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccepterNetIpRanges\":[" ));
-		for (as = args->accepter_net_ip_ranges; *as > 0; ++as) {
+		for (as = args->accepter_net_ip_ranges; *as; ++as) {
 			if (as != args->accepter_net_ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7749,7 +7749,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccepterNetNetIds\":[" ));
-		for (as = args->accepter_net_net_ids; *as > 0; ++as) {
+		for (as = args->accepter_net_net_ids; *as; ++as) {
 			if (as != args->accepter_net_net_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7765,7 +7765,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ExpirationDates\":[" ));
-		for (as = args->expiration_dates; *as > 0; ++as) {
+		for (as = args->expiration_dates; *as; ++as) {
 			if (as != args->expiration_dates)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7781,7 +7781,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetPeeringIds\":[" ));
-		for (as = args->net_peering_ids; *as > 0; ++as) {
+		for (as = args->net_peering_ids; *as; ++as) {
 			if (as != args->net_peering_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7797,7 +7797,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SourceNetAccountIds\":[" ));
-		for (as = args->source_net_account_ids; *as > 0; ++as) {
+		for (as = args->source_net_account_ids; *as; ++as) {
 			if (as != args->source_net_account_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7813,7 +7813,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SourceNetIpRanges\":[" ));
-		for (as = args->source_net_ip_ranges; *as > 0; ++as) {
+		for (as = args->source_net_ip_ranges; *as; ++as) {
 			if (as != args->source_net_ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7829,7 +7829,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SourceNetNetIds\":[" ));
-		for (as = args->source_net_net_ids; *as > 0; ++as) {
+		for (as = args->source_net_net_ids; *as; ++as) {
 			if (as != args->source_net_net_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7845,7 +7845,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"StateMessages\":[" ));
-		for (as = args->state_messages; *as > 0; ++as) {
+		for (as = args->state_messages; *as; ++as) {
 			if (as != args->state_messages)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7861,7 +7861,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"StateNames\":[" ));
-		for (as = args->state_names; *as > 0; ++as) {
+		for (as = args->state_names; *as; ++as) {
 			if (as != args->state_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7877,7 +7877,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
-		for (as = args->tag_keys; *as > 0; ++as) {
+		for (as = args->tag_keys; *as; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7893,7 +7893,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
-		for (as = args->tag_values; *as > 0; ++as) {
+		for (as = args->tag_values; *as; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7909,7 +7909,7 @@ static int filters_net_peering_setter(struct filters_net_peering *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
-		for (as = args->tags; *as > 0; ++as) {
+		for (as = args->tags; *as; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7930,7 +7930,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Descriptions\":[" ));
-		for (as = args->descriptions; *as > 0; ++as) {
+		for (as = args->descriptions; *as; ++as) {
 			if (as != args->descriptions)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7970,7 +7970,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNicLinkNicIds\":[" ));
-		for (as = args->link_nic_link_nic_ids; *as > 0; ++as) {
+		for (as = args->link_nic_link_nic_ids; *as; ++as) {
 			if (as != args->link_nic_link_nic_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -7986,7 +7986,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNicStates\":[" ));
-		for (as = args->link_nic_states; *as > 0; ++as) {
+		for (as = args->link_nic_states; *as; ++as) {
 			if (as != args->link_nic_states)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8002,7 +8002,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNicVmAccountIds\":[" ));
-		for (as = args->link_nic_vm_account_ids; *as > 0; ++as) {
+		for (as = args->link_nic_vm_account_ids; *as; ++as) {
 			if (as != args->link_nic_vm_account_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8018,7 +8018,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNicVmIds\":[" ));
-		for (as = args->link_nic_vm_ids; *as > 0; ++as) {
+		for (as = args->link_nic_vm_ids; *as; ++as) {
 			if (as != args->link_nic_vm_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8034,7 +8034,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkPublicIpAccountIds\":[" ));
-		for (as = args->link_public_ip_account_ids; *as > 0; ++as) {
+		for (as = args->link_public_ip_account_ids; *as; ++as) {
 			if (as != args->link_public_ip_account_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8050,7 +8050,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkPublicIpLinkPublicIpIds\":[" ));
-		for (as = args->link_public_ip_link_public_ip_ids; *as > 0; ++as) {
+		for (as = args->link_public_ip_link_public_ip_ids; *as; ++as) {
 			if (as != args->link_public_ip_link_public_ip_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8066,7 +8066,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkPublicIpPublicIpIds\":[" ));
-		for (as = args->link_public_ip_public_ip_ids; *as > 0; ++as) {
+		for (as = args->link_public_ip_public_ip_ids; *as; ++as) {
 			if (as != args->link_public_ip_public_ip_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8082,7 +8082,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkPublicIpPublicIps\":[" ));
-		for (as = args->link_public_ip_public_ips; *as > 0; ++as) {
+		for (as = args->link_public_ip_public_ips; *as; ++as) {
 			if (as != args->link_public_ip_public_ips)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8098,7 +8098,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MacAddresses\":[" ));
-		for (as = args->mac_addresses; *as > 0; ++as) {
+		for (as = args->mac_addresses; *as; ++as) {
 			if (as != args->mac_addresses)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8114,7 +8114,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetIds\":[" ));
-		for (as = args->net_ids; *as > 0; ++as) {
+		for (as = args->net_ids; *as; ++as) {
 			if (as != args->net_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8130,7 +8130,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicIds\":[" ));
-		for (as = args->nic_ids; *as > 0; ++as) {
+		for (as = args->nic_ids; *as; ++as) {
 			if (as != args->nic_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8146,7 +8146,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateDnsNames\":[" ));
-		for (as = args->private_dns_names; *as > 0; ++as) {
+		for (as = args->private_dns_names; *as; ++as) {
 			if (as != args->private_dns_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8162,7 +8162,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIpsLinkPublicIpAccountIds\":[" ));
-		for (as = args->private_ips_link_public_ip_account_ids; *as > 0; ++as) {
+		for (as = args->private_ips_link_public_ip_account_ids; *as; ++as) {
 			if (as != args->private_ips_link_public_ip_account_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8178,7 +8178,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIpsLinkPublicIpPublicIps\":[" ));
-		for (as = args->private_ips_link_public_ip_public_ips; *as > 0; ++as) {
+		for (as = args->private_ips_link_public_ip_public_ips; *as; ++as) {
 			if (as != args->private_ips_link_public_ip_public_ips)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8198,7 +8198,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIpsPrivateIps\":[" ));
-		for (as = args->private_ips_private_ips; *as > 0; ++as) {
+		for (as = args->private_ips_private_ips; *as; ++as) {
 			if (as != args->private_ips_private_ips)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8214,7 +8214,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":[" ));
-		for (as = args->security_group_ids; *as > 0; ++as) {
+		for (as = args->security_group_ids; *as; ++as) {
 			if (as != args->security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8230,7 +8230,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupNames\":[" ));
-		for (as = args->security_group_names; *as > 0; ++as) {
+		for (as = args->security_group_names; *as; ++as) {
 			if (as != args->security_group_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8246,7 +8246,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
-		for (as = args->states; *as > 0; ++as) {
+		for (as = args->states; *as; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8262,7 +8262,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetIds\":[" ));
-		for (as = args->subnet_ids; *as > 0; ++as) {
+		for (as = args->subnet_ids; *as; ++as) {
 			if (as != args->subnet_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8278,7 +8278,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":[" ));
-		for (as = args->subregion_names; *as > 0; ++as) {
+		for (as = args->subregion_names; *as; ++as) {
 			if (as != args->subregion_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8294,7 +8294,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
-		for (as = args->tag_keys; *as > 0; ++as) {
+		for (as = args->tag_keys; *as; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8310,7 +8310,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
-		for (as = args->tag_values; *as > 0; ++as) {
+		for (as = args->tag_values; *as; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8326,7 +8326,7 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
-		for (as = args->tags; *as > 0; ++as) {
+		for (as = args->tags; *as; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8347,7 +8347,7 @@ static int filters_product_type_setter(struct filters_product_type *args, struct
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ProductTypeIds\":[" ));
-		for (as = args->product_type_ids; *as > 0; ++as) {
+		for (as = args->product_type_ids; *as; ++as) {
 			if (as != args->product_type_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8368,7 +8368,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkPublicIpIds\":[" ));
-		for (as = args->link_public_ip_ids; *as > 0; ++as) {
+		for (as = args->link_public_ip_ids; *as; ++as) {
 			if (as != args->link_public_ip_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8384,7 +8384,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicAccountIds\":[" ));
-		for (as = args->nic_account_ids; *as > 0; ++as) {
+		for (as = args->nic_account_ids; *as; ++as) {
 			if (as != args->nic_account_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8400,7 +8400,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicIds\":[" ));
-		for (as = args->nic_ids; *as > 0; ++as) {
+		for (as = args->nic_ids; *as; ++as) {
 			if (as != args->nic_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8416,7 +8416,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Placements\":[" ));
-		for (as = args->placements; *as > 0; ++as) {
+		for (as = args->placements; *as; ++as) {
 			if (as != args->placements)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8432,7 +8432,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIps\":[" ));
-		for (as = args->private_ips; *as > 0; ++as) {
+		for (as = args->private_ips; *as; ++as) {
 			if (as != args->private_ips)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8448,7 +8448,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIpIds\":[" ));
-		for (as = args->public_ip_ids; *as > 0; ++as) {
+		for (as = args->public_ip_ids; *as; ++as) {
 			if (as != args->public_ip_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8464,7 +8464,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIps\":[" ));
-		for (as = args->public_ips; *as > 0; ++as) {
+		for (as = args->public_ips; *as; ++as) {
 			if (as != args->public_ips)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8480,7 +8480,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
-		for (as = args->tag_keys; *as > 0; ++as) {
+		for (as = args->tag_keys; *as; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8496,7 +8496,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
-		for (as = args->tag_values; *as > 0; ++as) {
+		for (as = args->tag_values; *as; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8512,7 +8512,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
-		for (as = args->tags; *as > 0; ++as) {
+		for (as = args->tags; *as; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8528,7 +8528,7 @@ static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_s
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
-		for (as = args->vm_ids; *as > 0; ++as) {
+		for (as = args->vm_ids; *as; ++as) {
 			if (as != args->vm_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8549,7 +8549,7 @@ static int filters_quota_setter(struct filters_quota *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Collections\":[" ));
-		for (as = args->collections; *as > 0; ++as) {
+		for (as = args->collections; *as; ++as) {
 			if (as != args->collections)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8565,7 +8565,7 @@ static int filters_quota_setter(struct filters_quota *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QuotaNames\":[" ));
-		for (as = args->quota_names; *as > 0; ++as) {
+		for (as = args->quota_names; *as; ++as) {
 			if (as != args->quota_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8581,7 +8581,7 @@ static int filters_quota_setter(struct filters_quota *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"QuotaTypes\":[" ));
-		for (as = args->quota_types; *as > 0; ++as) {
+		for (as = args->quota_types; *as; ++as) {
 			if (as != args->quota_types)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8597,7 +8597,7 @@ static int filters_quota_setter(struct filters_quota *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ShortDescriptions\":[" ));
-		for (as = args->short_descriptions; *as > 0; ++as) {
+		for (as = args->short_descriptions; *as; ++as) {
 			if (as != args->short_descriptions)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8618,7 +8618,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkRouteTableIds\":[" ));
-		for (as = args->link_route_table_ids; *as > 0; ++as) {
+		for (as = args->link_route_table_ids; *as; ++as) {
 			if (as != args->link_route_table_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8634,7 +8634,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkRouteTableLinkRouteTableIds\":[" ));
-		for (as = args->link_route_table_link_route_table_ids; *as > 0; ++as) {
+		for (as = args->link_route_table_link_route_table_ids; *as; ++as) {
 			if (as != args->link_route_table_link_route_table_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8654,7 +8654,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkSubnetIds\":[" ));
-		for (as = args->link_subnet_ids; *as > 0; ++as) {
+		for (as = args->link_subnet_ids; *as; ++as) {
 			if (as != args->link_subnet_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8670,7 +8670,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetIds\":[" ));
-		for (as = args->net_ids; *as > 0; ++as) {
+		for (as = args->net_ids; *as; ++as) {
 			if (as != args->net_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8686,7 +8686,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteCreationMethods\":[" ));
-		for (as = args->route_creation_methods; *as > 0; ++as) {
+		for (as = args->route_creation_methods; *as; ++as) {
 			if (as != args->route_creation_methods)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8702,7 +8702,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteDestinationIpRanges\":[" ));
-		for (as = args->route_destination_ip_ranges; *as > 0; ++as) {
+		for (as = args->route_destination_ip_ranges; *as; ++as) {
 			if (as != args->route_destination_ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8718,7 +8718,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteDestinationServiceIds\":[" ));
-		for (as = args->route_destination_service_ids; *as > 0; ++as) {
+		for (as = args->route_destination_service_ids; *as; ++as) {
 			if (as != args->route_destination_service_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8734,7 +8734,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteGatewayIds\":[" ));
-		for (as = args->route_gateway_ids; *as > 0; ++as) {
+		for (as = args->route_gateway_ids; *as; ++as) {
 			if (as != args->route_gateway_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8750,7 +8750,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteNatServiceIds\":[" ));
-		for (as = args->route_nat_service_ids; *as > 0; ++as) {
+		for (as = args->route_nat_service_ids; *as; ++as) {
 			if (as != args->route_nat_service_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8766,7 +8766,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteNetPeeringIds\":[" ));
-		for (as = args->route_net_peering_ids; *as > 0; ++as) {
+		for (as = args->route_net_peering_ids; *as; ++as) {
 			if (as != args->route_net_peering_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8782,7 +8782,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteStates\":[" ));
-		for (as = args->route_states; *as > 0; ++as) {
+		for (as = args->route_states; *as; ++as) {
 			if (as != args->route_states)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8798,7 +8798,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteTableIds\":[" ));
-		for (as = args->route_table_ids; *as > 0; ++as) {
+		for (as = args->route_table_ids; *as; ++as) {
 			if (as != args->route_table_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8814,7 +8814,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteVmIds\":[" ));
-		for (as = args->route_vm_ids; *as > 0; ++as) {
+		for (as = args->route_vm_ids; *as; ++as) {
 			if (as != args->route_vm_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8830,7 +8830,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
-		for (as = args->tag_keys; *as > 0; ++as) {
+		for (as = args->tag_keys; *as; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8846,7 +8846,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
-		for (as = args->tag_values; *as > 0; ++as) {
+		for (as = args->tag_values; *as; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8862,7 +8862,7 @@ static int filters_route_table_setter(struct filters_route_table *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
-		for (as = args->tags; *as > 0; ++as) {
+		for (as = args->tags; *as; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8883,7 +8883,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Descriptions\":[" ));
-		for (as = args->descriptions; *as > 0; ++as) {
+		for (as = args->descriptions; *as; ++as) {
 			if (as != args->descriptions)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8899,7 +8899,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InboundRuleAccountIds\":[" ));
-		for (as = args->inbound_rule_account_ids; *as > 0; ++as) {
+		for (as = args->inbound_rule_account_ids; *as; ++as) {
 			if (as != args->inbound_rule_account_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8931,7 +8931,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InboundRuleIpRanges\":[" ));
-		for (as = args->inbound_rule_ip_ranges; *as > 0; ++as) {
+		for (as = args->inbound_rule_ip_ranges; *as; ++as) {
 			if (as != args->inbound_rule_ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8947,7 +8947,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InboundRuleProtocols\":[" ));
-		for (as = args->inbound_rule_protocols; *as > 0; ++as) {
+		for (as = args->inbound_rule_protocols; *as; ++as) {
 			if (as != args->inbound_rule_protocols)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8963,7 +8963,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InboundRuleSecurityGroupIds\":[" ));
-		for (as = args->inbound_rule_security_group_ids; *as > 0; ++as) {
+		for (as = args->inbound_rule_security_group_ids; *as; ++as) {
 			if (as != args->inbound_rule_security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -8979,7 +8979,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"InboundRuleSecurityGroupNames\":[" ));
-		for (as = args->inbound_rule_security_group_names; *as > 0; ++as) {
+		for (as = args->inbound_rule_security_group_names; *as; ++as) {
 			if (as != args->inbound_rule_security_group_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9011,7 +9011,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetIds\":[" ));
-		for (as = args->net_ids; *as > 0; ++as) {
+		for (as = args->net_ids; *as; ++as) {
 			if (as != args->net_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9027,7 +9027,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OutboundRuleAccountIds\":[" ));
-		for (as = args->outbound_rule_account_ids; *as > 0; ++as) {
+		for (as = args->outbound_rule_account_ids; *as; ++as) {
 			if (as != args->outbound_rule_account_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9059,7 +9059,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OutboundRuleIpRanges\":[" ));
-		for (as = args->outbound_rule_ip_ranges; *as > 0; ++as) {
+		for (as = args->outbound_rule_ip_ranges; *as; ++as) {
 			if (as != args->outbound_rule_ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9075,7 +9075,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OutboundRuleProtocols\":[" ));
-		for (as = args->outbound_rule_protocols; *as > 0; ++as) {
+		for (as = args->outbound_rule_protocols; *as; ++as) {
 			if (as != args->outbound_rule_protocols)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9091,7 +9091,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OutboundRuleSecurityGroupIds\":[" ));
-		for (as = args->outbound_rule_security_group_ids; *as > 0; ++as) {
+		for (as = args->outbound_rule_security_group_ids; *as; ++as) {
 			if (as != args->outbound_rule_security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9107,7 +9107,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"OutboundRuleSecurityGroupNames\":[" ));
-		for (as = args->outbound_rule_security_group_names; *as > 0; ++as) {
+		for (as = args->outbound_rule_security_group_names; *as; ++as) {
 			if (as != args->outbound_rule_security_group_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9139,7 +9139,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":[" ));
-		for (as = args->security_group_ids; *as > 0; ++as) {
+		for (as = args->security_group_ids; *as; ++as) {
 			if (as != args->security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9155,7 +9155,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupNames\":[" ));
-		for (as = args->security_group_names; *as > 0; ++as) {
+		for (as = args->security_group_names; *as; ++as) {
 			if (as != args->security_group_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9171,7 +9171,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
-		for (as = args->tag_keys; *as > 0; ++as) {
+		for (as = args->tag_keys; *as; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9187,7 +9187,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
-		for (as = args->tag_values; *as > 0; ++as) {
+		for (as = args->tag_values; *as; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9203,7 +9203,7 @@ static int filters_security_group_setter(struct filters_security_group *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
-		for (as = args->tags; *as > 0; ++as) {
+		for (as = args->tags; *as; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9224,7 +9224,7 @@ static int filters_server_certificate_setter(struct filters_server_certificate *
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Paths\":[" ));
-		for (as = args->paths; *as > 0; ++as) {
+		for (as = args->paths; *as; ++as) {
 			if (as != args->paths)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9245,7 +9245,7 @@ static int filters_service_setter(struct filters_service *args, struct osc_str *
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ServiceIds\":[" ));
-		for (as = args->service_ids; *as > 0; ++as) {
+		for (as = args->service_ids; *as; ++as) {
 			if (as != args->service_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9261,7 +9261,7 @@ static int filters_service_setter(struct filters_service *args, struct osc_str *
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ServiceNames\":[" ));
-		for (as = args->service_names; *as > 0; ++as) {
+		for (as = args->service_names; *as; ++as) {
 			if (as != args->service_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9282,7 +9282,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountAliases\":[" ));
-		for (as = args->account_aliases; *as > 0; ++as) {
+		for (as = args->account_aliases; *as; ++as) {
 			if (as != args->account_aliases)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9298,7 +9298,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountIds\":[" ));
-		for (as = args->account_ids; *as > 0; ++as) {
+		for (as = args->account_ids; *as; ++as) {
 			if (as != args->account_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9314,7 +9314,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Descriptions\":[" ));
-		for (as = args->descriptions; *as > 0; ++as) {
+		for (as = args->descriptions; *as; ++as) {
 			if (as != args->descriptions)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9335,7 +9335,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PermissionsToCreateVolumeAccountIds\":[" ));
-		for (as = args->permissions_to_create_volume_account_ids; *as > 0; ++as) {
+		for (as = args->permissions_to_create_volume_account_ids; *as; ++as) {
 			if (as != args->permissions_to_create_volume_account_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9371,7 +9371,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SnapshotIds\":[" ));
-		for (as = args->snapshot_ids; *as > 0; ++as) {
+		for (as = args->snapshot_ids; *as; ++as) {
 			if (as != args->snapshot_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9387,7 +9387,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
-		for (as = args->states; *as > 0; ++as) {
+		for (as = args->states; *as; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9403,7 +9403,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
-		for (as = args->tag_keys; *as > 0; ++as) {
+		for (as = args->tag_keys; *as; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9419,7 +9419,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
-		for (as = args->tag_values; *as > 0; ++as) {
+		for (as = args->tag_values; *as; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9435,7 +9435,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
-		for (as = args->tags; *as > 0; ++as) {
+		for (as = args->tags; *as; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9456,7 +9456,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeIds\":[" ));
-		for (as = args->volume_ids; *as > 0; ++as) {
+		for (as = args->volume_ids; *as; ++as) {
 			if (as != args->volume_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9509,7 +9509,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRanges\":[" ));
-		for (as = args->ip_ranges; *as > 0; ++as) {
+		for (as = args->ip_ranges; *as; ++as) {
 			if (as != args->ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9525,7 +9525,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetIds\":[" ));
-		for (as = args->net_ids; *as > 0; ++as) {
+		for (as = args->net_ids; *as; ++as) {
 			if (as != args->net_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9541,7 +9541,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
-		for (as = args->states; *as > 0; ++as) {
+		for (as = args->states; *as; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9557,7 +9557,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetIds\":[" ));
-		for (as = args->subnet_ids; *as > 0; ++as) {
+		for (as = args->subnet_ids; *as; ++as) {
 			if (as != args->subnet_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9573,7 +9573,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":[" ));
-		for (as = args->subregion_names; *as > 0; ++as) {
+		for (as = args->subregion_names; *as; ++as) {
 			if (as != args->subregion_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9589,7 +9589,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
-		for (as = args->tag_keys; *as > 0; ++as) {
+		for (as = args->tag_keys; *as; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9605,7 +9605,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
-		for (as = args->tag_values; *as > 0; ++as) {
+		for (as = args->tag_values; *as; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9621,7 +9621,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
-		for (as = args->tags; *as > 0; ++as) {
+		for (as = args->tags; *as; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9642,7 +9642,7 @@ static int filters_subregion_setter(struct filters_subregion *args, struct osc_s
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RegionNames\":[" ));
-		for (as = args->region_names; *as > 0; ++as) {
+		for (as = args->region_names; *as; ++as) {
 			if (as != args->region_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9658,7 +9658,7 @@ static int filters_subregion_setter(struct filters_subregion *args, struct osc_s
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
-		for (as = args->states; *as > 0; ++as) {
+		for (as = args->states; *as; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9674,7 +9674,7 @@ static int filters_subregion_setter(struct filters_subregion *args, struct osc_s
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":[" ));
-		for (as = args->subregion_names; *as > 0; ++as) {
+		for (as = args->subregion_names; *as; ++as) {
 			if (as != args->subregion_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9695,7 +9695,7 @@ static int filters_tag_setter(struct filters_tag *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Keys\":[" ));
-		for (as = args->keys; *as > 0; ++as) {
+		for (as = args->keys; *as; ++as) {
 			if (as != args->keys)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9711,7 +9711,7 @@ static int filters_tag_setter(struct filters_tag *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ResourceIds\":[" ));
-		for (as = args->resource_ids; *as > 0; ++as) {
+		for (as = args->resource_ids; *as; ++as) {
 			if (as != args->resource_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9727,7 +9727,7 @@ static int filters_tag_setter(struct filters_tag *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ResourceTypes\":[" ));
-		for (as = args->resource_types; *as > 0; ++as) {
+		for (as = args->resource_types; *as; ++as) {
 			if (as != args->resource_types)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9743,7 +9743,7 @@ static int filters_tag_setter(struct filters_tag *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Values\":[" ));
-		for (as = args->values; *as > 0; ++as) {
+		for (as = args->values; *as; ++as) {
 			if (as != args->values)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9764,7 +9764,7 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ConnectionTypes\":[" ));
-		for (as = args->connection_types; *as > 0; ++as) {
+		for (as = args->connection_types; *as; ++as) {
 			if (as != args->connection_types)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9780,7 +9780,7 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkNetIds\":[" ));
-		for (as = args->link_net_ids; *as > 0; ++as) {
+		for (as = args->link_net_ids; *as; ++as) {
 			if (as != args->link_net_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9796,7 +9796,7 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkStates\":[" ));
-		for (as = args->link_states; *as > 0; ++as) {
+		for (as = args->link_states; *as; ++as) {
 			if (as != args->link_states)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9812,7 +9812,7 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
-		for (as = args->states; *as > 0; ++as) {
+		for (as = args->states; *as; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9828,7 +9828,7 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
-		for (as = args->tag_keys; *as > 0; ++as) {
+		for (as = args->tag_keys; *as; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9844,7 +9844,7 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
-		for (as = args->tag_values; *as > 0; ++as) {
+		for (as = args->tag_values; *as; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9860,7 +9860,7 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
-		for (as = args->tags; *as > 0; ++as) {
+		for (as = args->tags; *as; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9876,7 +9876,7 @@ static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, 
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VirtualGatewayIds\":[" ));
-		for (as = args->virtual_gateway_ids; *as > 0; ++as) {
+		for (as = args->virtual_gateway_ids; *as; ++as) {
 			if (as != args->virtual_gateway_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9897,7 +9897,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Architectures\":[" ));
-		for (as = args->architectures; *as > 0; ++as) {
+		for (as = args->architectures; *as; ++as) {
 			if (as != args->architectures)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9917,7 +9917,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappingDeviceNames\":[" ));
-		for (as = args->block_device_mapping_device_names; *as > 0; ++as) {
+		for (as = args->block_device_mapping_device_names; *as; ++as) {
 			if (as != args->block_device_mapping_device_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9933,7 +9933,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappingLinkDates\":[" ));
-		for (as = args->block_device_mapping_link_dates; *as > 0; ++as) {
+		for (as = args->block_device_mapping_link_dates; *as; ++as) {
 			if (as != args->block_device_mapping_link_dates)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9949,7 +9949,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappingStates\":[" ));
-		for (as = args->block_device_mapping_states; *as > 0; ++as) {
+		for (as = args->block_device_mapping_states; *as; ++as) {
 			if (as != args->block_device_mapping_states)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9965,7 +9965,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappingVolumeIds\":[" ));
-		for (as = args->block_device_mapping_volume_ids; *as > 0; ++as) {
+		for (as = args->block_device_mapping_volume_ids; *as; ++as) {
 			if (as != args->block_device_mapping_volume_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9981,7 +9981,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ClientTokens\":[" ));
-		for (as = args->client_tokens; *as > 0; ++as) {
+		for (as = args->client_tokens; *as; ++as) {
 			if (as != args->client_tokens)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -9997,7 +9997,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CreationDates\":[" ));
-		for (as = args->creation_dates; *as > 0; ++as) {
+		for (as = args->creation_dates; *as; ++as) {
 			if (as != args->creation_dates)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10013,7 +10013,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ImageIds\":[" ));
-		for (as = args->image_ids; *as > 0; ++as) {
+		for (as = args->image_ids; *as; ++as) {
 			if (as != args->image_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10033,7 +10033,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"KeypairNames\":[" ));
-		for (as = args->keypair_names; *as > 0; ++as) {
+		for (as = args->keypair_names; *as; ++as) {
 			if (as != args->keypair_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10065,7 +10065,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Lifecycles\":[" ));
-		for (as = args->lifecycles; *as > 0; ++as) {
+		for (as = args->lifecycles; *as; ++as) {
 			if (as != args->lifecycles)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10081,7 +10081,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NetIds\":[" ));
-		for (as = args->net_ids; *as > 0; ++as) {
+		for (as = args->net_ids; *as; ++as) {
 			if (as != args->net_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10097,7 +10097,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicAccountIds\":[" ));
-		for (as = args->nic_account_ids; *as > 0; ++as) {
+		for (as = args->nic_account_ids; *as; ++as) {
 			if (as != args->nic_account_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10113,7 +10113,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicDescriptions\":[" ));
-		for (as = args->nic_descriptions; *as > 0; ++as) {
+		for (as = args->nic_descriptions; *as; ++as) {
 			if (as != args->nic_descriptions)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10153,7 +10153,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicLinkNicLinkNicDates\":[" ));
-		for (as = args->nic_link_nic_link_nic_dates; *as > 0; ++as) {
+		for (as = args->nic_link_nic_link_nic_dates; *as; ++as) {
 			if (as != args->nic_link_nic_link_nic_dates)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10169,7 +10169,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicLinkNicLinkNicIds\":[" ));
-		for (as = args->nic_link_nic_link_nic_ids; *as > 0; ++as) {
+		for (as = args->nic_link_nic_link_nic_ids; *as; ++as) {
 			if (as != args->nic_link_nic_link_nic_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10185,7 +10185,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicLinkNicStates\":[" ));
-		for (as = args->nic_link_nic_states; *as > 0; ++as) {
+		for (as = args->nic_link_nic_states; *as; ++as) {
 			if (as != args->nic_link_nic_states)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10201,7 +10201,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicLinkNicVmAccountIds\":[" ));
-		for (as = args->nic_link_nic_vm_account_ids; *as > 0; ++as) {
+		for (as = args->nic_link_nic_vm_account_ids; *as; ++as) {
 			if (as != args->nic_link_nic_vm_account_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10217,7 +10217,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicLinkNicVmIds\":[" ));
-		for (as = args->nic_link_nic_vm_ids; *as > 0; ++as) {
+		for (as = args->nic_link_nic_vm_ids; *as; ++as) {
 			if (as != args->nic_link_nic_vm_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10233,7 +10233,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicLinkPublicIpAccountIds\":[" ));
-		for (as = args->nic_link_public_ip_account_ids; *as > 0; ++as) {
+		for (as = args->nic_link_public_ip_account_ids; *as; ++as) {
 			if (as != args->nic_link_public_ip_account_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10249,7 +10249,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicLinkPublicIpLinkPublicIpIds\":[" ));
-		for (as = args->nic_link_public_ip_link_public_ip_ids; *as > 0; ++as) {
+		for (as = args->nic_link_public_ip_link_public_ip_ids; *as; ++as) {
 			if (as != args->nic_link_public_ip_link_public_ip_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10265,7 +10265,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicLinkPublicIpPublicIpIds\":[" ));
-		for (as = args->nic_link_public_ip_public_ip_ids; *as > 0; ++as) {
+		for (as = args->nic_link_public_ip_public_ip_ids; *as; ++as) {
 			if (as != args->nic_link_public_ip_public_ip_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10281,7 +10281,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicLinkPublicIpPublicIps\":[" ));
-		for (as = args->nic_link_public_ip_public_ips; *as > 0; ++as) {
+		for (as = args->nic_link_public_ip_public_ips; *as; ++as) {
 			if (as != args->nic_link_public_ip_public_ips)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10297,7 +10297,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicMacAddresses\":[" ));
-		for (as = args->nic_mac_addresses; *as > 0; ++as) {
+		for (as = args->nic_mac_addresses; *as; ++as) {
 			if (as != args->nic_mac_addresses)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10313,7 +10313,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicNetIds\":[" ));
-		for (as = args->nic_net_ids; *as > 0; ++as) {
+		for (as = args->nic_net_ids; *as; ++as) {
 			if (as != args->nic_net_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10329,7 +10329,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicNicIds\":[" ));
-		for (as = args->nic_nic_ids; *as > 0; ++as) {
+		for (as = args->nic_nic_ids; *as; ++as) {
 			if (as != args->nic_nic_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10345,7 +10345,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicPrivateIpsLinkPublicIpAccountIds\":[" ));
-		for (as = args->nic_private_ips_link_public_ip_account_ids; *as > 0; ++as) {
+		for (as = args->nic_private_ips_link_public_ip_account_ids; *as; ++as) {
 			if (as != args->nic_private_ips_link_public_ip_account_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10361,7 +10361,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicPrivateIpsLinkPublicIpIds\":[" ));
-		for (as = args->nic_private_ips_link_public_ip_ids; *as > 0; ++as) {
+		for (as = args->nic_private_ips_link_public_ip_ids; *as; ++as) {
 			if (as != args->nic_private_ips_link_public_ip_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10381,7 +10381,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicPrivateIpsPrivateIps\":[" ));
-		for (as = args->nic_private_ips_private_ips; *as > 0; ++as) {
+		for (as = args->nic_private_ips_private_ips; *as; ++as) {
 			if (as != args->nic_private_ips_private_ips)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10397,7 +10397,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicSecurityGroupIds\":[" ));
-		for (as = args->nic_security_group_ids; *as > 0; ++as) {
+		for (as = args->nic_security_group_ids; *as; ++as) {
 			if (as != args->nic_security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10413,7 +10413,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicSecurityGroupNames\":[" ));
-		for (as = args->nic_security_group_names; *as > 0; ++as) {
+		for (as = args->nic_security_group_names; *as; ++as) {
 			if (as != args->nic_security_group_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10429,7 +10429,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicStates\":[" ));
-		for (as = args->nic_states; *as > 0; ++as) {
+		for (as = args->nic_states; *as; ++as) {
 			if (as != args->nic_states)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10445,7 +10445,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicSubnetIds\":[" ));
-		for (as = args->nic_subnet_ids; *as > 0; ++as) {
+		for (as = args->nic_subnet_ids; *as; ++as) {
 			if (as != args->nic_subnet_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10461,7 +10461,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NicSubregionNames\":[" ));
-		for (as = args->nic_subregion_names; *as > 0; ++as) {
+		for (as = args->nic_subregion_names; *as; ++as) {
 			if (as != args->nic_subregion_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10477,7 +10477,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Platforms\":[" ));
-		for (as = args->platforms; *as > 0; ++as) {
+		for (as = args->platforms; *as; ++as) {
 			if (as != args->platforms)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10493,7 +10493,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIps\":[" ));
-		for (as = args->private_ips; *as > 0; ++as) {
+		for (as = args->private_ips; *as; ++as) {
 			if (as != args->private_ips)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10509,7 +10509,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ProductCodes\":[" ));
-		for (as = args->product_codes; *as > 0; ++as) {
+		for (as = args->product_codes; *as; ++as) {
 			if (as != args->product_codes)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10525,7 +10525,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PublicIps\":[" ));
-		for (as = args->public_ips; *as > 0; ++as) {
+		for (as = args->public_ips; *as; ++as) {
 			if (as != args->public_ips)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10541,7 +10541,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ReservationIds\":[" ));
-		for (as = args->reservation_ids; *as > 0; ++as) {
+		for (as = args->reservation_ids; *as; ++as) {
 			if (as != args->reservation_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10557,7 +10557,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RootDeviceNames\":[" ));
-		for (as = args->root_device_names; *as > 0; ++as) {
+		for (as = args->root_device_names; *as; ++as) {
 			if (as != args->root_device_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10573,7 +10573,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RootDeviceTypes\":[" ));
-		for (as = args->root_device_types; *as > 0; ++as) {
+		for (as = args->root_device_types; *as; ++as) {
 			if (as != args->root_device_types)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10589,7 +10589,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":[" ));
-		for (as = args->security_group_ids; *as > 0; ++as) {
+		for (as = args->security_group_ids; *as; ++as) {
 			if (as != args->security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10605,7 +10605,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupNames\":[" ));
-		for (as = args->security_group_names; *as > 0; ++as) {
+		for (as = args->security_group_names; *as; ++as) {
 			if (as != args->security_group_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10637,7 +10637,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"StateReasonMessages\":[" ));
-		for (as = args->state_reason_messages; *as > 0; ++as) {
+		for (as = args->state_reason_messages; *as; ++as) {
 			if (as != args->state_reason_messages)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10653,7 +10653,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"StateReasons\":[" ));
-		for (as = args->state_reasons; *as > 0; ++as) {
+		for (as = args->state_reasons; *as; ++as) {
 			if (as != args->state_reasons)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10669,7 +10669,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetIds\":[" ));
-		for (as = args->subnet_ids; *as > 0; ++as) {
+		for (as = args->subnet_ids; *as; ++as) {
 			if (as != args->subnet_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10685,7 +10685,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":[" ));
-		for (as = args->subregion_names; *as > 0; ++as) {
+		for (as = args->subregion_names; *as; ++as) {
 			if (as != args->subregion_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10701,7 +10701,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
-		for (as = args->tag_keys; *as > 0; ++as) {
+		for (as = args->tag_keys; *as; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10717,7 +10717,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
-		for (as = args->tag_values; *as > 0; ++as) {
+		for (as = args->tag_values; *as; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10733,7 +10733,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
-		for (as = args->tags; *as > 0; ++as) {
+		for (as = args->tags; *as; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10749,7 +10749,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tenancies\":[" ));
-		for (as = args->tenancies; *as > 0; ++as) {
+		for (as = args->tenancies; *as; ++as) {
 			if (as != args->tenancies)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10765,7 +10765,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
-		for (as = args->vm_ids; *as > 0; ++as) {
+		for (as = args->vm_ids; *as; ++as) {
 			if (as != args->vm_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10781,7 +10781,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmSecurityGroupIds\":[" ));
-		for (as = args->vm_security_group_ids; *as > 0; ++as) {
+		for (as = args->vm_security_group_ids; *as; ++as) {
 			if (as != args->vm_security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10797,7 +10797,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmSecurityGroupNames\":[" ));
-		for (as = args->vm_security_group_names; *as > 0; ++as) {
+		for (as = args->vm_security_group_names; *as; ++as) {
 			if (as != args->vm_security_group_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10829,7 +10829,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmStateNames\":[" ));
-		for (as = args->vm_state_names; *as > 0; ++as) {
+		for (as = args->vm_state_names; *as; ++as) {
 			if (as != args->vm_state_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10845,7 +10845,7 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmTypes\":[" ));
-		for (as = args->vm_types; *as > 0; ++as) {
+		for (as = args->vm_types; *as; ++as) {
 			if (as != args->vm_types)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10866,7 +10866,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Descriptions\":[" ));
-		for (as = args->descriptions; *as > 0; ++as) {
+		for (as = args->descriptions; *as; ++as) {
 			if (as != args->descriptions)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10882,7 +10882,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":[" ));
-		for (as = args->security_group_ids; *as > 0; ++as) {
+		for (as = args->security_group_ids; *as; ++as) {
 			if (as != args->security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10898,7 +10898,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubnetIds\":[" ));
-		for (as = args->subnet_ids; *as > 0; ++as) {
+		for (as = args->subnet_ids; *as; ++as) {
 			if (as != args->subnet_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10914,7 +10914,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
-		for (as = args->tag_keys; *as > 0; ++as) {
+		for (as = args->tag_keys; *as; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10930,7 +10930,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
-		for (as = args->tag_values; *as > 0; ++as) {
+		for (as = args->tag_values; *as; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10946,7 +10946,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
-		for (as = args->tags; *as > 0; ++as) {
+		for (as = args->tags; *as; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10978,7 +10978,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmGroupIds\":[" ));
-		for (as = args->vm_group_ids; *as > 0; ++as) {
+		for (as = args->vm_group_ids; *as; ++as) {
 			if (as != args->vm_group_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -10994,7 +10994,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmGroupNames\":[" ));
-		for (as = args->vm_group_names; *as > 0; ++as) {
+		for (as = args->vm_group_names; *as; ++as) {
 			if (as != args->vm_group_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11010,7 +11010,7 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmTemplateIds\":[" ));
-		for (as = args->vm_template_ids; *as > 0; ++as) {
+		for (as = args->vm_template_ids; *as; ++as) {
 			if (as != args->vm_template_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11047,7 +11047,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CpuGenerations\":[" ));
-		for (as = args->cpu_generations; *as > 0; ++as) {
+		for (as = args->cpu_generations; *as; ++as) {
 			if (as != args->cpu_generations)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11063,7 +11063,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CpuPerformances\":[" ));
-		for (as = args->cpu_performances; *as > 0; ++as) {
+		for (as = args->cpu_performances; *as; ++as) {
 			if (as != args->cpu_performances)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11079,7 +11079,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Descriptions\":[" ));
-		for (as = args->descriptions; *as > 0; ++as) {
+		for (as = args->descriptions; *as; ++as) {
 			if (as != args->descriptions)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11095,7 +11095,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ImageIds\":[" ));
-		for (as = args->image_ids; *as > 0; ++as) {
+		for (as = args->image_ids; *as; ++as) {
 			if (as != args->image_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11111,7 +11111,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"KeypairNames\":[" ));
-		for (as = args->keypair_names; *as > 0; ++as) {
+		for (as = args->keypair_names; *as; ++as) {
 			if (as != args->keypair_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11143,7 +11143,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
-		for (as = args->tag_keys; *as > 0; ++as) {
+		for (as = args->tag_keys; *as; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11159,7 +11159,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
-		for (as = args->tag_values; *as > 0; ++as) {
+		for (as = args->tag_values; *as; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11175,7 +11175,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
-		for (as = args->tags; *as > 0; ++as) {
+		for (as = args->tags; *as; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11191,7 +11191,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmTemplateIds\":[" ));
-		for (as = args->vm_template_ids; *as > 0; ++as) {
+		for (as = args->vm_template_ids; *as; ++as) {
 			if (as != args->vm_template_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11207,7 +11207,7 @@ static int filters_vm_template_setter(struct filters_vm_template *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmTemplateNames\":[" ));
-		for (as = args->vm_template_names; *as > 0; ++as) {
+		for (as = args->vm_template_names; *as; ++as) {
 			if (as != args->vm_template_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11232,7 +11232,7 @@ static int filters_vm_type_setter(struct filters_vm_type *args, struct osc_str *
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"EphemeralsTypes\":[" ));
-		for (as = args->ephemerals_types; *as > 0; ++as) {
+		for (as = args->ephemerals_types; *as; ++as) {
 			if (as != args->ephemerals_types)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11312,7 +11312,7 @@ static int filters_vm_type_setter(struct filters_vm_type *args, struct osc_str *
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmTypeNames\":[" ));
-		for (as = args->vm_type_names; *as > 0; ++as) {
+		for (as = args->vm_type_names; *as; ++as) {
 			if (as != args->vm_type_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11365,7 +11365,7 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MaintenanceEventCodes\":[" ));
-		for (as = args->maintenance_event_codes; *as > 0; ++as) {
+		for (as = args->maintenance_event_codes; *as; ++as) {
 			if (as != args->maintenance_event_codes)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11381,7 +11381,7 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MaintenanceEventDescriptions\":[" ));
-		for (as = args->maintenance_event_descriptions; *as > 0; ++as) {
+		for (as = args->maintenance_event_descriptions; *as; ++as) {
 			if (as != args->maintenance_event_descriptions)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11397,7 +11397,7 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MaintenanceEventsNotAfter\":[" ));
-		for (as = args->maintenance_events_not_after; *as > 0; ++as) {
+		for (as = args->maintenance_events_not_after; *as; ++as) {
 			if (as != args->maintenance_events_not_after)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11413,7 +11413,7 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"MaintenanceEventsNotBefore\":[" ));
-		for (as = args->maintenance_events_not_before; *as > 0; ++as) {
+		for (as = args->maintenance_events_not_before; *as; ++as) {
 			if (as != args->maintenance_events_not_before)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11429,7 +11429,7 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":[" ));
-		for (as = args->subregion_names; *as > 0; ++as) {
+		for (as = args->subregion_names; *as; ++as) {
 			if (as != args->subregion_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11445,7 +11445,7 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
-		for (as = args->vm_ids; *as > 0; ++as) {
+		for (as = args->vm_ids; *as; ++as) {
 			if (as != args->vm_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11461,7 +11461,7 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmStates\":[" ));
-		for (as = args->vm_states; *as > 0; ++as) {
+		for (as = args->vm_states; *as; ++as) {
 			if (as != args->vm_states)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11482,7 +11482,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CreationDates\":[" ));
-		for (as = args->creation_dates; *as > 0; ++as) {
+		for (as = args->creation_dates; *as; ++as) {
 			if (as != args->creation_dates)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11502,7 +11502,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkVolumeDeviceNames\":[" ));
-		for (as = args->link_volume_device_names; *as > 0; ++as) {
+		for (as = args->link_volume_device_names; *as; ++as) {
 			if (as != args->link_volume_device_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11518,7 +11518,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkVolumeLinkDates\":[" ));
-		for (as = args->link_volume_link_dates; *as > 0; ++as) {
+		for (as = args->link_volume_link_dates; *as; ++as) {
 			if (as != args->link_volume_link_dates)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11534,7 +11534,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkVolumeLinkStates\":[" ));
-		for (as = args->link_volume_link_states; *as > 0; ++as) {
+		for (as = args->link_volume_link_states; *as; ++as) {
 			if (as != args->link_volume_link_states)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11550,7 +11550,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LinkVolumeVmIds\":[" ));
-		for (as = args->link_volume_vm_ids; *as > 0; ++as) {
+		for (as = args->link_volume_vm_ids; *as; ++as) {
 			if (as != args->link_volume_vm_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11566,7 +11566,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SnapshotIds\":[" ));
-		for (as = args->snapshot_ids; *as > 0; ++as) {
+		for (as = args->snapshot_ids; *as; ++as) {
 			if (as != args->snapshot_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11582,7 +11582,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":[" ));
-		for (as = args->subregion_names; *as > 0; ++as) {
+		for (as = args->subregion_names; *as; ++as) {
 			if (as != args->subregion_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11598,7 +11598,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
-		for (as = args->tag_keys; *as > 0; ++as) {
+		for (as = args->tag_keys; *as; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11614,7 +11614,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
-		for (as = args->tag_values; *as > 0; ++as) {
+		for (as = args->tag_values; *as; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11630,7 +11630,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
-		for (as = args->tags; *as > 0; ++as) {
+		for (as = args->tags; *as; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11646,7 +11646,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeIds\":[" ));
-		for (as = args->volume_ids; *as > 0; ++as) {
+		for (as = args->volume_ids; *as; ++as) {
 			if (as != args->volume_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11678,7 +11678,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeStates\":[" ));
-		for (as = args->volume_states; *as > 0; ++as) {
+		for (as = args->volume_states; *as; ++as) {
 			if (as != args->volume_states)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11694,7 +11694,7 @@ static int filters_volume_setter(struct filters_volume *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VolumeTypes\":[" ));
-		for (as = args->volume_types; *as > 0; ++as) {
+		for (as = args->volume_types; *as; ++as) {
 			if (as != args->volume_types)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11731,7 +11731,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ClientGatewayIds\":[" ));
-		for (as = args->client_gateway_ids; *as > 0; ++as) {
+		for (as = args->client_gateway_ids; *as; ++as) {
 			if (as != args->client_gateway_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11747,7 +11747,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ConnectionTypes\":[" ));
-		for (as = args->connection_types; *as > 0; ++as) {
+		for (as = args->connection_types; *as; ++as) {
 			if (as != args->connection_types)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11763,7 +11763,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteDestinationIpRanges\":[" ));
-		for (as = args->route_destination_ip_ranges; *as > 0; ++as) {
+		for (as = args->route_destination_ip_ranges; *as; ++as) {
 			if (as != args->route_destination_ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11779,7 +11779,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"States\":[" ));
-		for (as = args->states; *as > 0; ++as) {
+		for (as = args->states; *as; ++as) {
 			if (as != args->states)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11799,7 +11799,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
-		for (as = args->tag_keys; *as > 0; ++as) {
+		for (as = args->tag_keys; *as; ++as) {
 			if (as != args->tag_keys)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11815,7 +11815,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
-		for (as = args->tag_values; *as > 0; ++as) {
+		for (as = args->tag_values; *as; ++as) {
 			if (as != args->tag_values)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11831,7 +11831,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Tags\":[" ));
-		for (as = args->tags; *as > 0; ++as) {
+		for (as = args->tags; *as; ++as) {
 			if (as != args->tags)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11847,7 +11847,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VirtualGatewayIds\":[" ));
-		for (as = args->virtual_gateway_ids; *as > 0; ++as) {
+		for (as = args->virtual_gateway_ids; *as; ++as) {
 			if (as != args->virtual_gateway_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11863,7 +11863,7 @@ static int filters_vpn_connection_setter(struct filters_vpn_connection *args, st
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VpnConnectionIds\":[" ));
-		for (as = args->vpn_connection_ids; *as > 0; ++as) {
+		for (as = args->vpn_connection_ids; *as; ++as) {
 			if (as != args->vpn_connection_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -11923,7 +11923,7 @@ static int flexible_gpu_catalog_setter(struct flexible_gpu_catalog *args, struct
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Generations\":[" ));
-		for (as = args->generations; *as > 0; ++as) {
+		for (as = args->generations; *as; ++as) {
 			if (as != args->generations)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -12069,7 +12069,7 @@ static int image_setter(struct image *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ProductCodes\":[" ));
-		for (as = args->product_codes; *as > 0; ++as) {
+		for (as = args->product_codes; *as; ++as) {
 			if (as != args->product_codes)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -12499,7 +12499,7 @@ static int listener_setter(struct listener *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PolicyNames\":[" ));
-		for (as = args->policy_names; *as > 0; ++as) {
+		for (as = args->policy_names; *as; ++as) {
 			if (as != args->policy_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -12585,7 +12585,7 @@ static int listener_rule_setter(struct listener_rule *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
-		for (as = args->vm_ids; *as > 0; ++as) {
+		for (as = args->vm_ids; *as; ++as) {
 			if (as != args->vm_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -12663,7 +12663,7 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendIps\":[" ));
-		for (as = args->backend_ips; *as > 0; ++as) {
+		for (as = args->backend_ips; *as; ++as) {
 			if (as != args->backend_ips)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -12679,7 +12679,7 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendVmIds\":[" ));
-		for (as = args->backend_vm_ids; *as > 0; ++as) {
+		for (as = args->backend_vm_ids; *as; ++as) {
 			if (as != args->backend_vm_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -12770,7 +12770,7 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroups\":[" ));
-		for (as = args->security_groups; *as > 0; ++as) {
+		for (as = args->security_groups; *as; ++as) {
 			if (as != args->security_groups)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -12796,7 +12796,7 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Subnets\":[" ));
-		for (as = args->subnets; *as > 0; ++as) {
+		for (as = args->subnets; *as; ++as) {
 			if (as != args->subnets)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -12812,7 +12812,7 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":[" ));
-		for (as = args->subregion_names; *as > 0; ++as) {
+		for (as = args->subregion_names; *as; ++as) {
 			if (as != args->subregion_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -13138,7 +13138,7 @@ static int net_access_point_setter(struct net_access_point *args, struct osc_str
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteTableIds\":[" ));
-		for (as = args->route_table_ids; *as > 0; ++as) {
+		for (as = args->route_table_ids; *as; ++as) {
 			if (as != args->route_table_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -13448,7 +13448,7 @@ static int nic_for_vm_creation_setter(struct nic_for_vm_creation *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":[" ));
-		for (as = args->security_group_ids; *as > 0; ++as) {
+		for (as = args->security_group_ids; *as; ++as) {
 			if (as != args->security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -13674,7 +13674,7 @@ static int permissions_on_resource_setter(struct permissions_on_resource *args, 
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AccountIds\":[" ));
-		for (as = args->account_ids; *as > 0; ++as) {
+		for (as = args->account_ids; *as; ++as) {
 			if (as != args->account_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -13733,7 +13733,7 @@ static int phase1_options_setter(struct phase1_options *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IkeVersions\":[" ));
-		for (as = args->ike_versions; *as > 0; ++as) {
+		for (as = args->ike_versions; *as; ++as) {
 			if (as != args->ike_versions)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -13765,7 +13765,7 @@ static int phase1_options_setter(struct phase1_options *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Phase1EncryptionAlgorithms\":[" ));
-		for (as = args->phase1_encryption_algorithms; *as > 0; ++as) {
+		for (as = args->phase1_encryption_algorithms; *as; ++as) {
 			if (as != args->phase1_encryption_algorithms)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -13781,7 +13781,7 @@ static int phase1_options_setter(struct phase1_options *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Phase1IntegrityAlgorithms\":[" ));
-		for (as = args->phase1_integrity_algorithms; *as > 0; ++as) {
+		for (as = args->phase1_integrity_algorithms; *as; ++as) {
 			if (as != args->phase1_integrity_algorithms)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -13831,7 +13831,7 @@ static int phase2_options_setter(struct phase2_options *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Phase2EncryptionAlgorithms\":[" ));
-		for (as = args->phase2_encryption_algorithms; *as > 0; ++as) {
+		for (as = args->phase2_encryption_algorithms; *as; ++as) {
 			if (as != args->phase2_encryption_algorithms)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -13847,7 +13847,7 @@ static int phase2_options_setter(struct phase2_options *args, struct osc_str *da
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Phase2IntegrityAlgorithms\":[" ));
-		for (as = args->phase2_integrity_algorithms; *as > 0; ++as) {
+		for (as = args->phase2_integrity_algorithms; *as; ++as) {
 			if (as != args->phase2_integrity_algorithms)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -14564,7 +14564,7 @@ static int security_group_rule_setter(struct security_group_rule *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRanges\":[" ));
-		for (as = args->ip_ranges; *as > 0; ++as) {
+		for (as = args->ip_ranges; *as; ++as) {
 			if (as != args->ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -14598,7 +14598,7 @@ static int security_group_rule_setter(struct security_group_rule *args, struct o
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ServiceIds\":[" ));
-		for (as = args->service_ids; *as > 0; ++as) {
+		for (as = args->service_ids; *as; ++as) {
 			if (as != args->service_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -14678,7 +14678,7 @@ static int service_setter(struct service *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRanges\":[" ));
-		for (as = args->ip_ranges; *as > 0; ++as) {
+		for (as = args->ip_ranges; *as; ++as) {
 			if (as != args->ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -15224,7 +15224,7 @@ static int vm_setter(struct vm *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ProductCodes\":[" ));
-		for (as = args->product_codes; *as > 0; ++as) {
+		for (as = args->product_codes; *as; ++as) {
 			if (as != args->product_codes)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -15356,7 +15356,7 @@ static int vm_group_setter(struct vm_group *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":[" ));
-		for (as = args->security_group_ids; *as > 0; ++as) {
+		for (as = args->security_group_ids; *as; ++as) {
 			if (as != args->security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -15414,7 +15414,7 @@ static int vm_group_setter(struct vm_group *args, struct osc_str *data) {
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
-		for (as = args->vm_ids; *as > 0; ++as) {
+		for (as = args->vm_ids; *as; ++as) {
 			if (as != args->vm_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -16257,7 +16257,7 @@ static  int update_vm_data(struct osc_update_vm_arg *args, struct osc_str *data)
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":[" ));
-		for (as = args->security_group_ids; *as > 0; ++as) {
+		for (as = args->security_group_ids; *as; ++as) {
 			if (as != args->security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -16770,7 +16770,7 @@ static  int update_nic_data(struct osc_update_nic_arg *args, struct osc_str *dat
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":[" ));
-		for (as = args->security_group_ids; *as > 0; ++as) {
+		for (as = args->security_group_ids; *as; ++as) {
 			if (as != args->security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -16825,7 +16825,7 @@ static  int update_net_access_point_data(struct osc_update_net_access_point_arg 
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AddRouteTableIds\":[" ));
-		for (as = args->add_route_table_ids; *as > 0; ++as) {
+		for (as = args->add_route_table_ids; *as; ++as) {
 			if (as != args->add_route_table_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -16850,7 +16850,7 @@ static  int update_net_access_point_data(struct osc_update_net_access_point_arg 
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RemoveRouteTableIds\":[" ));
-		for (as = args->remove_route_table_ids; *as > 0; ++as) {
+		for (as = args->remove_route_table_ids; *as; ++as) {
 			if (as != args->remove_route_table_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -16991,7 +16991,7 @@ static  int update_load_balancer_data(struct osc_update_load_balancer_arg *args,
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PolicyNames\":[" ));
-		for (as = args->policy_names; *as > 0; ++as) {
+		for (as = args->policy_names; *as; ++as) {
 			if (as != args->policy_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -17016,7 +17016,7 @@ static  int update_load_balancer_data(struct osc_update_load_balancer_arg *args,
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroups\":[" ));
-		for (as = args->security_groups; *as > 0; ++as) {
+		for (as = args->security_groups; *as; ++as) {
 			if (as != args->security_groups)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -17407,7 +17407,7 @@ static  int update_api_access_rule_data(struct osc_update_api_access_rule_arg *a
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CaIds\":[" ));
-		for (as = args->ca_ids; *as > 0; ++as) {
+		for (as = args->ca_ids; *as; ++as) {
 			if (as != args->ca_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -17423,7 +17423,7 @@ static  int update_api_access_rule_data(struct osc_update_api_access_rule_arg *a
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Cns\":[" ));
-		for (as = args->cns; *as > 0; ++as) {
+		for (as = args->cns; *as; ++as) {
 			if (as != args->cns)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -17448,7 +17448,7 @@ static  int update_api_access_rule_data(struct osc_update_api_access_rule_arg *a
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRanges\":[" ));
-		for (as = args->ip_ranges; *as > 0; ++as) {
+		for (as = args->ip_ranges; *as; ++as) {
 			if (as != args->ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -17554,7 +17554,7 @@ static  int update_account_data(struct osc_update_account_arg *args, struct osc_
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AdditionalEmails\":[" ));
-		for (as = args->additional_emails; *as > 0; ++as) {
+		for (as = args->additional_emails; *as; ++as) {
 			if (as != args->additional_emails)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -17951,7 +17951,7 @@ static  int unlink_private_ips_data(struct osc_unlink_private_ips_arg *args, str
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIps\":[" ));
-		for (as = args->private_ips; *as > 0; ++as) {
+		for (as = args->private_ips; *as; ++as) {
 			if (as != args->private_ips)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -18107,7 +18107,7 @@ static  int unlink_load_balancer_backend_machines_data(struct osc_unlink_load_ba
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendIps\":[" ));
-		for (as = args->backend_ips; *as > 0; ++as) {
+		for (as = args->backend_ips; *as; ++as) {
 			if (as != args->backend_ips)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -18123,7 +18123,7 @@ static  int unlink_load_balancer_backend_machines_data(struct osc_unlink_load_ba
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendVmIds\":[" ));
-		for (as = args->backend_vm_ids; *as > 0; ++as) {
+		for (as = args->backend_vm_ids; *as; ++as) {
 			if (as != args->backend_vm_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -18296,7 +18296,7 @@ static  int stop_vms_data(struct osc_stop_vms_arg *args, struct osc_str *data)
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
-		for (as = args->vm_ids; *as > 0; ++as) {
+		for (as = args->vm_ids; *as; ++as) {
 			if (as != args->vm_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -18355,7 +18355,7 @@ static  int start_vms_data(struct osc_start_vms_arg *args, struct osc_str *data)
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
-		for (as = args->vm_ids; *as > 0; ++as) {
+		for (as = args->vm_ids; *as; ++as) {
 			if (as != args->vm_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -18611,7 +18611,7 @@ static  int register_vms_in_load_balancer_data(struct osc_register_vms_in_load_b
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendVmIds\":[" ));
-		for (as = args->backend_vm_ids; *as > 0; ++as) {
+		for (as = args->backend_vm_ids; *as; ++as) {
 			if (as != args->backend_vm_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -18679,7 +18679,7 @@ static  int reboot_vms_data(struct osc_reboot_vms_arg *args, struct osc_str *dat
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
-		for (as = args->vm_ids; *as > 0; ++as) {
+		for (as = args->vm_ids; *as; ++as) {
 			if (as != args->vm_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -18915,7 +18915,7 @@ static  int read_vms_health_data(struct osc_read_vms_health_arg *args, struct os
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendVmIds\":[" ));
-		for (as = args->backend_vm_ids; *as > 0; ++as) {
+		for (as = args->backend_vm_ids; *as; ++as) {
 			if (as != args->backend_vm_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -20734,7 +20734,7 @@ static  int read_load_balancer_tags_data(struct osc_read_load_balancer_tags_arg 
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerNames\":[" ));
-		for (as = args->load_balancer_names; *as > 0; ++as) {
+		for (as = args->load_balancer_names; *as; ++as) {
 			if (as != args->load_balancer_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -22323,7 +22323,7 @@ static  int link_private_ips_data(struct osc_link_private_ips_arg *args, struct 
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIps\":[" ));
-		for (as = args->private_ips; *as > 0; ++as) {
+		for (as = args->private_ips; *as; ++as) {
 			if (as != args->private_ips)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -22492,7 +22492,7 @@ static  int link_load_balancer_backend_machines_data(struct osc_link_load_balanc
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendIps\":[" ));
-		for (as = args->backend_ips; *as > 0; ++as) {
+		for (as = args->backend_ips; *as; ++as) {
 			if (as != args->backend_ips)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -22508,7 +22508,7 @@ static  int link_load_balancer_backend_machines_data(struct osc_link_load_balanc
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendVmIds\":[" ));
-		for (as = args->backend_vm_ids; *as > 0; ++as) {
+		for (as = args->backend_vm_ids; *as; ++as) {
 			if (as != args->backend_vm_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -22678,7 +22678,7 @@ static  int deregister_vms_in_load_balancer_data(struct osc_deregister_vms_in_lo
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BackendVmIds\":[" ));
-		for (as = args->backend_vm_ids; *as > 0; ++as) {
+		for (as = args->backend_vm_ids; *as; ++as) {
 			if (as != args->backend_vm_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -22895,7 +22895,7 @@ static  int delete_vms_data(struct osc_delete_vms_arg *args, struct osc_str *dat
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
-		for (as = args->vm_ids; *as > 0; ++as) {
+		for (as = args->vm_ids; *as; ++as) {
 			if (as != args->vm_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -23146,7 +23146,7 @@ static  int delete_tags_data(struct osc_delete_tags_arg *args, struct osc_str *d
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ResourceIds\":[" ));
-		for (as = args->resource_ids; *as > 0; ++as) {
+		for (as = args->resource_ids; *as; ++as) {
 			if (as != args->resource_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -24010,7 +24010,7 @@ static  int delete_load_balancer_tags_data(struct osc_delete_load_balancer_tags_
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerNames\":[" ));
-		for (as = args->load_balancer_names; *as > 0; ++as) {
+		for (as = args->load_balancer_names; *as; ++as) {
 			if (as != args->load_balancer_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -25204,7 +25204,7 @@ static  int create_vms_data(struct osc_create_vms_arg *args, struct osc_str *dat
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"PrivateIps\":[" ));
-		for (as = args->private_ips; *as > 0; ++as) {
+		for (as = args->private_ips; *as; ++as) {
 			if (as != args->private_ips)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -25220,7 +25220,7 @@ static  int create_vms_data(struct osc_create_vms_arg *args, struct osc_str *dat
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":[" ));
-		for (as = args->security_group_ids; *as > 0; ++as) {
+		for (as = args->security_group_ids; *as; ++as) {
 			if (as != args->security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -25236,7 +25236,7 @@ static  int create_vms_data(struct osc_create_vms_arg *args, struct osc_str *dat
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroups\":[" ));
-		for (as = args->security_groups; *as > 0; ++as) {
+		for (as = args->security_groups; *as; ++as) {
 			if (as != args->security_groups)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -25424,7 +25424,7 @@ static  int create_vm_group_data(struct osc_create_vm_group_arg *args, struct os
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":[" ));
-		for (as = args->security_group_ids; *as > 0; ++as) {
+		for (as = args->security_group_ids; *as; ++as) {
 			if (as != args->security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -25621,7 +25621,7 @@ static  int create_tags_data(struct osc_create_tags_arg *args, struct osc_str *d
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ResourceIds\":[" ));
-		for (as = args->resource_ids; *as > 0; ++as) {
+		for (as = args->resource_ids; *as; ++as) {
 			if (as != args->resource_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -26472,7 +26472,7 @@ static  int create_nic_data(struct osc_create_nic_arg *args, struct osc_str *dat
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroupIds\":[" ));
-		for (as = args->security_group_ids; *as > 0; ++as) {
+		for (as = args->security_group_ids; *as; ++as) {
 			if (as != args->security_group_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -26594,7 +26594,7 @@ static  int create_net_access_point_data(struct osc_create_net_access_point_arg 
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"RouteTableIds\":[" ));
-		for (as = args->route_table_ids; *as > 0; ++as) {
+		for (as = args->route_table_ids; *as; ++as) {
 			if (as != args->route_table_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -26764,7 +26764,7 @@ static  int create_load_balancer_tags_data(struct osc_create_load_balancer_tags_
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LoadBalancerNames\":[" ));
-		for (as = args->load_balancer_names; *as > 0; ++as) {
+		for (as = args->load_balancer_names; *as; ++as) {
 			if (as != args->load_balancer_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -27007,7 +27007,7 @@ static  int create_load_balancer_data(struct osc_create_load_balancer_arg *args,
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SecurityGroups\":[" ));
-		for (as = args->security_groups; *as > 0; ++as) {
+		for (as = args->security_groups; *as; ++as) {
 			if (as != args->security_groups)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -27023,7 +27023,7 @@ static  int create_load_balancer_data(struct osc_create_load_balancer_arg *args,
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Subnets\":[" ));
-		for (as = args->subnets; *as > 0; ++as) {
+		for (as = args->subnets; *as; ++as) {
 			if (as != args->subnets)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -27039,7 +27039,7 @@ static  int create_load_balancer_data(struct osc_create_load_balancer_arg *args,
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"SubregionNames\":[" ));
-		for (as = args->subregion_names; *as > 0; ++as) {
+		for (as = args->subregion_names; *as; ++as) {
 			if (as != args->subregion_names)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -27136,7 +27136,7 @@ static  int create_listener_rule_data(struct osc_create_listener_rule_arg *args,
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
-		for (as = args->vm_ids; *as > 0; ++as) {
+		for (as = args->vm_ids; *as; ++as) {
 			if (as != args->vm_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -27391,7 +27391,7 @@ static  int create_image_data(struct osc_create_image_arg *args, struct osc_str 
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"ProductCodes\":[" ));
-		for (as = args->product_codes; *as > 0; ++as) {
+		for (as = args->product_codes; *as; ++as) {
 			if (as != args->product_codes)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -27649,7 +27649,7 @@ static  int create_dhcp_options_data(struct osc_create_dhcp_options_arg *args, s
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"DomainNameServers\":[" ));
-		for (as = args->domain_name_servers; *as > 0; ++as) {
+		for (as = args->domain_name_servers; *as; ++as) {
 			if (as != args->domain_name_servers)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -27669,7 +27669,7 @@ static  int create_dhcp_options_data(struct osc_create_dhcp_options_arg *args, s
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"LogServers\":[" ));
-		for (as = args->log_servers; *as > 0; ++as) {
+		for (as = args->log_servers; *as; ++as) {
 			if (as != args->log_servers)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -27685,7 +27685,7 @@ static  int create_dhcp_options_data(struct osc_create_dhcp_options_arg *args, s
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"NtpServers\":[" ));
-		for (as = args->ntp_servers; *as > 0; ++as) {
+		for (as = args->ntp_servers; *as; ++as) {
 			if (as != args->ntp_servers)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -27907,7 +27907,7 @@ static  int create_api_access_rule_data(struct osc_create_api_access_rule_arg *a
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"CaIds\":[" ));
-		for (as = args->ca_ids; *as > 0; ++as) {
+		for (as = args->ca_ids; *as; ++as) {
 			if (as != args->ca_ids)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -27923,7 +27923,7 @@ static  int create_api_access_rule_data(struct osc_create_api_access_rule_arg *a
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"Cns\":[" ));
-		for (as = args->cns; *as > 0; ++as) {
+		for (as = args->cns; *as; ++as) {
 			if (as != args->cns)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -27948,7 +27948,7 @@ static  int create_api_access_rule_data(struct osc_create_api_access_rule_arg *a
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"IpRanges\":[" ));
-		for (as = args->ip_ranges; *as > 0; ++as) {
+		for (as = args->ip_ranges; *as; ++as) {
 			if (as != args->ip_ranges)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);
@@ -28003,7 +28003,7 @@ static  int create_account_data(struct osc_create_account_arg *args, struct osc_
 
 	   	TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"AdditionalEmails\":[" ));
-		for (as = args->additional_emails; *as > 0; ++as) {
+		for (as = args->additional_emails; *as; ++as) {
 			if (as != args->additional_emails)
 				STRY(osc_str_append_string(data, "," ));
 			ARG_TO_JSON_STR("", *as);

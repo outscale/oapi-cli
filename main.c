@@ -133,28 +133,32 @@ char *read_file(char *files_cnt[static MAX_FILES_PER_CMD], char *file_name,
 	}
 	if (fseek(f, 0, SEEK_END) < 0) {
 		fprintf(stderr, "%s fseek fail for %s", call_name, file_name);
-		return NULL;
+		goto error;
 	}
 	long fsize = ftell(f);
 	if (fseek(f, 0, SEEK_SET) < 0) {
 		fprintf(stderr, "%s fseek fail for %s", call_name, file_name);
-		return NULL;
+		goto error;
 	}
 
 	files_cnt[dest] = malloc(fsize + 1);
 	if (!files_cnt[dest]) {
 		fprintf(stderr, "%s malloc fail for %s", call_name, file_name);
-		return NULL;
+		goto error;
 	}
-	if (fread(files_cnt[dest], fsize, 1, f) < 0) {
+	fread(files_cnt[dest], fsize, 1, f);
+	if (ferror(f)) {
 		fprintf(stderr, "%s fread fail for %s", call_name, file_name);
-		return NULL;
+		goto error;
 	}
 	fclose(f);
 	files_cnt[dest][fsize] = 0;
 	if (is_json)
 		return string_to_jsonstr(&files_cnt[dest]);
 	return files_cnt[dest];
+error:
+	fclose(f);
+	return NULL;
 }
 
 
@@ -9947,6 +9951,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -10096,6 +10101,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -10233,6 +10239,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -10390,6 +10397,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -10558,6 +10566,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -10825,6 +10834,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -10951,6 +10961,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -11071,6 +11082,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -11198,6 +11210,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -11324,6 +11337,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -11439,6 +11453,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -11570,6 +11585,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -11740,6 +11756,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -11891,6 +11908,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -12021,6 +12039,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -12136,6 +12155,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -12361,6 +12381,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -12487,6 +12508,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -12614,6 +12636,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -12734,6 +12757,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -12849,6 +12873,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -12964,6 +12989,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -13079,6 +13105,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -13233,6 +13260,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -13353,6 +13381,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -13591,6 +13620,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -13728,6 +13758,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -13848,6 +13879,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -13963,6 +13995,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -14067,6 +14100,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -14182,6 +14216,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -14299,6 +14334,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -14414,6 +14450,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -14518,6 +14555,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -14648,6 +14686,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -14763,6 +14802,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -14867,6 +14907,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -14989,6 +15030,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -15095,6 +15137,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -15194,6 +15237,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -15309,6 +15353,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -15424,6 +15469,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -15528,6 +15574,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -15645,6 +15692,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -15751,6 +15799,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -15889,6 +15938,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -16027,6 +16077,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -16159,6 +16210,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -16276,6 +16328,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -16414,6 +16467,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -16530,6 +16584,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -16646,6 +16701,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -16762,6 +16818,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -16900,6 +16957,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -16993,6 +17051,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -17109,6 +17168,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -17225,6 +17285,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -17341,6 +17402,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -17457,6 +17519,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -17573,6 +17636,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -17689,6 +17753,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -17805,6 +17870,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -17909,6 +17975,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -18047,6 +18114,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -18140,6 +18208,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -18256,6 +18325,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -18394,6 +18464,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -18487,6 +18558,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -18580,6 +18652,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -18696,6 +18769,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -18806,6 +18880,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -18905,6 +18980,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -18993,6 +19069,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -19131,6 +19208,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -19247,6 +19325,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -19363,6 +19442,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -19501,6 +19581,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -19639,6 +19720,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -19755,6 +19837,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -19893,6 +19976,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -19986,6 +20070,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -20102,6 +20187,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -20208,6 +20294,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -20324,6 +20411,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -20473,6 +20561,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -20589,6 +20678,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -20705,6 +20795,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -20843,6 +20934,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -20959,6 +21051,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -21075,6 +21168,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -21168,6 +21262,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -21284,6 +21379,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -21400,6 +21496,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -21538,6 +21635,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -21654,6 +21752,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -21801,6 +21900,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -21905,6 +22005,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -22021,6 +22122,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -22137,6 +22239,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -22230,6 +22333,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -22346,6 +22450,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -22507,6 +22612,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -22623,6 +22729,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -22716,6 +22823,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -22820,6 +22928,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -22913,6 +23022,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -23040,6 +23150,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -23166,6 +23277,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -23281,6 +23393,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -23396,6 +23509,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -23560,6 +23674,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -23704,6 +23819,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -23819,6 +23935,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -23945,6 +24062,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -24075,6 +24193,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -24190,6 +24309,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -24305,6 +24425,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -24422,6 +24543,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -24537,6 +24659,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -24641,6 +24764,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -24745,6 +24869,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -24851,6 +24976,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -24955,6 +25081,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -25059,6 +25186,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -25163,6 +25291,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -25267,6 +25396,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -25404,6 +25534,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -25508,6 +25639,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -25612,6 +25744,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -25716,6 +25849,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -25928,6 +26062,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -26043,6 +26178,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -26147,6 +26283,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -26262,6 +26399,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -26377,6 +26515,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -26476,6 +26615,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -26580,6 +26720,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -26684,6 +26825,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -26788,6 +26930,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -26892,6 +27035,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -26996,6 +27140,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -27100,6 +27245,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -27237,6 +27383,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -27352,6 +27499,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -27469,6 +27617,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -27573,6 +27722,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -27677,6 +27827,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -27781,6 +27932,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -27885,6 +28037,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -27989,6 +28142,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -28093,6 +28247,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -28197,6 +28352,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -28301,6 +28457,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -28405,6 +28562,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -28509,6 +28667,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -28629,6 +28788,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -28733,6 +28893,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -28837,6 +28998,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -28941,6 +29103,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -29056,6 +29219,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -29171,6 +29335,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -29313,6 +29478,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -29461,6 +29627,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -29852,6 +30019,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -30064,6 +30232,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -30267,6 +30436,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -30371,6 +30541,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -30486,6 +30657,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -30623,6 +30795,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -30749,6 +30922,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -30876,6 +31050,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -31035,6 +31210,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -31183,6 +31359,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -31395,6 +31572,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -31521,6 +31699,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -31625,6 +31804,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -31795,6 +31975,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -31888,6 +32069,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -32003,6 +32185,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -32118,6 +32301,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -32255,6 +32439,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -32414,6 +32599,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -32529,6 +32715,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -32657,6 +32844,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -32772,6 +32960,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -32887,6 +33076,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -33024,6 +33214,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -33172,6 +33363,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -33307,6 +33499,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -33534,6 +33727,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -33686,6 +33880,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -33801,6 +33996,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -33894,6 +34090,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -34021,6 +34218,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -34262,6 +34460,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -34404,6 +34603,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -34531,6 +34731,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -34657,6 +34858,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -34800,6 +35002,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -34926,6 +35129,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -35052,6 +35256,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -35167,6 +35372,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -35310,6 +35516,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -35559,6 +35766,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -35674,6 +35882,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");
@@ -35789,6 +35998,7 @@ int main(int ac, char **av)
 			     int aret = 0;
 			     int incr = aa ? 2 : 1;
 
+			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				if (!strcmp(aa, "--file")) {
 				   	TRY(i + 3 >= ac, "file name require");

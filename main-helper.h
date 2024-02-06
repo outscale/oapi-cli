@@ -22,9 +22,10 @@ struct ptr_array {
 			int oidx = ptr_array_get_idx(pa, s->a);		\
 			s->a = osc_realloc(s->a, sz * size);		\
 			CHK_BAD_RET(!s->a, "allocation fail\n");	\
-			if (oidx < 0)					\
-				ptr_array_append(pa, s->a);		\
-			else {						\
+			if (oidx < 0) {					\
+			        CHK_BAD_RET(ptr_array_append(pa, s->a) < 0, \
+					    "ptr_array_append fail");	\
+			} else {					\
 				pa->ptrs[oidx] = s->a;			\
 				s->a = pa->ptrs[oidx];			\
 			}						\
@@ -60,7 +61,10 @@ static inline int ptr_array_append(struct ptr_array *pa, void *ptr)
 		pa->size += 64;
 		pa->ptrs = realloc(old, pa->size);
 		if (!pa->ptrs) {
+			/* if realloc return NULL. old is left untouched */
+			#pragma GCC diagnostic ignored "-Wuse-after-free"
 			free(old);
+			#pragma GCC diagnostic pop
 			return -1;
 		}
 	}
