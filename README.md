@@ -127,7 +127,7 @@ export OSC_ENDPOINT_API=XXX
 
 ```bash
 brew tap outscale/tap
-brew install outscale/tap/oapi-cli  
+brew install outscale/tap/oapi-cli
 ```
 or if you want to clone the homebrew repo:
 
@@ -141,7 +141,7 @@ brew install Formula/oapi-cli.rb
 
 oapi-cli is pre-packaged for Linux as a standalone AppImage.
 Download oapi-cli-x86_64.AppImage from [nightly build](https://github.com/outscale/oapi-cli/releases/tag/nightly-linux).
-Allow file to be executed by running 
+Allow file to be executed by running
 `chmod a+x ./oapi-cli-x86_64.AppImage`
 
 Run oapi-cli: `./oapi-cli-x86_64.AppImage`
