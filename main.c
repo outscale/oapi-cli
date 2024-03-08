@@ -58,9 +58,23 @@
 
 #define TRY(f, args...)						\
 	do {							\
-		if (f) {fprintf(stderr, args);  return 1;}	\
+		if (f) {fprintf(stderr, args);  return -1;}	\
 	} while(0)
 
+
+#define VAR_NAME_SIZE 128
+#define VAR_VAL_SIZE 512
+#define VAR_ARRAY_SIZE 128
+
+static int nb_cli_vars;
+
+struct cli_var {
+	char name[VAR_NAME_SIZE];
+	char val[VAR_VAL_SIZE];
+} cli_vars[VAR_ARRAY_SIZE];
+
+static void *cascade_struct;
+static int (*cascade_parser)(void *, char *, char *, struct ptr_array *);
 
 static int argcmp2(const char *s1, const char *s2, char dst)
 {
@@ -109,6 +123,55 @@ char *string_to_jsonstr(char **file_str_p)
 	free(in);
 	*file_str_p = s.buf;
 	return *file_str_p;
+}
+
+static int parse_variable(json_object *jobj, char **av, int ac, int i)
+{
+	const char *tmp = av[i + 1];
+	const char *tmp2;
+	TRY(nb_cli_vars >= VAR_ARRAY_SIZE, "variable asignement fail: too much variables");
+	struct cli_var *var = &cli_vars[nb_cli_vars++];
+	json_object *j = jobj;
+	char buf[512];
+
+	tmp2 = strchr(tmp, '=');
+	TRY(!tmp2, "variable asignement fail (missing '='))\n");
+	TRY((uintptr_t)(tmp2 - tmp) >= VAR_NAME_SIZE, "var name too long");
+	strncpy(var->name, tmp, tmp2 - tmp);
+	var->name[tmp2 - tmp] = 0;
+	tmp = tmp2 + 1;
+
+	while ((tmp2 = strchr(tmp, '.')) != NULL) {
+		char *end = NULL;
+		// get json
+		int idx = strtoul(tmp, &end, 0);
+		if (end != tmp) {
+			j = json_object_array_get_idx(j, idx);
+		} else {
+			TRY((uintptr_t)(tmp2 - tmp) >= sizeof buf - 1,
+			    "variable asignement fail");
+			strncpy(buf, tmp, tmp2 - tmp);
+			buf[tmp2 - tmp] = 0;
+			j = json_object_object_get(j, buf);
+		}
+		TRY(!j, "variable asignement fail (not found)");
+		tmp = tmp2 + 1;
+	}
+	tmp2 = tmp + strlen(tmp);
+	TRY((uintptr_t)(tmp2 - tmp) >= sizeof buf - 1,
+	    "variable asignement fail");
+	strncpy(buf, tmp, tmp2 - tmp);
+	buf[tmp2 - tmp] = 0;
+	j = json_object_object_get(j, buf);
+	if (json_object_is_type(j, json_type_string)) {
+		tmp = json_object_get_string(j);
+	} else {
+		tmp = json_object_to_json_string_ext(j, JSON_C_TO_STRING_PLAIN);
+	}
+	TRY(strlen(tmp) >= VAR_VAL_SIZE, "variable asignement fail: value too big");
+	strcpy(var->val, tmp);
+	return 0;
+
 }
 
 char *read_file(char *files_cnt[static MAX_FILES_PER_CMD], char *file_name,
@@ -160,10 +223,6 @@ error:
 	fclose(f);
 	return NULL;
 }
-
-
-static void *cascade_struct;
-static int (*cascade_parser)(void *, char *, char *, struct ptr_array *);
 
 int accepter_net_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int access_key_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -9826,7 +9885,7 @@ int main(int ac, char **av)
 
 	if (ac < 2 || (ac == 2 && !strcmp(av[1], "--help"))) {
 	show_help:
-                printf("Usage: %s [--help] CallName [options] [--Params <param_argument | [--file | --jsonstr-file] <file_name>>]\n"
+                printf("Usage: %s [--help] CallName [options] [--Params <param_argument | [--file | --jsonstr-file] <file_name>>] | --var <variable_name>\n"
                        "options:\n"
                        "\t    --auth-method=METHODE set authentification method, password|accesskey|none\n"
                        "\t    --color               try to colorize json if json-c support it\n"
@@ -9834,6 +9893,10 @@ int main(int ac, char **av)
 		       "\t    --file PATH           use content of PATH as an agrument for a call, example:\n"
 		       "\t\t\t\toapi-cli CreateCa  --CaPem --file /$CA_DIR/cert.pem\n"
 		       "\t    --jsonstr-file PATH   same as --file, except the content is surrounded by \"\n"
+		       "\t    --set-var ID=VARIABLE_PATH  Create an oapi-cli variable, that can be use with --var\n"
+		       "\t\t\t\tExamples: ./oapi-cli ReadVms --Filters.TagValues[] VM_NAME --set-var id=Vms.0.VmId ReadVms --Filters.VmIds[] --var id\n"
+		       "\t\t\t\twill find the vm with VM_NAME as it's tag, and read it again, but using it's VmId as filter this time\n"
+		       "\t    --var                 use variabble content created by --set-var\n"
 		       "\t\t\t\tand \" inside the file are escape with a \\, this option is useful for CreatePolicy\n"
                        "\t-h, --help [CallName]     this, can be used with call name, example:\n\t\t\t\t%s --help ReadVms\n"
                        "\t    --list-calls          list all calls\n"
@@ -9912,7 +9975,7 @@ int main(int ac, char **av)
 			color_flag |= JSON_C_TO_STRING_COLOR;
 		} else
               if (!strcmp("UpdateVpnConnection", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_vpn_connection_arg a = {0};
@@ -9944,7 +10007,7 @@ int main(int ac, char **av)
 		       	   goto update_vpn_connection_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -9963,7 +10026,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -10050,6 +10124,7 @@ int main(int ac, char **av)
 		     cret = osc_update_vpn_connection(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateVpnConnection: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10057,12 +10132,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateVolume", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_volume_arg a = {0};
@@ -10094,7 +10182,7 @@ int main(int ac, char **av)
 		       	   goto update_volume_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -10113,7 +10201,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -10188,6 +10287,7 @@ int main(int ac, char **av)
 		     cret = osc_update_volume(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateVolume: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10195,12 +10295,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateVmTemplate", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_vm_template_arg a = {0};
@@ -10232,7 +10345,7 @@ int main(int ac, char **av)
 		       	   goto update_vm_template_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -10251,7 +10364,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -10346,6 +10470,7 @@ int main(int ac, char **av)
 		     cret = osc_update_vm_template(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateVmTemplate: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10353,12 +10478,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateVmGroup", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_vm_group_arg a = {0};
@@ -10390,7 +10528,7 @@ int main(int ac, char **av)
 		       	   goto update_vm_group_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -10409,7 +10547,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -10515,6 +10664,7 @@ int main(int ac, char **av)
 		     cret = osc_update_vm_group(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateVmGroup: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10522,12 +10672,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateVm", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_vm_arg a = {0};
@@ -10559,7 +10722,7 @@ int main(int ac, char **av)
 		       	   goto update_vm_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -10578,7 +10741,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -10783,6 +10957,7 @@ int main(int ac, char **av)
 		     cret = osc_update_vm(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateVm: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10790,12 +10965,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateUser", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_user_arg a = {0};
@@ -10827,7 +11015,7 @@ int main(int ac, char **av)
 		       	   goto update_user_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -10846,7 +11034,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -10910,6 +11109,7 @@ int main(int ac, char **av)
 		     cret = osc_update_user(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateUser: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -10917,12 +11117,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateSubnet", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_subnet_arg a = {0};
@@ -10954,7 +11167,7 @@ int main(int ac, char **av)
 		       	   goto update_subnet_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -10973,7 +11186,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -11031,6 +11255,7 @@ int main(int ac, char **av)
 		     cret = osc_update_subnet(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateSubnet: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11038,12 +11263,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateSnapshot", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_snapshot_arg a = {0};
@@ -11075,7 +11313,7 @@ int main(int ac, char **av)
 		       	   goto update_snapshot_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -11094,7 +11332,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -11159,6 +11408,7 @@ int main(int ac, char **av)
 		     cret = osc_update_snapshot(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateSnapshot: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11166,12 +11416,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateServerCertificate", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_server_certificate_arg a = {0};
@@ -11203,7 +11466,7 @@ int main(int ac, char **av)
 		       	   goto update_server_certificate_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -11222,7 +11485,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -11286,6 +11560,7 @@ int main(int ac, char **av)
 		     cret = osc_update_server_certificate(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateServerCertificate: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11293,12 +11568,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateRouteTableLink", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_route_table_link_arg a = {0};
@@ -11330,7 +11618,7 @@ int main(int ac, char **av)
 		       	   goto update_route_table_link_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -11349,7 +11637,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -11402,6 +11701,7 @@ int main(int ac, char **av)
 		     cret = osc_update_route_table_link(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateRouteTableLink: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11409,12 +11709,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateRoutePropagation", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_route_propagation_arg a = {0};
@@ -11446,7 +11759,7 @@ int main(int ac, char **av)
 		       	   goto update_route_propagation_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -11465,7 +11778,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -11534,6 +11858,7 @@ int main(int ac, char **av)
 		     cret = osc_update_route_propagation(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateRoutePropagation: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11541,12 +11866,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateRoute", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_route_arg a = {0};
@@ -11578,7 +11916,7 @@ int main(int ac, char **av)
 		       	   goto update_route_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -11597,7 +11935,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -11705,6 +12054,7 @@ int main(int ac, char **av)
 		     cret = osc_update_route(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateRoute: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11712,12 +12062,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateNic", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_nic_arg a = {0};
@@ -11749,7 +12112,7 @@ int main(int ac, char **av)
 		       	   goto update_nic_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -11768,7 +12131,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -11857,6 +12231,7 @@ int main(int ac, char **av)
 		     cret = osc_update_nic(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateNic: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11864,12 +12239,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateNetAccessPoint", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_net_access_point_arg a = {0};
@@ -11901,7 +12289,7 @@ int main(int ac, char **av)
 		       	   goto update_net_access_point_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -11920,7 +12308,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -11988,6 +12387,7 @@ int main(int ac, char **av)
 		     cret = osc_update_net_access_point(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateNetAccessPoint: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -11995,12 +12395,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateNet", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_net_arg a = {0};
@@ -12032,7 +12445,7 @@ int main(int ac, char **av)
 		       	   goto update_net_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -12051,7 +12464,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -12104,6 +12528,7 @@ int main(int ac, char **av)
 		     cret = osc_update_net(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateNet: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12111,12 +12536,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateLoadBalancer", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_load_balancer_arg a = {0};
@@ -12148,7 +12586,7 @@ int main(int ac, char **av)
 		       	   goto update_load_balancer_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -12167,7 +12605,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -12330,6 +12779,7 @@ int main(int ac, char **av)
 		     cret = osc_update_load_balancer(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateLoadBalancer: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12337,12 +12787,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateListenerRule", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_listener_rule_arg a = {0};
@@ -12374,7 +12837,7 @@ int main(int ac, char **av)
 		       	   goto update_listener_rule_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -12393,7 +12856,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -12457,6 +12931,7 @@ int main(int ac, char **av)
 		     cret = osc_update_listener_rule(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateListenerRule: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12464,12 +12939,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateImage", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_image_arg a = {0};
@@ -12501,7 +12989,7 @@ int main(int ac, char **av)
 		       	   goto update_image_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -12520,7 +13008,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -12585,6 +13084,7 @@ int main(int ac, char **av)
 		     cret = osc_update_image(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateImage: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12592,12 +13092,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateFlexibleGpu", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_flexible_gpu_arg a = {0};
@@ -12629,7 +13142,7 @@ int main(int ac, char **av)
 		       	   goto update_flexible_gpu_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -12648,7 +13161,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -12706,6 +13230,7 @@ int main(int ac, char **av)
 		     cret = osc_update_flexible_gpu(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateFlexibleGpu: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12713,12 +13238,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateDirectLinkInterface", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_direct_link_interface_arg a = {0};
@@ -12750,7 +13288,7 @@ int main(int ac, char **av)
 		       	   goto update_direct_link_interface_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -12769,7 +13307,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -12822,6 +13371,7 @@ int main(int ac, char **av)
 		     cret = osc_update_direct_link_interface(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateDirectLinkInterface: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12829,12 +13379,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateDedicatedGroup", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_dedicated_group_arg a = {0};
@@ -12866,7 +13429,7 @@ int main(int ac, char **av)
 		       	   goto update_dedicated_group_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -12885,7 +13448,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -12938,6 +13512,7 @@ int main(int ac, char **av)
 		     cret = osc_update_dedicated_group(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateDedicatedGroup: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -12945,12 +13520,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateCa", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_ca_arg a = {0};
@@ -12982,7 +13570,7 @@ int main(int ac, char **av)
 		       	   goto update_ca_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -13001,7 +13589,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -13054,6 +13653,7 @@ int main(int ac, char **av)
 		     cret = osc_update_ca(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateCa: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13061,12 +13661,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateApiAccessRule", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_api_access_rule_arg a = {0};
@@ -13098,7 +13711,7 @@ int main(int ac, char **av)
 		       	   goto update_api_access_rule_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -13117,7 +13730,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -13209,6 +13833,7 @@ int main(int ac, char **av)
 		     cret = osc_update_api_access_rule(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateApiAccessRule: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13216,12 +13841,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateApiAccessPolicy", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_api_access_policy_arg a = {0};
@@ -13253,7 +13891,7 @@ int main(int ac, char **av)
 		       	   goto update_api_access_policy_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -13272,7 +13910,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -13330,6 +13979,7 @@ int main(int ac, char **av)
 		     cret = osc_update_api_access_policy(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateApiAccessPolicy: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13337,12 +13987,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateAccount", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_account_arg a = {0};
@@ -13374,7 +14037,7 @@ int main(int ac, char **av)
 		       	   goto update_account_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -13393,7 +14056,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -13569,6 +14243,7 @@ int main(int ac, char **av)
 		     cret = osc_update_account(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateAccount: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13576,12 +14251,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UpdateAccessKey", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_update_access_key_arg a = {0};
@@ -13613,7 +14301,7 @@ int main(int ac, char **av)
 		       	   goto update_access_key_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -13632,7 +14320,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -13707,6 +14406,7 @@ int main(int ac, char **av)
 		     cret = osc_update_access_key(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateAccessKey: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13714,12 +14414,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UnlinkVolume", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_volume_arg a = {0};
@@ -13751,7 +14464,7 @@ int main(int ac, char **av)
 		       	   goto unlink_volume_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -13770,7 +14483,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -13828,6 +14552,7 @@ int main(int ac, char **av)
 		     cret = osc_unlink_volume(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkVolume: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13835,12 +14560,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UnlinkVirtualGateway", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_virtual_gateway_arg a = {0};
@@ -13872,7 +14610,7 @@ int main(int ac, char **av)
 		       	   goto unlink_virtual_gateway_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -13891,7 +14629,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -13944,6 +14693,7 @@ int main(int ac, char **av)
 		     cret = osc_unlink_virtual_gateway(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkVirtualGateway: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -13951,12 +14701,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UnlinkRouteTable", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_route_table_arg a = {0};
@@ -13988,7 +14751,7 @@ int main(int ac, char **av)
 		       	   goto unlink_route_table_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -14007,7 +14770,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -14049,6 +14823,7 @@ int main(int ac, char **av)
 		     cret = osc_unlink_route_table(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkRouteTable: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14056,12 +14831,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UnlinkPublicIp", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_public_ip_arg a = {0};
@@ -14093,7 +14881,7 @@ int main(int ac, char **av)
 		       	   goto unlink_public_ip_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -14112,7 +14900,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -14165,6 +14964,7 @@ int main(int ac, char **av)
 		     cret = osc_unlink_public_ip(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkPublicIp: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14172,12 +14972,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UnlinkPrivateIps", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_private_ips_arg a = {0};
@@ -14209,7 +15022,7 @@ int main(int ac, char **av)
 		       	   goto unlink_private_ips_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -14228,7 +15041,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -14283,6 +15107,7 @@ int main(int ac, char **av)
 		     cret = osc_unlink_private_ips(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkPrivateIps: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14290,12 +15115,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UnlinkPolicy", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_policy_arg a = {0};
@@ -14327,7 +15165,7 @@ int main(int ac, char **av)
 		       	   goto unlink_policy_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -14346,7 +15184,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -14399,6 +15248,7 @@ int main(int ac, char **av)
 		     cret = osc_unlink_policy(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkPolicy: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14406,12 +15256,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UnlinkNic", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_nic_arg a = {0};
@@ -14443,7 +15306,7 @@ int main(int ac, char **av)
 		       	   goto unlink_nic_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -14462,7 +15325,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -14504,6 +15378,7 @@ int main(int ac, char **av)
 		     cret = osc_unlink_nic(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkNic: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14511,12 +15386,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UnlinkLoadBalancerBackendMachines", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_load_balancer_backend_machines_arg a = {0};
@@ -14548,7 +15436,7 @@ int main(int ac, char **av)
 		       	   goto unlink_load_balancer_backend_machines_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -14567,7 +15455,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -14635,6 +15534,7 @@ int main(int ac, char **av)
 		     cret = osc_unlink_load_balancer_backend_machines(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkLoadBalancerBackendMachines: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14642,12 +15542,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UnlinkInternetService", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_internet_service_arg a = {0};
@@ -14679,7 +15592,7 @@ int main(int ac, char **av)
 		       	   goto unlink_internet_service_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -14698,7 +15611,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -14751,6 +15675,7 @@ int main(int ac, char **av)
 		     cret = osc_unlink_internet_service(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkInternetService: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14758,12 +15683,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("UnlinkFlexibleGpu", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_unlink_flexible_gpu_arg a = {0};
@@ -14795,7 +15733,7 @@ int main(int ac, char **av)
 		       	   goto unlink_flexible_gpu_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -14814,7 +15752,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -14856,6 +15805,7 @@ int main(int ac, char **av)
 		     cret = osc_unlink_flexible_gpu(&e, &r, &a);
             	     TRY(cret, "fail to call UnlinkFlexibleGpu: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14863,12 +15813,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("StopVms", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_stop_vms_arg a = {0};
@@ -14900,7 +15863,7 @@ int main(int ac, char **av)
 		       	   goto stop_vms_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -14919,7 +15882,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -14979,6 +15953,7 @@ int main(int ac, char **av)
 		     cret = osc_stop_vms(&e, &r, &a);
             	     TRY(cret, "fail to call StopVms: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -14986,12 +15961,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("StartVms", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_start_vms_arg a = {0};
@@ -15023,7 +16011,7 @@ int main(int ac, char **av)
 		       	   goto start_vms_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -15042,7 +16030,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -15086,6 +16085,7 @@ int main(int ac, char **av)
 		     cret = osc_start_vms(&e, &r, &a);
             	     TRY(cret, "fail to call StartVms: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15093,12 +16093,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("SetDefaultPolicyVersion", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_set_default_policy_version_arg a = {0};
@@ -15130,7 +16143,7 @@ int main(int ac, char **av)
 		       	   goto set_default_policy_version_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -15149,7 +16162,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -15186,6 +16210,7 @@ int main(int ac, char **av)
 		     cret = osc_set_default_policy_version(&e, &r, &a);
             	     TRY(cret, "fail to call SetDefaultPolicyVersion: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15193,12 +16218,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ScaleUpVmGroup", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_scale_up_vm_group_arg a = {0};
@@ -15230,7 +16268,7 @@ int main(int ac, char **av)
 		       	   goto scale_up_vm_group_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -15249,7 +16287,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -15302,6 +16351,7 @@ int main(int ac, char **av)
 		     cret = osc_scale_up_vm_group(&e, &r, &a);
             	     TRY(cret, "fail to call ScaleUpVmGroup: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15309,12 +16359,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ScaleDownVmGroup", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_scale_down_vm_group_arg a = {0};
@@ -15346,7 +16409,7 @@ int main(int ac, char **av)
 		       	   goto scale_down_vm_group_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -15365,7 +16428,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -15418,6 +16492,7 @@ int main(int ac, char **av)
 		     cret = osc_scale_down_vm_group(&e, &r, &a);
             	     TRY(cret, "fail to call ScaleDownVmGroup: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15425,12 +16500,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("RejectNetPeering", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_reject_net_peering_arg a = {0};
@@ -15462,7 +16550,7 @@ int main(int ac, char **av)
 		       	   goto reject_net_peering_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -15481,7 +16569,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -15523,6 +16622,7 @@ int main(int ac, char **av)
 		     cret = osc_reject_net_peering(&e, &r, &a);
             	     TRY(cret, "fail to call RejectNetPeering: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15530,12 +16630,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("RegisterVmsInLoadBalancer", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_register_vms_in_load_balancer_arg a = {0};
@@ -15567,7 +16680,7 @@ int main(int ac, char **av)
 		       	   goto register_vms_in_load_balancer_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -15586,7 +16699,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -15641,6 +16765,7 @@ int main(int ac, char **av)
 		     cret = osc_register_vms_in_load_balancer(&e, &r, &a);
             	     TRY(cret, "fail to call RegisterVmsInLoadBalancer: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15648,12 +16773,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("RebootVms", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_reboot_vms_arg a = {0};
@@ -15685,7 +16823,7 @@ int main(int ac, char **av)
 		       	   goto reboot_vms_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -15704,7 +16842,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -15748,6 +16897,7 @@ int main(int ac, char **av)
 		     cret = osc_reboot_vms(&e, &r, &a);
             	     TRY(cret, "fail to call RebootVms: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15755,12 +16905,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadVpnConnections", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_vpn_connections_arg a = {0};
@@ -15792,7 +16955,7 @@ int main(int ac, char **av)
 		       	   goto read_vpn_connections_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -15811,7 +16974,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -15887,6 +17061,7 @@ int main(int ac, char **av)
 		     cret = osc_read_vpn_connections(&e, &r, &a);
             	     TRY(cret, "fail to call ReadVpnConnections: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -15894,12 +17069,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadVolumes", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_volumes_arg a = {0};
@@ -15931,7 +17119,7 @@ int main(int ac, char **av)
 		       	   goto read_volumes_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -15950,7 +17138,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -16026,6 +17225,7 @@ int main(int ac, char **av)
 		     cret = osc_read_volumes(&e, &r, &a);
             	     TRY(cret, "fail to call ReadVolumes: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16033,12 +17233,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadVmsState", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_vms_state_arg a = {0};
@@ -16070,7 +17283,7 @@ int main(int ac, char **av)
 		       	   goto read_vms_state_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -16089,7 +17302,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -16159,6 +17383,7 @@ int main(int ac, char **av)
 		     cret = osc_read_vms_state(&e, &r, &a);
             	     TRY(cret, "fail to call ReadVmsState: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16166,12 +17391,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadVmsHealth", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_vms_health_arg a = {0};
@@ -16203,7 +17441,7 @@ int main(int ac, char **av)
 		       	   goto read_vms_health_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -16222,7 +17460,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -16277,6 +17526,7 @@ int main(int ac, char **av)
 		     cret = osc_read_vms_health(&e, &r, &a);
             	     TRY(cret, "fail to call ReadVmsHealth: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16284,12 +17534,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadVms", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_vms_arg a = {0};
@@ -16321,7 +17584,7 @@ int main(int ac, char **av)
 		       	   goto read_vms_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -16340,7 +17603,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -16416,6 +17690,7 @@ int main(int ac, char **av)
 		     cret = osc_read_vms(&e, &r, &a);
             	     TRY(cret, "fail to call ReadVms: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16423,12 +17698,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadVmTypes", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_vm_types_arg a = {0};
@@ -16460,7 +17748,7 @@ int main(int ac, char **av)
 		       	   goto read_vm_types_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -16479,7 +17767,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -16533,6 +17832,7 @@ int main(int ac, char **av)
 		     cret = osc_read_vm_types(&e, &r, &a);
             	     TRY(cret, "fail to call ReadVmTypes: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16540,12 +17840,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadVmTemplates", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_vm_templates_arg a = {0};
@@ -16577,7 +17890,7 @@ int main(int ac, char **av)
 		       	   goto read_vm_templates_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -16596,7 +17909,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -16650,6 +17974,7 @@ int main(int ac, char **av)
 		     cret = osc_read_vm_templates(&e, &r, &a);
             	     TRY(cret, "fail to call ReadVmTemplates: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16657,12 +17982,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadVmGroups", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_vm_groups_arg a = {0};
@@ -16694,7 +18032,7 @@ int main(int ac, char **av)
 		       	   goto read_vm_groups_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -16713,7 +18051,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -16767,6 +18116,7 @@ int main(int ac, char **av)
 		     cret = osc_read_vm_groups(&e, &r, &a);
             	     TRY(cret, "fail to call ReadVmGroups: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16774,12 +18124,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadVirtualGateways", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_virtual_gateways_arg a = {0};
@@ -16811,7 +18174,7 @@ int main(int ac, char **av)
 		       	   goto read_virtual_gateways_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -16830,7 +18193,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -16906,6 +18280,7 @@ int main(int ac, char **av)
 		     cret = osc_read_virtual_gateways(&e, &r, &a);
             	     TRY(cret, "fail to call ReadVirtualGateways: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -16913,12 +18288,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadUsers", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_users_arg a = {0};
@@ -16950,7 +18338,7 @@ int main(int ac, char **av)
 		       	   goto read_users_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -16969,7 +18357,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -17000,6 +18399,7 @@ int main(int ac, char **av)
 		     cret = osc_read_users(&e, &r, &a);
             	     TRY(cret, "fail to call ReadUsers: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17007,12 +18407,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadTags", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_tags_arg a = {0};
@@ -17044,7 +18457,7 @@ int main(int ac, char **av)
 		       	   goto read_tags_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -17063,7 +18476,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -17117,6 +18541,7 @@ int main(int ac, char **av)
 		     cret = osc_read_tags(&e, &r, &a);
             	     TRY(cret, "fail to call ReadTags: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17124,12 +18549,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadSubregions", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_subregions_arg a = {0};
@@ -17161,7 +18599,7 @@ int main(int ac, char **av)
 		       	   goto read_subregions_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -17180,7 +18618,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -17234,6 +18683,7 @@ int main(int ac, char **av)
 		     cret = osc_read_subregions(&e, &r, &a);
             	     TRY(cret, "fail to call ReadSubregions: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17241,12 +18691,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadSubnets", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_subnets_arg a = {0};
@@ -17278,7 +18741,7 @@ int main(int ac, char **av)
 		       	   goto read_subnets_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -17297,7 +18760,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -17351,6 +18825,7 @@ int main(int ac, char **av)
 		     cret = osc_read_subnets(&e, &r, &a);
             	     TRY(cret, "fail to call ReadSubnets: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17358,12 +18833,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadSnapshots", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_snapshots_arg a = {0};
@@ -17395,7 +18883,7 @@ int main(int ac, char **av)
 		       	   goto read_snapshots_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -17414,7 +18902,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -17468,6 +18967,7 @@ int main(int ac, char **av)
 		     cret = osc_read_snapshots(&e, &r, &a);
             	     TRY(cret, "fail to call ReadSnapshots: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17475,12 +18975,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadSnapshotExportTasks", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_snapshot_export_tasks_arg a = {0};
@@ -17512,7 +19025,7 @@ int main(int ac, char **av)
 		       	   goto read_snapshot_export_tasks_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -17531,7 +19044,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -17585,6 +19109,7 @@ int main(int ac, char **av)
 		     cret = osc_read_snapshot_export_tasks(&e, &r, &a);
             	     TRY(cret, "fail to call ReadSnapshotExportTasks: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17592,12 +19117,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadServerCertificates", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_server_certificates_arg a = {0};
@@ -17629,7 +19167,7 @@ int main(int ac, char **av)
 		       	   goto read_server_certificates_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -17648,7 +19186,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -17702,6 +19251,7 @@ int main(int ac, char **av)
 		     cret = osc_read_server_certificates(&e, &r, &a);
             	     TRY(cret, "fail to call ReadServerCertificates: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17709,12 +19259,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadSecurityGroups", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_security_groups_arg a = {0};
@@ -17746,7 +19309,7 @@ int main(int ac, char **av)
 		       	   goto read_security_groups_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -17765,7 +19328,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -17819,6 +19393,7 @@ int main(int ac, char **av)
 		     cret = osc_read_security_groups(&e, &r, &a);
             	     TRY(cret, "fail to call ReadSecurityGroups: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17826,12 +19401,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadSecretAccessKey", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_secret_access_key_arg a = {0};
@@ -17863,7 +19451,7 @@ int main(int ac, char **av)
 		       	   goto read_secret_access_key_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -17882,7 +19470,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -17924,6 +19523,7 @@ int main(int ac, char **av)
 		     cret = osc_read_secret_access_key(&e, &r, &a);
             	     TRY(cret, "fail to call ReadSecretAccessKey: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -17931,12 +19531,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadRouteTables", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_route_tables_arg a = {0};
@@ -17968,7 +19581,7 @@ int main(int ac, char **av)
 		       	   goto read_route_tables_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -17987,7 +19600,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -18063,6 +19687,7 @@ int main(int ac, char **av)
 		     cret = osc_read_route_tables(&e, &r, &a);
             	     TRY(cret, "fail to call ReadRouteTables: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18070,12 +19695,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadRegions", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_regions_arg a = {0};
@@ -18107,7 +19745,7 @@ int main(int ac, char **av)
 		       	   goto read_regions_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -18126,7 +19764,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -18157,6 +19806,7 @@ int main(int ac, char **av)
 		     cret = osc_read_regions(&e, &r, &a);
             	     TRY(cret, "fail to call ReadRegions: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18164,12 +19814,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadQuotas", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_quotas_arg a = {0};
@@ -18201,7 +19864,7 @@ int main(int ac, char **av)
 		       	   goto read_quotas_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -18220,7 +19883,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -18274,6 +19948,7 @@ int main(int ac, char **av)
 		     cret = osc_read_quotas(&e, &r, &a);
             	     TRY(cret, "fail to call ReadQuotas: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18281,12 +19956,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadPublicIps", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_public_ips_arg a = {0};
@@ -18318,7 +20006,7 @@ int main(int ac, char **av)
 		       	   goto read_public_ips_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -18337,7 +20025,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -18413,6 +20112,7 @@ int main(int ac, char **av)
 		     cret = osc_read_public_ips(&e, &r, &a);
             	     TRY(cret, "fail to call ReadPublicIps: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18420,12 +20120,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadPublicIpRanges", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_public_ip_ranges_arg a = {0};
@@ -18457,7 +20170,7 @@ int main(int ac, char **av)
 		       	   goto read_public_ip_ranges_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -18476,7 +20189,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -18507,6 +20231,7 @@ int main(int ac, char **av)
 		     cret = osc_read_public_ip_ranges(&e, &r, &a);
             	     TRY(cret, "fail to call ReadPublicIpRanges: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18514,12 +20239,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadPublicCatalog", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_public_catalog_arg a = {0};
@@ -18551,7 +20289,7 @@ int main(int ac, char **av)
 		       	   goto read_public_catalog_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -18570,7 +20308,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -18601,6 +20350,7 @@ int main(int ac, char **av)
 		     cret = osc_read_public_catalog(&e, &r, &a);
             	     TRY(cret, "fail to call ReadPublicCatalog: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18608,12 +20358,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadProductTypes", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_product_types_arg a = {0};
@@ -18645,7 +20408,7 @@ int main(int ac, char **av)
 		       	   goto read_product_types_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -18664,7 +20427,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -18718,6 +20492,7 @@ int main(int ac, char **av)
 		     cret = osc_read_product_types(&e, &r, &a);
             	     TRY(cret, "fail to call ReadProductTypes: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18725,12 +20500,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadPolicyVersions", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_policy_versions_arg a = {0};
@@ -18762,7 +20550,7 @@ int main(int ac, char **av)
 		       	   goto read_policy_versions_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -18781,7 +20569,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -18829,6 +20628,7 @@ int main(int ac, char **av)
 		     cret = osc_read_policy_versions(&e, &r, &a);
             	     TRY(cret, "fail to call ReadPolicyVersions: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18836,12 +20636,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadPolicyVersion", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_policy_version_arg a = {0};
@@ -18873,7 +20686,7 @@ int main(int ac, char **av)
 		       	   goto read_policy_version_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -18892,7 +20705,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -18929,6 +20753,7 @@ int main(int ac, char **av)
 		     cret = osc_read_policy_version(&e, &r, &a);
             	     TRY(cret, "fail to call ReadPolicyVersion: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -18936,12 +20761,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadPolicy", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_policy_arg a = {0};
@@ -18973,7 +20811,7 @@ int main(int ac, char **av)
 		       	   goto read_policy_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -18992,7 +20830,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -19018,6 +20867,7 @@ int main(int ac, char **av)
 		     cret = osc_read_policy(&e, &r, &a);
             	     TRY(cret, "fail to call ReadPolicy: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19025,12 +20875,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadPolicies", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_policies_arg a = {0};
@@ -19062,7 +20925,7 @@ int main(int ac, char **av)
 		       	   goto read_policies_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -19081,7 +20944,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -19157,6 +21031,7 @@ int main(int ac, char **av)
 		     cret = osc_read_policies(&e, &r, &a);
             	     TRY(cret, "fail to call ReadPolicies: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19164,12 +21039,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadNics", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_nics_arg a = {0};
@@ -19201,7 +21089,7 @@ int main(int ac, char **av)
 		       	   goto read_nics_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -19220,7 +21108,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -19274,6 +21173,7 @@ int main(int ac, char **av)
 		     cret = osc_read_nics(&e, &r, &a);
             	     TRY(cret, "fail to call ReadNics: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19281,12 +21181,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadNets", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_nets_arg a = {0};
@@ -19318,7 +21231,7 @@ int main(int ac, char **av)
 		       	   goto read_nets_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -19337,7 +21250,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -19391,6 +21315,7 @@ int main(int ac, char **av)
 		     cret = osc_read_nets(&e, &r, &a);
             	     TRY(cret, "fail to call ReadNets: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19398,12 +21323,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadNetPeerings", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_net_peerings_arg a = {0};
@@ -19435,7 +21373,7 @@ int main(int ac, char **av)
 		       	   goto read_net_peerings_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -19454,7 +21392,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -19530,6 +21479,7 @@ int main(int ac, char **av)
 		     cret = osc_read_net_peerings(&e, &r, &a);
             	     TRY(cret, "fail to call ReadNetPeerings: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19537,12 +21487,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadNetAccessPoints", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_net_access_points_arg a = {0};
@@ -19574,7 +21537,7 @@ int main(int ac, char **av)
 		       	   goto read_net_access_points_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -19593,7 +21556,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -19669,6 +21643,7 @@ int main(int ac, char **av)
 		     cret = osc_read_net_access_points(&e, &r, &a);
             	     TRY(cret, "fail to call ReadNetAccessPoints: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19676,12 +21651,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadNetAccessPointServices", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_net_access_point_services_arg a = {0};
@@ -19713,7 +21701,7 @@ int main(int ac, char **av)
 		       	   goto read_net_access_point_services_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -19732,7 +21720,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -19786,6 +21785,7 @@ int main(int ac, char **av)
 		     cret = osc_read_net_access_point_services(&e, &r, &a);
             	     TRY(cret, "fail to call ReadNetAccessPointServices: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19793,12 +21793,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadNatServices", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_nat_services_arg a = {0};
@@ -19830,7 +21843,7 @@ int main(int ac, char **av)
 		       	   goto read_nat_services_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -19849,7 +21862,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -19925,6 +21949,7 @@ int main(int ac, char **av)
 		     cret = osc_read_nat_services(&e, &r, &a);
             	     TRY(cret, "fail to call ReadNatServices: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -19932,12 +21957,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadLocations", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_locations_arg a = {0};
@@ -19969,7 +22007,7 @@ int main(int ac, char **av)
 		       	   goto read_locations_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -19988,7 +22026,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -20019,6 +22068,7 @@ int main(int ac, char **av)
 		     cret = osc_read_locations(&e, &r, &a);
             	     TRY(cret, "fail to call ReadLocations: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20026,12 +22076,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadLoadBalancers", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_load_balancers_arg a = {0};
@@ -20063,7 +22126,7 @@ int main(int ac, char **av)
 		       	   goto read_load_balancers_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -20082,7 +22145,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -20136,6 +22210,7 @@ int main(int ac, char **av)
 		     cret = osc_read_load_balancers(&e, &r, &a);
             	     TRY(cret, "fail to call ReadLoadBalancers: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20143,12 +22218,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadLoadBalancerTags", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_load_balancer_tags_arg a = {0};
@@ -20180,7 +22268,7 @@ int main(int ac, char **av)
 		       	   goto read_load_balancer_tags_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -20199,7 +22287,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -20243,6 +22342,7 @@ int main(int ac, char **av)
 		     cret = osc_read_load_balancer_tags(&e, &r, &a);
             	     TRY(cret, "fail to call ReadLoadBalancerTags: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20250,12 +22350,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadListenerRules", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_listener_rules_arg a = {0};
@@ -20287,7 +22400,7 @@ int main(int ac, char **av)
 		       	   goto read_listener_rules_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -20306,7 +22419,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -20360,6 +22484,7 @@ int main(int ac, char **av)
 		     cret = osc_read_listener_rules(&e, &r, &a);
             	     TRY(cret, "fail to call ReadListenerRules: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20367,12 +22492,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadLinkedPolicies", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_linked_policies_arg a = {0};
@@ -20404,7 +22542,7 @@ int main(int ac, char **av)
 		       	   goto read_linked_policies_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -20423,7 +22561,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -20510,6 +22659,7 @@ int main(int ac, char **av)
 		     cret = osc_read_linked_policies(&e, &r, &a);
             	     TRY(cret, "fail to call ReadLinkedPolicies: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20517,12 +22667,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadKeypairs", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_keypairs_arg a = {0};
@@ -20554,7 +22717,7 @@ int main(int ac, char **av)
 		       	   goto read_keypairs_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -20573,7 +22736,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -20627,6 +22801,7 @@ int main(int ac, char **av)
 		     cret = osc_read_keypairs(&e, &r, &a);
             	     TRY(cret, "fail to call ReadKeypairs: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20634,12 +22809,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadInternetServices", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_internet_services_arg a = {0};
@@ -20671,7 +22859,7 @@ int main(int ac, char **av)
 		       	   goto read_internet_services_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -20690,7 +22878,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -20744,6 +22943,7 @@ int main(int ac, char **av)
 		     cret = osc_read_internet_services(&e, &r, &a);
             	     TRY(cret, "fail to call ReadInternetServices: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20751,12 +22951,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadImages", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_images_arg a = {0};
@@ -20788,7 +23001,7 @@ int main(int ac, char **av)
 		       	   goto read_images_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -20807,7 +23020,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -20883,6 +23107,7 @@ int main(int ac, char **av)
 		     cret = osc_read_images(&e, &r, &a);
             	     TRY(cret, "fail to call ReadImages: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -20890,12 +23115,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadImageExportTasks", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_image_export_tasks_arg a = {0};
@@ -20927,7 +23165,7 @@ int main(int ac, char **av)
 		       	   goto read_image_export_tasks_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -20946,7 +23184,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -21000,6 +23249,7 @@ int main(int ac, char **av)
 		     cret = osc_read_image_export_tasks(&e, &r, &a);
             	     TRY(cret, "fail to call ReadImageExportTasks: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21007,12 +23257,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadFlexibleGpus", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_flexible_gpus_arg a = {0};
@@ -21044,7 +23307,7 @@ int main(int ac, char **av)
 		       	   goto read_flexible_gpus_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -21063,7 +23326,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -21117,6 +23391,7 @@ int main(int ac, char **av)
 		     cret = osc_read_flexible_gpus(&e, &r, &a);
             	     TRY(cret, "fail to call ReadFlexibleGpus: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21124,12 +23399,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadFlexibleGpuCatalog", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_flexible_gpu_catalog_arg a = {0};
@@ -21161,7 +23449,7 @@ int main(int ac, char **av)
 		       	   goto read_flexible_gpu_catalog_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -21180,7 +23468,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -21211,6 +23510,7 @@ int main(int ac, char **av)
 		     cret = osc_read_flexible_gpu_catalog(&e, &r, &a);
             	     TRY(cret, "fail to call ReadFlexibleGpuCatalog: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21218,12 +23518,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadDirectLinks", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_direct_links_arg a = {0};
@@ -21255,7 +23568,7 @@ int main(int ac, char **av)
 		       	   goto read_direct_links_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -21274,7 +23587,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -21328,6 +23652,7 @@ int main(int ac, char **av)
 		     cret = osc_read_direct_links(&e, &r, &a);
             	     TRY(cret, "fail to call ReadDirectLinks: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21335,12 +23660,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadDirectLinkInterfaces", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_direct_link_interfaces_arg a = {0};
@@ -21372,7 +23710,7 @@ int main(int ac, char **av)
 		       	   goto read_direct_link_interfaces_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -21391,7 +23729,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -21445,6 +23794,7 @@ int main(int ac, char **av)
 		     cret = osc_read_direct_link_interfaces(&e, &r, &a);
             	     TRY(cret, "fail to call ReadDirectLinkInterfaces: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21452,12 +23802,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadDhcpOptions", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_dhcp_options_arg a = {0};
@@ -21489,7 +23852,7 @@ int main(int ac, char **av)
 		       	   goto read_dhcp_options_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -21508,7 +23871,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -21584,6 +23958,7 @@ int main(int ac, char **av)
 		     cret = osc_read_dhcp_options(&e, &r, &a);
             	     TRY(cret, "fail to call ReadDhcpOptions: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21591,12 +23966,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadDedicatedGroups", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_dedicated_groups_arg a = {0};
@@ -21628,7 +24016,7 @@ int main(int ac, char **av)
 		       	   goto read_dedicated_groups_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -21647,7 +24035,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -21701,6 +24100,7 @@ int main(int ac, char **av)
 		     cret = osc_read_dedicated_groups(&e, &r, &a);
             	     TRY(cret, "fail to call ReadDedicatedGroups: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21708,12 +24108,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadConsumptionAccount", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_consumption_account_arg a = {0};
@@ -21745,7 +24158,7 @@ int main(int ac, char **av)
 		       	   goto read_consumption_account_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -21764,7 +24177,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -21849,6 +24273,7 @@ int main(int ac, char **av)
 		     cret = osc_read_consumption_account(&e, &r, &a);
             	     TRY(cret, "fail to call ReadConsumptionAccount: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21856,12 +24281,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadConsoleOutput", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_console_output_arg a = {0};
@@ -21893,7 +24331,7 @@ int main(int ac, char **av)
 		       	   goto read_console_output_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -21912,7 +24350,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -21954,6 +24403,7 @@ int main(int ac, char **av)
 		     cret = osc_read_console_output(&e, &r, &a);
             	     TRY(cret, "fail to call ReadConsoleOutput: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -21961,12 +24411,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadClientGateways", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_client_gateways_arg a = {0};
@@ -21998,7 +24461,7 @@ int main(int ac, char **av)
 		       	   goto read_client_gateways_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -22017,7 +24480,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -22071,6 +24545,7 @@ int main(int ac, char **av)
 		     cret = osc_read_client_gateways(&e, &r, &a);
             	     TRY(cret, "fail to call ReadClientGateways: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22078,12 +24553,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadCatalogs", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_catalogs_arg a = {0};
@@ -22115,7 +24603,7 @@ int main(int ac, char **av)
 		       	   goto read_catalogs_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -22134,7 +24622,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -22188,6 +24687,7 @@ int main(int ac, char **av)
 		     cret = osc_read_catalogs(&e, &r, &a);
             	     TRY(cret, "fail to call ReadCatalogs: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22195,12 +24695,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadCatalog", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_catalog_arg a = {0};
@@ -22232,7 +24745,7 @@ int main(int ac, char **av)
 		       	   goto read_catalog_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -22251,7 +24764,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -22282,6 +24806,7 @@ int main(int ac, char **av)
 		     cret = osc_read_catalog(&e, &r, &a);
             	     TRY(cret, "fail to call ReadCatalog: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22289,12 +24814,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadCas", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_cas_arg a = {0};
@@ -22326,7 +24864,7 @@ int main(int ac, char **av)
 		       	   goto read_cas_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -22345,7 +24883,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -22399,6 +24948,7 @@ int main(int ac, char **av)
 		     cret = osc_read_cas(&e, &r, &a);
             	     TRY(cret, "fail to call ReadCas: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22406,12 +24956,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadApiLogs", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_api_logs_arg a = {0};
@@ -22443,7 +25006,7 @@ int main(int ac, char **av)
 		       	   goto read_api_logs_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -22462,7 +25025,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -22561,6 +25135,7 @@ int main(int ac, char **av)
 		     cret = osc_read_api_logs(&e, &r, &a);
             	     TRY(cret, "fail to call ReadApiLogs: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22568,12 +25143,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadApiAccessRules", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_api_access_rules_arg a = {0};
@@ -22605,7 +25193,7 @@ int main(int ac, char **av)
 		       	   goto read_api_access_rules_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -22624,7 +25212,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -22678,6 +25277,7 @@ int main(int ac, char **av)
 		     cret = osc_read_api_access_rules(&e, &r, &a);
             	     TRY(cret, "fail to call ReadApiAccessRules: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22685,12 +25285,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadApiAccessPolicy", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_api_access_policy_arg a = {0};
@@ -22722,7 +25335,7 @@ int main(int ac, char **av)
 		       	   goto read_api_access_policy_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -22741,7 +25354,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -22772,6 +25396,7 @@ int main(int ac, char **av)
 		     cret = osc_read_api_access_policy(&e, &r, &a);
             	     TRY(cret, "fail to call ReadApiAccessPolicy: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22779,12 +25404,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadAdminPassword", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_admin_password_arg a = {0};
@@ -22816,7 +25454,7 @@ int main(int ac, char **av)
 		       	   goto read_admin_password_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -22835,7 +25473,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -22877,6 +25526,7 @@ int main(int ac, char **av)
 		     cret = osc_read_admin_password(&e, &r, &a);
             	     TRY(cret, "fail to call ReadAdminPassword: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22884,12 +25534,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadAccounts", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_accounts_arg a = {0};
@@ -22921,7 +25584,7 @@ int main(int ac, char **av)
 		       	   goto read_accounts_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -22940,7 +25603,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -22971,6 +25645,7 @@ int main(int ac, char **av)
 		     cret = osc_read_accounts(&e, &r, &a);
             	     TRY(cret, "fail to call ReadAccounts: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -22978,12 +25653,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("ReadAccessKeys", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_read_access_keys_arg a = {0};
@@ -23015,7 +25703,7 @@ int main(int ac, char **av)
 		       	   goto read_access_keys_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -23034,7 +25722,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -23099,6 +25798,7 @@ int main(int ac, char **av)
 		     cret = osc_read_access_keys(&e, &r, &a);
             	     TRY(cret, "fail to call ReadAccessKeys: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23106,12 +25806,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("LinkVolume", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_volume_arg a = {0};
@@ -23143,7 +25856,7 @@ int main(int ac, char **av)
 		       	   goto link_volume_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -23162,7 +25875,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -23226,6 +25950,7 @@ int main(int ac, char **av)
 		     cret = osc_link_volume(&e, &r, &a);
             	     TRY(cret, "fail to call LinkVolume: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23233,12 +25958,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("LinkVirtualGateway", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_virtual_gateway_arg a = {0};
@@ -23270,7 +26008,7 @@ int main(int ac, char **av)
 		       	   goto link_virtual_gateway_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -23289,7 +26027,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -23342,6 +26091,7 @@ int main(int ac, char **av)
 		     cret = osc_link_virtual_gateway(&e, &r, &a);
             	     TRY(cret, "fail to call LinkVirtualGateway: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23349,12 +26099,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("LinkRouteTable", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_route_table_arg a = {0};
@@ -23386,7 +26149,7 @@ int main(int ac, char **av)
 		       	   goto link_route_table_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -23405,7 +26168,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -23458,6 +26232,7 @@ int main(int ac, char **av)
 		     cret = osc_link_route_table(&e, &r, &a);
             	     TRY(cret, "fail to call LinkRouteTable: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23465,12 +26240,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("LinkPublicIp", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_public_ip_arg a = {0};
@@ -23502,7 +26290,7 @@ int main(int ac, char **av)
 		       	   goto link_public_ip_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -23521,7 +26309,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -23623,6 +26422,7 @@ int main(int ac, char **av)
 		     cret = osc_link_public_ip(&e, &r, &a);
             	     TRY(cret, "fail to call LinkPublicIp: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23630,12 +26430,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("LinkPrivateIps", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_private_ips_arg a = {0};
@@ -23667,7 +26480,7 @@ int main(int ac, char **av)
 		       	   goto link_private_ips_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -23686,7 +26499,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -23768,6 +26592,7 @@ int main(int ac, char **av)
 		     cret = osc_link_private_ips(&e, &r, &a);
             	     TRY(cret, "fail to call LinkPrivateIps: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23775,12 +26600,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("LinkPolicy", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_policy_arg a = {0};
@@ -23812,7 +26650,7 @@ int main(int ac, char **av)
 		       	   goto link_policy_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -23831,7 +26669,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -23884,6 +26733,7 @@ int main(int ac, char **av)
 		     cret = osc_link_policy(&e, &r, &a);
             	     TRY(cret, "fail to call LinkPolicy: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -23891,12 +26741,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("LinkNic", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_nic_arg a = {0};
@@ -23928,7 +26791,7 @@ int main(int ac, char **av)
 		       	   goto link_nic_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -23947,7 +26810,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -24011,6 +26885,7 @@ int main(int ac, char **av)
 		     cret = osc_link_nic(&e, &r, &a);
             	     TRY(cret, "fail to call LinkNic: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -24018,12 +26893,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("LinkLoadBalancerBackendMachines", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_load_balancer_backend_machines_arg a = {0};
@@ -24055,7 +26943,7 @@ int main(int ac, char **av)
 		       	   goto link_load_balancer_backend_machines_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -24074,7 +26962,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -24142,6 +27041,7 @@ int main(int ac, char **av)
 		     cret = osc_link_load_balancer_backend_machines(&e, &r, &a);
             	     TRY(cret, "fail to call LinkLoadBalancerBackendMachines: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -24149,12 +27049,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("LinkInternetService", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_internet_service_arg a = {0};
@@ -24186,7 +27099,7 @@ int main(int ac, char **av)
 		       	   goto link_internet_service_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -24205,7 +27118,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -24258,6 +27182,7 @@ int main(int ac, char **av)
 		     cret = osc_link_internet_service(&e, &r, &a);
             	     TRY(cret, "fail to call LinkInternetService: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -24265,12 +27190,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("LinkFlexibleGpu", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_link_flexible_gpu_arg a = {0};
@@ -24302,7 +27240,7 @@ int main(int ac, char **av)
 		       	   goto link_flexible_gpu_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -24321,7 +27259,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -24374,6 +27323,7 @@ int main(int ac, char **av)
 		     cret = osc_link_flexible_gpu(&e, &r, &a);
             	     TRY(cret, "fail to call LinkFlexibleGpu: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -24381,12 +27331,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeregisterVmsInLoadBalancer", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_deregister_vms_in_load_balancer_arg a = {0};
@@ -24418,7 +27381,7 @@ int main(int ac, char **av)
 		       	   goto deregister_vms_in_load_balancer_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -24437,7 +27400,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -24492,6 +27466,7 @@ int main(int ac, char **av)
 		     cret = osc_deregister_vms_in_load_balancer(&e, &r, &a);
             	     TRY(cret, "fail to call DeregisterVmsInLoadBalancer: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -24499,12 +27474,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteVpnConnectionRoute", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_vpn_connection_route_arg a = {0};
@@ -24536,7 +27524,7 @@ int main(int ac, char **av)
 		       	   goto delete_vpn_connection_route_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -24555,7 +27543,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -24608,6 +27607,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_vpn_connection_route(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteVpnConnectionRoute: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -24615,12 +27615,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteVpnConnection", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_vpn_connection_arg a = {0};
@@ -24652,7 +27665,7 @@ int main(int ac, char **av)
 		       	   goto delete_vpn_connection_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -24671,7 +27684,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -24713,6 +27737,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_vpn_connection(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteVpnConnection: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -24720,12 +27745,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteVolume", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_volume_arg a = {0};
@@ -24757,7 +27795,7 @@ int main(int ac, char **av)
 		       	   goto delete_volume_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -24776,7 +27814,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -24818,6 +27867,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_volume(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteVolume: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -24825,12 +27875,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteVms", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_vms_arg a = {0};
@@ -24862,7 +27925,7 @@ int main(int ac, char **av)
 		       	   goto delete_vms_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -24881,7 +27944,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -24925,6 +27999,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_vms(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteVms: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -24932,12 +28007,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteVmTemplate", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_vm_template_arg a = {0};
@@ -24969,7 +28057,7 @@ int main(int ac, char **av)
 		       	   goto delete_vm_template_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -24988,7 +28076,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -25030,6 +28129,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_vm_template(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteVmTemplate: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -25037,12 +28137,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteVmGroup", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_vm_group_arg a = {0};
@@ -25074,7 +28187,7 @@ int main(int ac, char **av)
 		       	   goto delete_vm_group_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -25093,7 +28206,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -25135,6 +28259,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_vm_group(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteVmGroup: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -25142,12 +28267,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteVirtualGateway", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_virtual_gateway_arg a = {0};
@@ -25179,7 +28317,7 @@ int main(int ac, char **av)
 		       	   goto delete_virtual_gateway_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -25198,7 +28336,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -25240,6 +28389,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_virtual_gateway(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteVirtualGateway: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -25247,12 +28397,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteUser", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_user_arg a = {0};
@@ -25284,7 +28447,7 @@ int main(int ac, char **av)
 		       	   goto delete_user_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -25303,7 +28466,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -25345,6 +28519,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_user(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteUser: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -25352,12 +28527,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteTags", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_tags_arg a = {0};
@@ -25389,7 +28577,7 @@ int main(int ac, char **av)
 		       	   goto delete_tags_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -25408,7 +28596,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -25483,6 +28682,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_tags(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteTags: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -25490,12 +28690,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteSubnet", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_subnet_arg a = {0};
@@ -25527,7 +28740,7 @@ int main(int ac, char **av)
 		       	   goto delete_subnet_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -25546,7 +28759,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -25588,6 +28812,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_subnet(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteSubnet: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -25595,12 +28820,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteSnapshot", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_snapshot_arg a = {0};
@@ -25632,7 +28870,7 @@ int main(int ac, char **av)
 		       	   goto delete_snapshot_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -25651,7 +28889,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -25693,6 +28942,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_snapshot(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteSnapshot: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -25700,12 +28950,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteServerCertificate", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_server_certificate_arg a = {0};
@@ -25737,7 +29000,7 @@ int main(int ac, char **av)
 		       	   goto delete_server_certificate_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -25756,7 +29019,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -25798,6 +29072,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_server_certificate(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteServerCertificate: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -25805,12 +29080,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteSecurityGroupRule", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_security_group_rule_arg a = {0};
@@ -25842,7 +29130,7 @@ int main(int ac, char **av)
 		       	   goto delete_security_group_rule_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -25861,7 +29149,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -26011,6 +29310,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_security_group_rule(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteSecurityGroupRule: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -26018,12 +29318,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteSecurityGroup", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_security_group_arg a = {0};
@@ -26055,7 +29368,7 @@ int main(int ac, char **av)
 		       	   goto delete_security_group_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -26074,7 +29387,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -26127,6 +29451,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_security_group(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteSecurityGroup: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -26134,12 +29459,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteRouteTable", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_route_table_arg a = {0};
@@ -26171,7 +29509,7 @@ int main(int ac, char **av)
 		       	   goto delete_route_table_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -26190,7 +29528,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -26232,6 +29581,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_route_table(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteRouteTable: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -26239,12 +29589,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteRoute", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_route_arg a = {0};
@@ -26276,7 +29639,7 @@ int main(int ac, char **av)
 		       	   goto delete_route_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -26295,7 +29658,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -26348,6 +29722,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_route(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteRoute: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -26355,12 +29730,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeletePublicIp", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_public_ip_arg a = {0};
@@ -26392,7 +29780,7 @@ int main(int ac, char **av)
 		       	   goto delete_public_ip_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -26411,7 +29799,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -26464,6 +29863,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_public_ip(&e, &r, &a);
             	     TRY(cret, "fail to call DeletePublicIp: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -26471,12 +29871,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeletePolicyVersion", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_policy_version_arg a = {0};
@@ -26508,7 +29921,7 @@ int main(int ac, char **av)
 		       	   goto delete_policy_version_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -26527,7 +29940,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -26564,6 +29988,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_policy_version(&e, &r, &a);
             	     TRY(cret, "fail to call DeletePolicyVersion: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -26571,12 +29996,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeletePolicy", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_policy_arg a = {0};
@@ -26608,7 +30046,7 @@ int main(int ac, char **av)
 		       	   goto delete_policy_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -26627,7 +30065,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -26669,6 +30118,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_policy(&e, &r, &a);
             	     TRY(cret, "fail to call DeletePolicy: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -26676,12 +30126,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteNic", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_nic_arg a = {0};
@@ -26713,7 +30176,7 @@ int main(int ac, char **av)
 		       	   goto delete_nic_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -26732,7 +30195,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -26774,6 +30248,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_nic(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteNic: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -26781,12 +30256,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteNetPeering", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_net_peering_arg a = {0};
@@ -26818,7 +30306,7 @@ int main(int ac, char **av)
 		       	   goto delete_net_peering_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -26837,7 +30325,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -26879,6 +30378,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_net_peering(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteNetPeering: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -26886,12 +30386,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteNetAccessPoint", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_net_access_point_arg a = {0};
@@ -26923,7 +30436,7 @@ int main(int ac, char **av)
 		       	   goto delete_net_access_point_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -26942,7 +30455,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -26984,6 +30508,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_net_access_point(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteNetAccessPoint: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -26991,12 +30516,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteNet", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_net_arg a = {0};
@@ -27028,7 +30566,7 @@ int main(int ac, char **av)
 		       	   goto delete_net_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -27047,7 +30585,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -27089,6 +30638,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_net(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteNet: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -27096,12 +30646,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteNatService", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_nat_service_arg a = {0};
@@ -27133,7 +30696,7 @@ int main(int ac, char **av)
 		       	   goto delete_nat_service_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -27152,7 +30715,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -27194,6 +30768,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_nat_service(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteNatService: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -27201,12 +30776,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteLoadBalancerTags", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_load_balancer_tags_arg a = {0};
@@ -27238,7 +30826,7 @@ int main(int ac, char **av)
 		       	   goto delete_load_balancer_tags_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -27257,7 +30845,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -27332,6 +30931,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_load_balancer_tags(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteLoadBalancerTags: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -27339,12 +30939,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteLoadBalancerPolicy", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_load_balancer_policy_arg a = {0};
@@ -27376,7 +30989,7 @@ int main(int ac, char **av)
 		       	   goto delete_load_balancer_policy_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -27395,7 +31008,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -27448,6 +31072,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_load_balancer_policy(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteLoadBalancerPolicy: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -27455,12 +31080,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteLoadBalancerListeners", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_load_balancer_listeners_arg a = {0};
@@ -27492,7 +31130,7 @@ int main(int ac, char **av)
 		       	   goto delete_load_balancer_listeners_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -27511,7 +31149,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -27566,6 +31215,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_load_balancer_listeners(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteLoadBalancerListeners: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -27573,12 +31223,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteLoadBalancer", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_load_balancer_arg a = {0};
@@ -27610,7 +31273,7 @@ int main(int ac, char **av)
 		       	   goto delete_load_balancer_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -27629,7 +31292,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -27671,6 +31345,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_load_balancer(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteLoadBalancer: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -27678,12 +31353,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteListenerRule", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_listener_rule_arg a = {0};
@@ -27715,7 +31403,7 @@ int main(int ac, char **av)
 		       	   goto delete_listener_rule_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -27734,7 +31422,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -27776,6 +31475,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_listener_rule(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteListenerRule: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -27783,12 +31483,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteKeypair", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_keypair_arg a = {0};
@@ -27820,7 +31533,7 @@ int main(int ac, char **av)
 		       	   goto delete_keypair_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -27839,7 +31552,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -27881,6 +31605,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_keypair(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteKeypair: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -27888,12 +31613,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteInternetService", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_internet_service_arg a = {0};
@@ -27925,7 +31663,7 @@ int main(int ac, char **av)
 		       	   goto delete_internet_service_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -27944,7 +31682,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -27986,6 +31735,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_internet_service(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteInternetService: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -27993,12 +31743,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteImage", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_image_arg a = {0};
@@ -28030,7 +31793,7 @@ int main(int ac, char **av)
 		       	   goto delete_image_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -28049,7 +31812,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -28091,6 +31865,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_image(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteImage: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -28098,12 +31873,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteFlexibleGpu", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_flexible_gpu_arg a = {0};
@@ -28135,7 +31923,7 @@ int main(int ac, char **av)
 		       	   goto delete_flexible_gpu_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -28154,7 +31942,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -28196,6 +31995,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_flexible_gpu(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteFlexibleGpu: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -28203,12 +32003,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteExportTask", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_export_task_arg a = {0};
@@ -28240,7 +32053,7 @@ int main(int ac, char **av)
 		       	   goto delete_export_task_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -28259,7 +32072,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -28301,6 +32125,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_export_task(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteExportTask: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -28308,12 +32133,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteDirectLinkInterface", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_direct_link_interface_arg a = {0};
@@ -28345,7 +32183,7 @@ int main(int ac, char **av)
 		       	   goto delete_direct_link_interface_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -28364,7 +32202,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -28406,6 +32255,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_direct_link_interface(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteDirectLinkInterface: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -28413,12 +32263,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteDirectLink", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_direct_link_arg a = {0};
@@ -28450,7 +32313,7 @@ int main(int ac, char **av)
 		       	   goto delete_direct_link_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -28469,7 +32332,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -28511,6 +32385,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_direct_link(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteDirectLink: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -28518,12 +32393,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteDhcpOptions", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_dhcp_options_arg a = {0};
@@ -28555,7 +32443,7 @@ int main(int ac, char **av)
 		       	   goto delete_dhcp_options_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -28574,7 +32462,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -28616,6 +32515,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_dhcp_options(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteDhcpOptions: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -28623,12 +32523,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteDedicatedGroup", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_dedicated_group_arg a = {0};
@@ -28660,7 +32573,7 @@ int main(int ac, char **av)
 		       	   goto delete_dedicated_group_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -28679,7 +32592,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -28737,6 +32661,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_dedicated_group(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteDedicatedGroup: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -28744,12 +32669,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteClientGateway", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_client_gateway_arg a = {0};
@@ -28781,7 +32719,7 @@ int main(int ac, char **av)
 		       	   goto delete_client_gateway_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -28800,7 +32738,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -28842,6 +32791,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_client_gateway(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteClientGateway: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -28849,12 +32799,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteCa", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_ca_arg a = {0};
@@ -28886,7 +32849,7 @@ int main(int ac, char **av)
 		       	   goto delete_ca_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -28905,7 +32868,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -28947,6 +32921,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_ca(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteCa: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -28954,12 +32929,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteApiAccessRule", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_api_access_rule_arg a = {0};
@@ -28991,7 +32979,7 @@ int main(int ac, char **av)
 		       	   goto delete_api_access_rule_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -29010,7 +32998,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -29052,6 +33051,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_api_access_rule(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteApiAccessRule: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -29059,12 +33059,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("DeleteAccessKey", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_delete_access_key_arg a = {0};
@@ -29096,7 +33109,7 @@ int main(int ac, char **av)
 		       	   goto delete_access_key_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -29115,7 +33128,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -29168,6 +33192,7 @@ int main(int ac, char **av)
 		     cret = osc_delete_access_key(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteAccessKey: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -29175,12 +33200,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateVpnConnectionRoute", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_vpn_connection_route_arg a = {0};
@@ -29212,7 +33250,7 @@ int main(int ac, char **av)
 		       	   goto create_vpn_connection_route_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -29231,7 +33269,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -29284,6 +33333,7 @@ int main(int ac, char **av)
 		     cret = osc_create_vpn_connection_route(&e, &r, &a);
             	     TRY(cret, "fail to call CreateVpnConnectionRoute: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -29291,12 +33341,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateVpnConnection", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_vpn_connection_arg a = {0};
@@ -29328,7 +33391,7 @@ int main(int ac, char **av)
 		       	   goto create_vpn_connection_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -29347,7 +33410,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -29427,6 +33501,7 @@ int main(int ac, char **av)
 		     cret = osc_create_vpn_connection(&e, &r, &a);
             	     TRY(cret, "fail to call CreateVpnConnection: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -29434,12 +33509,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateVolume", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_volume_arg a = {0};
@@ -29471,7 +33559,7 @@ int main(int ac, char **av)
 		       	   goto create_volume_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -29490,7 +33578,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -29576,6 +33675,7 @@ int main(int ac, char **av)
 		     cret = osc_create_volume(&e, &r, &a);
             	     TRY(cret, "fail to call CreateVolume: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -29583,12 +33683,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateVms", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_vms_arg a = {0};
@@ -29620,7 +33733,7 @@ int main(int ac, char **av)
 		       	   goto create_vms_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -29639,7 +33752,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -29968,6 +34092,7 @@ int main(int ac, char **av)
 		     cret = osc_create_vms(&e, &r, &a);
             	     TRY(cret, "fail to call CreateVms: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -29975,12 +34100,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateVmTemplate", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_vm_template_arg a = {0};
@@ -30012,7 +34150,7 @@ int main(int ac, char **av)
 		       	   goto create_vm_template_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -30031,7 +34169,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -30181,6 +34330,7 @@ int main(int ac, char **av)
 		     cret = osc_create_vm_template(&e, &r, &a);
             	     TRY(cret, "fail to call CreateVmTemplate: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -30188,12 +34338,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateVmGroup", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_vm_group_arg a = {0};
@@ -30225,7 +34388,7 @@ int main(int ac, char **av)
 		       	   goto create_vm_group_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -30244,7 +34407,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -30385,6 +34559,7 @@ int main(int ac, char **av)
 		     cret = osc_create_vm_group(&e, &r, &a);
             	     TRY(cret, "fail to call CreateVmGroup: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -30392,12 +34567,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateVirtualGateway", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_virtual_gateway_arg a = {0};
@@ -30429,7 +34617,7 @@ int main(int ac, char **av)
 		       	   goto create_virtual_gateway_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -30448,7 +34636,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -30490,6 +34689,7 @@ int main(int ac, char **av)
 		     cret = osc_create_virtual_gateway(&e, &r, &a);
             	     TRY(cret, "fail to call CreateVirtualGateway: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -30497,12 +34697,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateUser", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_user_arg a = {0};
@@ -30534,7 +34747,7 @@ int main(int ac, char **av)
 		       	   goto create_user_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -30553,7 +34766,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -30606,6 +34830,7 @@ int main(int ac, char **av)
 		     cret = osc_create_user(&e, &r, &a);
             	     TRY(cret, "fail to call CreateUser: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -30613,12 +34838,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateTags", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_tags_arg a = {0};
@@ -30650,7 +34888,7 @@ int main(int ac, char **av)
 		       	   goto create_tags_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -30669,7 +34907,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -30744,6 +34993,7 @@ int main(int ac, char **av)
 		     cret = osc_create_tags(&e, &r, &a);
             	     TRY(cret, "fail to call CreateTags: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -30751,12 +35001,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateSubnet", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_subnet_arg a = {0};
@@ -30788,7 +35051,7 @@ int main(int ac, char **av)
 		       	   goto create_subnet_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -30807,7 +35070,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -30871,6 +35145,7 @@ int main(int ac, char **av)
 		     cret = osc_create_subnet(&e, &r, &a);
             	     TRY(cret, "fail to call CreateSubnet: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -30878,12 +35153,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateSnapshotExportTask", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_snapshot_export_task_arg a = {0};
@@ -30915,7 +35203,7 @@ int main(int ac, char **av)
 		       	   goto create_snapshot_export_task_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -30934,7 +35222,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -30999,6 +35298,7 @@ int main(int ac, char **av)
 		     cret = osc_create_snapshot_export_task(&e, &r, &a);
             	     TRY(cret, "fail to call CreateSnapshotExportTask: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -31006,12 +35306,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateSnapshot", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_snapshot_arg a = {0};
@@ -31043,7 +35356,7 @@ int main(int ac, char **av)
 		       	   goto create_snapshot_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -31062,7 +35375,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -31159,6 +35483,7 @@ int main(int ac, char **av)
 		     cret = osc_create_snapshot(&e, &r, &a);
             	     TRY(cret, "fail to call CreateSnapshot: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -31166,12 +35491,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateServerCertificate", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_server_certificate_arg a = {0};
@@ -31203,7 +35541,7 @@ int main(int ac, char **av)
 		       	   goto create_server_certificate_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -31222,7 +35560,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -31308,6 +35657,7 @@ int main(int ac, char **av)
 		     cret = osc_create_server_certificate(&e, &r, &a);
             	     TRY(cret, "fail to call CreateServerCertificate: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -31315,12 +35665,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateSecurityGroupRule", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_security_group_rule_arg a = {0};
@@ -31352,7 +35715,7 @@ int main(int ac, char **av)
 		       	   goto create_security_group_rule_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -31371,7 +35734,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -31521,6 +35895,7 @@ int main(int ac, char **av)
 		     cret = osc_create_security_group_rule(&e, &r, &a);
             	     TRY(cret, "fail to call CreateSecurityGroupRule: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -31528,12 +35903,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateSecurityGroup", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_security_group_arg a = {0};
@@ -31565,7 +35953,7 @@ int main(int ac, char **av)
 		       	   goto create_security_group_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -31584,7 +35972,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -31648,6 +36047,7 @@ int main(int ac, char **av)
 		     cret = osc_create_security_group(&e, &r, &a);
             	     TRY(cret, "fail to call CreateSecurityGroup: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -31655,12 +36055,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateRouteTable", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_route_table_arg a = {0};
@@ -31692,7 +36105,7 @@ int main(int ac, char **av)
 		       	   goto create_route_table_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -31711,7 +36124,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -31753,6 +36177,7 @@ int main(int ac, char **av)
 		     cret = osc_create_route_table(&e, &r, &a);
             	     TRY(cret, "fail to call CreateRouteTable: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -31760,12 +36185,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateRoute", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_route_arg a = {0};
@@ -31797,7 +36235,7 @@ int main(int ac, char **av)
 		       	   goto create_route_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -31816,7 +36254,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -31924,6 +36373,7 @@ int main(int ac, char **av)
 		     cret = osc_create_route(&e, &r, &a);
             	     TRY(cret, "fail to call CreateRoute: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -31931,12 +36381,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreatePublicIp", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_public_ip_arg a = {0};
@@ -31968,7 +36431,7 @@ int main(int ac, char **av)
 		       	   goto create_public_ip_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -31987,7 +36450,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -32018,6 +36492,7 @@ int main(int ac, char **av)
 		     cret = osc_create_public_ip(&e, &r, &a);
             	     TRY(cret, "fail to call CreatePublicIp: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -32025,12 +36500,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateProductType", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_product_type_arg a = {0};
@@ -32062,7 +36550,7 @@ int main(int ac, char **av)
 		       	   goto create_product_type_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -32081,7 +36569,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -32134,6 +36633,7 @@ int main(int ac, char **av)
 		     cret = osc_create_product_type(&e, &r, &a);
             	     TRY(cret, "fail to call CreateProductType: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -32141,12 +36641,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreatePolicyVersion", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_policy_version_arg a = {0};
@@ -32178,7 +36691,7 @@ int main(int ac, char **av)
 		       	   goto create_policy_version_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -32197,7 +36710,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -32250,6 +36774,7 @@ int main(int ac, char **av)
 		     cret = osc_create_policy_version(&e, &r, &a);
             	     TRY(cret, "fail to call CreatePolicyVersion: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -32257,12 +36782,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreatePolicy", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_policy_arg a = {0};
@@ -32294,7 +36832,7 @@ int main(int ac, char **av)
 		       	   goto create_policy_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -32313,7 +36851,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -32388,6 +36937,7 @@ int main(int ac, char **av)
 		     cret = osc_create_policy(&e, &r, &a);
             	     TRY(cret, "fail to call CreatePolicy: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -32395,12 +36945,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateNic", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_nic_arg a = {0};
@@ -32432,7 +36995,7 @@ int main(int ac, char **av)
 		       	   goto create_nic_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -32451,7 +37014,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -32548,6 +37122,7 @@ int main(int ac, char **av)
 		     cret = osc_create_nic(&e, &r, &a);
             	     TRY(cret, "fail to call CreateNic: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -32555,12 +37130,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateNetPeering", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_net_peering_arg a = {0};
@@ -32592,7 +37180,7 @@ int main(int ac, char **av)
 		       	   goto create_net_peering_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -32611,7 +37199,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -32664,6 +37263,7 @@ int main(int ac, char **av)
 		     cret = osc_create_net_peering(&e, &r, &a);
             	     TRY(cret, "fail to call CreateNetPeering: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -32671,12 +37271,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateNetAccessPoint", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_net_access_point_arg a = {0};
@@ -32708,7 +37321,7 @@ int main(int ac, char **av)
 		       	   goto create_net_access_point_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -32727,7 +37340,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -32793,6 +37417,7 @@ int main(int ac, char **av)
 		     cret = osc_create_net_access_point(&e, &r, &a);
             	     TRY(cret, "fail to call CreateNetAccessPoint: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -32800,12 +37425,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateNet", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_net_arg a = {0};
@@ -32837,7 +37475,7 @@ int main(int ac, char **av)
 		       	   goto create_net_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -32856,7 +37494,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -32909,6 +37558,7 @@ int main(int ac, char **av)
 		     cret = osc_create_net(&e, &r, &a);
             	     TRY(cret, "fail to call CreateNet: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -32916,12 +37566,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateNatService", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_nat_service_arg a = {0};
@@ -32953,7 +37616,7 @@ int main(int ac, char **av)
 		       	   goto create_nat_service_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -32972,7 +37635,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -33025,6 +37699,7 @@ int main(int ac, char **av)
 		     cret = osc_create_nat_service(&e, &r, &a);
             	     TRY(cret, "fail to call CreateNatService: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -33032,12 +37707,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateLoadBalancerTags", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_load_balancer_tags_arg a = {0};
@@ -33069,7 +37757,7 @@ int main(int ac, char **av)
 		       	   goto create_load_balancer_tags_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -33088,7 +37776,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -33163,6 +37862,7 @@ int main(int ac, char **av)
 		     cret = osc_create_load_balancer_tags(&e, &r, &a);
             	     TRY(cret, "fail to call CreateLoadBalancerTags: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -33170,12 +37870,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateLoadBalancerPolicy", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_load_balancer_policy_arg a = {0};
@@ -33207,7 +37920,7 @@ int main(int ac, char **av)
 		       	   goto create_load_balancer_policy_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -33226,7 +37939,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -33312,6 +38036,7 @@ int main(int ac, char **av)
 		     cret = osc_create_load_balancer_policy(&e, &r, &a);
             	     TRY(cret, "fail to call CreateLoadBalancerPolicy: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -33319,12 +38044,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateLoadBalancerListeners", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_load_balancer_listeners_arg a = {0};
@@ -33356,7 +38094,7 @@ int main(int ac, char **av)
 		       	   goto create_load_balancer_listeners_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -33375,7 +38113,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -33448,6 +38197,7 @@ int main(int ac, char **av)
 		     cret = osc_create_load_balancer_listeners(&e, &r, &a);
             	     TRY(cret, "fail to call CreateLoadBalancerListeners: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -33455,12 +38205,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateLoadBalancer", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_load_balancer_arg a = {0};
@@ -33492,7 +38255,7 @@ int main(int ac, char **av)
 		       	   goto create_load_balancer_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -33511,7 +38274,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -33676,6 +38450,7 @@ int main(int ac, char **av)
 		     cret = osc_create_load_balancer(&e, &r, &a);
             	     TRY(cret, "fail to call CreateLoadBalancer: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -33683,12 +38458,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateListenerRule", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_listener_rule_arg a = {0};
@@ -33720,7 +38508,7 @@ int main(int ac, char **av)
 		       	   goto create_listener_rule_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -33739,7 +38527,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -33829,6 +38628,7 @@ int main(int ac, char **av)
 		     cret = osc_create_listener_rule(&e, &r, &a);
             	     TRY(cret, "fail to call CreateListenerRule: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -33836,12 +38636,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateKeypair", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_keypair_arg a = {0};
@@ -33873,7 +38686,7 @@ int main(int ac, char **av)
 		       	   goto create_keypair_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -33892,7 +38705,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -33945,6 +38769,7 @@ int main(int ac, char **av)
 		     cret = osc_create_keypair(&e, &r, &a);
             	     TRY(cret, "fail to call CreateKeypair: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -33952,12 +38777,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateInternetService", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_internet_service_arg a = {0};
@@ -33989,7 +38827,7 @@ int main(int ac, char **av)
 		       	   goto create_internet_service_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -34008,7 +38846,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -34039,6 +38888,7 @@ int main(int ac, char **av)
 		     cret = osc_create_internet_service(&e, &r, &a);
             	     TRY(cret, "fail to call CreateInternetService: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -34046,12 +38896,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateImageExportTask", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_image_export_task_arg a = {0};
@@ -34083,7 +38946,7 @@ int main(int ac, char **av)
 		       	   goto create_image_export_task_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -34102,7 +38965,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -34167,6 +39041,7 @@ int main(int ac, char **av)
 		     cret = osc_create_image_export_task(&e, &r, &a);
             	     TRY(cret, "fail to call CreateImageExportTask: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -34174,12 +39049,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateImage", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_image_arg a = {0};
@@ -34211,7 +39099,7 @@ int main(int ac, char **av)
 		       	   goto create_image_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -34230,7 +39118,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -34409,6 +39308,7 @@ int main(int ac, char **av)
 		     cret = osc_create_image(&e, &r, &a);
             	     TRY(cret, "fail to call CreateImage: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -34416,12 +39316,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateFlexibleGpu", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_flexible_gpu_arg a = {0};
@@ -34453,7 +39366,7 @@ int main(int ac, char **av)
 		       	   goto create_flexible_gpu_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -34472,7 +39385,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -34552,6 +39476,7 @@ int main(int ac, char **av)
 		     cret = osc_create_flexible_gpu(&e, &r, &a);
             	     TRY(cret, "fail to call CreateFlexibleGpu: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -34559,12 +39484,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateDirectLinkInterface", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_direct_link_interface_arg a = {0};
@@ -34596,7 +39534,7 @@ int main(int ac, char **av)
 		       	   goto create_direct_link_interface_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -34615,7 +39553,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -34680,6 +39629,7 @@ int main(int ac, char **av)
 		     cret = osc_create_direct_link_interface(&e, &r, &a);
             	     TRY(cret, "fail to call CreateDirectLinkInterface: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -34687,12 +39637,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateDirectLink", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_direct_link_arg a = {0};
@@ -34724,7 +39687,7 @@ int main(int ac, char **av)
 		       	   goto create_direct_link_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -34743,7 +39706,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -34807,6 +39781,7 @@ int main(int ac, char **av)
 		     cret = osc_create_direct_link(&e, &r, &a);
             	     TRY(cret, "fail to call CreateDirectLink: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -34814,12 +39789,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateDhcpOptions", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_dhcp_options_arg a = {0};
@@ -34851,7 +39839,7 @@ int main(int ac, char **av)
 		       	   goto create_dhcp_options_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -34870,7 +39858,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -34951,6 +39950,7 @@ int main(int ac, char **av)
 		     cret = osc_create_dhcp_options(&e, &r, &a);
             	     TRY(cret, "fail to call CreateDhcpOptions: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -34958,12 +39958,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateDedicatedGroup", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_dedicated_group_arg a = {0};
@@ -34995,7 +40008,7 @@ int main(int ac, char **av)
 		       	   goto create_dedicated_group_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -35014,7 +40027,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -35078,6 +40102,7 @@ int main(int ac, char **av)
 		     cret = osc_create_dedicated_group(&e, &r, &a);
             	     TRY(cret, "fail to call CreateDedicatedGroup: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -35085,12 +40110,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateClientGateway", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_client_gateway_arg a = {0};
@@ -35122,7 +40160,7 @@ int main(int ac, char **av)
 		       	   goto create_client_gateway_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -35141,7 +40179,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -35205,6 +40254,7 @@ int main(int ac, char **av)
 		     cret = osc_create_client_gateway(&e, &r, &a);
             	     TRY(cret, "fail to call CreateClientGateway: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -35212,12 +40262,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateCa", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_ca_arg a = {0};
@@ -35249,7 +40312,7 @@ int main(int ac, char **av)
 		       	   goto create_ca_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -35268,7 +40331,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -35321,6 +40395,7 @@ int main(int ac, char **av)
 		     cret = osc_create_ca(&e, &r, &a);
             	     TRY(cret, "fail to call CreateCa: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -35328,12 +40403,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateApiAccessRule", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_api_access_rule_arg a = {0};
@@ -35365,7 +40453,7 @@ int main(int ac, char **av)
 		       	   goto create_api_access_rule_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -35384,7 +40472,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -35465,6 +40564,7 @@ int main(int ac, char **av)
 		     cret = osc_create_api_access_rule(&e, &r, &a);
             	     TRY(cret, "fail to call CreateApiAccessRule: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -35472,12 +40572,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateAccount", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_account_arg a = {0};
@@ -35509,7 +40622,7 @@ int main(int ac, char **av)
 		       	   goto create_account_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -35528,7 +40641,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -35715,6 +40839,7 @@ int main(int ac, char **av)
 		     cret = osc_create_account(&e, &r, &a);
             	     TRY(cret, "fail to call CreateAccount: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -35722,12 +40847,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CreateAccessKey", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_create_access_key_arg a = {0};
@@ -35759,7 +40897,7 @@ int main(int ac, char **av)
 		       	   goto create_access_key_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -35778,7 +40916,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -35831,6 +40980,7 @@ int main(int ac, char **av)
 		     cret = osc_create_access_key(&e, &r, &a);
             	     TRY(cret, "fail to call CreateAccessKey: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -35838,12 +40988,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("CheckAuthentication", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_check_authentication_arg a = {0};
@@ -35875,7 +41038,7 @@ int main(int ac, char **av)
 		       	   goto check_authentication_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -35894,7 +41057,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -35947,6 +41121,7 @@ int main(int ac, char **av)
 		     cret = osc_check_authentication(&e, &r, &a);
             	     TRY(cret, "fail to call CheckAuthentication: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -35954,12 +41129,25 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
               if (!strcmp("AcceptNetPeering", av[i])) {
-		     json_object *jobj;
+		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
 		     struct ptr_array *pa = &opa;
 	      	     struct osc_accept_net_peering_arg a = {0};
@@ -35991,7 +41179,7 @@ int main(int ac, char **av)
 		       	   goto accept_net_peering_arg;
 		      }
 
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-') {
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
  		             char *next_a = &av[i + 1][2];
 			     char *str = next_a;
  		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
@@ -36010,7 +41198,18 @@ int main(int ac, char **av)
 					++incr;
 					aa = read_file(files_cnt, av[i + 3], 1);
 					STRY(!aa);
-
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
 				} else {
 					aa = 0;
 					incr = 1;
@@ -36052,6 +41251,7 @@ int main(int ac, char **av)
 		     cret = osc_accept_net_peering(&e, &r, &a);
             	     TRY(cret, "fail to call AcceptNetPeering: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
 		             puts(r.buf);
 		     else {
@@ -36059,7 +41259,20 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
 			     json_object_put(jobj);
+			     jobj = NULL;
 		      }
 		     osc_deinit_str(&r);
 	      } else
