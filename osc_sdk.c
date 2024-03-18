@@ -669,7 +669,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli CreateListenerRule --VmIds=vmids --Listener=listener --ListenerRule=listenerrule [OPTIONS]\n" "Creates a rule for traffic redirection for the specified listener. Each rule \n" "must have either the `HostNamePattern` or `PathPattern` parameter specified. \n" "Rules are treated in priority order, from the highest value to the lowest \n" "value.\nOnce the rule is created, you need to register backend VMs with it. For \n" "more information, see the \n" "[RegisterVmsInLoadBalancer](#registervmsinloadbalancer) method.\nFor more \n" "information, see [About Load \n" "Balancers](https://docs.outscale.com/en/userguide/About-Load-Balancers.html).\n" "\nRequired Argument: VmIds, Listener, ListenerRule \n"
 ,
-	"Usage: oapi-cli CreateKeypair --KeypairName=keypairname [OPTIONS]\n" "Creates a keypair to use with your virtual machines (VMs).\nYou can use this \n" "method in two different ways:\n* **Creating a keypair**: In that case, 3DS \n" "OUTSCALE creates a 2048-bit RSA keypair, stores its public key in your account, \n" "and returns its private key in the response of the call so that you can save it \n" "in a file.\nWhen you save the returned private key, make sure you replace the \n" "`\\n` escape sequences with real line breaks.\n* **Importing a keypair created \n" "locally**: If you already have a keypair that you have created locally with a \n" "third-party tool, you can import its public key in your account. The following \n" "types of key can be imported: RSA (2048 bits or preferably 4096 bits), ECDSA \n" "(256 bits), and Ed25519. The following formats can be used: PEM, PKCS8, \n" "RFC4716, and OpenSSH.\n\nFor more information, see [About \n" "Keypairs](https://docs.outscale.com/en/userguide/About-Keypairs.html).\n" "\nRequired Argument: KeypairName \n"
+	"Usage: oapi-cli CreateKeypair --KeypairName=keypairname [OPTIONS]\n" "Creates a keypair to use with your virtual machines (VMs).\nYou can use this \n" "method in two different ways:\n* **Creating a keypair**: In that case, 3DS \n" "OUTSCALE creates a 2048-bit RSA keypair, stores its public key in your account, \n" "and returns its private key in the response of the call so that you can save it \n" "in a file.\nWhen you save the returned private key, make sure you replace the \n" "`\\n` escape sequences with real line breaks.\n* **Importing a keypair created \n" "locally**: If you already have a keypair that you have created locally with a \n" "third-party tool, you can import its public key in your account. The following \n" "types of key can be imported: RSA (2048 bits or preferably 4096 bits), Ed25519, \n" "and ECDSA (256 bits, 384 bits, or 521 bits). The following formats can be used: \n" "PEM, PKCS8, RFC4716, and OpenSSH.\n\nFor more information, see [About \n" "Keypairs](https://docs.outscale.com/en/userguide/About-Keypairs.html).\n" "\nRequired Argument: KeypairName \n"
 ,
 	"Usage: oapi-cli CreateInternetService [OPTIONS]\n" "Creates an Internet service you can use with a Net.\nAn Internet service \n" "enables your virtual machines (VMs) launched in a Net to connect to the \n" "Internet. By default, a Net includes an Internet service, and each Subnet is \n" "public. Every VM launched within a default Subnet has a private IP and a public \n" "IP.\nFor more information, see [About Internet \n" "Services](https://docs.outscale.com/en/userguide/About-Internet-Services.html).\n" "\nRequired Argument: \n"
 ,
@@ -2155,7 +2155,7 @@ static const char *calls_args_descriptions[] = {
 	"      The path prefix you can use to filter the results, set to a \n"
 	"      slash (`/`) by default.\n"
 	"    -Scope: string\n"
-	"      The scope to filter policies (`ALL` \\| `OWS` \\| `local`).\n"
+	"      The scope to filter policies (`OWS` \\| `LOCAL`).\n"
 "FirstItem: int\n"
 	"  The item starting the list of policies requested.\n"
 "ResultsPerPage: int\n"
@@ -2645,11 +2645,10 @@ static const char *calls_args_descriptions[] = {
 	"  account that sends this request is a paying account) or returns nothing \n"
 	"  (if the account that sends this request is a linked account).\n"
 "ShowPrice: bool\n"
-	"  By default or if false, returns only the consumption of the specific \n"
-	"  account that sends this request. If true, returns the unit price of the \n"
-	"  consumed resource, and the total price of the consumed resource during \n"
-	"  the specified time period in the currency of the catalog of the Region \n"
-	"  where the API method was used.\n"
+	"  If true, the response also includes the unit price of the consumed \n"
+	"  resource (`UnitPrice`) and the total price of the consumed resource \n"
+	"  during the specified time period (`Price`), in the currency of the \n"
+	"  Region's catalog.\n"
 "ToDate: string\n"
 	"  The end of the time period, in ISO 8601 date format (for example, \n"
 	"  `2020-06-30`). The date-time format is also accepted, but only with a \n"
@@ -4115,7 +4114,7 @@ static const char *calls_args_descriptions[] = {
 ,
 	"Architecture: string\n"
 	"  **(when registering from a snapshot, or from a bucket without using a \n"
-	"  manifest file)** The architecture of the OMI (`i386` or `x84_64`).\n"
+	"  manifest file)** The architecture of the OMI (`i386` or `x86_64`).\n"
 "BlockDeviceMappings: array ref BlockDeviceMappingImage\n"
 	"  **(when registering from a snapshot, or from a bucket without using a \n"
 	"  manifest file)** One or more block device mappings.\n"
