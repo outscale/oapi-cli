@@ -33,6 +33,28 @@ show debug information (HTTP info, and json send to the api)
 oapi-cli --verbose ReadVms
 ```
 
+For complex argument, you can store argument in file using `--file`:
+```bash
+echo -n false > false.txt
+./oapi-cli ReadVms --DryRun --file false.txt 
+```
+Here `-DryRun` argument will be "false", as it is what is inside false.txt.
+
+
+For CreatePolicy, you should use `--jsonstr-file`.
+
+As CreatePolicy require Document to be a string contaning a jsons, if you want to pass the policy directly to oapi-cli, `--Document` argument should look like this:
+```
+"Document": "{\"Statement\": [ {\"Effect\": \"Allow\", \"Action\": [\"*\"], \"Resource\": [\"*\"]} ]}"
+```
+
+With `--jsonstr-file`, you can simply create a json containing your policy, and pass it to oapi-cli:
+
+```bash
+CreatePolicy --PolicyName please --Document --jsonstr-file ./policy.json
+```
+
+
 *Note that with osc-cli, you need to add `api`, here, as we only support outscale api, this is remove*
 
 # Autocompletion
