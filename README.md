@@ -76,6 +76,32 @@ bashcompinit
 source $HOME/oapi-cli-completion.bash
 ```
 
+# oapi-cli Variables
+
+
+oapi-cli offer its own "variables" system.
+They can be use if you want to chain calls.
+For example, let's say you want a Vm call "my vm".
+If you want to set "my vm" as a name, you would normally require to first call CreateVms.
+Then get the VmId, and use that VmId with CreateTag.
+
+This is particularly cumbersome in a script, as you need to parse CreateVm output manually to get VmId.
+
+But as oapi-cli allow to chain calls, having a way, to keep some argument taken from a Call return, and send it to the next call, enable us to make a vm with a name, in only one  oapi-cli command.
+
+To do so, here's how to do it using oapi-cli's variables:
+```sh
+CreateVms --ImageId IMG_NAME  --set-var vm_id=Vms.0.VmId \
+CreateTags --ResourceIds[] --var vm_id --Tags.0.Key Name ..Value "my vm"
+```
+
+Here `VmId` is store in `vm_id` oapi-cli variable using `--set-var vm_id=Vms.0.VmId`, and then used in CreateTags, with `-var vm_id` argument.
+
+`--set-var`, take a single argument, a string using the syntax `ID=JSON_PATH`.
+In order to use it, you need to know which part of a call return you want to store in a variable.
+
+
+
 # Config
 
 ## using `~/.osc/config.json` on unix/macOS, or .\config.json on windows
