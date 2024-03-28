@@ -53,6 +53,11 @@ extern "C" {
 #define auto_osc_str __attribute__((cleanup(osc_deinit_str)))
 #define auto_osc_env __attribute__((cleanup(osc_deinit_sdk)))
 
+/*
+ * Helper for json C
+ */
+#define auto_osc_json_c __attribute__((cleanup(osc_deinit_json_c)))
+
 #endif
 
 struct osc_str {
@@ -70,8 +75,8 @@ struct osc_str {
 
 #define OSC_ENV_FREE_AK_SK (OSC_ENV_FREE_AK | OSC_ENV_FREE_SK)
 
-#define OSC_API_VERSION "1.28.5"
-#define OSC_SDK_VERSION 0X000700
+#define OSC_API_VERSION "1.28.7"
+#define OSC_SDK_VERSION 0X000900
 
 enum osc_auth_method {
 	OSC_AKSK_METHOD,
@@ -621,7 +626,7 @@ struct catalog {
          *     The type of resource associated with the catalog entry.
          *   -UnitPrice: double
          *     The unit price of the catalog entry, in the currency of the 
-         *     catalog of the Region where the API method was used.
+         *     Region's catalog.
          */
         char *entries_str;
         int nb_entries;
@@ -661,8 +666,8 @@ struct catalog_entry {
          */
 	char *type; /* string */
         /*
-         * The unit price of the catalog entry, in the currency of the catalog 
-         * of the Region where the API method was used.
+         * The unit price of the catalog entry, in the currency of the Region's 
+         * catalog.
          */
         int is_set_unit_price;
 	double unit_price; /* double */
@@ -691,7 +696,7 @@ struct catalogs {
          *     The type of resource associated with the catalog entry.
          *   -UnitPrice: double
          *     The unit price of the catalog entry, in the currency of the 
-         *     catalog of the Region where the API method was used.
+         *     Region's catalog.
          */
         char *entries_str;
         int nb_entries;
@@ -775,8 +780,7 @@ struct consumption_entry {
 	char *paying_account_id; /* string */
         /*
          * The total price of the consumed resource during the specified time 
-         * period, in the currency of the catalog of the Region where the API 
-         * method was used.
+         * period, in the currency of the Region's catalog.
          */
         int is_set_price;
 	double price; /* double */
@@ -803,7 +807,7 @@ struct consumption_entry {
 	char *type; /* string */
         /*
          * The unit price of the consumed resource, in the currency of the 
-         * catalog of the Region where the API method was used.
+         * Region's catalog.
          */
         int is_set_unit_price;
 	double unit_price; /* double */
@@ -5257,7 +5261,7 @@ struct read_policies_filters {
          */
 	char *path_prefix; /* string */
         /*
-         * The scope to filter policies (`ALL` \\| `OWS` \\| `local`).
+         * The scope to filter policies (`OWS` \\| `LOCAL`).
          */
 	char *scope; /* string */
 };
@@ -9183,7 +9187,7 @@ struct osc_read_policies_arg  {
          *     The path prefix you can use to filter the results, set to a 
          *     slash (`/`) by default.
          *   -Scope: string
-         *     The scope to filter policies (`ALL` \\| `OWS` \\| `local`).
+         *     The scope to filter policies (`OWS` \\| `LOCAL`).
          */
         char *filters_str;
         int is_set_filters;
@@ -9929,11 +9933,10 @@ struct osc_read_consumption_account_arg  {
         int is_set_overall;
 	int overall; /* bool */
         /*
-         * By default or if false, returns only the consumption of the specific 
-         * account that sends this request. If true, returns the unit price of 
-         * the consumed resource, and the total price of the consumed resource 
-         * during the specified time period in the currency of the catalog of 
-         * the Region where the API method was used.
+         * If true, the response also includes the unit price of the consumed 
+         * resource (`UnitPrice`) and the total price of the consumed resource 
+         * during the specified time period (`Price`), in the currency of the 
+         * Region's catalog.
          */
         int is_set_show_price;
 	int show_price; /* bool */
@@ -12573,7 +12576,7 @@ struct osc_create_image_arg  {
         /* Required:none */
         /*
          * **(when registering from a snapshot, or from a bucket without using a 
-         * manifest file)** The architecture of the OMI (`i386` or `x84_64`).
+         * manifest file)** The architecture of the OMI (`i386` or `x86_64`).
          */
 	char *architecture; /* string */
         /*
@@ -13065,6 +13068,12 @@ int osc_init_sdk(struct osc_env *e, const char *profile, unsigned int flag);
 int osc_init_sdk_ext(struct osc_env *e, const char *profile,
 		     unsigned int flag, struct osc_env_conf *cfg);
 void osc_deinit_sdk(struct osc_env *e);
+
+struct json_object;
+
+typedef struct json_object json_object;
+
+void osc_deinit_json_c(json_object **j);
 
 int osc_str_append_string(struct osc_str *osc_str, const char *str);
 int osc_str_append_n_string(struct osc_str *osc_str, const char *str, int l);

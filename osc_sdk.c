@@ -669,7 +669,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli CreateListenerRule --VmIds=vmids --Listener=listener --ListenerRule=listenerrule [OPTIONS]\n" "Creates a rule for traffic redirection for the specified listener. Each rule \n" "must have either the `HostNamePattern` or `PathPattern` parameter specified. \n" "Rules are treated in priority order, from the highest value to the lowest \n" "value.\nOnce the rule is created, you need to register backend VMs with it. For \n" "more information, see the \n" "[RegisterVmsInLoadBalancer](#registervmsinloadbalancer) method.\nFor more \n" "information, see [About Load \n" "Balancers](https://docs.outscale.com/en/userguide/About-Load-Balancers.html).\n" "\nRequired Argument: VmIds, Listener, ListenerRule \n"
 ,
-	"Usage: oapi-cli CreateKeypair --KeypairName=keypairname [OPTIONS]\n" "Creates a keypair to use with your virtual machines (VMs).\nYou can use this \n" "method in two different ways:\n* **Creating a keypair**: In that case, 3DS \n" "OUTSCALE creates a 2048-bit RSA keypair, stores its public key in your account, \n" "and returns its private key in the response of the call so that you can save it \n" "in a file.\nWhen you save the returned private key, make sure you replace the \n" "`\\n` escape sequences with real line breaks.\n* **Importing a keypair created \n" "locally**: If you already have a keypair that you have created locally with a \n" "third-party tool, you can import its public key in your account. The following \n" "types of key can be imported: RSA (2048 bits or preferably 4096 bits), ECDSA \n" "(256 bits), and Ed25519. The following formats can be used: PEM, PKCS8, \n" "RFC4716, and OpenSSH.\n\nFor more information, see [About \n" "Keypairs](https://docs.outscale.com/en/userguide/About-Keypairs.html).\n" "\nRequired Argument: KeypairName \n"
+	"Usage: oapi-cli CreateKeypair --KeypairName=keypairname [OPTIONS]\n" "Creates a keypair to use with your virtual machines (VMs).\nYou can use this \n" "method in two different ways:\n* **Creating a keypair**: In that case, 3DS \n" "OUTSCALE creates a 2048-bit RSA keypair, stores its public key in your account, \n" "and returns its private key in the response of the call so that you can save it \n" "in a file.\nWhen you save the returned private key, make sure you replace the \n" "`\\n` escape sequences with real line breaks.\n* **Importing a keypair created \n" "locally**: If you already have a keypair that you have created locally with a \n" "third-party tool, you can import its public key in your account. The following \n" "types of key can be imported: RSA (2048 bits or preferably 4096 bits), Ed25519, \n" "and ECDSA (256 bits, 384 bits, or 521 bits). The following formats can be used: \n" "PEM, PKCS8, RFC4716, and OpenSSH.\n\nFor more information, see [About \n" "Keypairs](https://docs.outscale.com/en/userguide/About-Keypairs.html).\n" "\nRequired Argument: KeypairName \n"
 ,
 	"Usage: oapi-cli CreateInternetService [OPTIONS]\n" "Creates an Internet service you can use with a Net.\nAn Internet service \n" "enables your virtual machines (VMs) launched in a Net to connect to the \n" "Internet. By default, a Net includes an Internet service, and each Subnet is \n" "public. Every VM launched within a default Subnet has a private IP and a public \n" "IP.\nFor more information, see [About Internet \n" "Services](https://docs.outscale.com/en/userguide/About-Internet-Services.html).\n" "\nRequired Argument: \n"
 ,
@@ -2155,7 +2155,7 @@ static const char *calls_args_descriptions[] = {
 	"      The path prefix you can use to filter the results, set to a \n"
 	"      slash (`/`) by default.\n"
 	"    -Scope: string\n"
-	"      The scope to filter policies (`ALL` \\| `OWS` \\| `local`).\n"
+	"      The scope to filter policies (`OWS` \\| `LOCAL`).\n"
 "FirstItem: int\n"
 	"  The item starting the list of policies requested.\n"
 "ResultsPerPage: int\n"
@@ -2645,11 +2645,10 @@ static const char *calls_args_descriptions[] = {
 	"  account that sends this request is a paying account) or returns nothing \n"
 	"  (if the account that sends this request is a linked account).\n"
 "ShowPrice: bool\n"
-	"  By default or if false, returns only the consumption of the specific \n"
-	"  account that sends this request. If true, returns the unit price of the \n"
-	"  consumed resource, and the total price of the consumed resource during \n"
-	"  the specified time period in the currency of the catalog of the Region \n"
-	"  where the API method was used.\n"
+	"  If true, the response also includes the unit price of the consumed \n"
+	"  resource (`UnitPrice`) and the total price of the consumed resource \n"
+	"  during the specified time period (`Price`), in the currency of the \n"
+	"  Region's catalog.\n"
 "ToDate: string\n"
 	"  The end of the time period, in ISO 8601 date format (for example, \n"
 	"  `2020-06-30`). The date-time format is also accepted, but only with a \n"
@@ -4115,7 +4114,7 @@ static const char *calls_args_descriptions[] = {
 ,
 	"Architecture: string\n"
 	"  **(when registering from a snapshot, or from a bucket without using a \n"
-	"  manifest file)** The architecture of the OMI (`i386` or `x84_64`).\n"
+	"  manifest file)** The architecture of the OMI (`i386` or `x86_64`).\n"
 "BlockDeviceMappings: array ref BlockDeviceMappingImage\n"
 	"  **(when registering from a snapshot, or from a bucket without using a \n"
 	"  manifest file)** One or more block device mappings.\n"
@@ -4423,16 +4422,6 @@ const char **osc_calls_name(void)
 #define THREAD_LOCAL
 #endif
 
-static void osc_json_c_obj_put(json_object **js)
-{
-	if (!*js)
-		return;
-	json_object_put(*js);
-}
-
-#define auto_osc_json_c_obj_put __attribute__((cleanup(osc_json_c_obj_put)))
-
-
 static THREAD_LOCAL const char *cfg_path;
 
 void osc_set_cfg_path(const char *cfg)
@@ -4588,7 +4577,7 @@ int osc_load_ak_sk_from_conf(const char *profile, char **ak, char **sk)
 	char buf[1024];
 	const char *cfg = cfg_path;
 	struct json_object *js, *ak_js, *sk_js;
-	auto_osc_json_c_obj_put struct json_object *to_free = NULL;
+	auto_osc_json_c struct json_object *to_free = NULL;
 
 	if (!ak && !sk)
 		return 0;
@@ -4624,7 +4613,7 @@ int osc_load_loging_password_from_conf(const char *profile,
 {
 	char buf[1024];
 	const char *cfg = cfg_path;
-	auto_osc_json_c_obj_put struct json_object *to_free = NULL;
+	auto_osc_json_c struct json_object *to_free = NULL;
 	struct json_object *js, *login_js, *pass_js;
 
 	if (!email && !password)
@@ -4664,7 +4653,7 @@ int osc_load_region_from_conf(const char *profile, char **region)
 	const char *cfg = cfg_path;
 	char buf[1024];
 	struct json_object *js;
-	auto_osc_json_c_obj_put struct json_object *to_free = NULL;
+	auto_osc_json_c struct json_object *to_free = NULL;
 
 	if (!cfg) {
 		LOAD_CFG_GET_HOME(buf);
@@ -4689,7 +4678,7 @@ int osc_load_cert_from_conf(const char *profile, char **cert, char **key)
 {
 	struct json_object *cert_obj, *key_obj, *js;
 	const char *cfg = cfg_path;
-	auto_osc_json_c_obj_put struct json_object *to_free = NULL;
+	auto_osc_json_c struct json_object *to_free = NULL;
 	char buf[1024];
 	int ret = 0;
 
@@ -4739,6 +4728,12 @@ void osc_init_str(struct osc_str *r)
 {
 	r->len = 0;
 	r->buf = NULL;
+}
+
+void osc_deinit_json_c(json_object **j)
+{
+	if (j && *j)
+		json_object_put(*j);
 }
 
 void osc_deinit_str(struct osc_str *r)
@@ -15970,7 +15965,7 @@ int osc_update_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -16031,7 +16026,7 @@ int osc_update_volume(struct osc_env *e, struct osc_str *out, struct osc_update_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -16107,7 +16102,7 @@ int osc_update_vm_template(struct osc_env *e, struct osc_str *out, struct osc_up
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -16188,7 +16183,7 @@ int osc_update_vm_group(struct osc_env *e, struct osc_str *out, struct osc_updat
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -16311,7 +16306,7 @@ int osc_update_vm(struct osc_env *e, struct osc_str *out, struct osc_update_vm_a
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -16369,7 +16364,7 @@ int osc_update_user(struct osc_env *e, struct osc_str *out, struct osc_update_us
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -16421,7 +16416,7 @@ int osc_update_subnet(struct osc_env *e, struct osc_str *out, struct osc_update_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -16479,7 +16474,7 @@ int osc_update_snapshot(struct osc_env *e, struct osc_str *out, struct osc_updat
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -16537,7 +16532,7 @@ int osc_update_server_certificate(struct osc_env *e, struct osc_str *out, struct
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -16590,7 +16585,7 @@ int osc_update_route_table_link(struct osc_env *e, struct osc_str *out, struct o
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -16647,7 +16642,7 @@ int osc_update_route_propagation(struct osc_env *e, struct osc_str *out, struct 
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -16725,7 +16720,7 @@ int osc_update_route(struct osc_env *e, struct osc_str *out, struct osc_update_r
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -16804,7 +16799,7 @@ int osc_update_nic(struct osc_env *e, struct osc_str *out, struct osc_update_nic
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -16884,7 +16879,7 @@ int osc_update_net_access_point(struct osc_env *e, struct osc_str *out, struct o
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -16937,7 +16932,7 @@ int osc_update_net(struct osc_env *e, struct osc_str *out, struct osc_update_net
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -17055,7 +17050,7 @@ int osc_update_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -17113,7 +17108,7 @@ int osc_update_listener_rule(struct osc_env *e, struct osc_str *out, struct osc_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -17171,7 +17166,7 @@ int osc_update_image(struct osc_env *e, struct osc_str *out, struct osc_update_i
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -17223,7 +17218,7 @@ int osc_update_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_u
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -17275,7 +17270,7 @@ int osc_update_direct_link_interface(struct osc_env *e, struct osc_str *out, str
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -17328,7 +17323,7 @@ int osc_update_dedicated_group(struct osc_env *e, struct osc_str *out, struct os
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -17381,7 +17376,7 @@ int osc_update_ca(struct osc_env *e, struct osc_str *out, struct osc_update_ca_a
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -17482,7 +17477,7 @@ int osc_update_api_access_rule(struct osc_env *e, struct osc_str *out, struct os
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -17533,7 +17528,7 @@ int osc_update_api_access_policy(struct osc_env *e, struct osc_str *out, struct 
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -17652,7 +17647,7 @@ int osc_update_account(struct osc_env *e, struct osc_str *out, struct osc_update
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -17715,7 +17710,7 @@ int osc_update_access_key(struct osc_env *e, struct osc_str *out, struct osc_upd
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -17767,7 +17762,7 @@ int osc_unlink_volume(struct osc_env *e, struct osc_str *out, struct osc_unlink_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -17820,7 +17815,7 @@ int osc_unlink_virtual_gateway(struct osc_env *e, struct osc_str *out, struct os
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -17868,7 +17863,7 @@ int osc_unlink_route_table(struct osc_env *e, struct osc_str *out, struct osc_un
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -17921,7 +17916,7 @@ int osc_unlink_public_ip(struct osc_env *e, struct osc_str *out, struct osc_unli
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -17985,7 +17980,7 @@ int osc_unlink_private_ips(struct osc_env *e, struct osc_str *out, struct osc_un
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -18038,7 +18033,7 @@ int osc_unlink_policy(struct osc_env *e, struct osc_str *out, struct osc_unlink_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -18086,7 +18081,7 @@ int osc_unlink_nic(struct osc_env *e, struct osc_str *out, struct osc_unlink_nic
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -18166,7 +18161,7 @@ int osc_unlink_load_balancer_backend_machines(struct osc_env *e, struct osc_str 
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -18219,7 +18214,7 @@ int osc_unlink_internet_service(struct osc_env *e, struct osc_str *out, struct o
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -18267,7 +18262,7 @@ int osc_unlink_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_u
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -18330,7 +18325,7 @@ int osc_stop_vms(struct osc_env *e, struct osc_str *out, struct osc_stop_vms_arg
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -18389,7 +18384,7 @@ int osc_start_vms(struct osc_env *e, struct osc_str *out, struct osc_start_vms_a
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -18438,7 +18433,7 @@ int osc_set_default_policy_version(struct osc_env *e, struct osc_str *out, struc
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -18490,7 +18485,7 @@ int osc_scale_up_vm_group(struct osc_env *e, struct osc_str *out, struct osc_sca
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -18542,7 +18537,7 @@ int osc_scale_down_vm_group(struct osc_env *e, struct osc_str *out, struct osc_s
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -18590,7 +18585,7 @@ int osc_reject_net_peering(struct osc_env *e, struct osc_str *out, struct osc_re
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -18654,7 +18649,7 @@ int osc_register_vms_in_load_balancer(struct osc_env *e, struct osc_str *out, st
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -18713,7 +18708,7 @@ int osc_reboot_vms(struct osc_env *e, struct osc_str *out, struct osc_reboot_vms
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -18775,7 +18770,7 @@ int osc_read_vpn_connections(struct osc_env *e, struct osc_str *out, struct osc_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -18837,7 +18832,7 @@ int osc_read_volumes(struct osc_env *e, struct osc_str *out, struct osc_read_vol
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -18894,7 +18889,7 @@ int osc_read_vms_state(struct osc_env *e, struct osc_str *out, struct osc_read_v
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -18958,7 +18953,7 @@ int osc_read_vms_health(struct osc_env *e, struct osc_str *out, struct osc_read_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -19020,7 +19015,7 @@ int osc_read_vms(struct osc_env *e, struct osc_str *out, struct osc_read_vms_arg
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -19073,7 +19068,7 @@ int osc_read_vm_types(struct osc_env *e, struct osc_str *out, struct osc_read_vm
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -19126,7 +19121,7 @@ int osc_read_vm_templates(struct osc_env *e, struct osc_str *out, struct osc_rea
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -19179,7 +19174,7 @@ int osc_read_vm_groups(struct osc_env *e, struct osc_str *out, struct osc_read_v
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -19241,7 +19236,7 @@ int osc_read_virtual_gateways(struct osc_env *e, struct osc_str *out, struct osc
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -19284,7 +19279,7 @@ int osc_read_users(struct osc_env *e, struct osc_str *out, struct osc_read_users
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -19337,7 +19332,7 @@ int osc_read_tags(struct osc_env *e, struct osc_str *out, struct osc_read_tags_a
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -19390,7 +19385,7 @@ int osc_read_subregions(struct osc_env *e, struct osc_str *out, struct osc_read_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -19443,7 +19438,7 @@ int osc_read_subnets(struct osc_env *e, struct osc_str *out, struct osc_read_sub
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -19496,7 +19491,7 @@ int osc_read_snapshots(struct osc_env *e, struct osc_str *out, struct osc_read_s
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -19549,7 +19544,7 @@ int osc_read_snapshot_export_tasks(struct osc_env *e, struct osc_str *out, struc
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -19602,7 +19597,7 @@ int osc_read_server_certificates(struct osc_env *e, struct osc_str *out, struct 
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -19655,7 +19650,7 @@ int osc_read_security_groups(struct osc_env *e, struct osc_str *out, struct osc_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -19703,7 +19698,7 @@ int osc_read_secret_access_key(struct osc_env *e, struct osc_str *out, struct os
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -19765,7 +19760,7 @@ int osc_read_route_tables(struct osc_env *e, struct osc_str *out, struct osc_rea
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -19808,7 +19803,7 @@ int osc_read_regions(struct osc_env *e, struct osc_str *out, struct osc_read_reg
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -19861,7 +19856,7 @@ int osc_read_quotas(struct osc_env *e, struct osc_str *out, struct osc_read_quot
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -19923,7 +19918,7 @@ int osc_read_public_ips(struct osc_env *e, struct osc_str *out, struct osc_read_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -19966,7 +19961,7 @@ int osc_read_public_ip_ranges(struct osc_env *e, struct osc_str *out, struct osc
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -20009,7 +20004,7 @@ int osc_read_public_catalog(struct osc_env *e, struct osc_str *out, struct osc_r
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -20062,7 +20057,7 @@ int osc_read_product_types(struct osc_env *e, struct osc_str *out, struct osc_re
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -20114,7 +20109,7 @@ int osc_read_policy_versions(struct osc_env *e, struct osc_str *out, struct osc_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -20163,7 +20158,7 @@ int osc_read_policy_version(struct osc_env *e, struct osc_str *out, struct osc_r
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -20207,7 +20202,7 @@ int osc_read_policy(struct osc_env *e, struct osc_str *out, struct osc_read_poli
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -20268,7 +20263,7 @@ int osc_read_policies(struct osc_env *e, struct osc_str *out, struct osc_read_po
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -20321,7 +20316,7 @@ int osc_read_nics(struct osc_env *e, struct osc_str *out, struct osc_read_nics_a
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -20374,7 +20369,7 @@ int osc_read_nets(struct osc_env *e, struct osc_str *out, struct osc_read_nets_a
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -20436,7 +20431,7 @@ int osc_read_net_peerings(struct osc_env *e, struct osc_str *out, struct osc_rea
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -20498,7 +20493,7 @@ int osc_read_net_access_points(struct osc_env *e, struct osc_str *out, struct os
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -20551,7 +20546,7 @@ int osc_read_net_access_point_services(struct osc_env *e, struct osc_str *out, s
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -20613,7 +20608,7 @@ int osc_read_nat_services(struct osc_env *e, struct osc_str *out, struct osc_rea
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -20656,7 +20651,7 @@ int osc_read_locations(struct osc_env *e, struct osc_str *out, struct osc_read_l
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -20709,7 +20704,7 @@ int osc_read_load_balancers(struct osc_env *e, struct osc_str *out, struct osc_r
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -20768,7 +20763,7 @@ int osc_read_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct o
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -20821,7 +20816,7 @@ int osc_read_listener_rules(struct osc_env *e, struct osc_str *out, struct osc_r
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -20887,7 +20882,7 @@ int osc_read_linked_policies(struct osc_env *e, struct osc_str *out, struct osc_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -20940,7 +20935,7 @@ int osc_read_keypairs(struct osc_env *e, struct osc_str *out, struct osc_read_ke
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -20993,7 +20988,7 @@ int osc_read_internet_services(struct osc_env *e, struct osc_str *out, struct os
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -21055,7 +21050,7 @@ int osc_read_images(struct osc_env *e, struct osc_str *out, struct osc_read_imag
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -21108,7 +21103,7 @@ int osc_read_image_export_tasks(struct osc_env *e, struct osc_str *out, struct o
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -21161,7 +21156,7 @@ int osc_read_flexible_gpus(struct osc_env *e, struct osc_str *out, struct osc_re
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -21204,7 +21199,7 @@ int osc_read_flexible_gpu_catalog(struct osc_env *e, struct osc_str *out, struct
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -21257,7 +21252,7 @@ int osc_read_direct_links(struct osc_env *e, struct osc_str *out, struct osc_rea
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -21310,7 +21305,7 @@ int osc_read_direct_link_interfaces(struct osc_env *e, struct osc_str *out, stru
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -21372,7 +21367,7 @@ int osc_read_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_rea
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -21425,7 +21420,7 @@ int osc_read_dedicated_groups(struct osc_env *e, struct osc_str *out, struct osc
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -21486,7 +21481,7 @@ int osc_read_consumption_account(struct osc_env *e, struct osc_str *out, struct 
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -21534,7 +21529,7 @@ int osc_read_console_output(struct osc_env *e, struct osc_str *out, struct osc_r
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -21587,7 +21582,7 @@ int osc_read_client_gateways(struct osc_env *e, struct osc_str *out, struct osc_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -21640,7 +21635,7 @@ int osc_read_catalogs(struct osc_env *e, struct osc_str *out, struct osc_read_ca
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -21683,7 +21678,7 @@ int osc_read_catalog(struct osc_env *e, struct osc_str *out, struct osc_read_cat
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -21736,7 +21731,7 @@ int osc_read_cas(struct osc_env *e, struct osc_str *out, struct osc_read_cas_arg
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -21808,7 +21803,7 @@ int osc_read_api_logs(struct osc_env *e, struct osc_str *out, struct osc_read_ap
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -21861,7 +21856,7 @@ int osc_read_api_access_rules(struct osc_env *e, struct osc_str *out, struct osc
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -21904,7 +21899,7 @@ int osc_read_api_access_policy(struct osc_env *e, struct osc_str *out, struct os
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -21952,7 +21947,7 @@ int osc_read_admin_password(struct osc_env *e, struct osc_str *out, struct osc_r
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -21995,7 +21990,7 @@ int osc_read_accounts(struct osc_env *e, struct osc_str *out, struct osc_read_ac
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -22053,7 +22048,7 @@ int osc_read_access_keys(struct osc_env *e, struct osc_str *out, struct osc_read
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -22111,7 +22106,7 @@ int osc_link_volume(struct osc_env *e, struct osc_str *out, struct osc_link_volu
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -22164,7 +22159,7 @@ int osc_link_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -22217,7 +22212,7 @@ int osc_link_route_table(struct osc_env *e, struct osc_str *out, struct osc_link
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -22289,7 +22284,7 @@ int osc_link_public_ip(struct osc_env *e, struct osc_str *out, struct osc_link_p
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -22361,7 +22356,7 @@ int osc_link_private_ips(struct osc_env *e, struct osc_str *out, struct osc_link
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -22414,7 +22409,7 @@ int osc_link_policy(struct osc_env *e, struct osc_str *out, struct osc_link_poli
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -22471,7 +22466,7 @@ int osc_link_nic(struct osc_env *e, struct osc_str *out, struct osc_link_nic_arg
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -22551,7 +22546,7 @@ int osc_link_load_balancer_backend_machines(struct osc_env *e, struct osc_str *o
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -22604,7 +22599,7 @@ int osc_link_internet_service(struct osc_env *e, struct osc_str *out, struct osc
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -22657,7 +22652,7 @@ int osc_link_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_lin
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -22721,7 +22716,7 @@ int osc_deregister_vms_in_load_balancer(struct osc_env *e, struct osc_str *out, 
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -22774,7 +22769,7 @@ int osc_delete_vpn_connection_route(struct osc_env *e, struct osc_str *out, stru
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -22822,7 +22817,7 @@ int osc_delete_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -22870,7 +22865,7 @@ int osc_delete_volume(struct osc_env *e, struct osc_str *out, struct osc_delete_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -22929,7 +22924,7 @@ int osc_delete_vms(struct osc_env *e, struct osc_str *out, struct osc_delete_vms
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -22977,7 +22972,7 @@ int osc_delete_vm_template(struct osc_env *e, struct osc_str *out, struct osc_de
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -23025,7 +23020,7 @@ int osc_delete_vm_group(struct osc_env *e, struct osc_str *out, struct osc_delet
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -23073,7 +23068,7 @@ int osc_delete_virtual_gateway(struct osc_env *e, struct osc_str *out, struct os
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -23121,7 +23116,7 @@ int osc_delete_user(struct osc_env *e, struct osc_str *out, struct osc_delete_us
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -23198,7 +23193,7 @@ int osc_delete_tags(struct osc_env *e, struct osc_str *out, struct osc_delete_ta
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -23246,7 +23241,7 @@ int osc_delete_subnet(struct osc_env *e, struct osc_str *out, struct osc_delete_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -23294,7 +23289,7 @@ int osc_delete_snapshot(struct osc_env *e, struct osc_str *out, struct osc_delet
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -23342,7 +23337,7 @@ int osc_delete_server_certificate(struct osc_env *e, struct osc_str *out, struct
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -23441,7 +23436,7 @@ int osc_delete_security_group_rule(struct osc_env *e, struct osc_str *out, struc
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -23494,7 +23489,7 @@ int osc_delete_security_group(struct osc_env *e, struct osc_str *out, struct osc
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -23542,7 +23537,7 @@ int osc_delete_route_table(struct osc_env *e, struct osc_str *out, struct osc_de
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -23595,7 +23590,7 @@ int osc_delete_route(struct osc_env *e, struct osc_str *out, struct osc_delete_r
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -23648,7 +23643,7 @@ int osc_delete_public_ip(struct osc_env *e, struct osc_str *out, struct osc_dele
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -23697,7 +23692,7 @@ int osc_delete_policy_version(struct osc_env *e, struct osc_str *out, struct osc
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -23745,7 +23740,7 @@ int osc_delete_policy(struct osc_env *e, struct osc_str *out, struct osc_delete_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -23793,7 +23788,7 @@ int osc_delete_nic(struct osc_env *e, struct osc_str *out, struct osc_delete_nic
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -23841,7 +23836,7 @@ int osc_delete_net_peering(struct osc_env *e, struct osc_str *out, struct osc_de
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -23889,7 +23884,7 @@ int osc_delete_net_access_point(struct osc_env *e, struct osc_str *out, struct o
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -23937,7 +23932,7 @@ int osc_delete_net(struct osc_env *e, struct osc_str *out, struct osc_delete_net
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -23985,7 +23980,7 @@ int osc_delete_nat_service(struct osc_env *e, struct osc_str *out, struct osc_de
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -24062,7 +24057,7 @@ int osc_delete_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -24115,7 +24110,7 @@ int osc_delete_load_balancer_policy(struct osc_env *e, struct osc_str *out, stru
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -24179,7 +24174,7 @@ int osc_delete_load_balancer_listeners(struct osc_env *e, struct osc_str *out, s
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -24227,7 +24222,7 @@ int osc_delete_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -24275,7 +24270,7 @@ int osc_delete_listener_rule(struct osc_env *e, struct osc_str *out, struct osc_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -24323,7 +24318,7 @@ int osc_delete_keypair(struct osc_env *e, struct osc_str *out, struct osc_delete
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -24371,7 +24366,7 @@ int osc_delete_internet_service(struct osc_env *e, struct osc_str *out, struct o
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -24419,7 +24414,7 @@ int osc_delete_image(struct osc_env *e, struct osc_str *out, struct osc_delete_i
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -24467,7 +24462,7 @@ int osc_delete_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_d
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -24515,7 +24510,7 @@ int osc_delete_export_task(struct osc_env *e, struct osc_str *out, struct osc_de
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -24563,7 +24558,7 @@ int osc_delete_direct_link_interface(struct osc_env *e, struct osc_str *out, str
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -24611,7 +24606,7 @@ int osc_delete_direct_link(struct osc_env *e, struct osc_str *out, struct osc_de
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -24659,7 +24654,7 @@ int osc_delete_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_d
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -24711,7 +24706,7 @@ int osc_delete_dedicated_group(struct osc_env *e, struct osc_str *out, struct os
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -24759,7 +24754,7 @@ int osc_delete_client_gateway(struct osc_env *e, struct osc_str *out, struct osc
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -24807,7 +24802,7 @@ int osc_delete_ca(struct osc_env *e, struct osc_str *out, struct osc_delete_ca_a
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -24855,7 +24850,7 @@ int osc_delete_api_access_rule(struct osc_env *e, struct osc_str *out, struct os
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -24908,7 +24903,7 @@ int osc_delete_access_key(struct osc_env *e, struct osc_str *out, struct osc_del
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -24961,7 +24956,7 @@ int osc_create_vpn_connection_route(struct osc_env *e, struct osc_str *out, stru
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -25023,7 +25018,7 @@ int osc_create_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -25089,7 +25084,7 @@ int osc_create_volume(struct osc_env *e, struct osc_str *out, struct osc_create_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -25290,7 +25285,7 @@ int osc_create_vms(struct osc_env *e, struct osc_str *out, struct osc_create_vms
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -25389,7 +25384,7 @@ int osc_create_vm_template(struct osc_env *e, struct osc_str *out, struct osc_cr
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -25495,7 +25490,7 @@ int osc_create_vm_group(struct osc_env *e, struct osc_str *out, struct osc_creat
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -25543,7 +25538,7 @@ int osc_create_virtual_gateway(struct osc_env *e, struct osc_str *out, struct os
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -25596,7 +25591,7 @@ int osc_create_user(struct osc_env *e, struct osc_str *out, struct osc_create_us
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -25673,7 +25668,7 @@ int osc_create_tags(struct osc_env *e, struct osc_str *out, struct osc_create_ta
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -25731,7 +25726,7 @@ int osc_create_subnet(struct osc_env *e, struct osc_str *out, struct osc_create_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -25789,7 +25784,7 @@ int osc_create_snapshot_export_task(struct osc_env *e, struct osc_str *out, stru
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -25861,7 +25856,7 @@ int osc_create_snapshot(struct osc_env *e, struct osc_str *out, struct osc_creat
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -25929,7 +25924,7 @@ int osc_create_server_certificate(struct osc_env *e, struct osc_str *out, struct
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -26028,7 +26023,7 @@ int osc_create_security_group_rule(struct osc_env *e, struct osc_str *out, struc
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -26086,7 +26081,7 @@ int osc_create_security_group(struct osc_env *e, struct osc_str *out, struct osc
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -26134,7 +26129,7 @@ int osc_create_route_table(struct osc_env *e, struct osc_str *out, struct osc_cr
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -26212,7 +26207,7 @@ int osc_create_route(struct osc_env *e, struct osc_str *out, struct osc_create_r
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -26255,7 +26250,7 @@ int osc_create_public_ip(struct osc_env *e, struct osc_str *out, struct osc_crea
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -26308,7 +26303,7 @@ int osc_create_product_type(struct osc_env *e, struct osc_str *out, struct osc_c
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -26361,7 +26356,7 @@ int osc_create_policy_version(struct osc_env *e, struct osc_str *out, struct osc
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -26424,7 +26419,7 @@ int osc_create_policy(struct osc_env *e, struct osc_str *out, struct osc_create_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -26511,7 +26506,7 @@ int osc_create_nic(struct osc_env *e, struct osc_str *out, struct osc_create_nic
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -26564,7 +26559,7 @@ int osc_create_net_peering(struct osc_env *e, struct osc_str *out, struct osc_cr
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -26633,7 +26628,7 @@ int osc_create_net_access_point(struct osc_env *e, struct osc_str *out, struct o
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -26686,7 +26681,7 @@ int osc_create_net(struct osc_env *e, struct osc_str *out, struct osc_create_net
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -26739,7 +26734,7 @@ int osc_create_nat_service(struct osc_env *e, struct osc_str *out, struct osc_cr
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -26816,7 +26811,7 @@ int osc_create_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -26883,7 +26878,7 @@ int osc_create_load_balancer_policy(struct osc_env *e, struct osc_str *out, stru
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -26949,7 +26944,7 @@ int osc_create_load_balancer_listeners(struct osc_env *e, struct osc_str *out, s
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -27091,7 +27086,7 @@ int osc_create_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -27170,7 +27165,7 @@ int osc_create_listener_rule(struct osc_env *e, struct osc_str *out, struct osc_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -27223,7 +27218,7 @@ int osc_create_keypair(struct osc_env *e, struct osc_str *out, struct osc_create
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -27266,7 +27261,7 @@ int osc_create_internet_service(struct osc_env *e, struct osc_str *out, struct o
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -27324,7 +27319,7 @@ int osc_create_image_export_task(struct osc_env *e, struct osc_str *out, struct 
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -27445,7 +27440,7 @@ int osc_create_image(struct osc_env *e, struct osc_str *out, struct osc_create_i
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -27507,7 +27502,7 @@ int osc_create_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_c
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -27565,7 +27560,7 @@ int osc_create_direct_link_interface(struct osc_env *e, struct osc_str *out, str
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -27623,7 +27618,7 @@ int osc_create_direct_link(struct osc_env *e, struct osc_str *out, struct osc_cr
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -27719,7 +27714,7 @@ int osc_create_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_c
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -27776,7 +27771,7 @@ int osc_create_dedicated_group(struct osc_env *e, struct osc_str *out, struct os
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -27833,7 +27828,7 @@ int osc_create_client_gateway(struct osc_env *e, struct osc_str *out, struct osc
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -27886,7 +27881,7 @@ int osc_create_ca(struct osc_env *e, struct osc_str *out, struct osc_create_ca_a
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -27982,7 +27977,7 @@ int osc_create_api_access_rule(struct osc_env *e, struct osc_str *out, struct os
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -28106,7 +28101,7 @@ int osc_create_account(struct osc_env *e, struct osc_str *out, struct osc_create
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -28159,7 +28154,7 @@ int osc_create_access_key(struct osc_env *e, struct osc_str *out, struct osc_cre
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -28212,7 +28207,7 @@ int osc_check_authentication(struct osc_env *e, struct osc_str *out, struct osc_
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
@@ -28260,7 +28255,7 @@ int osc_accept_net_peering(struct osc_env *e, struct osc_str *out, struct osc_ac
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
 	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Date send to curl>\n%s\n</Date send to curl>\n", data.buf);
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
 out:
