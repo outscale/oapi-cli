@@ -35,12 +35,12 @@ oapi-cli --help > /dev/null
 echo [Test \"$oapi_cli\" --help OK]
 
 trap "echo '[Test \"$oapi_cli\" --help NyanCat doesn t crash FAIL]'" ERR
-oapi-cli --help NyanCat --config="./local-tests-cfg.json" | grep 'Unknow Call' > /dev/null
+oapi-cli --help NyanCat --config="./local-tests-cfg.json" | grep 'Unknown Call' > /dev/null
 echo [Test \"$oapi_cli\" --help NyanCat doesn t crash OK]
 
-trap "echo [Test unknow user is unknow FAIL]" ERR
-oapi-cli   --password=useless --login=non-existant CreateVms ReadVms  ReadVms --Filters.VmIds[] i-00000000 | grep -e 'Unknow user' -e "AuthFailure" -e "require auth" > /dev/null
-echo "[Test unknow user is unknow OK]"
+trap "echo [Test unknown user is unknown FAIL]" ERR
+oapi-cli   --password=useless --login=non-existant CreateVms ReadVms  ReadVms --Filters.VmIds[] i-00000000 | grep -e 'Unknown user' -e "AuthFailure" -e "require auth" > /dev/null
+echo "[Test unknown user is unknown OK]"
 
 trap "echo [Test Create vms and read with user 0 FAIL]" ERR
 oapi-cli  --password='ashita wa dochida' --login='joe' CreateVms ReadVms  ReadVms --Filters.VmIds[] i-00000003 | jq .Vms  > /dev/null
