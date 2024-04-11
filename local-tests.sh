@@ -46,6 +46,10 @@ trap "echo [Test Create vms and read with user 0 FAIL]" ERR
 oapi-cli  --password='ashita wa dochida' --login='joe' CreateVms ReadVms  ReadVms --Filters.VmIds[] i-00000003 | jq .Vms  > /dev/null
 echo '[Test Create vms and read with user 0 OK]'
 
+trap "echo [Test read vm with user and --raw-print 0 FAIL]" ERR
+oapi-cli --raw-print  --password='ashita wa dochida' --login='joe' ReadVms --Filters.VmIds[] i-00000003 | jq .Vms  > /dev/null
+echo "[Test read vm with user and --raw-print 0 OK]"
+
 trap "echo [Test Read vms with user 1  FAIL]" ERR
 export OSC_LOGIN=titi
 oapi-cli   --password='toto' ReadVms --Filters.VmIds[] i-00000003 | jq .Vms | grep '\[]' > /dev/null
