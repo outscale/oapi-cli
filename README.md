@@ -91,7 +91,7 @@ But as oapi-cli allow to chain calls, having a way, to keep some argument taken 
 
 To do so, here's how to do it using oapi-cli's variables:
 ```sh
-CreateVms --ImageId IMG_NAME  --set-var vm_id=Vms.0.VmId \
+oapi-cli CreateVms --ImageId IMG_NAME  --set-var vm_id=Vms.0.VmId \
 CreateTags --ResourceIds[] --var vm_id --Tags.0.Key Name ..Value "my vm"
 ```
 
@@ -100,7 +100,7 @@ Here `VmId` is store in `vm_id` oapi-cli variable using `--set-var vm_id=Vms.0.V
 `--set-var`, take a single argument, a string using the syntax `ID=JSON_PATH`.
 In order to use it, you need to know which part of a call return you want to store in a variable.
 
-
+more examples [here](./variable.md)
 
 # Config
 
