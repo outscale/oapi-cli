@@ -47,7 +47,7 @@
 
 #define OAPI_RAW_OUTPUT 1
 
-#define OAPI_CLI_VERSION "0.3.0"
+#define OAPI_CLI_VERSION "0.4.0"
 
 #define OAPI_CLI_UAGENT "oapi-cli/"OAPI_CLI_VERSION"; osc-sdk-c/"
 
@@ -285,6 +285,7 @@ int filters_snapshot_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_subnet_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_subregion_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_tag_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int filters_user_group_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_virtual_gateway_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_vm_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_vm_group_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -298,6 +299,7 @@ int flexible_gpu_catalog_parser(void *s, char *str, char *aa, struct ptr_array *
 int health_check_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int image_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int image_export_task_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int inline_policy_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int internet_service_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int keypair_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int keypair_created_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -337,7 +339,6 @@ int permissions_on_resource_parser(void *s, char *str, char *aa, struct ptr_arra
 int permissions_on_resource_creation_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int phase1_options_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int phase2_options_parser(void *s, char *str, char *aa, struct ptr_array *pa);
-int phase2_options_to_update_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int placement_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int policy_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int policy_version_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -373,6 +374,7 @@ int subnet_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int subregion_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int tag_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int user_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int user_group_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int vgw_telemetry_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int virtual_gateway_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int vm_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -384,7 +386,6 @@ int vm_type_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int volume_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int vpn_connection_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int vpn_options_parser(void *s, char *str, char *aa, struct ptr_array *pa);
-int vpn_options_to_update_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int with_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 
 int accepter_net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
@@ -2396,6 +2397,13 @@ int filters_load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_arra
 int filters_nat_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_nat_service *s = v_s;
 	    int aret = 0;
+	if ((aret = argcmp(str, "ClientTokens")) == 0 || aret == '=') {
+            	 TRY(!aa, "ClientTokens argument missing\n");
+               s->client_tokens_str = aa;
+         } else if (!(aret = strcmp(str, "ClientTokens[]")) || aret == '=') {
+               TRY(!aa, "ClientTokens[] argument missing\n");
+               SET_NEXT(s->client_tokens, (aa), pa);
+         } else
 	if ((aret = argcmp(str, "NatServiceIds")) == 0 || aret == '=') {
             	 TRY(!aa, "NatServiceIds argument missing\n");
                s->nat_service_ids_str = aa;
@@ -2759,6 +2767,13 @@ int filters_nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else if (!(aret = strcmp(str, "LinkPublicIpLinkPublicIpIds[]")) || aret == '=') {
                TRY(!aa, "LinkPublicIpLinkPublicIpIds[] argument missing\n");
                SET_NEXT(s->link_public_ip_link_public_ip_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "LinkPublicIpPublicDnsNames")) == 0 || aret == '=') {
+            	 TRY(!aa, "LinkPublicIpPublicDnsNames argument missing\n");
+               s->link_public_ip_public_dns_names_str = aa;
+         } else if (!(aret = strcmp(str, "LinkPublicIpPublicDnsNames[]")) || aret == '=') {
+               TRY(!aa, "LinkPublicIpPublicDnsNames[] argument missing\n");
+               SET_NEXT(s->link_public_ip_public_dns_names, (aa), pa);
          } else
 	if ((aret = argcmp(str, "LinkPublicIpPublicIpIds")) == 0 || aret == '=') {
             	 TRY(!aa, "LinkPublicIpPublicIpIds argument missing\n");
@@ -3619,6 +3634,28 @@ int filters_tag_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersTag'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
+int filters_user_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct filters_user_group *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "PathPrefix")) == 0 || aret == '=') {
+            TRY(!aa, "PathPrefix argument missing\n");
+            s->path_prefix = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "UserGroupIds")) == 0 || aret == '=') {
+            	 TRY(!aa, "UserGroupIds argument missing\n");
+               s->user_group_ids_str = aa;
+         } else if (!(aret = strcmp(str, "UserGroupIds[]")) || aret == '=') {
+               TRY(!aa, "UserGroupIds[] argument missing\n");
+               SET_NEXT(s->user_group_ids, (aa), pa);
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'FiltersUserGroup'\n", str);
 		return -1;
 	}
 	return 0;
@@ -5050,6 +5087,26 @@ int image_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array *p
 	return 0;
 }
 
+int inline_policy_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct inline_policy *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "Body")) == 0 || aret == '=') {
+            TRY(!aa, "Body argument missing\n");
+            s->body = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "Name")) == 0 || aret == '=') {
+            TRY(!aa, "Name argument missing\n");
+            s->name = aa; // string string
+
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'InlinePolicy'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
 int internet_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct internet_service *s = v_s;
 	    int aret = 0;
@@ -6038,6 +6095,11 @@ int maintenance_event_parser(void *v_s, char *str, char *aa, struct ptr_array *p
 int nat_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct nat_service *s = v_s;
 	    int aret = 0;
+	if ((aret = argcmp(str, "ClientToken")) == 0 || aret == '=') {
+            TRY(!aa, "ClientToken argument missing\n");
+            s->client_token = aa; // string string
+
+         } else
 	if ((aret = argcmp(str, "NatServiceId")) == 0 || aret == '=') {
             TRY(!aa, "NatServiceId argument missing\n");
             s->nat_service_id = aa; // string string
@@ -7060,21 +7122,6 @@ int phase2_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Phase2Options'\n", str);
-		return -1;
-	}
-	return 0;
-}
-
-int phase2_options_to_update_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
-	    struct phase2_options_to_update *s = v_s;
-	    int aret = 0;
-	if ((aret = argcmp(str, "PreSharedKey")) == 0 || aret == '=') {
-            TRY(!aa, "PreSharedKey argument missing\n");
-            s->pre_shared_key = aa; // string string
-
-         } else
-	{
-		fprintf(stderr, "'%s' not an argumemt of 'Phase2OptionsToUpdate'\n", str);
 		return -1;
 	}
 	return 0;
@@ -8507,6 +8554,16 @@ int tag_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 int user_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct user *s = v_s;
 	    int aret = 0;
+	if ((aret = argcmp(str, "CreationDate")) == 0 || aret == '=') {
+            TRY(!aa, "CreationDate argument missing\n");
+            s->creation_date = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "LastModificationDate")) == 0 || aret == '=') {
+            TRY(!aa, "LastModificationDate argument missing\n");
+            s->last_modification_date = aa; // string string
+
+         } else
 	if ((aret = argcmp(str, "Path")) == 0 || aret == '=') {
             TRY(!aa, "Path argument missing\n");
             s->path = aa; // string string
@@ -8524,6 +8581,46 @@ int user_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'User'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
+int user_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct user_group *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "CreationDate")) == 0 || aret == '=') {
+            TRY(!aa, "CreationDate argument missing\n");
+            s->creation_date = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "LastModificationDate")) == 0 || aret == '=') {
+            TRY(!aa, "LastModificationDate argument missing\n");
+            s->last_modification_date = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "Name")) == 0 || aret == '=') {
+            TRY(!aa, "Name argument missing\n");
+            s->name = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "Orn")) == 0 || aret == '=') {
+            TRY(!aa, "Orn argument missing\n");
+            s->orn = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "Path")) == 0 || aret == '=') {
+            TRY(!aa, "Path argument missing\n");
+            s->path = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "UserGroupId")) == 0 || aret == '=') {
+            TRY(!aa, "UserGroupId argument missing\n");
+            s->user_group_id = aa; // string string
+
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'UserGroup'\n", str);
 		return -1;
 	}
 	return 0;
@@ -9543,38 +9640,6 @@ int vpn_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	return 0;
 }
 
-int vpn_options_to_update_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
-	    struct vpn_options_to_update *s = v_s;
-	    int aret = 0;
-	if ((aret = argcmp(str, "Phase2Options")) == 0 || aret == '=') {
-            char *dot_pos;
-
-            TRY(!aa, "Phase2Options argument missing\n");
-            dot_pos = strchr(str, '.');
-            if (dot_pos++) {
-            	    cascade_struct = &s->phase2_options;
-            	    cascade_parser = phase2_options_to_update_parser;
-            	    if (*dot_pos == '.') {
-            		++dot_pos;
-            	    }
-            	    STRY(phase2_options_to_update_parser(&s->phase2_options, dot_pos, aa, pa));
-            	    s->is_set_phase2_options = 1;
-             } else {
-                   s->phase2_options_str = aa;
-             }
-         } else
-	if ((aret = argcmp(str, "TunnelInsideIpRange")) == 0 || aret == '=') {
-            TRY(!aa, "TunnelInsideIpRange argument missing\n");
-            s->tunnel_inside_ip_range = aa; // string string
-
-         } else
-	{
-		fprintf(stderr, "'%s' not an argumemt of 'VpnOptionsToUpdate'\n", str);
-		return -1;
-	}
-	return 0;
-}
-
 int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct with *s = v_s;
 	    int aret = 0;
@@ -10105,11 +10170,11 @@ int main(int ac, char **av)
 				          dot_pos = strchr(str, '.');
 				          if (dot_pos++) {
 				          	    cascade_struct = &s->vpn_options;
-				          	    cascade_parser = vpn_options_to_update_parser;
+				          	    cascade_parser = vpn_options_parser;
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    STRY(vpn_options_to_update_parser(&s->vpn_options, dot_pos, aa, pa));
+				          	    STRY(vpn_options_parser(&s->vpn_options, dot_pos, aa, pa));
 				          	    s->is_set_vpn_options = 1;
 				           } else {
 				                 s->vpn_options_str = aa;
@@ -10956,6 +11021,169 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_update_vm(&e, &r, &a);
             	     TRY(cret, "fail to call UpdateVm: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("UpdateUserGroup", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_update_user_group_arg a = {0};
+		     struct osc_update_user_group_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     update_user_group_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto update_user_group_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 0);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "NewPath")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NewPath argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NewPath argument missing\n");
+				          s->new_path = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "NewUserGroupName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NewUserGroupName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NewUserGroupName argument missing\n");
+				          s->new_user_group_name = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "Path")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Path argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "Path argument missing\n");
+				          s->path = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserGroupName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserGroupName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserGroupName argument missing\n");
+				          s->user_group_name = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'UpdateUserGroup'\n", next_a);
+			    }
+		            i += incr;
+			    goto update_user_group_arg;
+		     }
+		     cret = osc_update_user_group(&e, &r, &a);
+            	     TRY(cret, "fail to call UpdateUserGroup: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
@@ -13025,6 +13253,17 @@ int main(int ac, char **av)
 					incr = 1;
 				}
 			     }
+			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Description argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "Description argument missing\n");
+				          s->description = aa; // string string
+
+				       } else
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
 			      	 if (eq_ptr) {
@@ -15403,6 +15642,147 @@ int main(int ac, char **av)
 		      }
 		     osc_deinit_str(&r);
 	      } else
+              if (!strcmp("UnlinkManagedPolicyFromUserGroup", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_unlink_managed_policy_from_user_group_arg a = {0};
+		     struct osc_unlink_managed_policy_from_user_group_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     unlink_managed_policy_from_user_group_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto unlink_managed_policy_from_user_group_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 0);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "PolicyOrn")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PolicyOrn argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "PolicyOrn argument missing\n");
+				          s->policy_orn = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserGroupName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserGroupName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserGroupName argument missing\n");
+				          s->user_group_name = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'UnlinkManagedPolicyFromUserGroup'\n", next_a);
+			    }
+		            i += incr;
+			    goto unlink_managed_policy_from_user_group_arg;
+		     }
+		     cret = osc_unlink_managed_policy_from_user_group(&e, &r, &a);
+            	     TRY(cret, "fail to call UnlinkManagedPolicyFromUserGroup: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
               if (!strcmp("UnlinkLoadBalancerBackendMachines", av[i])) {
 		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
@@ -16517,6 +16897,169 @@ int main(int ac, char **av)
 		      }
 		     osc_deinit_str(&r);
 	      } else
+              if (!strcmp("RemoveUserFromUserGroup", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_remove_user_from_user_group_arg a = {0};
+		     struct osc_remove_user_from_user_group_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     remove_user_from_user_group_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto remove_user_from_user_group_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 0);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "UserGroupName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserGroupName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserGroupName argument missing\n");
+				          s->user_group_name = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserGroupPath")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserGroupPath argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserGroupPath argument missing\n");
+				          s->user_group_path = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserName argument missing\n");
+				          s->user_name = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserPath")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserPath argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserPath argument missing\n");
+				          s->user_path = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'RemoveUserFromUserGroup'\n", next_a);
+			    }
+		            i += incr;
+			    goto remove_user_from_user_group_arg;
+		     }
+		     cret = osc_remove_user_from_user_group(&e, &r, &a);
+            	     TRY(cret, "fail to call RemoveUserFromUserGroup: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
               if (!strcmp("RejectNetPeering", av[i])) {
 		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
@@ -17374,6 +17917,28 @@ int main(int ac, char **av)
 				                 s->filters_str = aa;
 				           }
 				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
+				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadVmsState'\n", next_a);
 			    }
@@ -17822,6 +18387,28 @@ int main(int ac, char **av)
 				           } else {
 				                 s->filters_str = aa;
 				           }
+				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadVmTypes'\n", next_a);
@@ -18424,6 +19011,767 @@ int main(int ac, char **av)
 		      }
 		     osc_deinit_str(&r);
 	      } else
+              if (!strcmp("ReadUserGroupsPerUser", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_read_user_groups_per_user_arg a = {0};
+		     struct osc_read_user_groups_per_user_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     read_user_groups_per_user_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto read_user_groups_per_user_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 0);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "UserName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserName argument missing\n");
+				          s->user_name = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserPath")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserPath argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserPath argument missing\n");
+				          s->user_path = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'ReadUserGroupsPerUser'\n", next_a);
+			    }
+		            i += incr;
+			    goto read_user_groups_per_user_arg;
+		     }
+		     cret = osc_read_user_groups_per_user(&e, &r, &a);
+            	     TRY(cret, "fail to call ReadUserGroupsPerUser: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("ReadUserGroups", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_read_user_groups_arg a = {0};
+		     struct osc_read_user_groups_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     read_user_groups_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto read_user_groups_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 0);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          char *dot_pos;
+
+				          TRY(!aa, "Filters argument missing\n");
+				          dot_pos = strchr(str, '.');
+				          if (dot_pos++) {
+				          	    cascade_struct = &s->filters;
+				          	    cascade_parser = filters_user_group_parser;
+				          	    if (*dot_pos == '.') {
+				          		++dot_pos;
+				          	    }
+				          	    STRY(filters_user_group_parser(&s->filters, dot_pos, aa, pa));
+				          	    s->is_set_filters = 1;
+				           } else {
+				                 s->filters_str = aa;
+				           }
+				       } else
+			      if ((aret = argcmp(next_a, "FirstItem")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "FirstItem argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "FirstItem argument missing\n");
+				          s->is_set_first_item = 1;
+				          s->first_item = atoi(aa);
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'ReadUserGroups'\n", next_a);
+			    }
+		            i += incr;
+			    goto read_user_groups_arg;
+		     }
+		     cret = osc_read_user_groups(&e, &r, &a);
+            	     TRY(cret, "fail to call ReadUserGroups: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("ReadUserGroupPolicy", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_read_user_group_policy_arg a = {0};
+		     struct osc_read_user_group_policy_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     read_user_group_policy_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto read_user_group_policy_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 0);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "PolicyName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PolicyName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "PolicyName argument missing\n");
+				          s->policy_name = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserGroupName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserGroupName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserGroupName argument missing\n");
+				          s->user_group_name = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserGroupPath")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserGroupPath argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserGroupPath argument missing\n");
+				          s->user_group_path = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'ReadUserGroupPolicy'\n", next_a);
+			    }
+		            i += incr;
+			    goto read_user_group_policy_arg;
+		     }
+		     cret = osc_read_user_group_policy(&e, &r, &a);
+            	     TRY(cret, "fail to call ReadUserGroupPolicy: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("ReadUserGroupPolicies", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_read_user_group_policies_arg a = {0};
+		     struct osc_read_user_group_policies_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     read_user_group_policies_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto read_user_group_policies_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 0);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "FirstItem")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "FirstItem argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "FirstItem argument missing\n");
+				          s->is_set_first_item = 1;
+				          s->first_item = atoi(aa);
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
+				       } else
+			      if ((aret = argcmp(next_a, "UserGroupName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserGroupName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserGroupName argument missing\n");
+				          s->user_group_name = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserGroupPath")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserGroupPath argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserGroupPath argument missing\n");
+				          s->user_group_path = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'ReadUserGroupPolicies'\n", next_a);
+			    }
+		            i += incr;
+			    goto read_user_group_policies_arg;
+		     }
+		     cret = osc_read_user_group_policies(&e, &r, &a);
+            	     TRY(cret, "fail to call ReadUserGroupPolicies: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("ReadUserGroup", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_read_user_group_arg a = {0};
+		     struct osc_read_user_group_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     read_user_group_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto read_user_group_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 0);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "Path")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Path argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "Path argument missing\n");
+				          s->path = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserGroupName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserGroupName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserGroupName argument missing\n");
+				          s->user_group_name = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'ReadUserGroup'\n", next_a);
+			    }
+		            i += incr;
+			    goto read_user_group_arg;
+		     }
+		     cret = osc_read_user_group(&e, &r, &a);
+            	     TRY(cret, "fail to call ReadUserGroup: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
               if (!strcmp("ReadTags", av[i])) {
 		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
@@ -18531,6 +19879,28 @@ int main(int ac, char **av)
 				           } else {
 				                 s->filters_str = aa;
 				           }
+				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadTags'\n", next_a);
@@ -18674,6 +20044,28 @@ int main(int ac, char **av)
 				                 s->filters_str = aa;
 				           }
 				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
+				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadSubregions'\n", next_a);
 			    }
@@ -18815,6 +20207,28 @@ int main(int ac, char **av)
 				           } else {
 				                 s->filters_str = aa;
 				           }
+				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadSubnets'\n", next_a);
@@ -18958,6 +20372,28 @@ int main(int ac, char **av)
 				                 s->filters_str = aa;
 				           }
 				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
+				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadSnapshots'\n", next_a);
 			    }
@@ -19099,6 +20535,28 @@ int main(int ac, char **av)
 				           } else {
 				                 s->filters_str = aa;
 				           }
+				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadSnapshotExportTasks'\n", next_a);
@@ -19383,6 +20841,28 @@ int main(int ac, char **av)
 				           } else {
 				                 s->filters_str = aa;
 				           }
+				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadSecurityGroups'\n", next_a);
@@ -19939,6 +21419,28 @@ int main(int ac, char **av)
 				                 s->filters_str = aa;
 				           }
 				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
+				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadQuotas'\n", next_a);
 			    }
@@ -20222,6 +21724,28 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
+				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadPublicIpRanges'\n", next_a);
 			    }
@@ -20482,6 +22006,28 @@ int main(int ac, char **av)
 				           } else {
 				                 s->filters_str = aa;
 				           }
+				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadProductTypes'\n", next_a);
@@ -21306,6 +22852,28 @@ int main(int ac, char **av)
 				                 s->filters_str = aa;
 				           }
 				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
+				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadNets'\n", next_a);
 			    }
@@ -21776,6 +23344,28 @@ int main(int ac, char **av)
 				                 s->filters_str = aa;
 				           }
 				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
+				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadNetAccessPointServices'\n", next_a);
 			    }
@@ -21974,6 +23564,181 @@ int main(int ac, char **av)
 		      }
 		     osc_deinit_str(&r);
 	      } else
+              if (!strcmp("ReadManagedPoliciesLinkedToUserGroup", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_read_managed_policies_linked_to_user_group_arg a = {0};
+		     struct osc_read_managed_policies_linked_to_user_group_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     read_managed_policies_linked_to_user_group_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto read_managed_policies_linked_to_user_group_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 0);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          char *dot_pos;
+
+				          TRY(!aa, "Filters argument missing\n");
+				          dot_pos = strchr(str, '.');
+				          if (dot_pos++) {
+				          	    cascade_struct = &s->filters;
+				          	    cascade_parser = filters_user_group_parser;
+				          	    if (*dot_pos == '.') {
+				          		++dot_pos;
+				          	    }
+				          	    STRY(filters_user_group_parser(&s->filters, dot_pos, aa, pa));
+				          	    s->is_set_filters = 1;
+				           } else {
+				                 s->filters_str = aa;
+				           }
+				       } else
+			      if ((aret = argcmp(next_a, "FirstItem")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "FirstItem argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "FirstItem argument missing\n");
+				          s->is_set_first_item = 1;
+				          s->first_item = atoi(aa);
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
+				       } else
+			      if ((aret = argcmp(next_a, "UserGroupName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserGroupName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserGroupName argument missing\n");
+				          s->user_group_name = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'ReadManagedPoliciesLinkedToUserGroup'\n", next_a);
+			    }
+		            i += incr;
+			    goto read_managed_policies_linked_to_user_group_arg;
+		     }
+		     cret = osc_read_managed_policies_linked_to_user_group(&e, &r, &a);
+            	     TRY(cret, "fail to call ReadManagedPoliciesLinkedToUserGroup: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
               if (!strcmp("ReadLocations", av[i])) {
 		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
@@ -22059,6 +23824,28 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
+				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadLocations'\n", next_a);
 			    }
@@ -22792,6 +24579,28 @@ int main(int ac, char **av)
 				                 s->filters_str = aa;
 				           }
 				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
+				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadKeypairs'\n", next_a);
 			    }
@@ -22933,6 +24742,28 @@ int main(int ac, char **av)
 				           } else {
 				                 s->filters_str = aa;
 				           }
+				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadInternetServices'\n", next_a);
@@ -23239,6 +25070,28 @@ int main(int ac, char **av)
 				           } else {
 				                 s->filters_str = aa;
 				           }
+				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadImageExportTasks'\n", next_a);
@@ -23643,6 +25496,28 @@ int main(int ac, char **av)
 				                 s->filters_str = aa;
 				           }
 				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
+				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadDirectLinks'\n", next_a);
 			    }
@@ -23784,6 +25659,28 @@ int main(int ac, char **av)
 				           } else {
 				                 s->filters_str = aa;
 				           }
+				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadDirectLinkInterfaces'\n", next_a);
@@ -24090,6 +25987,28 @@ int main(int ac, char **av)
 				           } else {
 				                 s->filters_str = aa;
 				           }
+				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadDedicatedGroups'\n", next_a);
@@ -24535,6 +26454,28 @@ int main(int ac, char **av)
 				           } else {
 				                 s->filters_str = aa;
 				           }
+				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoi(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadClientGateways'\n", next_a);
@@ -25823,6 +27764,169 @@ int main(int ac, char **av)
 		      }
 		     osc_deinit_str(&r);
 	      } else
+              if (!strcmp("PutUserGroupPolicy", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_put_user_group_policy_arg a = {0};
+		     struct osc_put_user_group_policy_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     put_user_group_policy_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto put_user_group_policy_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 0);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "PolicyDocument")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PolicyDocument argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "PolicyDocument argument missing\n");
+				          s->policy_document = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "PolicyName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PolicyName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "PolicyName argument missing\n");
+				          s->policy_name = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserGroupName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserGroupName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserGroupName argument missing\n");
+				          s->user_group_name = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserGroupPath")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserGroupPath argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserGroupPath argument missing\n");
+				          s->user_group_path = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'PutUserGroupPolicy'\n", next_a);
+			    }
+		            i += incr;
+			    goto put_user_group_policy_arg;
+		     }
+		     cret = osc_put_user_group_policy(&e, &r, &a);
+            	     TRY(cret, "fail to call PutUserGroupPolicy: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
               if (!strcmp("LinkVolume", av[i])) {
 		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
@@ -26884,6 +28988,147 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_link_nic(&e, &r, &a);
             	     TRY(cret, "fail to call LinkNic: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("LinkManagedPolicyToUserGroup", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_link_managed_policy_to_user_group_arg a = {0};
+		     struct osc_link_managed_policy_to_user_group_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     link_managed_policy_to_user_group_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto link_managed_policy_to_user_group_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 0);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "PolicyOrn")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PolicyOrn argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "PolicyOrn argument missing\n");
+				          s->policy_orn = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserGroupName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserGroupName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserGroupName argument missing\n");
+				          s->user_group_name = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'LinkManagedPolicyToUserGroup'\n", next_a);
+			    }
+		            i += incr;
+			    goto link_managed_policy_to_user_group_arg;
+		     }
+		     cret = osc_link_managed_policy_to_user_group(&e, &r, &a);
+            	     TRY(cret, "fail to call LinkManagedPolicyToUserGroup: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
@@ -28388,6 +30633,315 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_virtual_gateway(&e, &r, &a);
             	     TRY(cret, "fail to call DeleteVirtualGateway: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("DeleteUserGroupPolicy", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_delete_user_group_policy_arg a = {0};
+		     struct osc_delete_user_group_policy_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     delete_user_group_policy_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto delete_user_group_policy_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 0);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "PolicyName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PolicyName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "PolicyName argument missing\n");
+				          s->policy_name = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserGroupName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserGroupName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserGroupName argument missing\n");
+				          s->user_group_name = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserGroupPath")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserGroupPath argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserGroupPath argument missing\n");
+				          s->user_group_path = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'DeleteUserGroupPolicy'\n", next_a);
+			    }
+		            i += incr;
+			    goto delete_user_group_policy_arg;
+		     }
+		     cret = osc_delete_user_group_policy(&e, &r, &a);
+            	     TRY(cret, "fail to call DeleteUserGroupPolicy: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("DeleteUserGroup", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_delete_user_group_arg a = {0};
+		     struct osc_delete_user_group_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     delete_user_group_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto delete_user_group_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 0);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "Force")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Force argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_force = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->force = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->force = 0;
+				           } else {
+				          		BAD_RET("Force require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "Path")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Path argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "Path argument missing\n");
+				          s->path = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserGroupName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserGroupName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserGroupName argument missing\n");
+				          s->user_group_name = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'DeleteUserGroup'\n", next_a);
+			    }
+		            i += incr;
+			    goto delete_user_group_arg;
+		     }
+		     cret = osc_delete_user_group(&e, &r, &a);
+            	     TRY(cret, "fail to call DeleteUserGroup: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
@@ -34714,6 +37268,147 @@ int main(int ac, char **av)
 		      }
 		     osc_deinit_str(&r);
 	      } else
+              if (!strcmp("CreateUserGroup", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_create_user_group_arg a = {0};
+		     struct osc_create_user_group_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     create_user_group_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto create_user_group_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 0);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "Path")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Path argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "Path argument missing\n");
+				          s->path = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserGroupName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserGroupName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserGroupName argument missing\n");
+				          s->user_group_name = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'CreateUserGroup'\n", next_a);
+			    }
+		            i += incr;
+			    goto create_user_group_arg;
+		     }
+		     cret = osc_create_user_group(&e, &r, &a);
+            	     TRY(cret, "fail to call CreateUserGroup: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
               if (!strcmp("CreateUser", av[i])) {
 		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
@@ -37652,6 +40347,17 @@ int main(int ac, char **av)
 					incr = 1;
 				}
 			     }
+			      if ((aret = argcmp(next_a, "ClientToken")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ClientToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ClientToken argument missing\n");
+				          s->client_token = aa; // string string
+
+				       } else
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
 			      	 if (eq_ptr) {
@@ -41120,6 +43826,169 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_check_authentication(&e, &r, &a);
             	     TRY(cret, "fail to call CheckAuthentication: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     }
+		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("AddUserToUserGroup", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_add_user_to_user_group_arg a = {0};
+		     struct osc_add_user_to_user_group_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     add_user_to_user_group_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto add_user_to_user_group_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				if (!strcmp(aa, "--file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 0);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--jsonstr-file")) {
+				   	TRY(i + 3 >= ac, "file name require");
+					++incr;
+					aa = read_file(files_cnt, av[i + 3], 1);
+					STRY(!aa);
+				} else if (!strcmp(aa, "--var")) {
+				   	TRY(i + 3 >= ac, "var name require");
+					int var_found = 0;
+					for (int j = 0; j < nb_cli_vars; ++j) {
+					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
+						var_found = 1;
+						aa = cli_vars[j].val;
+					    }
+					}
+					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
+					++incr;
+					STRY(!aa);
+				} else {
+					aa = 0;
+					incr = 1;
+				}
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "UserGroupName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserGroupName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserGroupName argument missing\n");
+				          s->user_group_name = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserGroupPath")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserGroupPath argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserGroupPath argument missing\n");
+				          s->user_group_path = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserName")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserName argument missing\n");
+				          s->user_name = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserPath")) == 0 || aret == '=' ) {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserPath argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserPath argument missing\n");
+				          s->user_path = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'AddUserToUserGroup'\n", next_a);
+			    }
+		            i += incr;
+			    goto add_user_to_user_group_arg;
+		     }
+		     cret = osc_add_user_to_user_group(&e, &r, &a);
+            	     TRY(cret, "fail to call AddUserToUserGroup: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
