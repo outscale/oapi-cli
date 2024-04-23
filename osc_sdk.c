@@ -84,6 +84,7 @@ static const char *calls_name[] = {
 	"UpdateVmTemplate",
 	"UpdateVmGroup",
 	"UpdateVm",
+	"UpdateUserGroup",
 	"UpdateUser",
 	"UpdateSubnet",
 	"UpdateSnapshot",
@@ -112,6 +113,7 @@ static const char *calls_name[] = {
 	"UnlinkPrivateIps",
 	"UnlinkPolicy",
 	"UnlinkNic",
+	"UnlinkManagedPolicyFromUserGroup",
 	"UnlinkLoadBalancerBackendMachines",
 	"UnlinkInternetService",
 	"UnlinkFlexibleGpu",
@@ -120,6 +122,7 @@ static const char *calls_name[] = {
 	"SetDefaultPolicyVersion",
 	"ScaleUpVmGroup",
 	"ScaleDownVmGroup",
+	"RemoveUserFromUserGroup",
 	"RejectNetPeering",
 	"RegisterVmsInLoadBalancer",
 	"RebootVms",
@@ -133,6 +136,11 @@ static const char *calls_name[] = {
 	"ReadVmGroups",
 	"ReadVirtualGateways",
 	"ReadUsers",
+	"ReadUserGroupsPerUser",
+	"ReadUserGroups",
+	"ReadUserGroupPolicy",
+	"ReadUserGroupPolicies",
+	"ReadUserGroup",
 	"ReadTags",
 	"ReadSubregions",
 	"ReadSubnets",
@@ -158,6 +166,7 @@ static const char *calls_name[] = {
 	"ReadNetAccessPoints",
 	"ReadNetAccessPointServices",
 	"ReadNatServices",
+	"ReadManagedPoliciesLinkedToUserGroup",
 	"ReadLocations",
 	"ReadLoadBalancers",
 	"ReadLoadBalancerTags",
@@ -185,6 +194,7 @@ static const char *calls_name[] = {
 	"ReadAdminPassword",
 	"ReadAccounts",
 	"ReadAccessKeys",
+	"PutUserGroupPolicy",
 	"LinkVolume",
 	"LinkVirtualGateway",
 	"LinkRouteTable",
@@ -192,6 +202,7 @@ static const char *calls_name[] = {
 	"LinkPrivateIps",
 	"LinkPolicy",
 	"LinkNic",
+	"LinkManagedPolicyToUserGroup",
 	"LinkLoadBalancerBackendMachines",
 	"LinkInternetService",
 	"LinkFlexibleGpu",
@@ -203,6 +214,8 @@ static const char *calls_name[] = {
 	"DeleteVmTemplate",
 	"DeleteVmGroup",
 	"DeleteVirtualGateway",
+	"DeleteUserGroupPolicy",
+	"DeleteUserGroup",
 	"DeleteUser",
 	"DeleteTags",
 	"DeleteSubnet",
@@ -245,6 +258,7 @@ static const char *calls_name[] = {
 	"CreateVmTemplate",
 	"CreateVmGroup",
 	"CreateVirtualGateway",
+	"CreateUserGroup",
 	"CreateUser",
 	"CreateTags",
 	"CreateSubnet",
@@ -284,6 +298,7 @@ static const char *calls_name[] = {
 	"CreateAccount",
 	"CreateAccessKey",
 	"CheckAuthentication",
+	"AddUserToUserGroup",
 	"AcceptNetPeering",
 	NULL
 };
@@ -298,6 +313,8 @@ static const char *calls_descriptions[] = {
 	"Usage: oapi-cli UpdateVmGroup --VmGroupId=vmgroupid [OPTIONS]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nModifies the specified attributes of a group of virtual machines \n" "(VMs).\n" "\nRequired Argument: VmGroupId \n"
 ,
 	"Usage: oapi-cli UpdateVm --VmId=vmid [OPTIONS]\n" "Modifies the specified attributes of a virtual machine (VM).\nYou must stop the \n" "VM before modifying the following attributes:\n* `NestedVirtualization`\n* \n" "`Performance`\n* `UserData`\n* `VmType`\n" "\nRequired Argument: VmId \n"
+,
+	"Usage: oapi-cli UpdateUserGroup --UserGroupName=usergroupname [OPTIONS]\n" "Modifies the name and/or the path of a specified group.\n" "\nRequired Argument: UserGroupName \n"
 ,
 	"Usage: oapi-cli UpdateUser --UserName=username [OPTIONS]\n" "Modifies the name and/or the path of a specified EIM user.\n" "\nRequired Argument: UserName \n"
 ,
@@ -323,7 +340,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli UpdateListenerRule --ListenerRuleName=listenerrulename [OPTIONS]\n" "Updates the pattern of the listener rule.\nThis call updates the pattern \n" "matching algorithm for incoming traffic.\n" "\nRequired Argument: ListenerRuleName \n"
 ,
-	"Usage: oapi-cli UpdateImage --ImageId=imageid --PermissionsToLaunch=permissionstolaunch [OPTIONS]\n" "Modifies the access permissions for an OUTSCALE machine image (OMI).\nYou must \n" "specify either the `Additions` or the `Removals` parameter.\nAfter sharing an \n" "OMI with an account, the other account can create a copy of it that they own. \n" "For more information about copying OMIs, see [CreateImage](#createimage).\n" "\nRequired Argument: ImageId, PermissionsToLaunch \n"
+	"Usage: oapi-cli UpdateImage --ImageId=imageid [OPTIONS]\n" "Modifies the access permissions for an OUTSCALE machine image (OMI).\nYou must \n" "specify either the `Additions` or the `Removals` parameter.\nAfter sharing an \n" "OMI with an account, the other account can create a copy of it that they own. \n" "For more information about copying OMIs, see [CreateImage](#createimage).\n" "\nRequired Argument: ImageId \n"
 ,
 	"Usage: oapi-cli UpdateFlexibleGpu --FlexibleGpuId=flexiblegpuid [OPTIONS]\n" "Modifies a flexible GPU (fGPU) behavior.\n" "\nRequired Argument: FlexibleGpuId \n"
 ,
@@ -355,11 +372,13 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli UnlinkNic --LinkNicId=linknicid [OPTIONS]\n" "Detaches a network interface card (NIC) from a virtual machine (VM).\nThe \n" "primary NIC cannot be detached.\n" "\nRequired Argument: LinkNicId \n"
 ,
-	"Usage: oapi-cli UnlinkLoadBalancerBackendMachines --LoadBalancerName=loadbalancername [OPTIONS]\n" "Detaches one or more back-end virtual machines (VMs) from a load balancer. You \n" "need to specify at least the `BackendIps` or the `BackendVmIds` parameter.\n" "\nRequired Argument: LoadBalancerName \n"
+	"Usage: oapi-cli UnlinkManagedPolicyFromUserGroup --PolicyOrn=policyorn --UserGroupName=usergroupname [OPTIONS]\n" "Unlinks a managed policy from a specific group.\n" "\nRequired Argument: PolicyOrn, UserGroupName \n"
+,
+	"Usage: oapi-cli UnlinkLoadBalancerBackendMachines --LoadBalancerName=loadbalancername [OPTIONS]\n" "Detaches one or more backend virtual machines (VMs) from a load balancer. You \n" "need to specify at least the `BackendIps` or the `BackendVmIds` parameter.\n" "\nRequired Argument: LoadBalancerName \n"
 ,
 	"Usage: oapi-cli UnlinkInternetService --InternetServiceId=internetserviceid --NetId=netid [OPTIONS]\n" "Detaches an Internet service from a Net.\nThis action disables and detaches an \n" "Internet service from a Net. The Net must not contain virtual machines (VMs) \n" "using public IPs nor internet-facing load balancers.\n" "\nRequired Argument: InternetServiceId, NetId \n"
 ,
-	"Usage: oapi-cli UnlinkFlexibleGpu --FlexibleGpuId=flexiblegpuid [OPTIONS]\n" "Detaches a flexible GPU (fGPU) from a virtual machine (VM).\nThe fGPU is in the \n" "`detaching` state until the VM is stopped, after which it becomes available for \n" "allocation again.\n" "\nRequired Argument: FlexibleGpuId \n"
+	"Usage: oapi-cli UnlinkFlexibleGpu --FlexibleGpuId=flexiblegpuid [OPTIONS]\n" "Detaches a flexible GPU (fGPU) from a virtual machine (VM).\nThe fGPU is in the \n" "`detaching` state until the VM is stopped, after which it becomes `allocated`. \n" "It is then available again for attachment to a VM.\n" "\nRequired Argument: FlexibleGpuId \n"
 ,
 	"Usage: oapi-cli StopVms --VmIds=vmids [OPTIONS]\n" "Stops one or more running virtual machines (VMs).\nYou can stop only VMs that \n" "are valid and that belong to you. Data stored in the VM RAM is lost.\n" "\nRequired Argument: VmIds \n"
 ,
@@ -371,9 +390,11 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli ScaleDownVmGroup --VmGroupId=vmgroupid --VmSubtraction=vmsubtraction [OPTIONS]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nDeletes virtual machines (VMs) from a VM group.\nThe oldest VMs \n" "are the first to be deleted.\n" "\nRequired Argument: VmGroupId, VmSubtraction \n"
 ,
+	"Usage: oapi-cli RemoveUserFromUserGroup --UserGroupName=usergroupname --UserName=username [OPTIONS]\n" "Removes a specified user from a specified group.\n" "\nRequired Argument: UserGroupName, UserName \n"
+,
 	"Usage: oapi-cli RejectNetPeering --NetPeeringId=netpeeringid [OPTIONS]\n" "Rejects a Net peering request.\nThe Net peering must be in the \n" "`pending-acceptance` state to be rejected. The rejected Net peering is then in \n" "the `rejected` state.\n" "\nRequired Argument: NetPeeringId \n"
 ,
-	"Usage: oapi-cli RegisterVmsInLoadBalancer --BackendVmIds=backendvmids --LoadBalancerName=loadbalancername [OPTIONS]\n" "Registers one or more virtual machines (VMs) with a specified load \n" "balancer.\nThe VMs can be in different Subnets and different Subregions than \n" "the load balancer, as long as the VMs and load balancers are all in the public \n" "Cloud or all in the same Net. It may take a little time for a VM to be \n" "registered with the load balancer. Once the VM is registered with a load \n" "balancer, it receives traffic and requests from this load balancer and is \n" "called a back-end VM.\n" "\nRequired Argument: BackendVmIds, LoadBalancerName \n"
+	"Usage: oapi-cli RegisterVmsInLoadBalancer --BackendVmIds=backendvmids --LoadBalancerName=loadbalancername [OPTIONS]\n" "Registers one or more virtual machines (VMs) with a specified load \n" "balancer.\nThe VMs can be in different Subnets and different Subregions than \n" "the load balancer, as long as the VMs and load balancers are all in the public \n" "Cloud or all in the same Net. It may take a little time for a VM to be \n" "registered with the load balancer. Once the VM is registered with a load \n" "balancer, it receives traffic and requests from this load balancer and is \n" "called a backend VM.\n" "\nRequired Argument: BackendVmIds, LoadBalancerName \n"
 ,
 	"Usage: oapi-cli RebootVms --VmIds=vmids [OPTIONS]\n" "Reboots one or more virtual machines (VMs).\nThis operation sends a reboot \n" "request to one or more specified VMs. This is an asynchronous action that \n" "queues this reboot request. This action only reboots VMs that are valid and \n" "that belong to you.\n" "\nRequired Argument: VmIds \n"
 ,
@@ -383,7 +404,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli ReadVmsState [OPTIONS]\n" "Lists the status of one or more virtual machines (VMs).\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadVmsHealth --LoadBalancerName=loadbalancername [OPTIONS]\n" "Lists the state of one or more back-end virtual machines (VMs) registered with \n" "a specified load balancer.\n" "\nRequired Argument: LoadBalancerName \n"
+	"Usage: oapi-cli ReadVmsHealth --LoadBalancerName=loadbalancername [OPTIONS]\n" "Lists the state of one or more backend virtual machines (VMs) registered with a \n" "specified load balancer.\n" "\nRequired Argument: LoadBalancerName \n"
 ,
 	"Usage: oapi-cli ReadVms [OPTIONS]\n" "Lists one or more of your virtual machines (VMs).\nIf you provide one or more \n" "VM IDs, this action returns a description for all of these VMs. If you do not \n" "provide any VM ID, this action returns a description for all of the VMs that \n" "belong to you. If you provide an invalid VM ID, an error is returned. If you \n" "provide the ID of a VM that does not belong to you, the description of this VM \n" "is not included in the response. The refresh interval for data returned by this \n" "action is one hour, meaning that a terminated VM may appear in the response.\n" "\nRequired Argument: \n"
 ,
@@ -396,6 +417,16 @@ static const char *calls_descriptions[] = {
 	"Usage: oapi-cli ReadVirtualGateways [OPTIONS]\n" "Lists one or more virtual gateways.\n" "\nRequired Argument: \n"
 ,
 	"Usage: oapi-cli ReadUsers [OPTIONS]\n" "Lists all EIM users that have a specified path.\nIf you do not specify a path, \n" "this action returns a list of all users in the account (or an empty list if \n" "there are none).\n" "\nRequired Argument: \n"
+,
+	"Usage: oapi-cli ReadUserGroupsPerUser --UserName=username [OPTIONS]\n" "Lists the groups a specified user belongs to.\n" "\nRequired Argument: UserName \n"
+,
+	"Usage: oapi-cli ReadUserGroups [OPTIONS]\n" "Lists the groups with the specified path prefix.\nIf you do not specify any \n" "path prefix, this action returns all the groups (or an empty list if there are \n" "none).\n" "\nRequired Argument: \n"
+,
+	"Usage: oapi-cli ReadUserGroupPolicy --PolicyName=policyname --UserGroupName=usergroupname [OPTIONS]\n" "Returns information about an inline policy included in a specified group.\n" "\nRequired Argument: PolicyName, UserGroupName \n"
+,
+	"Usage: oapi-cli ReadUserGroupPolicies --UserGroupName=usergroupname [OPTIONS]\n" "Lists the names of the inline policies embedded in a specific group.\n" "\nRequired Argument: UserGroupName \n"
+,
+	"Usage: oapi-cli ReadUserGroup --UserGroupName=usergroupname [OPTIONS]\n" "Lists information about a specified user group, including its users.\n" "\nRequired Argument: UserGroupName \n"
 ,
 	"Usage: oapi-cli ReadTags [OPTIONS]\n" "Lists one or more tags for your resources.\n" "\nRequired Argument: \n"
 ,
@@ -447,6 +478,8 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli ReadNatServices [OPTIONS]\n" "Lists one or more network address translation (NAT) services.\n" "\nRequired Argument: \n"
 ,
+	"Usage: oapi-cli ReadManagedPoliciesLinkedToUserGroup --UserGroupName=usergroupname [OPTIONS]\n" "Lists the managed policies linked to a specified group.\n" "\nRequired Argument: UserGroupName \n"
+,
 	"Usage: oapi-cli ReadLocations [OPTIONS]\n" "Lists the locations, corresponding to datacenters, where you can set up a \n" "DirectLink.\nFor more information, see [About \n" "DirectLink](https://docs.outscale.com/en/userguide/About-DirectLink.html).\n" "\nRequired Argument: \n"
 ,
 	"Usage: oapi-cli ReadLoadBalancers [OPTIONS]\n" "Lists one or more load balancers and their attributes.\n" "\nRequired Argument: \n"
@@ -455,7 +488,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli ReadListenerRules [OPTIONS]\n" "Lists one or more listener rules. By default, this action returns the full list \n" "of listener rules for the account.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadLinkedPolicies [OPTIONS]\n" "Lists the managed policies linked to a specified user.\n" "\nRequired Argument: \n"
+	"Usage: oapi-cli ReadLinkedPolicies --UserName=username [OPTIONS]\n" "Lists the managed policies linked to a specified user.\n" "\nRequired Argument: UserName \n"
 ,
 	"Usage: oapi-cli ReadKeypairs [OPTIONS]\n" "Lists one or more of your keypairs.\n" "\nRequired Argument: \n"
 ,
@@ -489,7 +522,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli ReadCas [OPTIONS]\n" "Gets information about one or more of your Client Certificate Authorities (CAs).\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadApiLogs [OPTIONS]\n" "Lists the logs of the API calls you have performed with this \n" "account.\n\n**[IMPORTANT]**\nPast logs are accessible for up to 32 days.\nBy \n" "default, the retrieved interval is 48 hours. If neither of the \n" "`QueryDateBefore` nor `QueryDateAfter` parameters are specified, logs from the \n" "past 48 hours are retrieved. If you only specify one of two, logs are retrieved \n" "from a 2-day interval based on the date you provided. To retrieve logs beyond a \n" "2-day interval, specify both parameters.\nFor more information, see [About \n" "OUTSCALE Monitoring Services \n" "(OMS)](https://docs.outscale.com/en/userguide/About-OUTSCALE-Monitoring-Services\n" "-OMS.html).\n" "\nRequired Argument: \n"
+	"Usage: oapi-cli ReadApiLogs [OPTIONS]\n" "Lists the logs of the API calls you have performed with this \n" "account.\n\n**[IMPORTANT]**\nPast logs are accessible for up to 32 days.\nBy \n" "default, the retrieved interval is 48 hours. If neither of the \n" "`QueryDateBefore` nor `QueryDateAfter` parameters are specified, logs from the \n" "past 48 hours are retrieved. If you only specify one of two, logs are retrieved \n" "from a 2-day interval based on the date you provided. To retrieve logs beyond a \n" "2-day interval, specify both parameters.\nFor more information, see [About \n" "OMS](https://docs.outscale.com/en/userguide/About-OMS.html).\n" "\nRequired Argument: \n"
 ,
 	"Usage: oapi-cli ReadApiAccessRules [OPTIONS]\n" "Lists one or more API access rules.\n" "\nRequired Argument: \n"
 ,
@@ -500,6 +533,8 @@ static const char *calls_descriptions[] = {
 	"Usage: oapi-cli ReadAccounts [OPTIONS]\n" "Gets information about the account that sent the request.\n" "\nRequired Argument: \n"
 ,
 	"Usage: oapi-cli ReadAccessKeys [OPTIONS]\n" "Lists the access key IDs of either your root account or an EIM user.\n" "\nRequired Argument: \n"
+,
+	"Usage: oapi-cli PutUserGroupPolicy --PolicyName=policyname --PolicyDocument=policydocument --UserGroupName=usergroupname [OPTIONS]\n" "Creates or updates an inline policy included in a specified group.\nThe policy \n" "is automatically applied to all the users of the group after its creation.\n" "\nRequired Argument: PolicyName, PolicyDocument, UserGroupName \n"
 ,
 	"Usage: oapi-cli LinkVolume --DeviceName=devicename --VmId=vmid --VolumeId=volumeid [OPTIONS]\n" "Attaches a Block Storage Unit (BSU) volume to a virtual machine (VM).\nThe \n" "volume and the VM must be in the same Subregion. The VM can be running or \n" "stopped. The volume is attached to the specified VM device.\n" "\nRequired Argument: DeviceName, VmId, VolumeId \n"
 ,
@@ -515,11 +550,13 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli LinkNic --DeviceNumber=devicenumber --VmId=vmid --NicId=nicid [OPTIONS]\n" "Attaches a network interface card (NIC) to a virtual machine (VM).\nThe \n" "interface and the VM must be in the same Subregion. The VM can be either \n" "`running` or `stopped`. The NIC must be in the `available` state. For more \n" "information, see [Attaching a NIC to a \n" "VM](https://docs.outscale.com/en/userguide/Attaching-a-NIC-to-a-VM.html).\n" "\nRequired Argument: DeviceNumber, VmId, NicId \n"
 ,
-	"Usage: oapi-cli LinkLoadBalancerBackendMachines --LoadBalancerName=loadbalancername [OPTIONS]\n" "Attaches one or more virtual machines (VMs) to a specified load balancer. You \n" "need to specify at least the `BackendIps` or the `BackendVmIds` parameter.\nThe \n" "VMs can be in different Subnets and different Subregions than the load \n" "balancer, as long as the VMs and load balancers are all in the public Cloud or \n" "all in the same Net. It may take a little time for a VM to be registered with \n" "the load balancer. Once the VM is registered with a load balancer, it receives \n" "traffic and requests from this load balancer and is called a back-end VM.\n" "\nRequired Argument: LoadBalancerName \n"
+	"Usage: oapi-cli LinkManagedPolicyToUserGroup --PolicyOrn=policyorn --UserGroupName=usergroupname [OPTIONS]\n" "Links a managed policy to a specific group. This policy applies to all the \n" "users contained in this group.\n" "\nRequired Argument: PolicyOrn, UserGroupName \n"
+,
+	"Usage: oapi-cli LinkLoadBalancerBackendMachines --LoadBalancerName=loadbalancername [OPTIONS]\n" "Attaches one or more virtual machines (VMs) to a specified load balancer. You \n" "need to specify at least the `BackendIps` or the `BackendVmIds` parameter.\nThe \n" "VMs can be in different Subnets and different Subregions than the load \n" "balancer, as long as the VMs and load balancers are all in the public Cloud or \n" "all in the same Net. It may take a little time for a VM to be registered with \n" "the load balancer. Once the VM is registered with a load balancer, it receives \n" "traffic and requests from this load balancer and is called a backend VM.\n" "\nRequired Argument: LoadBalancerName \n"
 ,
 	"Usage: oapi-cli LinkInternetService --InternetServiceId=internetserviceid --NetId=netid [OPTIONS]\n" "Attaches an Internet service to a Net.\nTo enable the connection between the \n" "Internet and a Net, you must attach an Internet service to this Net.\n" "\nRequired Argument: InternetServiceId, NetId \n"
 ,
-	"Usage: oapi-cli LinkFlexibleGpu --FlexibleGpuId=flexiblegpuid --VmId=vmid [OPTIONS]\n" "Attaches one of your allocated flexible GPUs (fGPUs) to one of your virtual \n" "machines (VMs).\nThe fGPU is in the `attaching` state until the VM is stopped, \n" "after which it becomes `attached`.\n" "\nRequired Argument: FlexibleGpuId, VmId \n"
+	"Usage: oapi-cli LinkFlexibleGpu --FlexibleGpuId=flexiblegpuid --VmId=vmid [OPTIONS]\n" "Attaches one of your allocated flexible GPUs (fGPUs) to one of your virtual \n" "machines (VMs).\nThe fGPU is in the `attaching` state until the VM is stopped, \n" "after which it becomes `attached`. \n\n**[NOTE]**\nYou can attach fGPUs only to \n" "VMs with the `highest` (1) performance flag. For more information see [About \n" "Flexible GPUs](https://docs.outscale.com/en/userguide/About-Flexible-GPUs.html) \n" "and [VM Types](https://docs.outscale.com/en/userguide/VM-Types.html).\n" "\nRequired Argument: FlexibleGpuId, VmId \n"
 ,
 	"Usage: oapi-cli DeregisterVmsInLoadBalancer --BackendVmIds=backendvmids --LoadBalancerName=loadbalancername [OPTIONS]\n" "Deregisters a specified virtual machine (VM) from a load balancer.\n" "\nRequired Argument: BackendVmIds, LoadBalancerName \n"
 ,
@@ -537,7 +574,11 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli DeleteVirtualGateway --VirtualGatewayId=virtualgatewayid [OPTIONS]\n" "Deletes a specified virtual gateway.\nBefore deleting a virtual gateway, we \n" "recommend to detach it from the Net and delete the VPN connection.\n" "\nRequired Argument: VirtualGatewayId \n"
 ,
-	"Usage: oapi-cli DeleteUser --UserName=username [OPTIONS]\n" "Deletes a specified EIM user. The EIM user must not belong to any group, nor \n" "have any key or attached policy.\n" "\nRequired Argument: UserName \n"
+	"Usage: oapi-cli DeleteUserGroupPolicy --UserGroupName=usergroupname --PolicyName=policyname [OPTIONS]\n" "Deletes a specified inline policy from a specific group.\n" "\nRequired Argument: UserGroupName, PolicyName \n"
+,
+	"Usage: oapi-cli DeleteUserGroup --UserGroupName=usergroupname [OPTIONS]\n" "Deletes a specified user group.\n\n**[WARNING]**\nThe user group must be empty \n" "of any user and must not have any linked policy. Otherwise, you need to force \n" "the deletion.\nIf you force the deletion, all inline policies will be deleted \n" "with the user group.\n" "\nRequired Argument: UserGroupName \n"
+,
+	"Usage: oapi-cli DeleteUser --UserName=username [OPTIONS]\n" "Deletes a specified EIM user. The EIM user must not belong to any group, nor \n" "have any key or linked policy.\n" "\nRequired Argument: UserName \n"
 ,
 	"Usage: oapi-cli DeleteTags --ResourceIds=resourceids --Tags=tags [OPTIONS]\n" "Deletes one or more tags from the specified resources.\n" "\nRequired Argument: ResourceIds, Tags \n"
 ,
@@ -621,6 +662,8 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli CreateVirtualGateway --ConnectionType=connectiontype [OPTIONS]\n" "Creates a virtual gateway.\nA virtual gateway is the access point on the Net \n" "side of a VPN connection.\nFor more information, see [About Virtual \n" "Gateways](https://docs.outscale.com/en/userguide/About-Virtual-Gateways.html).\n" "\nRequired Argument: ConnectionType \n"
 ,
+	"Usage: oapi-cli CreateUserGroup --UserGroupName=usergroupname [OPTIONS]\n" "Creates a group to which you can add users.\nYou can also add an inline policy \n" "or link a managed policy to the group, which is applied to all its users.\n" "\nRequired Argument: UserGroupName \n"
+,
 	"Usage: oapi-cli CreateUser --UserName=username [OPTIONS]\n" "Creates an EIM user for your account.\nFor more information, see [About EIM \n" "Users](https://docs.outscale.com/en/userguide/About-EIM-Users.html).\n" "\nRequired Argument: UserName \n"
 ,
 	"Usage: oapi-cli CreateTags --ResourceIds=resourceids --Tags=tags [OPTIONS]\n" "Adds one or more tags to the specified resources.\nIf a tag with the same key \n" "already exists for the resource, the tag value is replaced.\nYou can tag the \n" "following resources using their IDs:\n\n* Virtual machines (VMs) \n" "(i-xxxxxxxx)\n* OMIs (ami-xxxxxxxx)\n* Volumes (vol-xxxxxxxx)\n* Snapshots \n" "(snap-xxxxxxxx)\n* Public IPs (eipalloc-xxxxxxxx)\n* Security groups \n" "(sg-xxxxxxxx)\n* Route tables (rtb-xxxxxxxx)\n* Network interface cards (NIC) \n" "(eni-xxxxxxxx)\n* Nets (vpc-xxxxxxxx)\n* Subnets (subnet-xxxxxxxx)\n* Net \n" "peerings (vpcx-xxxxxxxx)\n* Net endpoints (vpce-xxxxxxxx)\n* NAT services \n" "(nat-xxxxxxxx)\n* Internet services (igw-xxxxxxxx)\n* Client gateways \n" "(cgw-xxxxxxxx)\n* Virtual gateways (vgw-xxxxxxxx)\n* VPN connections \n" "(vpn-xxxxxxxx)\n* DHCP options (dopt-xxxxxxxx)\n* OMI export tasks \n" "(image-export-xxxxxxxx)\n* Snapshot export tasks (snap-export-xxxxxxxx)\n\nFor \n" "more information, see [About \n" "Tags](https://docs.outscale.com/en/userguide/About-Tags.html).\n" "\nRequired Argument: ResourceIds, Tags \n"
@@ -629,9 +672,9 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli CreateSnapshotExportTask --OsuExport=osuexport --SnapshotId=snapshotid [OPTIONS]\n" "Exports a snapshot to an OUTSCALE Object Storage (OOS) bucket.\nThis action \n" "enables you to create a backup of your snapshot or to copy it to another \n" "account. You, or other accounts you send a pre-signed URL to, can then download \n" "this snapshot from the bucket using the [CreateSnapshot](#createsnapshot) \n" "method.\nThis procedure enables you to copy a snapshot between accounts within \n" "the same Region or in different Regions. To copy a snapshot within the same \n" "Region, you can also use the [CreateSnapshot](#createsnapshot) direct method. \n" "The copy of the source snapshot is independent and belongs to you.\nFor more \n" "information, see [About \n" "Snapshots](https://docs.outscale.com/en/userguide/About-Snapshots.html).\n" "\nRequired Argument: OsuExport, SnapshotId \n"
 ,
-	"Usage: oapi-cli CreateSnapshot [OPTIONS]\n" "Creates a snapshot. Snapshots are point-in-time images of a volume that you can \n" "use to back up your data or to create replicas of this volume.\nYou can use \n" "this method in three different ways:\n* **Creating from a volume**: You create \n" "a snapshot from one of your volumes.\n* **Copying a snapshot**: You copy an \n" "existing snapshot. The source snapshot can be one of your own snapshots, or a \n" "snapshot owned by another account that has granted you permission via the \n" "[UpdateSnapshot](#updatesnapshot) method.\n* **Importing from a bucket**: You \n" "import a snapshot located in an OUTSCALE Object Storage (OOS) bucket. First, \n" "the owner of the source snapshot must export it to the bucket by using the \n" "[CreateSnapshotExportTask](#createsnapshotexporttask) method. Then, they must \n" "grant you permission to read the snapshot via a pre-signed URL or Access \n" "Control Lists. For more information, see [Managing Access to Your Buckets and \n" "Objects](https://docs.outscale.com/en/userguide/Managing-Access-to-Your-Buckets-\n" "and-Objects.html).\n\nFor more information, see [About \n" "Snapshots](https://docs.outscale.com/en/userguide/About-Snapshots.html).\n" "\nRequired Argument: \n"
+	"Usage: oapi-cli CreateSnapshot [OPTIONS]\n" "Creates a snapshot. Snapshots are point-in-time images of a volume that you can \n" "use to back up your data or to create replicas of this volume.\nYou can use \n" "this method in three different ways:\n* **Creating from a volume**: You create \n" "a snapshot from one of your volumes.\n* **Copying a snapshot**: You copy an \n" "existing snapshot. The source snapshot can be one of your own snapshots, or a \n" "snapshot owned by another account that has granted you permission via the \n" "[UpdateSnapshot](#updatesnapshot) method.\n* **Importing from a bucket**: You \n" "import a snapshot located in an OUTSCALE Object Storage (OOS) bucket. First, \n" "the owner of the source snapshot must export it to the bucket by using the \n" "[CreateSnapshotExportTask](#createsnapshotexporttask) method. Then, they must \n" "grant you permission to read the snapshot via a pre-signed URL or Access \n" "Control Lists. For more information, see [Managing Access to Your Buckets and \n" "Objects](https://docs.outscale.com/en/userguide/Managing-Access-to-Your-Buckets-\n" "and-Objects.html).\n\n**[NOTE]**\nIn case of excessive use of the snapshot \n" "creation feature on the same volume over a short period of time, 3DS OUTSCALE \n" "reserves the right to temporarily block the feature.\n\nFor more information, \n" "see [About \n" "Snapshots](https://docs.outscale.com/en/userguide/About-Snapshots.html).\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli CreateServerCertificate --Body=body --PrivateKey=privatekey --Name=name [OPTIONS]\n" "Creates a server certificate and its matching private key.\nThese elements can \n" "be used with other services (for example, to configure SSL termination on load \n" "balancers).\nYou can also specify the chain of intermediate certification \n" "authorities if your certificate is not directly signed by a root one. You can \n" "specify multiple intermediate certification authorities in the \n" "`CertificateChain` parameter. To do so, concatenate all certificates in the \n" "correct order (the first certificate must be the authority of your certificate, \n" "the second must the the authority of the first one, and so on).\nThe private \n" "key must be a RSA key in PKCS1 form. To check this, open the PEM file and \n" "ensure its header reads as follows: BEGIN RSA PRIVATE KEY.\n[IMPORTANT]\nThis \n" "private key must not be protected by a password or a passphrase.\nFor more \n" "information, see [About Server Certificates in \n" "EIM](https://docs.outscale.com/en/userguide/About-Server-Certificates-in-EIM.htm\n" "l).\n" "\nRequired Argument: Body, PrivateKey, Name \n"
+	"Usage: oapi-cli CreateServerCertificate --Body=body --PrivateKey=privatekey --Name=name [OPTIONS]\n" "Creates a server certificate and its matching private key.\nThese elements can \n" "be used with other services (for example, to configure SSL termination on load \n" "balancers).\nYou can also specify the chain of intermediate certification \n" "authorities if your certificate is not directly signed by a root one. You can \n" "specify multiple intermediate certification authorities in the \n" "`CertificateChain` parameter. To do so, concatenate all certificates in the \n" "correct order (the first certificate must be the authority of your certificate, \n" "the second must be the authority of the first one, and so on).\nThe private key \n" "must be a RSA key in PKCS1 form. To check this, open the PEM file and ensure \n" "its header reads as follows: BEGIN RSA PRIVATE KEY.\n[IMPORTANT]\nThis private \n" "key must not be protected by a password or a passphrase.\nFor more information, \n" "see [About Server Certificates in \n" "EIM](https://docs.outscale.com/en/userguide/About-Server-Certificates-in-EIM.htm\n" "l).\n" "\nRequired Argument: Body, PrivateKey, Name \n"
 ,
 	"Usage: oapi-cli CreateSecurityGroupRule --SecurityGroupId=securitygroupid --Flow=flow [OPTIONS]\n" "Adds one or more rules to a security group.\nUse the `SecurityGroupId` \n" "parameter to specify the security group for which you want to create a \n" "rule.\nUse the `Flow` parameter to specify if you want an inbound rule or an \n" "outbound rule.\nAn inbound rule allows the security group to receive \n" "traffic:\n* Either from a specific IP range (`IpRange` parameter) on a specific \n" "port range (`FromPortRange` and `ToPortRange` parameters) and specific protocol \n" "(`IpProtocol` parameter).\n* Or from another specific security group \n" "(`SecurityGroupAccountIdToLink` and `SecurityGroupNameToLink` \n" "parameters).\n\n(Net only) An outbound rule works similarly but allows the \n" "security group to send traffic rather than receive traffic.\n\nAlternatively, \n" "you can use the `Rules` parameter to add several rules at the same \n" "time.\n\n**[NOTE]**\n* The modifications are effective as quickly as possible, \n" "but a small delay may occur.\n* By default, traffic between two security groups \n" "is allowed through both public and private IPs. To restrict traffic to private \n" "IPs only, contact our Support team at support@outscale.com.\n\nFor more \n" "information, see [About Security Group \n" "Rules](https://docs.outscale.com/en/userguide/About-Security-Group-Rules.html).\n" "\nRequired Argument: SecurityGroupId, Flow \n"
 ,
@@ -661,7 +704,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli CreateLoadBalancerTags --LoadBalancerNames=loadbalancernames --Tags=tags [OPTIONS]\n" "Adds one or more tags to the specified load balancers.\nIf a tag with the same \n" "key already exists for the load balancer, the tag value is replaced.\nFor more \n" "information, see [About \n" "Tags](https://docs.outscale.com/en/userguide/About-Tags.html).\n" "\nRequired Argument: LoadBalancerNames, Tags \n"
 ,
-	"Usage: oapi-cli CreateLoadBalancerPolicy --PolicyType=policytype --LoadBalancerName=loadbalancername --PolicyName=policyname [OPTIONS]\n" "Creates a stickiness policy with sticky session lifetimes defined by the \n" "browser lifetime.\nThe created policy can be used with HTTP or HTTPS listeners \n" "only.\nIf this policy is implemented by a load balancer, this load balancer \n" "uses this cookie in all incoming requests to direct them to the specified \n" "back-end server virtual machine (VM). If this cookie is not present, the load \n" "balancer sends the request to any other server according to its load-balancing \n" "algorithm.\n\nYou can also create a stickiness policy with sticky session \n" "lifetimes following the lifetime of an application-generated cookie.\nUnlike \n" "the other type of stickiness policy, the lifetime of the special Load Balancer \n" "Unit (LBU) cookie follows the lifetime of the application-generated cookie \n" "specified in the policy configuration. The load balancer inserts a new \n" "stickiness cookie only when the application response includes a new application \n" "cookie.\nThe session stops being sticky if the application cookie is removed or \n" "expires, until a new application cookie is issued.\nFor more information, see \n" "[About Load \n" "Balancers](https://docs.outscale.com/en/userguide/About-Load-Balancers.html).\n" "\nRequired Argument: PolicyType, LoadBalancerName, PolicyName \n"
+	"Usage: oapi-cli CreateLoadBalancerPolicy --PolicyType=policytype --LoadBalancerName=loadbalancername --PolicyName=policyname [OPTIONS]\n" "Creates a stickiness policy with sticky session lifetimes defined by the \n" "browser lifetime.\nThe created policy can be used with HTTP or HTTPS listeners \n" "only.\nIf this policy is implemented by a load balancer, this load balancer \n" "uses this cookie in all incoming requests to direct them to the specified \n" "backend server virtual machine (VM). If this cookie is not present, the load \n" "balancer sends the request to any other server according to its load-balancing \n" "algorithm.\n\nYou can also create a stickiness policy with sticky session \n" "lifetimes following the lifetime of an application-generated cookie.\nUnlike \n" "the other type of stickiness policy, the lifetime of the special Load Balancer \n" "Unit (LBU) cookie follows the lifetime of the application-generated cookie \n" "specified in the policy configuration. The load balancer inserts a new \n" "stickiness cookie only when the application response includes a new application \n" "cookie.\nThe session stops being sticky if the application cookie is removed or \n" "expires, until a new application cookie is issued.\nFor more information, see \n" "[About Load \n" "Balancers](https://docs.outscale.com/en/userguide/About-Load-Balancers.html).\n" "\nRequired Argument: PolicyType, LoadBalancerName, PolicyName \n"
 ,
 	"Usage: oapi-cli CreateLoadBalancerListeners --Listeners=listeners --LoadBalancerName=loadbalancername [OPTIONS]\n" "Creates one or more listeners for a specified load balancer.\nFor more \n" "information, see [About Load \n" "Balancers](https://docs.outscale.com/en/userguide/About-Load-Balancers.html).\n" "\nRequired Argument: Listeners, LoadBalancerName \n"
 ,
@@ -673,7 +716,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli CreateInternetService [OPTIONS]\n" "Creates an Internet service you can use with a Net.\nAn Internet service \n" "enables your virtual machines (VMs) launched in a Net to connect to the \n" "Internet. By default, a Net includes an Internet service, and each Subnet is \n" "public. Every VM launched within a default Subnet has a private IP and a public \n" "IP.\nFor more information, see [About Internet \n" "Services](https://docs.outscale.com/en/userguide/About-Internet-Services.html).\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli CreateImageExportTask --OsuExport=osuexport --ImageId=imageid [OPTIONS]\n" "Exports an Outscale machine image (OMI) to an OUTSCALE Object Storage (OOS) \n" "bucket.\nThis action enables you to copy an OMI between accounts in different \n" "Regions. To copy an OMI in the same Region, you can also use the \n" "[CreateImage](#createimage) method.\nThe copy of the OMI belongs to you and is \n" "independent from the source OMI.\n\n**[IMPORTANT]**\nYou cannot export a shared \n" "or public OMI, as they do not belong to you. To do so, you must first copy it \n" "to your account. The copy then belongs to you and you can export it.\nFor more \n" "information, see [About \n" "OMIs](https://docs.outscale.com/en/userguide/About-OMIs.html).\n" "\nRequired Argument: OsuExport, ImageId \n"
+	"Usage: oapi-cli CreateImageExportTask --OsuExport=osuexport --ImageId=imageid [OPTIONS]\n" "Exports an OUTSCALE machine image (OMI) to an OUTSCALE Object Storage (OOS) \n" "bucket.\nThis action enables you to copy an OMI between accounts in different \n" "Regions. To copy an OMI in the same Region, you can also use the \n" "[CreateImage](#createimage) method.\nThe copy of the OMI belongs to you and is \n" "independent from the source OMI.\n\n**[IMPORTANT]**\nYou cannot export a shared \n" "or public OMI, as they do not belong to you. To do so, you must first copy it \n" "to your account. The copy then belongs to you and you can export it.\nFor more \n" "information, see [About \n" "OMIs](https://docs.outscale.com/en/userguide/About-OMIs.html).\n" "\nRequired Argument: OsuExport, ImageId \n"
 ,
 	"Usage: oapi-cli CreateImage [OPTIONS]\n" "Creates an OUTSCALE machine image (OMI).\nYou can use this method in different \n" "ways:\n* **Creating from a VM**: You create an OMI from one of your virtual \n" "machines (VMs).<br>\n* **Copying an OMI**: You copy an existing OMI. The source \n" "OMI can be one of your own OMIs, or an OMI owned by another account that has \n" "granted you permission via the [UpdateImage](#updateimage) method.<br>\n* \n" "**Registering from a snapshot**: You register an OMI from an existing snapshot. \n" "The source snapshot can be one of your own snapshots, or a snapshot owned by \n" "another account that has granted you permission via the \n" "[UpdateSnapshot](#updatesnapshot) method.<br>\n* **Registering from a bucket by \n" "using a manifest file**: You register an OMI from the manifest file of an OMI \n" "that was exported to an OUTSCALE Object Storage (OOS) bucket. First, the owner \n" "of the source OMI must export it to the bucket by using the \n" "[CreateImageExportTask](#createimageexporttask) method. Then, they must grant \n" "you permission to read the manifest file via a pre-signed URL or Access Control \n" "Lists. For more information, see [Managing Access to Your Buckets and \n" "Objects](https://docs.outscale.com/en/userguide/Managing-Access-to-Your-Buckets-\n" "and-Objects.html).\n* **Registering from a bucket without using a manifest \n" "file**: This is similar to the previous case but you manually specify all the \n" "information that would be in a manifest file instead of using a manifest \n" "file.\n\n**[TIP]**\nRegistering from a bucket enables you to copy an OMI across \n" "Regions.\n\nFor more information, see [About \n" "OMIs](https://docs.outscale.com/en/userguide/About-OMIs.html).\n" "\nRequired Argument: \n"
 ,
@@ -699,6 +742,8 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli CheckAuthentication --Login=login --Password=password [OPTIONS]\n" "Validates the authenticity of the account.\n" "\nRequired Argument: Login, Password \n"
 ,
+	"Usage: oapi-cli AddUserToUserGroup --UserGroupName=usergroupname --UserName=username [OPTIONS]\n" "Adds a user to a specified group.\n" "\nRequired Argument: UserGroupName, UserName \n"
+,
 	"Usage: oapi-cli AcceptNetPeering --NetPeeringId=netpeeringid [OPTIONS]\n" "Accepts a Net peering request.\nTo accept this request, you must be the owner \n" "of the peer Net. If you do not accept the request within 7 days, the state of \n" "the Net peering becomes `expired`.\n\n**[NOTE]**\nA peering connection between \n" "two Nets works both ways. Therefore, when an A-to-B peering connection is \n" "accepted, any pending B-to-A peering connection is automatically rejected as \n" "redundant.\n" "\nRequired Argument: NetPeeringId \n"
 ,
 	NULL
@@ -714,11 +759,53 @@ static const char *calls_args_descriptions[] = {
 	"  The ID of the virtual gateway.\n"
 "VpnConnectionId: string\n"
 	"  The ID of the VPN connection you want to modify.\n"
-"VpnOptions: ref VpnOptionsToUpdate\n"
+"VpnOptions: ref VpnOptions\n"
 	"    Information about the VPN options.\n"
-	"    -Phase2Options: ref Phase2OptionsToUpdate\n"
+	"    -Phase1Options: ref Phase1Options\n"
+	"        Information about Phase 1 of the Internet Key Exchange (IKE) \n"
+	"        negotiation. When Phase 1 finishes successfully, peers proceed \n"
+	"        to Phase 2 negotiations.\n"
+	"        -DpdTimeoutAction: string\n"
+	"          The action to carry out after a Dead Peer Detection (DPD) \n"
+	"          timeout occurs.\n"
+	"        -DpdTimeoutSeconds: int\n"
+	"          The maximum waiting time for a Dead Peer Detection (DPD) \n"
+	"          response before considering the peer as dead, in seconds.\n"
+	"        -IkeVersions: array string\n"
+	"          The Internet Key Exchange (IKE) versions allowed for the VPN \n"
+	"          tunnel.\n"
+	"        -Phase1DhGroupNumbers: array integer\n"
+	"          The Diffie-Hellman (DH) group numbers allowed for the VPN \n"
+	"          tunnel for phase 1.\n"
+	"        -Phase1EncryptionAlgorithms: array string\n"
+	"          The encryption algorithms allowed for the VPN tunnel for phase \n"
+	"          1.\n"
+	"        -Phase1IntegrityAlgorithms: array string\n"
+	"          The integrity algorithms allowed for the VPN tunnel for phase \n"
+	"          1.\n"
+	"        -Phase1LifetimeSeconds: int\n"
+	"          The lifetime for phase 1 of the IKE negotiation process, in \n"
+	"          seconds.\n"
+	"        -ReplayWindowSize: int\n"
+	"          The number of packets in an IKE replay window.\n"
+	"        -StartupAction: string\n"
+	"          The action to carry out when establishing tunnels for a VPN \n"
+	"          connection.\n"
+	"    -Phase2Options: ref Phase2Options\n"
 	"        Information about Phase 2 of the Internet Key Exchange (IKE) \n"
-	"        negotiation. \n"
+	"        negotiation.\n"
+	"        -Phase2DhGroupNumbers: array integer\n"
+	"          The Diffie-Hellman (DH) group numbers allowed for the VPN \n"
+	"          tunnel for phase 2.\n"
+	"        -Phase2EncryptionAlgorithms: array string\n"
+	"          The encryption algorithms allowed for the VPN tunnel for phase \n"
+	"          2.\n"
+	"        -Phase2IntegrityAlgorithms: array string\n"
+	"          The integrity algorithms allowed for the VPN tunnel for phase \n"
+	"          2.\n"
+	"        -Phase2LifetimeSeconds: int\n"
+	"          The lifetime for phase 2 of the Internet Key Exchange (IKE) \n"
+	"          negociation process, in seconds.\n"
 	"        -PreSharedKey: string\n"
 	"          The pre-shared key to establish the initial authentication \n"
 	"          between the client gateway and the virtual gateway. This key \n"
@@ -852,6 +939,18 @@ static const char *calls_args_descriptions[] = {
 "VmType: string\n"
 	"  The type of VM. For more information, see [VM \n"
 	"  Types](https://docs.outscale.com/en/userguide/VM-Types.html).\n"
+,
+	"DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform \n"
+	"  the action.\n"
+"NewPath: string\n"
+	"  A new path for the group. If not specified, it is set to a slash (`/`).\n"
+"NewUserGroupName: string\n"
+	"  A new name for the user group.\n"
+"Path: string\n"
+	"  The path to the group. If not specified, it is set to a slash (`/`).\n"
+"UserGroupName: string\n"
+	"  The name of the group you want to update.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -1058,8 +1157,8 @@ static const char *calls_args_descriptions[] = {
 	"  list is empty, the default security group of the Net is assigned to the \n"
 	"  load balancer.\n"
 "ServerCertificateId: string\n"
-	"  The Outscale Resource Name (ORN) of the server certificate. For more \n"
-	"  information, see [Resource Identifiers > Outscale Resource Names \n"
+	"  The OUTSCALE Resource Name (ORN) of the server certificate. For more \n"
+	"  information, see [Resource Identifiers > OUTSCALE Resource Names \n"
 	"  (ORNs)](https://docs.outscale.com/en/userguide/Resource-Identifiers.html\n"
 	"  #_outscale_resource_names_orns). If this parameter is specified, you \n"
 	"  must also specify the `LoadBalancerPort` parameter.\n"
@@ -1078,7 +1177,9 @@ static const char *calls_args_descriptions[] = {
 	"  This path pattern supports maximum three wildcards, and must not \n"
 	"  contain any special characters except [_-.$/~\"'@:+?].\n"
 ,
-	"DryRun: bool\n"
+	"Description: string\n"
+	"  A new description for the image.\n"
+"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
 	"  the action.\n"
 "ImageId: string\n"
@@ -1156,7 +1257,7 @@ static const char *calls_args_descriptions[] = {
 	"  If true, checks whether you have the required permissions to perform \n"
 	"  the action.\n"
 "IpRanges: array string\n"
-	"  One or more IP addresses or CIDR blocks (for example, `192.0.2.0/16`).\n"
+	"  One or more IPs or CIDR blocks (for example, `192.0.2.0/16`).\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -1288,15 +1389,26 @@ static const char *calls_args_descriptions[] = {
 "LinkNicId: string\n"
 	"  The ID of the attachment operation.\n"
 ,
+	"DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform \n"
+	"  the action.\n"
+"PolicyOrn: string\n"
+	"  The OUTSCALE Resource Name (ORN) of the policy. For more information, \n"
+	"  see [Resource \n"
+	"  Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifiers\n"
+	"  .html).\n"
+"UserGroupName: string\n"
+	"  The name of the group you want to unlink the policy from.\n"
+,
 	"BackendIps: array string\n"
-	"   One or more public IPs of back-end VMs.\n"
+	"  One or more public IPs of backend VMs.\n"
 "BackendVmIds: array string\n"
-	"   One or more IDs of back-end VMs.\n"
+	"  One or more IDs of backend VMs.\n"
 "DryRun: bool\n"
-	"   If true, checks whether you have the required permissions to perform \n"
+	"  If true, checks whether you have the required permissions to perform \n"
 	"  the action.\n"
 "LoadBalancerName: string\n"
-	"   The name of the load balancer.\n"
+	"  The name of the load balancer.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -1353,12 +1465,24 @@ static const char *calls_args_descriptions[] = {
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
 	"  the action.\n"
+"UserGroupName: string\n"
+	"  The name of the group you want to remove the user from.\n"
+"UserGroupPath: string\n"
+	"  The path to the group. If not specified, it is set to a slash (`/`).\n"
+"UserName: string\n"
+	"  The name of the user you want to remove from the group.\n"
+"UserPath: string\n"
+	"  The path to the user (by default, `/`).\n"
+,
+	"DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform \n"
+	"  the action.\n"
 "NetPeeringId: string\n"
 	"  The ID of the Net peering you want to reject.\n"
 ,
 	"BackendVmIds: array string\n"
-	"  One or more IDs of back-end VMs.\nSpecifying the same ID several times \n"
-	"  has no effect as each back-end VM has equal weight.\n"
+	"  One or more IDs of backend VMs.\nSpecifying the same ID several times \n"
+	"  has no effect as each backend VM has equal weight.\n"
 "DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
 	"  the action.\n"
@@ -1480,9 +1604,9 @@ static const char *calls_args_descriptions[] = {
 	"    -MaintenanceEventDescriptions: array string\n"
 	"      The description of the scheduled event.\n"
 	"    -MaintenanceEventsNotAfter: array string\n"
-	"      The latest time the event can end.\n"
+	"      The latest date and time (UTC) the event can end.\n"
 	"    -MaintenanceEventsNotBefore: array string\n"
-	"      The earliest time the event can start.\n"
+	"      The earliest date and time (UTC) the event can start.\n"
 	"    -SubregionNames: array string\n"
 	"      The names of the Subregions of the VMs.\n"
 	"    -VmIds: array string\n"
@@ -1491,9 +1615,15 @@ static const char *calls_args_descriptions[] = {
 	"      The states of the VMs (`pending` \\| `running` \\| `stopping` \n"
 	"      \\| `stopped` \\| `shutting-down` \\| `terminated` \\| \n"
 	"      `quarantine`).\n"
+"NextPageToken: string\n"
+	"  The token to request the next page of results. Each token refers to a \n"
+	"  specific page.\n"
+"ResultsPerPage: int\n"
+	"  The maximum number of logs returned in a single response (between \n"
+	"  `1`and `1000`, both included). By default, `100`.\n"
 ,
 	"BackendVmIds: array string\n"
-	"  One or more IDs of back-end VMs.\n"
+	"  One or more IDs of backend VMs.\n"
 "DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
 	"  the action.\n"
@@ -1551,7 +1681,8 @@ static const char *calls_args_descriptions[] = {
 	"    -NicLinkNicDeviceNumbers: array integer\n"
 	"      The device numbers the NICs are attached to.\n"
 	"    -NicLinkNicLinkNicDates: array string\n"
-	"      The dates and time when the NICs were attached to the VMs.\n"
+	"      The dates and times (UTC) when the NICs were attached to the \n"
+	"      VMs.\n"
 	"    -NicLinkNicLinkNicIds: array string\n"
 	"      The IDs of the NIC attachments.\n"
 	"    -NicLinkNicStates: array string\n"
@@ -1697,12 +1828,18 @@ static const char *calls_args_descriptions[] = {
 	"      The maximum number of ephemeral storage disks.\n"
 	"    -VolumeSizes: array integer\n"
 	"      The size of one ephemeral storage disk, in gibibytes (GiB).\n"
+"NextPageToken: string\n"
+	"  The token to request the next page of results. Each token refers to a \n"
+	"  specific page.\n"
+"ResultsPerPage: int\n"
+	"  The maximum number of logs returned in a single response (between \n"
+	"  `1`and `1000`, both included). By default, `100`.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
 	"  the action.\n"
 "Filters: ref FiltersVmTemplate\n"
-	"    One or more filters.\n"
+	"    null\n"
 	"    -CpuCores: array integer\n"
 	"      The number of vCores.\n"
 	"    -CpuGenerations: array string\n"
@@ -1802,6 +1939,61 @@ static const char *calls_args_descriptions[] = {
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
 	"  the action.\n"
+"UserName: string\n"
+	"  The name of the user.\n"
+"UserPath: string\n"
+	"  The path to the user (by default, `/`).\n"
+,
+	"DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform \n"
+	"  the action.\n"
+"Filters: ref FiltersUserGroup\n"
+	"    One or more filters.\n"
+	"    -PathPrefix: string\n"
+	"      The path prefix of the groups. If not specified, it is set to \n"
+	"      a slash (`/`).\n"
+	"    -UserGroupIds: array string\n"
+	"      The IDs of the user groups.\n"
+"FirstItem: int\n"
+	"  The item starting the list of groups requested.\n"
+"ResultsPerPage: int\n"
+	"  The maximum number of items that can be returned in a single response \n"
+	"  (by default, `100`).\n"
+,
+	"DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform \n"
+	"  the action.\n"
+"PolicyName: string\n"
+	"  The name of the policy.\n"
+"UserGroupName: string\n"
+	"  The name of the group.\n"
+"UserGroupPath: string\n"
+	"  The path to the group. If not specified, it is set to a slash (`/`).\n"
+,
+	"DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform \n"
+	"  the action.\n"
+"FirstItem: int\n"
+	"  The item starting the list of policies requested.\n"
+"ResultsPerPage: int\n"
+	"  The maximum number of items that can be returned in a single response \n"
+	"  (by default, `100`).\n"
+"UserGroupName: string\n"
+	"  The name of the group.\n"
+"UserGroupPath: string\n"
+	"  The path to the group. If not specified, it is set to a slash (`/`).\n"
+,
+	"DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform \n"
+	"  the action.\n"
+"Path: string\n"
+	"  The path to the group. If not specified, it is set to a slash (`/`).\n"
+"UserGroupName: string\n"
+	"  The name of the group.\n"
+,
+	"DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform \n"
+	"  the action.\n"
 "Filters: ref FiltersTag\n"
 	"    One or more filters.\n"
 	"    -Keys: array string\n"
@@ -1823,6 +2015,12 @@ static const char *calls_args_descriptions[] = {
 	"      can use this filter alongside the `TagKeys` filter. In that \n"
 	"      case, you filter the resources corresponding to each tag, \n"
 	"      regardless of the other filter.\n"
+"NextPageToken: string\n"
+	"  The token to request the next page of results. Each token refers to a \n"
+	"  specific page.\n"
+"ResultsPerPage: int\n"
+	"  The maximum number of logs returned in a single response (between \n"
+	"  `1`and `1000`, both included). By default, `100`.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -1835,6 +2033,12 @@ static const char *calls_args_descriptions[] = {
 	"      The states of the Subregions.\n"
 	"    -SubregionNames: array string\n"
 	"      The names of the Subregions.\n"
+"NextPageToken: string\n"
+	"  The token to request the next page of results. Each token refers to a \n"
+	"  specific page.\n"
+"ResultsPerPage: int\n"
+	"  The maximum number of logs returned in a single response (between \n"
+	"  `1`and `1000`, both included). By default, `100`.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -1864,6 +2068,12 @@ static const char *calls_args_descriptions[] = {
 	"      Subnets, in the following format: \n"
 	"      \"Filters\":{\"Tags\":[\"TAGKEY=TAGVALUE&quo\n"
 	"      t;]}.\n"
+"NextPageToken: string\n"
+	"  The token to request the next page of results. Each token refers to a \n"
+	"  specific page.\n"
+"ResultsPerPage: int\n"
+	"  The maximum number of logs returned in a single response (between \n"
+	"  `1`and `1000`, both included). By default, `100`.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -1889,8 +2099,8 @@ static const char *calls_args_descriptions[] = {
 	"    -SnapshotIds: array string\n"
 	"      The IDs of the snapshots.\n"
 	"    -States: array string\n"
-	"      The states of the snapshots (`in-queue` \\| `completed` \\| \n"
-	"      `error`).\n"
+	"      The states of the snapshots (`in-queue` \\| `pending` \\| \n"
+	"      `completed` \\| `error` \\| `deleting`).\n"
 	"    -TagKeys: array string\n"
 	"      The keys of the tags associated with the snapshots.\n"
 	"    -TagValues: array string\n"
@@ -1908,6 +2118,12 @@ static const char *calls_args_descriptions[] = {
 	"    -VolumeSizes: array integer\n"
 	"      The sizes of the volumes used to create the snapshots, in \n"
 	"      gibibytes (GiB).\n"
+"NextPageToken: string\n"
+	"  The token to request the next page of results. Each token refers to a \n"
+	"  specific page.\n"
+"ResultsPerPage: int\n"
+	"  The maximum number of logs returned in a single response (between \n"
+	"  `1`and `1000`, both included). By default, `100`.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -1916,6 +2132,12 @@ static const char *calls_args_descriptions[] = {
 	"    One or more filters.\n"
 	"    -TaskIds: array string\n"
 	"      The IDs of the export tasks.\n"
+"NextPageToken: string\n"
+	"  The token to request the next page of results. Each token refers to a \n"
+	"  specific page.\n"
+"ResultsPerPage: int\n"
+	"  The maximum number of logs returned in a single response (between \n"
+	"  `1`and `1000`, both included). By default, `100`.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -1988,6 +2210,12 @@ static const char *calls_args_descriptions[] = {
 	"      security groups, in the following format: \n"
 	"      \"Filters\":{\"Tags\":[\"TAGKEY=TAGVALUE&quo\n"
 	"      t;]}.\n"
+"NextPageToken: string\n"
+	"  The token to request the next page of results. Each token refers to a \n"
+	"  specific page.\n"
+"ResultsPerPage: int\n"
+	"  The maximum number of logs returned in a single response (between \n"
+	"  `1`and `1000`, both included). By default, `100`.\n"
 ,
 	"AccessKeyId: string\n"
 	"  The ID of the access key.\n"
@@ -2063,6 +2291,12 @@ static const char *calls_args_descriptions[] = {
 	"      `global` if they are not.\n"
 	"    -ShortDescriptions: array string\n"
 	"      The description of the quotas.\n"
+"NextPageToken: string\n"
+	"  The token to request the next page of results. Each token refers to a \n"
+	"  specific page.\n"
+"ResultsPerPage: int\n"
+	"  The maximum number of logs returned in a single response (between \n"
+	"  `1`and `1000`, both included). By default, `100`.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -2106,6 +2340,12 @@ static const char *calls_args_descriptions[] = {
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
 	"  the action.\n"
+"NextPageToken: string\n"
+	"  The token to request the next page of results. Each token refers to a \n"
+	"  specific page.\n"
+"ResultsPerPage: int\n"
+	"  The maximum number of logs returned in a single response (between \n"
+	"  `1`and `1000`, both included). By default, `100`.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -2118,6 +2358,12 @@ static const char *calls_args_descriptions[] = {
 	"    One or more filters.\n"
 	"    -ProductTypeIds: array string\n"
 	"      The IDs of the product types.\n"
+"NextPageToken: string\n"
+	"  The token to request the next page of results. Each token refers to a \n"
+	"  specific page.\n"
+"ResultsPerPage: int\n"
+	"  The maximum number of logs returned in a single response (between \n"
+	"  `1`and `1000`, both included). By default, `100`.\n"
 ,
 	"FirstItem: int\n"
 	"  The item starting the list of policies requested.\n"
@@ -2128,7 +2374,7 @@ static const char *calls_args_descriptions[] = {
 	"  .html).\n"
 "ResultsPerPage: int\n"
 	"  The maximum number of items that can be returned in a single response \n"
-	"  (by default, 100).\n"
+	"  (by default, `100`).\n"
 ,
 	"PolicyOrn: string\n"
 	"  The OUTSCALE Resource Name (ORN) of the policy. For more information, \n"
@@ -2152,15 +2398,15 @@ static const char *calls_args_descriptions[] = {
 	"    -OnlyLinked: bool\n"
 	"      If set to true, lists only the policies attached to a user.\n"
 	"    -PathPrefix: string\n"
-	"      The path prefix you can use to filter the results, set to a \n"
-	"      slash (`/`) by default.\n"
+	"      The path prefix you can use to filter the results. If not \n"
+	"      specified, it is set to a slash (`/`).\n"
 	"    -Scope: string\n"
 	"      The scope to filter policies (`OWS` \\| `LOCAL`).\n"
 "FirstItem: int\n"
 	"  The item starting the list of policies requested.\n"
 "ResultsPerPage: int\n"
 	"  The maximum number of items that can be returned in a single response \n"
-	"  (by default, 100).\n"
+	"  (by default, `100`).\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -2192,6 +2438,8 @@ static const char *calls_args_descriptions[] = {
 	"    -LinkPublicIpLinkPublicIpIds: array string\n"
 	"      The association IDs returned when the public IPs were \n"
 	"      associated with the NICs.\n"
+	"    -LinkPublicIpPublicDnsNames: array string\n"
+	"      The public DNS names associated with the public IPs.\n"
 	"    -LinkPublicIpPublicIpIds: array string\n"
 	"      The allocation IDs returned when the public IPs were allocated \n"
 	"      to their accounts.\n"
@@ -2261,6 +2509,12 @@ static const char *calls_args_descriptions[] = {
 	"      Nets, in the following format: \n"
 	"      \"Filters\":{\"Tags\":[\"TAGKEY=TAGVALUE&quo\n"
 	"      t;]}.\n"
+"NextPageToken: string\n"
+	"  The token to request the next page of results. Each token refers to a \n"
+	"  specific page.\n"
+"ResultsPerPage: int\n"
+	"  The maximum number of logs returned in a single response (between \n"
+	"  `1`and `1000`, both included). By default, `100`.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -2348,12 +2602,21 @@ static const char *calls_args_descriptions[] = {
 	"      The IDs of the services.\n"
 	"    -ServiceNames: array string\n"
 	"      The names of the services.\n"
+"NextPageToken: string\n"
+	"  The token to request the next page of results. Each token refers to a \n"
+	"  specific page.\n"
+"ResultsPerPage: int\n"
+	"  The maximum number of logs returned in a single response (between \n"
+	"  `1`and `1000`, both included). By default, `100`.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
 	"  the action.\n"
 "Filters: ref FiltersNatService\n"
 	"    One or more filters.\n"
+	"    -ClientTokens: array string\n"
+	"      The idempotency tokens provided when creating the NAT \n"
+	"      services.\n"
 	"    -NatServiceIds: array string\n"
 	"      The IDs of the NAT services.\n"
 	"    -NetIds: array string\n"
@@ -2382,6 +2645,30 @@ static const char *calls_args_descriptions[] = {
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
 	"  the action.\n"
+"Filters: ref FiltersUserGroup\n"
+	"    One or more filters.\n"
+	"    -PathPrefix: string\n"
+	"      The path prefix of the groups. If not specified, it is set to \n"
+	"      a slash (`/`).\n"
+	"    -UserGroupIds: array string\n"
+	"      The IDs of the user groups.\n"
+"FirstItem: int\n"
+	"  The item starting the list of policies requested.\n"
+"ResultsPerPage: int\n"
+	"  The maximum number of items that can be returned in a single response \n"
+	"  (by default, `100`).\n"
+"UserGroupName: string\n"
+	"  The name of the group.\n"
+,
+	"DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform \n"
+	"  the action.\n"
+"NextPageToken: string\n"
+	"  The token to request the next page of results. Each token refers to a \n"
+	"  specific page.\n"
+"ResultsPerPage: int\n"
+	"  The maximum number of logs returned in a single response (between \n"
+	"  `1`and `1000`, both included). By default, `100`.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -2411,13 +2698,13 @@ static const char *calls_args_descriptions[] = {
 "Filters: ref ReadLinkedPoliciesFilters\n"
 	"    One or more filters.\n"
 	"    -PathPrefix: string\n"
-	"      The path prefix of the policies, set to a slash (`/`) by \n"
-	"      default.\n"
+	"      The path prefix of the policies. If not specified, it is set \n"
+	"      to a slash (`/`).\n"
 "FirstItem: int\n"
 	"  The item starting the list of policies requested.\n"
 "ResultsPerPage: int\n"
 	"  The maximum number of items that can be returned in a single response \n"
-	"  (by default, 100).\n"
+	"  (by default, `100`).\n"
 "UserName: string\n"
 	"  The name of the user the policies are linked to.\n"
 ,
@@ -2434,6 +2721,12 @@ static const char *calls_args_descriptions[] = {
 	"      The types of the keypairs (`ssh-rsa`, `ssh-ed25519`, \n"
 	"      `ecdsa-sha2-nistp256`, `ecdsa-sha2-nistp384`, or \n"
 	"      `ecdsa-sha2-nistp521`).\n"
+"NextPageToken: string\n"
+	"  The token to request the next page of results. Each token refers to a \n"
+	"  specific page.\n"
+"ResultsPerPage: int\n"
+	"  The maximum number of logs returned in a single response (between \n"
+	"  `1`and `1000`, both included). By default, `100`.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -2457,6 +2750,12 @@ static const char *calls_args_descriptions[] = {
 	"      Internet services, in the following format: \n"
 	"      \"Filters\":{\"Tags\":[\"TAGKEY=TAGVALUE&quo\n"
 	"      t;]}.\n"
+"NextPageToken: string\n"
+	"  The token to request the next page of results. Each token refers to a \n"
+	"  specific page.\n"
+"ResultsPerPage: int\n"
+	"  The maximum number of logs returned in a single response (between \n"
+	"  `1`and `1000`, both included). By default, `100`.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -2532,6 +2831,12 @@ static const char *calls_args_descriptions[] = {
 	"    One or more filters.\n"
 	"    -TaskIds: array string\n"
 	"      The IDs of the export tasks.\n"
+"NextPageToken: string\n"
+	"  The token to request the next page of results. Each token refers to a \n"
+	"  specific page.\n"
+"ResultsPerPage: int\n"
+	"  The maximum number of logs returned in a single response (between \n"
+	"  `1`and `1000`, both included). By default, `100`.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -2568,6 +2873,12 @@ static const char *calls_args_descriptions[] = {
 	"    One or more filters.\n"
 	"    -DirectLinkIds: array string\n"
 	"      The IDs of the DirectLinks.\n"
+"NextPageToken: string\n"
+	"  The token to request the next page of results. Each token refers to a \n"
+	"  specific page.\n"
+"ResultsPerPage: int\n"
+	"  The maximum number of logs returned in a single response (between \n"
+	"  `1`and `1000`, both included). By default, `100`.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -2578,6 +2889,12 @@ static const char *calls_args_descriptions[] = {
 	"      The IDs of the DirectLinks.\n"
 	"    -DirectLinkInterfaceIds: array string\n"
 	"      The IDs of the DirectLink interfaces.\n"
+"NextPageToken: string\n"
+	"  The token to request the next page of results. Each token refers to a \n"
+	"  specific page.\n"
+"ResultsPerPage: int\n"
+	"  The maximum number of logs returned in a single response (between \n"
+	"  `1`and `1000`, both included). By default, `100`.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -2630,6 +2947,12 @@ static const char *calls_args_descriptions[] = {
 	"    -SubregionNames: array string\n"
 	"      The names of the Subregions in which the dedicated groups are \n"
 	"      located.\n"
+"NextPageToken: string\n"
+	"  The token to request the next page of results. Each token refers to a \n"
+	"  specific page.\n"
+"ResultsPerPage: int\n"
+	"  The maximum number of logs returned in a single response (between \n"
+	"  `1`and `1000`, both included). By default, `100`.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -2637,7 +2960,8 @@ static const char *calls_args_descriptions[] = {
 "FromDate: string\n"
 	"  The beginning of the time period, in ISO 8601 date format (for example, \n"
 	"  `2020-06-14`). The date-time format is also accepted, but only with a \n"
-	"  time set to midnight (for example, `2020-06-14T00:00:00.000Z`).\n"
+	"  time set to midnight (for example, `2020-06-14T00:00:00.000Z`). This \n"
+	"  value is included in the time period.\n"
 "Overall: bool\n"
 	"  By default or if false, returns only the consumption of the specific \n"
 	"  account that sends this request. If true, returns either the overall \n"
@@ -2647,12 +2971,14 @@ static const char *calls_args_descriptions[] = {
 "ShowPrice: bool\n"
 	"  If true, the response also includes the unit price of the consumed \n"
 	"  resource (`UnitPrice`) and the total price of the consumed resource \n"
-	"  during the specified time period (`Price`), in the currency of the \n"
-	"  Region's catalog.\n"
+	"  during the specified time period (`Price`), in the currency of your \n"
+	"  account.\n"
 "ToDate: string\n"
 	"  The end of the time period, in ISO 8601 date format (for example, \n"
 	"  `2020-06-30`). The date-time format is also accepted, but only with a \n"
-	"  time set to midnight (for example, `2020-06-30T00:00:00.000Z`).\n"
+	"  time set to midnight (for example, `2020-06-30T00:00:00.000Z`). This \n"
+	"  value is excluded from the time period, and must be set to a later date \n"
+	"  than `FromDate`.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -2687,6 +3013,12 @@ static const char *calls_args_descriptions[] = {
 	"      client gateways, in the following format: \n"
 	"      \"Filters\":{\"Tags\":[\"TAGKEY=TAGVALUE&quo\n"
 	"      t;]}.\n"
+"NextPageToken: string\n"
+	"  The token to request the next page of results. Each token refers to a \n"
+	"  specific page.\n"
+"ResultsPerPage: int\n"
+	"  The maximum number of logs returned in a single response (between \n"
+	"  `1`and `1000`, both included). By default, `100`.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -2822,8 +3154,7 @@ static const char *calls_args_descriptions[] = {
 	"    -Descriptions: array string\n"
 	"      One or more descriptions of API access rules.\n"
 	"    -IpRanges: array string\n"
-	"      One or more IP addresses or CIDR blocks (for example, \n"
-	"      `192.0.2.0/16`).\n"
+	"      One or more IPs or CIDR blocks (for example, `192.0.2.0/16`).\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -2851,6 +3182,21 @@ static const char *calls_args_descriptions[] = {
 "UserName: string\n"
 	"  The name of the EIM user. By default, the user who sends the request \n"
 	"  (which can be the root account).\n"
+,
+	"DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform \n"
+	"  the action.\n"
+"PolicyDocument: string\n"
+	"  The policy document, corresponding to a JSON string that contains the \n"
+	"  policy. For more information, see [EIM Reference \n"
+	"  Information](https://docs.outscale.com/en/userguide/EIM-Reference-Inform\n"
+	"  ation.html).\n"
+"PolicyName: string\n"
+	"  The name of the policy.\n"
+"UserGroupName: string\n"
+	"  The name of the group.\n"
+"UserGroupPath: string\n"
+	"  The path to the group. If not specified, it is set to a slash (`/`).\n"
 ,
 	"DeviceName: string\n"
 	"  The name of the device. For a root device, you must use `/dev/sda1`. \n"
@@ -2946,15 +3292,26 @@ static const char *calls_args_descriptions[] = {
 "VmId: string\n"
 	"  The ID of the VM to which you want to attach the NIC.\n"
 ,
+	"DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform \n"
+	"  the action.\n"
+"PolicyOrn: string\n"
+	"  The OUTSCALE Resource Name (ORN) of the policy. For more information, \n"
+	"  see [Resource \n"
+	"  Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifiers\n"
+	"  .html).\n"
+"UserGroupName: string\n"
+	"  The name of the group you want to link the policy to.\n"
+,
 	"BackendIps: array string\n"
-	"   One or more public IPs of back-end VMs.\n"
+	"  One or more public IPs of backend VMs.\n"
 "BackendVmIds: array string\n"
-	"   One or more IDs of back-end VMs.\n"
+	"  One or more IDs of backend VMs.\n"
 "DryRun: bool\n"
-	"   If true, checks whether you have the required permissions to perform \n"
+	"  If true, checks whether you have the required permissions to perform \n"
 	"  the action.\n"
 "LoadBalancerName: string\n"
-	"   The name of the load balancer. \n"
+	"  The name of the load balancer.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -2973,7 +3330,7 @@ static const char *calls_args_descriptions[] = {
 	"  The ID of the VM you want to attach the fGPU to.\n"
 ,
 	"BackendVmIds: array string\n"
-	"  One or more IDs of back-end VMs.\n"
+	"  One or more IDs of backend VMs.\n"
 "DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
 	"  the action.\n"
@@ -3011,7 +3368,7 @@ static const char *calls_args_descriptions[] = {
 	"  If true, checks whether you have the required permissions to perform \n"
 	"  the action.\n"
 "VmTemplateId: string\n"
-	"  The ID of the VM template you want to delete. \n"
+	"  The ID of the VM template you want to delete.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -3024,6 +3381,26 @@ static const char *calls_args_descriptions[] = {
 	"  the action.\n"
 "VirtualGatewayId: string\n"
 	"  The ID of the virtual gateway you want to delete.\n"
+,
+	"DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform \n"
+	"  the action.\n"
+"PolicyName: string\n"
+	"  The name of the policy document you want to delete.\n"
+"UserGroupName: string\n"
+	"  The name of the group.\n"
+"UserGroupPath: string\n"
+	"  The path to the group. If not specified, it is set to a slash (`/`).\n"
+,
+	"DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform \n"
+	"  the action.\n"
+"Force: bool\n"
+	"  If true, forces the deletion of the user group even if it is not empty.\n"
+"Path: string\n"
+	"  The path to the group. If not specified, it is set to a slash (`/`).\n"
+"UserGroupName: string\n"
+	"  The name of the group you want to delete.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -3368,7 +3745,7 @@ static const char *calls_args_descriptions[] = {
 "Size: int\n"
 	"  The size of the volume, in gibibytes (GiB). The maximum allowed size \n"
 	"  for a volume is 14901 GiB. This parameter is required if the volume is \n"
-	"  not created from a snapshot (`SnapshotId` unspecified). \n"
+	"  not created from a snapshot (`SnapshotId` unspecified).\n"
 "SnapshotId: string\n"
 	"  The ID of the snapshot from which you want to create the volume.\n"
 "SubregionName: string\n"
@@ -3535,7 +3912,7 @@ static const char *calls_args_descriptions[] = {
 "CpuGeneration: string\n"
 	"  The processor generation to use for each VM (for example, `v4`).\n"
 "CpuPerformance: string\n"
-	"  The performance of the VMs (`medium` \\| `high` \\| `highest`). \n"
+	"  The performance of the VMs (`medium` \\| `high` \\| `highest`).\n"
 "Description: string\n"
 	"  A description for the VM template.\n"
 "DryRun: bool\n"
@@ -3599,14 +3976,22 @@ static const char *calls_args_descriptions[] = {
 	"  If true, checks whether you have the required permissions to perform \n"
 	"  the action.\n"
 "Path: string\n"
+	"  The path to the group. If not specified, it is set to a slash (`/`).\n"
+"UserGroupName: string\n"
+	"  The name of the group.\n"
+,
+	"DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform \n"
+	"  the action.\n"
+"Path: string\n"
 	"  The path to the EIM user you want to create (by default, `/`). This \n"
-	"  path name must begin and end with a slash (/), and contain between 1 \n"
-	"  and 512 alphanumeric characters and/or slashes (/), or underscores (_).\n"
+	"  path name must begin and end with a slash (`/`), and contain between 1 \n"
+	"  and 512 alphanumeric characters and/or slashes (`/`), or underscores \n"
+	"  (_).\n"
 "UserName: string\n"
-	"  The name of the EIM user you want to create. This user name must \n"
-	"  contain between 1 and 64 alphanumeric characters and/or pluses (+), \n"
-	"  equals (=), commas (,), periods (.), at signs (@), dashes (-), or \n"
-	"  underscores (_).\n"
+	"  The name of the EIM user. This user name must contain between 1 and 64 \n"
+	"  alphanumeric characters and/or pluses (+), equals (=), commas (,), \n"
+	"  periods (.), at signs (@), dashes (-), or underscores (_).\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -3691,12 +4076,12 @@ static const char *calls_args_descriptions[] = {
 ,
 	"Body: string\n"
 	"  The PEM-encoded X509 certificate.With OSC CLI, use the following syntax \n"
-	"  to make sure your CA file is correctly parsed: `--CaPem=\"$(cat \n"
-	"  FILENAME)\"`.\n"
+	"  to make sure your certificate file is correctly parsed: \n"
+	"  `--Body=\"$(cat FILENAME)\"`.\n"
 "Chain: string\n"
 	"  The PEM-encoded intermediate certification authorities.With OSC CLI, \n"
-	"  use the following syntax to make sure your CA file is correctly parsed: \n"
-	"  `--CaPem=\"$(cat FILENAME)\"`.\n"
+	"  use the following syntax to make sure your certificate chain file is \n"
+	"  correctly parsed: `--Chain=\"$(cat FILENAME)\"`.\n"
 "DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
 	"  the action.\n"
@@ -3708,8 +4093,8 @@ static const char *calls_args_descriptions[] = {
 	"  The path to the server certificate, set to a slash (/) if not specified.\n"
 "PrivateKey: string\n"
 	"  The PEM-encoded private key matching the certificate.With OSC CLI, use \n"
-	"  the following syntax to make sure your CA file is correctly parsed: \n"
-	"  `--CaPem=\"$(cat FILENAME)\"`.\n"
+	"  the following syntax to make sure your key file is correctly parsed: \n"
+	"  `--PrivateKey=\"$(cat FILENAME)\"`.\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -3915,7 +4300,9 @@ static const char *calls_args_descriptions[] = {
 	"  `dedicated group ID`: if it can be launched in a dedicated group on \n"
 	"  single-tenant hardware.\n"
 ,
-	"DryRun: bool\n"
+	"ClientToken: string\n"
+	"  A unique identifier which enables you to manage the idempotency.\n"
+"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
 	"  the action.\n"
 "PublicIpId: string\n"
@@ -3965,10 +4352,10 @@ static const char *calls_args_descriptions[] = {
 	"  One or more listeners for the load balancer.\n"
 	"    Information about the listener to create.\n"
 	"    -BackendPort: int\n"
-	"      The port on which the back-end VM is listening (between `1` \n"
-	"      and `65535`, both included).\n"
+	"      The port on which the backend VM is listening (between `1` and \n"
+	"      `65535`, both included).\n"
 	"    -BackendProtocol: string\n"
-	"      The protocol for routing traffic to back-end VMs (`HTTP` \\| \n"
+	"      The protocol for routing traffic to backend VMs (`HTTP` \\| \n"
 	"      `HTTPS` \\| `TCP` \\| `SSL`).\n"
 	"    -LoadBalancerPort: int\n"
 	"      The port on which the load balancer is listening (between `1` \n"
@@ -3991,10 +4378,10 @@ static const char *calls_args_descriptions[] = {
 	"  One or more listeners to create.\n"
 	"    Information about the listener to create.\n"
 	"    -BackendPort: int\n"
-	"      The port on which the back-end VM is listening (between `1` \n"
-	"      and `65535`, both included).\n"
+	"      The port on which the backend VM is listening (between `1` and \n"
+	"      `65535`, both included).\n"
 	"    -BackendProtocol: string\n"
-	"      The protocol for routing traffic to back-end VMs (`HTTP` \\| \n"
+	"      The protocol for routing traffic to backend VMs (`HTTP` \\| \n"
 	"      `HTTPS` \\| `TCP` \\| `SSL`).\n"
 	"    -LoadBalancerPort: int\n"
 	"      The port on which the load balancer is listening (between `1` \n"
@@ -4057,7 +4444,7 @@ static const char *calls_args_descriptions[] = {
 	"      A host-name pattern for the rule, with a maximum length of 128 \n"
 	"      characters. This host-name pattern supports maximum three \n"
 	"      wildcards, and must not contain any special characters except \n"
-	"      [-.?]. \n"
+	"      [-.?].\n"
 	"    -ListenerRuleName: string\n"
 	"      A human-readable name for the listener rule.\n"
 	"    -PathPattern: string\n"
@@ -4305,7 +4692,7 @@ static const char *calls_args_descriptions[] = {
 	"  the action.\n"
 ,
 	"CaIds: array string\n"
-	"   One or more IDs of Client Certificate Authorities (CAs).\n"
+	"  One or more IDs of Client Certificate Authorities (CAs).\n"
 "Cns: array string\n"
 	"  One or more Client Certificate Common Names (CNs). If this parameter is \n"
 	"  specified, you must also specify the `CaIds` parameter.\n"
@@ -4315,7 +4702,7 @@ static const char *calls_args_descriptions[] = {
 	"  If true, checks whether you have the required permissions to perform \n"
 	"  the action.\n"
 "IpRanges: array string\n"
-	"  One or more IP addresses or CIDR blocks (for example, `192.0.2.0/16`).\n"
+	"  One or more IPs or CIDR blocks (for example, `192.0.2.0/16`).\n"
 ,
 	"AdditionalEmails: array string\n"
 	"  One or more additional email addresses for the account. These addresses \n"
@@ -4373,6 +4760,18 @@ static const char *calls_args_descriptions[] = {
 	"  The email address of the account.\n"
 "Password: string\n"
 	"  The password of the account.\n"
+,
+	"DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform \n"
+	"  the action.\n"
+"UserGroupName: string\n"
+	"  The name of the group you want to add a user to.\n"
+"UserGroupPath: string\n"
+	"  The path to the group. If not specified, it is set to a slash (`/`).\n"
+"UserName: string\n"
+	"  The name of the user you want to add to the group.\n"
+"UserPath: string\n"
+	"  The path to the user. If not specified, it is set to a slash (`/`).\n"
 ,
 	"DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform \n"
@@ -4803,6 +5202,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *data);
 static int filters_subregion_setter(struct filters_subregion *args, struct osc_str *data);
 static int filters_tag_setter(struct filters_tag *args, struct osc_str *data);
+static int filters_user_group_setter(struct filters_user_group *args, struct osc_str *data);
 static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, struct osc_str *data);
 static int filters_vm_setter(struct filters_vm *args, struct osc_str *data);
 static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str *data);
@@ -4816,6 +5216,7 @@ static int flexible_gpu_catalog_setter(struct flexible_gpu_catalog *args, struct
 static int health_check_setter(struct health_check *args, struct osc_str *data);
 static int image_setter(struct image *args, struct osc_str *data);
 static int image_export_task_setter(struct image_export_task *args, struct osc_str *data);
+static int inline_policy_setter(struct inline_policy *args, struct osc_str *data);
 static int internet_service_setter(struct internet_service *args, struct osc_str *data);
 static int keypair_setter(struct keypair *args, struct osc_str *data);
 static int keypair_created_setter(struct keypair_created *args, struct osc_str *data);
@@ -4855,7 +5256,6 @@ static int permissions_on_resource_setter(struct permissions_on_resource *args, 
 static int permissions_on_resource_creation_setter(struct permissions_on_resource_creation *args, struct osc_str *data);
 static int phase1_options_setter(struct phase1_options *args, struct osc_str *data);
 static int phase2_options_setter(struct phase2_options *args, struct osc_str *data);
-static int phase2_options_to_update_setter(struct phase2_options_to_update *args, struct osc_str *data);
 static int placement_setter(struct placement *args, struct osc_str *data);
 static int policy_setter(struct policy *args, struct osc_str *data);
 static int policy_version_setter(struct policy_version *args, struct osc_str *data);
@@ -4891,6 +5291,7 @@ static int subnet_setter(struct subnet *args, struct osc_str *data);
 static int subregion_setter(struct subregion *args, struct osc_str *data);
 static int tag_setter(struct tag *args, struct osc_str *data);
 static int user_setter(struct user *args, struct osc_str *data);
+static int user_group_setter(struct user_group *args, struct osc_str *data);
 static int vgw_telemetry_setter(struct vgw_telemetry *args, struct osc_str *data);
 static int virtual_gateway_setter(struct virtual_gateway *args, struct osc_str *data);
 static int vm_setter(struct vm *args, struct osc_str *data);
@@ -4902,7 +5303,6 @@ static int vm_type_setter(struct vm_type *args, struct osc_str *data);
 static int volume_setter(struct volume *args, struct osc_str *data);
 static int vpn_connection_setter(struct vpn_connection *args, struct osc_str *data);
 static int vpn_options_setter(struct vpn_options *args, struct osc_str *data);
-static int vpn_options_to_update_setter(struct vpn_options_to_update *args, struct osc_str *data);
 static int with_setter(struct with *args, struct osc_str *data);
 static int accepter_net_setter(struct accepter_net *args, struct osc_str *data) {
        int count_args = 0;
@@ -7352,6 +7752,22 @@ static int filters_load_balancer_setter(struct filters_load_balancer *args, stru
 static int filters_nat_service_setter(struct filters_nat_service *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
+	if (args->client_tokens) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"ClientTokens\":[" ));
+		for (as = args->client_tokens; *as; ++as) {
+			if (as != args->client_tokens)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->client_tokens_str) {
+		ARG_TO_JSON(ClientTokens, string, args->client_tokens_str);
+		ret += 1;
+	}
 	if (args->nat_service_ids) {
 		char **as;
 
@@ -8054,6 +8470,22 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data) {
 		ret += 1;
 	} else if (args->link_public_ip_link_public_ip_ids_str) {
 		ARG_TO_JSON(LinkPublicIpLinkPublicIpIds, string, args->link_public_ip_link_public_ip_ids_str);
+		ret += 1;
+	}
+	if (args->link_public_ip_public_dns_names) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"LinkPublicIpPublicDnsNames\":[" ));
+		for (as = args->link_public_ip_public_dns_names; *as; ++as) {
+			if (as != args->link_public_ip_public_dns_names)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->link_public_ip_public_dns_names_str) {
+		ARG_TO_JSON(LinkPublicIpPublicDnsNames, string, args->link_public_ip_public_dns_names_str);
 		ret += 1;
 	}
 	if (args->link_public_ip_public_ip_ids) {
@@ -9747,6 +10179,32 @@ static int filters_tag_setter(struct filters_tag *args, struct osc_str *data) {
 		ret += 1;
 	} else if (args->values_str) {
 		ARG_TO_JSON(Values, string, args->values_str);
+		ret += 1;
+	}
+	return !!ret;
+}
+static int filters_user_group_setter(struct filters_user_group *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->path_prefix) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PathPrefix\":", args->path_prefix);
+	   	ret += 1;
+	}
+	if (args->user_group_ids) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"UserGroupIds\":[" ));
+		for (as = args->user_group_ids; *as; ++as) {
+			if (as != args->user_group_ids)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->user_group_ids_str) {
+		ARG_TO_JSON(UserGroupIds, string, args->user_group_ids_str);
 		ret += 1;
 	}
 	return !!ret;
@@ -12177,6 +12635,21 @@ static int image_export_task_setter(struct image_export_task *args, struct osc_s
 	}
 	return !!ret;
 }
+static int inline_policy_setter(struct inline_policy *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->body) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Body\":", args->body);
+	   	ret += 1;
+	}
+	if (args->name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Name\":", args->name);
+	   	ret += 1;
+	}
+	return !!ret;
+}
 static int internet_service_setter(struct internet_service *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
@@ -13009,6 +13482,11 @@ static int maintenance_event_setter(struct maintenance_event *args, struct osc_s
 static int nat_service_setter(struct nat_service *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
+	if (args->client_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ClientToken\":", args->client_token);
+	   	ret += 1;
+	}
 	if (args->nat_service_id) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"NatServiceId\":", args->nat_service_id);
@@ -13857,16 +14335,6 @@ static int phase2_options_setter(struct phase2_options *args, struct osc_str *da
 		ARG_TO_JSON(Phase2LifetimeSeconds, int, args->phase2_lifetime_seconds);
 	   	ret += 1;
 	}
-	if (args->pre_shared_key) {
-		TRY_APPEND_COL(count_args, data);
-	        ARG_TO_JSON_STR("\"PreSharedKey\":", args->pre_shared_key);
-	   	ret += 1;
-	}
-	return !!ret;
-}
-static int phase2_options_to_update_setter(struct phase2_options_to_update *args, struct osc_str *data) {
-       int count_args = 0;
-       int ret = 0;
 	if (args->pre_shared_key) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"PreSharedKey\":", args->pre_shared_key);
@@ -14988,6 +15456,16 @@ static int tag_setter(struct tag *args, struct osc_str *data) {
 static int user_setter(struct user *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
+	if (args->creation_date) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CreationDate\":", args->creation_date);
+	   	ret += 1;
+	}
+	if (args->last_modification_date) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LastModificationDate\":", args->last_modification_date);
+	   	ret += 1;
+	}
 	if (args->path) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"Path\":", args->path);
@@ -15001,6 +15479,41 @@ static int user_setter(struct user *args, struct osc_str *data) {
 	if (args->user_name) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"UserName\":", args->user_name);
+	   	ret += 1;
+	}
+	return !!ret;
+}
+static int user_group_setter(struct user_group *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->creation_date) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CreationDate\":", args->creation_date);
+	   	ret += 1;
+	}
+	if (args->last_modification_date) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LastModificationDate\":", args->last_modification_date);
+	   	ret += 1;
+	}
+	if (args->name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Name\":", args->name);
+	   	ret += 1;
+	}
+	if (args->orn) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Orn\":", args->orn);
+	   	ret += 1;
+	}
+	if (args->path) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Path\":", args->path);
+	   	ret += 1;
+	}
+	if (args->user_group_id) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserGroupId\":", args->user_group_id);
 	   	ret += 1;
 	}
 	return !!ret;
@@ -15815,26 +16328,6 @@ static int vpn_options_setter(struct vpn_options *args, struct osc_str *data) {
 	}
 	return !!ret;
 }
-static int vpn_options_to_update_setter(struct vpn_options_to_update *args, struct osc_str *data) {
-       int count_args = 0;
-       int ret = 0;
-	if (args->phase2_options_str) {
-		ARG_TO_JSON(Phase2Options, string, args->phase2_options_str);
-		ret += 1;
-	} else if (args->is_set_phase2_options) {
-	       TRY_APPEND_COL(count_args, data);
-	       STRY(osc_str_append_string(data, "\"Phase2Options\": { " ));
-	       STRY(phase2_options_to_update_setter(&args->phase2_options, data) < 0);
-	       STRY(osc_str_append_string(data, "}" ));
-	       ret += 1;
-	}
-	if (args->tunnel_inside_ip_range) {
-		TRY_APPEND_COL(count_args, data);
-	        ARG_TO_JSON_STR("\"TunnelInsideIpRange\":", args->tunnel_inside_ip_range);
-	   	ret += 1;
-	}
-	return !!ret;
-}
 static int with_setter(struct with *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
@@ -15938,7 +16431,7 @@ static  int update_vpn_connection_data(struct osc_update_vpn_connection_arg *arg
 	} else if (args->is_set_vpn_options) {
 	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"VpnOptions\": { " ));
-	       STRY(vpn_options_to_update_setter(&args->vpn_options, data) < 0);
+	       STRY(vpn_options_setter(&args->vpn_options, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
@@ -16302,6 +16795,69 @@ int osc_update_vm(struct osc_env *e, struct osc_str *out, struct osc_update_vm_a
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/UpdateVm");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
+static  int update_user_group_data(struct osc_update_user_group_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	if (args->new_path) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NewPath\":", args->new_path);
+	   	ret += 1;
+	}
+	if (args->new_user_group_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NewUserGroupName\":", args->new_user_group_name);
+	   	ret += 1;
+	}
+	if (args->path) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Path\":", args->path);
+	   	ret += 1;
+	}
+	if (args->user_group_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserGroupName\":", args->user_group_name);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_update_user_group(struct osc_env *e, struct osc_str *out, struct osc_update_user_group_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = update_user_group_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/UpdateUserGroup");
 	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
@@ -17124,6 +17680,11 @@ static  int update_image_data(struct osc_update_image_arg *args, struct osc_str 
 	if (!args)
 		return 0;
 	osc_str_append_string(data, "{");
+	if (args->description) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Description\":", args->description);
+	   	ret += 1;
+	}
 	if (args->is_set_dry_run) {
 		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
@@ -18089,6 +18650,59 @@ out:
 	osc_deinit_str(&data);
 	return res;
 }
+static  int unlink_managed_policy_from_user_group_data(struct osc_unlink_managed_policy_from_user_group_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	if (args->policy_orn) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PolicyOrn\":", args->policy_orn);
+	   	ret += 1;
+	}
+	if (args->user_group_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserGroupName\":", args->user_group_name);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_unlink_managed_policy_from_user_group(struct osc_env *e, struct osc_str *out, struct osc_unlink_managed_policy_from_user_group_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = unlink_managed_policy_from_user_group_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/UnlinkManagedPolicyFromUserGroup");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
 static  int unlink_load_balancer_backend_machines_data(struct osc_unlink_load_balancer_backend_machines_arg *args, struct osc_str *data)
 {
 	int ret = 0;
@@ -18545,6 +19159,69 @@ out:
 	osc_deinit_str(&data);
 	return res;
 }
+static  int remove_user_from_user_group_data(struct osc_remove_user_from_user_group_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	if (args->user_group_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserGroupName\":", args->user_group_name);
+	   	ret += 1;
+	}
+	if (args->user_group_path) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserGroupPath\":", args->user_group_path);
+	   	ret += 1;
+	}
+	if (args->user_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserName\":", args->user_name);
+	   	ret += 1;
+	}
+	if (args->user_path) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserPath\":", args->user_path);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_remove_user_from_user_group(struct osc_env *e, struct osc_str *out, struct osc_remove_user_from_user_group_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = remove_user_from_user_group_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/RemoveUserFromUserGroup");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
 static  int reject_net_peering_data(struct osc_reject_net_peering_arg *args, struct osc_str *data)
 {
 	int ret = 0;
@@ -18866,6 +19543,15 @@ static  int read_vms_state_data(struct osc_read_vms_state_arg *args, struct osc_
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
+	if (args->next_page_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NextPageToken\":", args->next_page_token);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
+	}
 	osc_str_append_string(data, "}");
 	return !!ret;
 }
@@ -19044,6 +19730,15 @@ static  int read_vm_types_data(struct osc_read_vm_types_arg *args, struct osc_st
 	       STRY(filters_vm_type_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
+	}
+	if (args->next_page_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NextPageToken\":", args->next_page_token);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
 	return !!ret;
@@ -19287,6 +19982,292 @@ out:
 	osc_deinit_str(&data);
 	return res;
 }
+static  int read_user_groups_per_user_data(struct osc_read_user_groups_per_user_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	if (args->user_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserName\":", args->user_name);
+	   	ret += 1;
+	}
+	if (args->user_path) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserPath\":", args->user_path);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_read_user_groups_per_user(struct osc_env *e, struct osc_str *out, struct osc_read_user_groups_per_user_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = read_user_groups_per_user_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/ReadUserGroupsPerUser");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
+static  int read_user_groups_data(struct osc_read_user_groups_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	if (args->filters_str) {
+		ARG_TO_JSON(Filters, string, args->filters_str);
+		ret += 1;
+	} else if (args->is_set_filters) {
+	       TRY_APPEND_COL(count_args, data);
+	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
+	       STRY(filters_user_group_setter(&args->filters, data) < 0);
+	       STRY(osc_str_append_string(data, "}" ));
+	       ret += 1;
+	}
+	if (args->is_set_first_item || args->first_item) {
+		ARG_TO_JSON(FirstItem, int, args->first_item);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_read_user_groups(struct osc_env *e, struct osc_str *out, struct osc_read_user_groups_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = read_user_groups_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/ReadUserGroups");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
+static  int read_user_group_policy_data(struct osc_read_user_group_policy_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	if (args->policy_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PolicyName\":", args->policy_name);
+	   	ret += 1;
+	}
+	if (args->user_group_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserGroupName\":", args->user_group_name);
+	   	ret += 1;
+	}
+	if (args->user_group_path) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserGroupPath\":", args->user_group_path);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_read_user_group_policy(struct osc_env *e, struct osc_str *out, struct osc_read_user_group_policy_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = read_user_group_policy_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/ReadUserGroupPolicy");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
+static  int read_user_group_policies_data(struct osc_read_user_group_policies_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	if (args->is_set_first_item || args->first_item) {
+		ARG_TO_JSON(FirstItem, int, args->first_item);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
+	}
+	if (args->user_group_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserGroupName\":", args->user_group_name);
+	   	ret += 1;
+	}
+	if (args->user_group_path) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserGroupPath\":", args->user_group_path);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_read_user_group_policies(struct osc_env *e, struct osc_str *out, struct osc_read_user_group_policies_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = read_user_group_policies_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/ReadUserGroupPolicies");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
+static  int read_user_group_data(struct osc_read_user_group_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	if (args->path) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Path\":", args->path);
+	   	ret += 1;
+	}
+	if (args->user_group_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserGroupName\":", args->user_group_name);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_read_user_group(struct osc_env *e, struct osc_str *out, struct osc_read_user_group_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = read_user_group_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/ReadUserGroup");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
 static  int read_tags_data(struct osc_read_tags_arg *args, struct osc_str *data)
 {
 	int ret = 0;
@@ -19308,6 +20289,15 @@ static  int read_tags_data(struct osc_read_tags_arg *args, struct osc_str *data)
 	       STRY(filters_tag_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
+	}
+	if (args->next_page_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NextPageToken\":", args->next_page_token);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
 	return !!ret;
@@ -19362,6 +20352,15 @@ static  int read_subregions_data(struct osc_read_subregions_arg *args, struct os
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
+	if (args->next_page_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NextPageToken\":", args->next_page_token);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
+	}
 	osc_str_append_string(data, "}");
 	return !!ret;
 }
@@ -19414,6 +20413,15 @@ static  int read_subnets_data(struct osc_read_subnets_arg *args, struct osc_str 
 	       STRY(filters_subnet_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
+	}
+	if (args->next_page_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NextPageToken\":", args->next_page_token);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
 	return !!ret;
@@ -19468,6 +20476,15 @@ static  int read_snapshots_data(struct osc_read_snapshots_arg *args, struct osc_
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
+	if (args->next_page_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NextPageToken\":", args->next_page_token);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
+	}
 	osc_str_append_string(data, "}");
 	return !!ret;
 }
@@ -19520,6 +20537,15 @@ static  int read_snapshot_export_tasks_data(struct osc_read_snapshot_export_task
 	       STRY(filters_export_task_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
+	}
+	if (args->next_page_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NextPageToken\":", args->next_page_token);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
 	return !!ret;
@@ -19626,6 +20652,15 @@ static  int read_security_groups_data(struct osc_read_security_groups_arg *args,
 	       STRY(filters_security_group_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
+	}
+	if (args->next_page_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NextPageToken\":", args->next_page_token);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
 	return !!ret;
@@ -19833,6 +20868,15 @@ static  int read_quotas_data(struct osc_read_quotas_arg *args, struct osc_str *d
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
+	if (args->next_page_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NextPageToken\":", args->next_page_token);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
+	}
 	osc_str_append_string(data, "}");
 	return !!ret;
 }
@@ -19938,6 +20982,15 @@ static  int read_public_ip_ranges_data(struct osc_read_public_ip_ranges_arg *arg
 		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
+	if (args->next_page_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NextPageToken\":", args->next_page_token);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
+	}
 	osc_str_append_string(data, "}");
 	return !!ret;
 }
@@ -20033,6 +21086,15 @@ static  int read_product_types_data(struct osc_read_product_types_arg *args, str
 	       STRY(filters_product_type_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
+	}
+	if (args->next_page_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NextPageToken\":", args->next_page_token);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
 	return !!ret;
@@ -20346,6 +21408,15 @@ static  int read_nets_data(struct osc_read_nets_arg *args, struct osc_str *data)
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
+	if (args->next_page_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NextPageToken\":", args->next_page_token);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
+	}
 	osc_str_append_string(data, "}");
 	return !!ret;
 }
@@ -20523,6 +21594,15 @@ static  int read_net_access_point_services_data(struct osc_read_net_access_point
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
+	if (args->next_page_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NextPageToken\":", args->next_page_token);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
+	}
 	osc_str_append_string(data, "}");
 	return !!ret;
 }
@@ -20616,6 +21696,72 @@ out:
 	osc_deinit_str(&data);
 	return res;
 }
+static  int read_managed_policies_linked_to_user_group_data(struct osc_read_managed_policies_linked_to_user_group_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	if (args->filters_str) {
+		ARG_TO_JSON(Filters, string, args->filters_str);
+		ret += 1;
+	} else if (args->is_set_filters) {
+	       TRY_APPEND_COL(count_args, data);
+	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
+	       STRY(filters_user_group_setter(&args->filters, data) < 0);
+	       STRY(osc_str_append_string(data, "}" ));
+	       ret += 1;
+	}
+	if (args->is_set_first_item || args->first_item) {
+		ARG_TO_JSON(FirstItem, int, args->first_item);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
+	}
+	if (args->user_group_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserGroupName\":", args->user_group_name);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_read_managed_policies_linked_to_user_group(struct osc_env *e, struct osc_str *out, struct osc_read_managed_policies_linked_to_user_group_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = read_managed_policies_linked_to_user_group_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/ReadManagedPoliciesLinkedToUserGroup");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
 static  int read_locations_data(struct osc_read_locations_arg *args, struct osc_str *data)
 {
 	int ret = 0;
@@ -20626,6 +21772,15 @@ static  int read_locations_data(struct osc_read_locations_arg *args, struct osc_
 	osc_str_append_string(data, "{");
 	if (args->is_set_dry_run) {
 		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	if (args->next_page_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NextPageToken\":", args->next_page_token);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
 	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
@@ -20912,6 +22067,15 @@ static  int read_keypairs_data(struct osc_read_keypairs_arg *args, struct osc_st
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
+	if (args->next_page_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NextPageToken\":", args->next_page_token);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
+	}
 	osc_str_append_string(data, "}");
 	return !!ret;
 }
@@ -20964,6 +22128,15 @@ static  int read_internet_services_data(struct osc_read_internet_services_arg *a
 	       STRY(filters_internet_service_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
+	}
+	if (args->next_page_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NextPageToken\":", args->next_page_token);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
 	return !!ret;
@@ -21079,6 +22252,15 @@ static  int read_image_export_tasks_data(struct osc_read_image_export_tasks_arg 
 	       STRY(filters_export_task_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
+	}
+	if (args->next_page_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NextPageToken\":", args->next_page_token);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
 	return !!ret;
@@ -21229,6 +22411,15 @@ static  int read_direct_links_data(struct osc_read_direct_links_arg *args, struc
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
+	if (args->next_page_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NextPageToken\":", args->next_page_token);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
+	}
 	osc_str_append_string(data, "}");
 	return !!ret;
 }
@@ -21281,6 +22472,15 @@ static  int read_direct_link_interfaces_data(struct osc_read_direct_link_interfa
 	       STRY(filters_direct_link_interface_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
+	}
+	if (args->next_page_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NextPageToken\":", args->next_page_token);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
 	return !!ret;
@@ -21396,6 +22596,15 @@ static  int read_dedicated_groups_data(struct osc_read_dedicated_groups_arg *arg
 	       STRY(filters_dedicated_group_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
+	}
+	if (args->next_page_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NextPageToken\":", args->next_page_token);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
 	return !!ret;
@@ -21558,6 +22767,15 @@ static  int read_client_gateways_data(struct osc_read_client_gateways_arg *args,
 	       STRY(filters_client_gateway_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
+	}
+	if (args->next_page_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NextPageToken\":", args->next_page_token);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
 	}
 	osc_str_append_string(data, "}");
 	return !!ret;
@@ -22056,6 +23274,69 @@ out:
 	osc_deinit_str(&data);
 	return res;
 }
+static  int put_user_group_policy_data(struct osc_put_user_group_policy_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	if (args->policy_document) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PolicyDocument\":", args->policy_document);
+	   	ret += 1;
+	}
+	if (args->policy_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PolicyName\":", args->policy_name);
+	   	ret += 1;
+	}
+	if (args->user_group_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserGroupName\":", args->user_group_name);
+	   	ret += 1;
+	}
+	if (args->user_group_path) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserGroupPath\":", args->user_group_path);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_put_user_group_policy(struct osc_env *e, struct osc_str *out, struct osc_put_user_group_policy_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = put_user_group_policy_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/PutUserGroupPolicy");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
 static  int link_volume_data(struct osc_link_volume_arg *args, struct osc_str *data)
 {
 	int ret = 0;
@@ -22462,6 +23743,59 @@ int osc_link_nic(struct osc_env *e, struct osc_str *out, struct osc_link_nic_arg
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/LinkNic");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
+static  int link_managed_policy_to_user_group_data(struct osc_link_managed_policy_to_user_group_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	if (args->policy_orn) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PolicyOrn\":", args->policy_orn);
+	   	ret += 1;
+	}
+	if (args->user_group_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserGroupName\":", args->user_group_name);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_link_managed_policy_to_user_group(struct osc_env *e, struct osc_str *out, struct osc_link_managed_policy_to_user_group_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = link_managed_policy_to_user_group_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/LinkManagedPolicyToUserGroup");
 	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
@@ -23064,6 +24398,121 @@ int osc_delete_virtual_gateway(struct osc_env *e, struct osc_str *out, struct os
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/DeleteVirtualGateway");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
+static  int delete_user_group_policy_data(struct osc_delete_user_group_policy_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	if (args->policy_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PolicyName\":", args->policy_name);
+	   	ret += 1;
+	}
+	if (args->user_group_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserGroupName\":", args->user_group_name);
+	   	ret += 1;
+	}
+	if (args->user_group_path) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserGroupPath\":", args->user_group_path);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_delete_user_group_policy(struct osc_env *e, struct osc_str *out, struct osc_delete_user_group_policy_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = delete_user_group_policy_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/DeleteUserGroupPolicy");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
+static  int delete_user_group_data(struct osc_delete_user_group_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	if (args->is_set_force) {
+		ARG_TO_JSON(Force, bool, args->force);
+	   	ret += 1;
+	}
+	if (args->path) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Path\":", args->path);
+	   	ret += 1;
+	}
+	if (args->user_group_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserGroupName\":", args->user_group_name);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_delete_user_group(struct osc_env *e, struct osc_str *out, struct osc_delete_user_group_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = delete_user_group_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/DeleteUserGroup");
 	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
@@ -25546,6 +26995,59 @@ out:
 	osc_deinit_str(&data);
 	return res;
 }
+static  int create_user_group_data(struct osc_create_user_group_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	if (args->path) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Path\":", args->path);
+	   	ret += 1;
+	}
+	if (args->user_group_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserGroupName\":", args->user_group_name);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_create_user_group(struct osc_env *e, struct osc_str *out, struct osc_create_user_group_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = create_user_group_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/CreateUserGroup");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
 static  int create_user_data(struct osc_create_user_arg *args, struct osc_str *data)
 {
 	int ret = 0;
@@ -26697,6 +28199,11 @@ static  int create_nat_service_data(struct osc_create_nat_service_arg *args, str
 	if (!args)
 		return 0;
 	osc_str_append_string(data, "{");
+	if (args->client_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ClientToken\":", args->client_token);
+	   	ret += 1;
+	}
 	if (args->is_set_dry_run) {
 		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
@@ -28203,6 +29710,69 @@ int osc_check_authentication(struct osc_env *e, struct osc_str *out, struct osc_
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/CheckAuthentication");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
+static  int add_user_to_user_group_data(struct osc_add_user_to_user_group_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	if (args->user_group_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserGroupName\":", args->user_group_name);
+	   	ret += 1;
+	}
+	if (args->user_group_path) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserGroupPath\":", args->user_group_path);
+	   	ret += 1;
+	}
+	if (args->user_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserName\":", args->user_name);
+	   	ret += 1;
+	}
+	if (args->user_path) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserPath\":", args->user_path);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_add_user_to_user_group(struct osc_env *e, struct osc_str *out, struct osc_add_user_to_user_group_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = add_user_to_user_group_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/AddUserToUserGroup");
 	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);

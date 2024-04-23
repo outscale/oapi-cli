@@ -1,7 +1,7 @@
 #/usr/bin/env bash
 
 UpdateVpnConnection() {
-    COMPREPLY=($(compgen -W " --ClientGatewayId --DryRun --VirtualGatewayId --VpnConnectionId --VpnOptions.Phase2Options.PreSharedKey  --VpnOptions.TunnelInsideIpRange" -- ${cur}))
+    COMPREPLY=($(compgen -W " --ClientGatewayId --DryRun --VirtualGatewayId --VpnConnectionId --VpnOptions.Phase1Options.DpdTimeoutAction --VpnOptions.Phase1Options.DpdTimeoutSeconds --VpnOptions.Phase1Options.IkeVersions --VpnOptions.Phase1Options.Phase1DhGroupNumbers --VpnOptions.Phase1Options.Phase1EncryptionAlgorithms --VpnOptions.Phase1Options.Phase1IntegrityAlgorithms --VpnOptions.Phase1Options.Phase1LifetimeSeconds --VpnOptions.Phase1Options.ReplayWindowSize --VpnOptions.Phase1Options.StartupAction  --VpnOptions.Phase2Options.Phase2DhGroupNumbers --VpnOptions.Phase2Options.Phase2EncryptionAlgorithms --VpnOptions.Phase2Options.Phase2IntegrityAlgorithms --VpnOptions.Phase2Options.Phase2LifetimeSeconds --VpnOptions.Phase2Options.PreSharedKey  --VpnOptions.TunnelInsideIpRange" -- ${cur}))
 }
 UpdateVolume() {
     COMPREPLY=($(compgen -W " --DryRun --Iops --Size --VolumeId --VolumeType" -- ${cur}))
@@ -14,6 +14,9 @@ UpdateVmGroup() {
 }
 UpdateVm() {
     COMPREPLY=($(compgen -W " --BlockDeviceMappings --BsuOptimized --DeletionProtection --DryRun --IsSourceDestChecked --KeypairName --NestedVirtualization --Performance --SecurityGroupIds --UserData --VmId --VmInitiatedShutdownBehavior --VmType" -- ${cur}))
+}
+UpdateUserGroup() {
+    COMPREPLY=($(compgen -W " --DryRun --NewPath --NewUserGroupName --Path --UserGroupName" -- ${cur}))
 }
 UpdateUser() {
     COMPREPLY=($(compgen -W " --DryRun --NewPath --NewUserName --UserName" -- ${cur}))
@@ -52,7 +55,7 @@ UpdateListenerRule() {
     COMPREPLY=($(compgen -W " --DryRun --HostPattern --ListenerRuleName --PathPattern" -- ${cur}))
 }
 UpdateImage() {
-    COMPREPLY=($(compgen -W " --DryRun --ImageId --PermissionsToLaunch.Additions.AccountIds --PermissionsToLaunch.Additions.GlobalPermission  --PermissionsToLaunch.Removals.AccountIds --PermissionsToLaunch.Removals.GlobalPermission " -- ${cur}))
+    COMPREPLY=($(compgen -W " --Description --DryRun --ImageId --PermissionsToLaunch.Additions.AccountIds --PermissionsToLaunch.Additions.GlobalPermission  --PermissionsToLaunch.Removals.AccountIds --PermissionsToLaunch.Removals.GlobalPermission " -- ${cur}))
 }
 UpdateFlexibleGpu() {
     COMPREPLY=($(compgen -W " --DeleteOnVmDeletion --DryRun --FlexibleGpuId" -- ${cur}))
@@ -99,6 +102,9 @@ UnlinkPolicy() {
 UnlinkNic() {
     COMPREPLY=($(compgen -W " --DryRun --LinkNicId" -- ${cur}))
 }
+UnlinkManagedPolicyFromUserGroup() {
+    COMPREPLY=($(compgen -W " --DryRun --PolicyOrn --UserGroupName" -- ${cur}))
+}
 UnlinkLoadBalancerBackendMachines() {
     COMPREPLY=($(compgen -W " --BackendIps --BackendVmIds --DryRun --LoadBalancerName" -- ${cur}))
 }
@@ -123,6 +129,9 @@ ScaleUpVmGroup() {
 ScaleDownVmGroup() {
     COMPREPLY=($(compgen -W " --DryRun --VmGroupId --VmSubtraction" -- ${cur}))
 }
+RemoveUserFromUserGroup() {
+    COMPREPLY=($(compgen -W " --DryRun --UserGroupName --UserGroupPath --UserName --UserPath" -- ${cur}))
+}
 RejectNetPeering() {
     COMPREPLY=($(compgen -W " --DryRun --NetPeeringId" -- ${cur}))
 }
@@ -139,7 +148,7 @@ ReadVolumes() {
     COMPREPLY=($(compgen -W " --DryRun --Filters.CreationDates --Filters.LinkVolumeDeleteOnVmDeletion --Filters.LinkVolumeDeviceNames --Filters.LinkVolumeLinkDates --Filters.LinkVolumeLinkStates --Filters.LinkVolumeVmIds --Filters.SnapshotIds --Filters.SubregionNames --Filters.TagKeys --Filters.TagValues --Filters.Tags --Filters.VolumeIds --Filters.VolumeSizes --Filters.VolumeStates --Filters.VolumeTypes --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadVmsState() {
-    COMPREPLY=($(compgen -W " --AllVms --DryRun --Filters.MaintenanceEventCodes --Filters.MaintenanceEventDescriptions --Filters.MaintenanceEventsNotAfter --Filters.MaintenanceEventsNotBefore --Filters.SubregionNames --Filters.VmIds --Filters.VmStates" -- ${cur}))
+    COMPREPLY=($(compgen -W " --AllVms --DryRun --Filters.MaintenanceEventCodes --Filters.MaintenanceEventDescriptions --Filters.MaintenanceEventsNotAfter --Filters.MaintenanceEventsNotBefore --Filters.SubregionNames --Filters.VmIds --Filters.VmStates --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadVmsHealth() {
     COMPREPLY=($(compgen -W " --BackendVmIds --DryRun --LoadBalancerName" -- ${cur}))
@@ -148,7 +157,7 @@ ReadVms() {
     COMPREPLY=($(compgen -W " --DryRun --Filters.Architectures --Filters.BlockDeviceMappingDeleteOnVmDeletion --Filters.BlockDeviceMappingDeviceNames --Filters.BlockDeviceMappingLinkDates --Filters.BlockDeviceMappingStates --Filters.BlockDeviceMappingVolumeIds --Filters.ClientTokens --Filters.CreationDates --Filters.ImageIds --Filters.IsSourceDestChecked --Filters.KeypairNames --Filters.LaunchNumbers --Filters.Lifecycles --Filters.NetIds --Filters.NicAccountIds --Filters.NicDescriptions --Filters.NicIsSourceDestChecked --Filters.NicLinkNicDeleteOnVmDeletion --Filters.NicLinkNicDeviceNumbers --Filters.NicLinkNicLinkNicDates --Filters.NicLinkNicLinkNicIds --Filters.NicLinkNicStates --Filters.NicLinkNicVmAccountIds --Filters.NicLinkNicVmIds --Filters.NicLinkPublicIpAccountIds --Filters.NicLinkPublicIpLinkPublicIpIds --Filters.NicLinkPublicIpPublicIpIds --Filters.NicLinkPublicIpPublicIps --Filters.NicMacAddresses --Filters.NicNetIds --Filters.NicNicIds --Filters.NicPrivateIpsLinkPublicIpAccountIds --Filters.NicPrivateIpsLinkPublicIpIds --Filters.NicPrivateIpsPrimaryIp --Filters.NicPrivateIpsPrivateIps --Filters.NicSecurityGroupIds --Filters.NicSecurityGroupNames --Filters.NicStates --Filters.NicSubnetIds --Filters.NicSubregionNames --Filters.Platforms --Filters.PrivateIps --Filters.ProductCodes --Filters.PublicIps --Filters.ReservationIds --Filters.RootDeviceNames --Filters.RootDeviceTypes --Filters.SecurityGroupIds --Filters.SecurityGroupNames --Filters.StateReasonCodes --Filters.StateReasonMessages --Filters.StateReasons --Filters.SubnetIds --Filters.SubregionNames --Filters.TagKeys --Filters.TagValues --Filters.Tags --Filters.Tenancies --Filters.VmIds --Filters.VmSecurityGroupIds --Filters.VmSecurityGroupNames --Filters.VmStateCodes --Filters.VmStateNames --Filters.VmTypes --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadVmTypes() {
-    COMPREPLY=($(compgen -W " --DryRun --Filters.BsuOptimized --Filters.EphemeralsTypes --Filters.Eths --Filters.Gpus --Filters.MemorySizes --Filters.VcoreCounts --Filters.VmTypeNames --Filters.VolumeCounts --Filters.VolumeSizes" -- ${cur}))
+    COMPREPLY=($(compgen -W " --DryRun --Filters.BsuOptimized --Filters.EphemeralsTypes --Filters.Eths --Filters.Gpus --Filters.MemorySizes --Filters.VcoreCounts --Filters.VmTypeNames --Filters.VolumeCounts --Filters.VolumeSizes --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadVmTemplates() {
     COMPREPLY=($(compgen -W " --DryRun --Filters.CpuCores --Filters.CpuGenerations --Filters.CpuPerformances --Filters.Descriptions --Filters.ImageIds --Filters.KeypairNames --Filters.Rams --Filters.TagKeys --Filters.TagValues --Filters.Tags --Filters.VmTemplateIds --Filters.VmTemplateNames" -- ${cur}))
@@ -162,26 +171,41 @@ ReadVirtualGateways() {
 ReadUsers() {
     COMPREPLY=($(compgen -W " --DryRun" -- ${cur}))
 }
+ReadUserGroupsPerUser() {
+    COMPREPLY=($(compgen -W " --DryRun --UserName --UserPath" -- ${cur}))
+}
+ReadUserGroups() {
+    COMPREPLY=($(compgen -W " --DryRun --Filters.PathPrefix --Filters.UserGroupIds --FirstItem --ResultsPerPage" -- ${cur}))
+}
+ReadUserGroupPolicy() {
+    COMPREPLY=($(compgen -W " --DryRun --PolicyName --UserGroupName --UserGroupPath" -- ${cur}))
+}
+ReadUserGroupPolicies() {
+    COMPREPLY=($(compgen -W " --DryRun --FirstItem --ResultsPerPage --UserGroupName --UserGroupPath" -- ${cur}))
+}
+ReadUserGroup() {
+    COMPREPLY=($(compgen -W " --DryRun --Path --UserGroupName" -- ${cur}))
+}
 ReadTags() {
-    COMPREPLY=($(compgen -W " --DryRun --Filters.Keys --Filters.ResourceIds --Filters.ResourceTypes --Filters.Values" -- ${cur}))
+    COMPREPLY=($(compgen -W " --DryRun --Filters.Keys --Filters.ResourceIds --Filters.ResourceTypes --Filters.Values --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadSubregions() {
-    COMPREPLY=($(compgen -W " --DryRun --Filters.RegionNames --Filters.States --Filters.SubregionNames" -- ${cur}))
+    COMPREPLY=($(compgen -W " --DryRun --Filters.RegionNames --Filters.States --Filters.SubregionNames --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadSubnets() {
-    COMPREPLY=($(compgen -W " --DryRun --Filters.AvailableIpsCounts --Filters.IpRanges --Filters.NetIds --Filters.States --Filters.SubnetIds --Filters.SubregionNames --Filters.TagKeys --Filters.TagValues --Filters.Tags" -- ${cur}))
+    COMPREPLY=($(compgen -W " --DryRun --Filters.AvailableIpsCounts --Filters.IpRanges --Filters.NetIds --Filters.States --Filters.SubnetIds --Filters.SubregionNames --Filters.TagKeys --Filters.TagValues --Filters.Tags --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadSnapshots() {
-    COMPREPLY=($(compgen -W " --DryRun --Filters.AccountAliases --Filters.AccountIds --Filters.Descriptions --Filters.FromCreationDate --Filters.PermissionsToCreateVolumeAccountIds --Filters.PermissionsToCreateVolumeGlobalPermission --Filters.Progresses --Filters.SnapshotIds --Filters.States --Filters.TagKeys --Filters.TagValues --Filters.Tags --Filters.ToCreationDate --Filters.VolumeIds --Filters.VolumeSizes" -- ${cur}))
+    COMPREPLY=($(compgen -W " --DryRun --Filters.AccountAliases --Filters.AccountIds --Filters.Descriptions --Filters.FromCreationDate --Filters.PermissionsToCreateVolumeAccountIds --Filters.PermissionsToCreateVolumeGlobalPermission --Filters.Progresses --Filters.SnapshotIds --Filters.States --Filters.TagKeys --Filters.TagValues --Filters.Tags --Filters.ToCreationDate --Filters.VolumeIds --Filters.VolumeSizes --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadSnapshotExportTasks() {
-    COMPREPLY=($(compgen -W " --DryRun --Filters.TaskIds" -- ${cur}))
+    COMPREPLY=($(compgen -W " --DryRun --Filters.TaskIds --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadServerCertificates() {
     COMPREPLY=($(compgen -W " --DryRun --Filters.Paths" -- ${cur}))
 }
 ReadSecurityGroups() {
-    COMPREPLY=($(compgen -W " --DryRun --Filters.Descriptions --Filters.InboundRuleAccountIds --Filters.InboundRuleFromPortRanges --Filters.InboundRuleIpRanges --Filters.InboundRuleProtocols --Filters.InboundRuleSecurityGroupIds --Filters.InboundRuleSecurityGroupNames --Filters.InboundRuleToPortRanges --Filters.NetIds --Filters.OutboundRuleAccountIds --Filters.OutboundRuleFromPortRanges --Filters.OutboundRuleIpRanges --Filters.OutboundRuleProtocols --Filters.OutboundRuleSecurityGroupIds --Filters.OutboundRuleSecurityGroupNames --Filters.OutboundRuleToPortRanges --Filters.SecurityGroupIds --Filters.SecurityGroupNames --Filters.TagKeys --Filters.TagValues --Filters.Tags" -- ${cur}))
+    COMPREPLY=($(compgen -W " --DryRun --Filters.Descriptions --Filters.InboundRuleAccountIds --Filters.InboundRuleFromPortRanges --Filters.InboundRuleIpRanges --Filters.InboundRuleProtocols --Filters.InboundRuleSecurityGroupIds --Filters.InboundRuleSecurityGroupNames --Filters.InboundRuleToPortRanges --Filters.NetIds --Filters.OutboundRuleAccountIds --Filters.OutboundRuleFromPortRanges --Filters.OutboundRuleIpRanges --Filters.OutboundRuleProtocols --Filters.OutboundRuleSecurityGroupIds --Filters.OutboundRuleSecurityGroupNames --Filters.OutboundRuleToPortRanges --Filters.SecurityGroupIds --Filters.SecurityGroupNames --Filters.TagKeys --Filters.TagValues --Filters.Tags --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadSecretAccessKey() {
     COMPREPLY=($(compgen -W " --AccessKeyId --DryRun" -- ${cur}))
@@ -193,19 +217,19 @@ ReadRegions() {
     COMPREPLY=($(compgen -W " --DryRun" -- ${cur}))
 }
 ReadQuotas() {
-    COMPREPLY=($(compgen -W " --DryRun --Filters.Collections --Filters.QuotaNames --Filters.QuotaTypes --Filters.ShortDescriptions" -- ${cur}))
+    COMPREPLY=($(compgen -W " --DryRun --Filters.Collections --Filters.QuotaNames --Filters.QuotaTypes --Filters.ShortDescriptions --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadPublicIps() {
     COMPREPLY=($(compgen -W " --DryRun --Filters.LinkPublicIpIds --Filters.NicAccountIds --Filters.NicIds --Filters.Placements --Filters.PrivateIps --Filters.PublicIpIds --Filters.PublicIps --Filters.TagKeys --Filters.TagValues --Filters.Tags --Filters.VmIds --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadPublicIpRanges() {
-    COMPREPLY=($(compgen -W " --DryRun" -- ${cur}))
+    COMPREPLY=($(compgen -W " --DryRun --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadPublicCatalog() {
     COMPREPLY=($(compgen -W " --DryRun" -- ${cur}))
 }
 ReadProductTypes() {
-    COMPREPLY=($(compgen -W " --DryRun --Filters.ProductTypeIds" -- ${cur}))
+    COMPREPLY=($(compgen -W " --DryRun --Filters.ProductTypeIds --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadPolicyVersions() {
     COMPREPLY=($(compgen -W " --FirstItem --PolicyOrn --ResultsPerPage" -- ${cur}))
@@ -220,10 +244,10 @@ ReadPolicies() {
     COMPREPLY=($(compgen -W " --DryRun --Filters.OnlyLinked --Filters.PathPrefix --Filters.Scope --FirstItem --ResultsPerPage" -- ${cur}))
 }
 ReadNics() {
-    COMPREPLY=($(compgen -W " --DryRun --Filters.Descriptions --Filters.IsSourceDestCheck --Filters.LinkNicDeleteOnVmDeletion --Filters.LinkNicDeviceNumbers --Filters.LinkNicLinkNicIds --Filters.LinkNicStates --Filters.LinkNicVmAccountIds --Filters.LinkNicVmIds --Filters.LinkPublicIpAccountIds --Filters.LinkPublicIpLinkPublicIpIds --Filters.LinkPublicIpPublicIpIds --Filters.LinkPublicIpPublicIps --Filters.MacAddresses --Filters.NetIds --Filters.NicIds --Filters.PrivateDnsNames --Filters.PrivateIpsLinkPublicIpAccountIds --Filters.PrivateIpsLinkPublicIpPublicIps --Filters.PrivateIpsPrimaryIp --Filters.PrivateIpsPrivateIps --Filters.SecurityGroupIds --Filters.SecurityGroupNames --Filters.States --Filters.SubnetIds --Filters.SubregionNames --Filters.TagKeys --Filters.TagValues --Filters.Tags" -- ${cur}))
+    COMPREPLY=($(compgen -W " --DryRun --Filters.Descriptions --Filters.IsSourceDestCheck --Filters.LinkNicDeleteOnVmDeletion --Filters.LinkNicDeviceNumbers --Filters.LinkNicLinkNicIds --Filters.LinkNicStates --Filters.LinkNicVmAccountIds --Filters.LinkNicVmIds --Filters.LinkPublicIpAccountIds --Filters.LinkPublicIpLinkPublicIpIds --Filters.LinkPublicIpPublicDnsNames --Filters.LinkPublicIpPublicIpIds --Filters.LinkPublicIpPublicIps --Filters.MacAddresses --Filters.NetIds --Filters.NicIds --Filters.PrivateDnsNames --Filters.PrivateIpsLinkPublicIpAccountIds --Filters.PrivateIpsLinkPublicIpPublicIps --Filters.PrivateIpsPrimaryIp --Filters.PrivateIpsPrivateIps --Filters.SecurityGroupIds --Filters.SecurityGroupNames --Filters.States --Filters.SubnetIds --Filters.SubregionNames --Filters.TagKeys --Filters.TagValues --Filters.Tags" -- ${cur}))
 }
 ReadNets() {
-    COMPREPLY=($(compgen -W " --DryRun --Filters.DhcpOptionsSetIds --Filters.IpRanges --Filters.IsDefault --Filters.NetIds --Filters.States --Filters.TagKeys --Filters.TagValues --Filters.Tags" -- ${cur}))
+    COMPREPLY=($(compgen -W " --DryRun --Filters.DhcpOptionsSetIds --Filters.IpRanges --Filters.IsDefault --Filters.NetIds --Filters.States --Filters.TagKeys --Filters.TagValues --Filters.Tags --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadNetPeerings() {
     COMPREPLY=($(compgen -W " --DryRun --Filters.AccepterNetAccountIds --Filters.AccepterNetIpRanges --Filters.AccepterNetNetIds --Filters.ExpirationDates --Filters.NetPeeringIds --Filters.SourceNetAccountIds --Filters.SourceNetIpRanges --Filters.SourceNetNetIds --Filters.StateMessages --Filters.StateNames --Filters.TagKeys --Filters.TagValues --Filters.Tags --NextPageToken --ResultsPerPage" -- ${cur}))
@@ -232,13 +256,16 @@ ReadNetAccessPoints() {
     COMPREPLY=($(compgen -W " --DryRun --Filters.NetAccessPointIds --Filters.NetIds --Filters.ServiceNames --Filters.States --Filters.TagKeys --Filters.TagValues --Filters.Tags --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadNetAccessPointServices() {
-    COMPREPLY=($(compgen -W " --DryRun --Filters.ServiceIds --Filters.ServiceNames" -- ${cur}))
+    COMPREPLY=($(compgen -W " --DryRun --Filters.ServiceIds --Filters.ServiceNames --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadNatServices() {
-    COMPREPLY=($(compgen -W " --DryRun --Filters.NatServiceIds --Filters.NetIds --Filters.States --Filters.SubnetIds --Filters.TagKeys --Filters.TagValues --Filters.Tags --NextPageToken --ResultsPerPage" -- ${cur}))
+    COMPREPLY=($(compgen -W " --DryRun --Filters.ClientTokens --Filters.NatServiceIds --Filters.NetIds --Filters.States --Filters.SubnetIds --Filters.TagKeys --Filters.TagValues --Filters.Tags --NextPageToken --ResultsPerPage" -- ${cur}))
+}
+ReadManagedPoliciesLinkedToUserGroup() {
+    COMPREPLY=($(compgen -W " --DryRun --Filters.PathPrefix --Filters.UserGroupIds --FirstItem --ResultsPerPage --UserGroupName" -- ${cur}))
 }
 ReadLocations() {
-    COMPREPLY=($(compgen -W " --DryRun" -- ${cur}))
+    COMPREPLY=($(compgen -W " --DryRun --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadLoadBalancers() {
     COMPREPLY=($(compgen -W " --DryRun --Filters.LoadBalancerNames" -- ${cur}))
@@ -253,16 +280,16 @@ ReadLinkedPolicies() {
     COMPREPLY=($(compgen -W " --DryRun --Filters.PathPrefix --FirstItem --ResultsPerPage --UserName" -- ${cur}))
 }
 ReadKeypairs() {
-    COMPREPLY=($(compgen -W " --DryRun --Filters.KeypairFingerprints --Filters.KeypairNames --Filters.KeypairTypes" -- ${cur}))
+    COMPREPLY=($(compgen -W " --DryRun --Filters.KeypairFingerprints --Filters.KeypairNames --Filters.KeypairTypes --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadInternetServices() {
-    COMPREPLY=($(compgen -W " --DryRun --Filters.InternetServiceIds --Filters.LinkNetIds --Filters.LinkStates --Filters.TagKeys --Filters.TagValues --Filters.Tags" -- ${cur}))
+    COMPREPLY=($(compgen -W " --DryRun --Filters.InternetServiceIds --Filters.LinkNetIds --Filters.LinkStates --Filters.TagKeys --Filters.TagValues --Filters.Tags --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadImages() {
     COMPREPLY=($(compgen -W " --DryRun --Filters.AccountAliases --Filters.AccountIds --Filters.Architectures --Filters.BlockDeviceMappingDeleteOnVmDeletion --Filters.BlockDeviceMappingDeviceNames --Filters.BlockDeviceMappingSnapshotIds --Filters.BlockDeviceMappingVolumeSizes --Filters.BlockDeviceMappingVolumeTypes --Filters.Descriptions --Filters.FileLocations --Filters.Hypervisors --Filters.ImageIds --Filters.ImageNames --Filters.PermissionsToLaunchAccountIds --Filters.PermissionsToLaunchGlobalPermission --Filters.ProductCodeNames --Filters.ProductCodes --Filters.RootDeviceNames --Filters.RootDeviceTypes --Filters.States --Filters.TagKeys --Filters.TagValues --Filters.Tags --Filters.VirtualizationTypes --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadImageExportTasks() {
-    COMPREPLY=($(compgen -W " --DryRun --Filters.TaskIds" -- ${cur}))
+    COMPREPLY=($(compgen -W " --DryRun --Filters.TaskIds --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadFlexibleGpus() {
     COMPREPLY=($(compgen -W " --DryRun --Filters.DeleteOnVmDeletion --Filters.FlexibleGpuIds --Filters.Generations --Filters.ModelNames --Filters.States --Filters.SubregionNames --Filters.VmIds" -- ${cur}))
@@ -271,16 +298,16 @@ ReadFlexibleGpuCatalog() {
     COMPREPLY=($(compgen -W " --DryRun" -- ${cur}))
 }
 ReadDirectLinks() {
-    COMPREPLY=($(compgen -W " --DryRun --Filters.DirectLinkIds" -- ${cur}))
+    COMPREPLY=($(compgen -W " --DryRun --Filters.DirectLinkIds --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadDirectLinkInterfaces() {
-    COMPREPLY=($(compgen -W " --DryRun --Filters.DirectLinkIds --Filters.DirectLinkInterfaceIds" -- ${cur}))
+    COMPREPLY=($(compgen -W " --DryRun --Filters.DirectLinkIds --Filters.DirectLinkInterfaceIds --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadDhcpOptions() {
     COMPREPLY=($(compgen -W " --DryRun --Filters.Default --Filters.DhcpOptionsSetIds --Filters.DomainNameServers --Filters.DomainNames --Filters.LogServers --Filters.NtpServers --Filters.TagKeys --Filters.TagValues --Filters.Tags --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadDedicatedGroups() {
-    COMPREPLY=($(compgen -W " --DryRun --Filters.CpuGenerations --Filters.DedicatedGroupIds --Filters.Names --Filters.SubregionNames" -- ${cur}))
+    COMPREPLY=($(compgen -W " --DryRun --Filters.CpuGenerations --Filters.DedicatedGroupIds --Filters.Names --Filters.SubregionNames --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadConsumptionAccount() {
     COMPREPLY=($(compgen -W " --DryRun --FromDate --Overall --ShowPrice --ToDate" -- ${cur}))
@@ -289,7 +316,7 @@ ReadConsoleOutput() {
     COMPREPLY=($(compgen -W " --DryRun --VmId" -- ${cur}))
 }
 ReadClientGateways() {
-    COMPREPLY=($(compgen -W " --DryRun --Filters.BgpAsns --Filters.ClientGatewayIds --Filters.ConnectionTypes --Filters.PublicIps --Filters.States --Filters.TagKeys --Filters.TagValues --Filters.Tags" -- ${cur}))
+    COMPREPLY=($(compgen -W " --DryRun --Filters.BgpAsns --Filters.ClientGatewayIds --Filters.ConnectionTypes --Filters.PublicIps --Filters.States --Filters.TagKeys --Filters.TagValues --Filters.Tags --NextPageToken --ResultsPerPage" -- ${cur}))
 }
 ReadCatalogs() {
     COMPREPLY=($(compgen -W " --DryRun --Filters.CurrentCatalogOnly --Filters.FromDate --Filters.ToDate" -- ${cur}))
@@ -318,6 +345,9 @@ ReadAccounts() {
 ReadAccessKeys() {
     COMPREPLY=($(compgen -W " --DryRun --Filters.AccessKeyIds --Filters.States --UserName" -- ${cur}))
 }
+PutUserGroupPolicy() {
+    COMPREPLY=($(compgen -W " --DryRun --PolicyDocument --PolicyName --UserGroupName --UserGroupPath" -- ${cur}))
+}
 LinkVolume() {
     COMPREPLY=($(compgen -W " --DeviceName --DryRun --VmId --VolumeId" -- ${cur}))
 }
@@ -338,6 +368,9 @@ LinkPolicy() {
 }
 LinkNic() {
     COMPREPLY=($(compgen -W " --DeviceNumber --DryRun --NicId --VmId" -- ${cur}))
+}
+LinkManagedPolicyToUserGroup() {
+    COMPREPLY=($(compgen -W " --DryRun --PolicyOrn --UserGroupName" -- ${cur}))
 }
 LinkLoadBalancerBackendMachines() {
     COMPREPLY=($(compgen -W " --BackendIps --BackendVmIds --DryRun --LoadBalancerName" -- ${cur}))
@@ -371,6 +404,12 @@ DeleteVmGroup() {
 }
 DeleteVirtualGateway() {
     COMPREPLY=($(compgen -W " --DryRun --VirtualGatewayId" -- ${cur}))
+}
+DeleteUserGroupPolicy() {
+    COMPREPLY=($(compgen -W " --DryRun --PolicyName --UserGroupName --UserGroupPath" -- ${cur}))
+}
+DeleteUserGroup() {
+    COMPREPLY=($(compgen -W " --DryRun --Force --Path --UserGroupName" -- ${cur}))
 }
 DeleteUser() {
     COMPREPLY=($(compgen -W " --DryRun --UserName" -- ${cur}))
@@ -498,6 +537,9 @@ CreateVmGroup() {
 CreateVirtualGateway() {
     COMPREPLY=($(compgen -W " --ConnectionType --DryRun" -- ${cur}))
 }
+CreateUserGroup() {
+    COMPREPLY=($(compgen -W " --DryRun --Path --UserGroupName" -- ${cur}))
+}
 CreateUser() {
     COMPREPLY=($(compgen -W " --DryRun --Path --UserName" -- ${cur}))
 }
@@ -553,7 +595,7 @@ CreateNet() {
     COMPREPLY=($(compgen -W " --DryRun --IpRange --Tenancy" -- ${cur}))
 }
 CreateNatService() {
-    COMPREPLY=($(compgen -W " --DryRun --PublicIpId --SubnetId" -- ${cur}))
+    COMPREPLY=($(compgen -W " --ClientToken --DryRun --PublicIpId --SubnetId" -- ${cur}))
 }
 CreateLoadBalancerTags() {
     COMPREPLY=($(compgen -W " --DryRun --LoadBalancerNames --Tags" -- ${cur}))
@@ -615,6 +657,9 @@ CreateAccessKey() {
 CheckAuthentication() {
     COMPREPLY=($(compgen -W " --DryRun --Login --Password" -- ${cur}))
 }
+AddUserToUserGroup() {
+    COMPREPLY=($(compgen -W " --DryRun --UserGroupName --UserGroupPath --UserName --UserPath" -- ${cur}))
+}
 AcceptNetPeering() {
     COMPREPLY=($(compgen -W " --DryRun --NetPeeringId" -- ${cur}))
 }
@@ -637,15 +682,15 @@ _cognac()
     case ${COMP_CWORD} in
         *)
             case ${prev} in
-		UpdateVpnConnection | UpdateVolume | UpdateVmTemplate | UpdateVmGroup | UpdateVm | UpdateUser | UpdateSubnet | UpdateSnapshot | UpdateServerCertificate | UpdateRouteTableLink | UpdateRoutePropagation | UpdateRoute | UpdateNic | UpdateNetAccessPoint | UpdateNet | UpdateLoadBalancer | UpdateListenerRule | UpdateImage | UpdateFlexibleGpu | UpdateDirectLinkInterface | UpdateDedicatedGroup | UpdateCa | UpdateApiAccessRule | UpdateApiAccessPolicy | UpdateAccount | UpdateAccessKey | UnlinkVolume | UnlinkVirtualGateway | UnlinkRouteTable | UnlinkPublicIp | UnlinkPrivateIps | UnlinkPolicy | UnlinkNic | UnlinkLoadBalancerBackendMachines | UnlinkInternetService | UnlinkFlexibleGpu | StopVms | StartVms | SetDefaultPolicyVersion | ScaleUpVmGroup | ScaleDownVmGroup | RejectNetPeering | RegisterVmsInLoadBalancer | RebootVms | ReadVpnConnections | ReadVolumes | ReadVmsState | ReadVmsHealth | ReadVms | ReadVmTypes | ReadVmTemplates | ReadVmGroups | ReadVirtualGateways | ReadUsers | ReadTags | ReadSubregions | ReadSubnets | ReadSnapshots | ReadSnapshotExportTasks | ReadServerCertificates | ReadSecurityGroups | ReadSecretAccessKey | ReadRouteTables | ReadRegions | ReadQuotas | ReadPublicIps | ReadPublicIpRanges | ReadPublicCatalog | ReadProductTypes | ReadPolicyVersions | ReadPolicyVersion | ReadPolicy | ReadPolicies | ReadNics | ReadNets | ReadNetPeerings | ReadNetAccessPoints | ReadNetAccessPointServices | ReadNatServices | ReadLocations | ReadLoadBalancers | ReadLoadBalancerTags | ReadListenerRules | ReadLinkedPolicies | ReadKeypairs | ReadInternetServices | ReadImages | ReadImageExportTasks | ReadFlexibleGpus | ReadFlexibleGpuCatalog | ReadDirectLinks | ReadDirectLinkInterfaces | ReadDhcpOptions | ReadDedicatedGroups | ReadConsumptionAccount | ReadConsoleOutput | ReadClientGateways | ReadCatalogs | ReadCatalog | ReadCas | ReadApiLogs | ReadApiAccessRules | ReadApiAccessPolicy | ReadAdminPassword | ReadAccounts | ReadAccessKeys | LinkVolume | LinkVirtualGateway | LinkRouteTable | LinkPublicIp | LinkPrivateIps | LinkPolicy | LinkNic | LinkLoadBalancerBackendMachines | LinkInternetService | LinkFlexibleGpu | DeregisterVmsInLoadBalancer | DeleteVpnConnectionRoute | DeleteVpnConnection | DeleteVolume | DeleteVms | DeleteVmTemplate | DeleteVmGroup | DeleteVirtualGateway | DeleteUser | DeleteTags | DeleteSubnet | DeleteSnapshot | DeleteServerCertificate | DeleteSecurityGroupRule | DeleteSecurityGroup | DeleteRouteTable | DeleteRoute | DeletePublicIp | DeletePolicyVersion | DeletePolicy | DeleteNic | DeleteNetPeering | DeleteNetAccessPoint | DeleteNet | DeleteNatService | DeleteLoadBalancerTags | DeleteLoadBalancerPolicy | DeleteLoadBalancerListeners | DeleteLoadBalancer | DeleteListenerRule | DeleteKeypair | DeleteInternetService | DeleteImage | DeleteFlexibleGpu | DeleteExportTask | DeleteDirectLinkInterface | DeleteDirectLink | DeleteDhcpOptions | DeleteDedicatedGroup | DeleteClientGateway | DeleteCa | DeleteApiAccessRule | DeleteAccessKey | CreateVpnConnectionRoute | CreateVpnConnection | CreateVolume | CreateVms | CreateVmTemplate | CreateVmGroup | CreateVirtualGateway | CreateUser | CreateTags | CreateSubnet | CreateSnapshotExportTask | CreateSnapshot | CreateServerCertificate | CreateSecurityGroupRule | CreateSecurityGroup | CreateRouteTable | CreateRoute | CreatePublicIp | CreateProductType | CreatePolicyVersion | CreatePolicy | CreateNic | CreateNetPeering | CreateNetAccessPoint | CreateNet | CreateNatService | CreateLoadBalancerTags | CreateLoadBalancerPolicy | CreateLoadBalancerListeners | CreateLoadBalancer | CreateListenerRule | CreateKeypair | CreateInternetService | CreateImageExportTask | CreateImage | CreateFlexibleGpu | CreateDirectLinkInterface | CreateDirectLink | CreateDhcpOptions | CreateDedicatedGroup | CreateClientGateway | CreateCa | CreateApiAccessRule | CreateAccount | CreateAccessKey | CheckAuthentication | AcceptNetPeering)
+		UpdateVpnConnection | UpdateVolume | UpdateVmTemplate | UpdateVmGroup | UpdateVm | UpdateUserGroup | UpdateUser | UpdateSubnet | UpdateSnapshot | UpdateServerCertificate | UpdateRouteTableLink | UpdateRoutePropagation | UpdateRoute | UpdateNic | UpdateNetAccessPoint | UpdateNet | UpdateLoadBalancer | UpdateListenerRule | UpdateImage | UpdateFlexibleGpu | UpdateDirectLinkInterface | UpdateDedicatedGroup | UpdateCa | UpdateApiAccessRule | UpdateApiAccessPolicy | UpdateAccount | UpdateAccessKey | UnlinkVolume | UnlinkVirtualGateway | UnlinkRouteTable | UnlinkPublicIp | UnlinkPrivateIps | UnlinkPolicy | UnlinkNic | UnlinkManagedPolicyFromUserGroup | UnlinkLoadBalancerBackendMachines | UnlinkInternetService | UnlinkFlexibleGpu | StopVms | StartVms | SetDefaultPolicyVersion | ScaleUpVmGroup | ScaleDownVmGroup | RemoveUserFromUserGroup | RejectNetPeering | RegisterVmsInLoadBalancer | RebootVms | ReadVpnConnections | ReadVolumes | ReadVmsState | ReadVmsHealth | ReadVms | ReadVmTypes | ReadVmTemplates | ReadVmGroups | ReadVirtualGateways | ReadUsers | ReadUserGroupsPerUser | ReadUserGroups | ReadUserGroupPolicy | ReadUserGroupPolicies | ReadUserGroup | ReadTags | ReadSubregions | ReadSubnets | ReadSnapshots | ReadSnapshotExportTasks | ReadServerCertificates | ReadSecurityGroups | ReadSecretAccessKey | ReadRouteTables | ReadRegions | ReadQuotas | ReadPublicIps | ReadPublicIpRanges | ReadPublicCatalog | ReadProductTypes | ReadPolicyVersions | ReadPolicyVersion | ReadPolicy | ReadPolicies | ReadNics | ReadNets | ReadNetPeerings | ReadNetAccessPoints | ReadNetAccessPointServices | ReadNatServices | ReadManagedPoliciesLinkedToUserGroup | ReadLocations | ReadLoadBalancers | ReadLoadBalancerTags | ReadListenerRules | ReadLinkedPolicies | ReadKeypairs | ReadInternetServices | ReadImages | ReadImageExportTasks | ReadFlexibleGpus | ReadFlexibleGpuCatalog | ReadDirectLinks | ReadDirectLinkInterfaces | ReadDhcpOptions | ReadDedicatedGroups | ReadConsumptionAccount | ReadConsoleOutput | ReadClientGateways | ReadCatalogs | ReadCatalog | ReadCas | ReadApiLogs | ReadApiAccessRules | ReadApiAccessPolicy | ReadAdminPassword | ReadAccounts | ReadAccessKeys | PutUserGroupPolicy | LinkVolume | LinkVirtualGateway | LinkRouteTable | LinkPublicIp | LinkPrivateIps | LinkPolicy | LinkNic | LinkManagedPolicyToUserGroup | LinkLoadBalancerBackendMachines | LinkInternetService | LinkFlexibleGpu | DeregisterVmsInLoadBalancer | DeleteVpnConnectionRoute | DeleteVpnConnection | DeleteVolume | DeleteVms | DeleteVmTemplate | DeleteVmGroup | DeleteVirtualGateway | DeleteUserGroupPolicy | DeleteUserGroup | DeleteUser | DeleteTags | DeleteSubnet | DeleteSnapshot | DeleteServerCertificate | DeleteSecurityGroupRule | DeleteSecurityGroup | DeleteRouteTable | DeleteRoute | DeletePublicIp | DeletePolicyVersion | DeletePolicy | DeleteNic | DeleteNetPeering | DeleteNetAccessPoint | DeleteNet | DeleteNatService | DeleteLoadBalancerTags | DeleteLoadBalancerPolicy | DeleteLoadBalancerListeners | DeleteLoadBalancer | DeleteListenerRule | DeleteKeypair | DeleteInternetService | DeleteImage | DeleteFlexibleGpu | DeleteExportTask | DeleteDirectLinkInterface | DeleteDirectLink | DeleteDhcpOptions | DeleteDedicatedGroup | DeleteClientGateway | DeleteCa | DeleteApiAccessRule | DeleteAccessKey | CreateVpnConnectionRoute | CreateVpnConnection | CreateVolume | CreateVms | CreateVmTemplate | CreateVmGroup | CreateVirtualGateway | CreateUserGroup | CreateUser | CreateTags | CreateSubnet | CreateSnapshotExportTask | CreateSnapshot | CreateServerCertificate | CreateSecurityGroupRule | CreateSecurityGroup | CreateRouteTable | CreateRoute | CreatePublicIp | CreateProductType | CreatePolicyVersion | CreatePolicy | CreateNic | CreateNetPeering | CreateNetAccessPoint | CreateNet | CreateNatService | CreateLoadBalancerTags | CreateLoadBalancerPolicy | CreateLoadBalancerListeners | CreateLoadBalancer | CreateListenerRule | CreateKeypair | CreateInternetService | CreateImageExportTask | CreateImage | CreateFlexibleGpu | CreateDirectLinkInterface | CreateDirectLink | CreateDhcpOptions | CreateDedicatedGroup | CreateClientGateway | CreateCa | CreateApiAccessRule | CreateAccount | CreateAccessKey | CheckAuthentication | AddUserToUserGroup | AcceptNetPeering)
 		    eval ${prev}
 		    ;;
 		--help)
-		    COMPREPLY=($(compgen -W "UpdateVpnConnection UpdateVolume UpdateVmTemplate UpdateVmGroup UpdateVm UpdateUser UpdateSubnet UpdateSnapshot UpdateServerCertificate UpdateRouteTableLink UpdateRoutePropagation UpdateRoute UpdateNic UpdateNetAccessPoint UpdateNet UpdateLoadBalancer UpdateListenerRule UpdateImage UpdateFlexibleGpu UpdateDirectLinkInterface UpdateDedicatedGroup UpdateCa UpdateApiAccessRule UpdateApiAccessPolicy UpdateAccount UpdateAccessKey UnlinkVolume UnlinkVirtualGateway UnlinkRouteTable UnlinkPublicIp UnlinkPrivateIps UnlinkPolicy UnlinkNic UnlinkLoadBalancerBackendMachines UnlinkInternetService UnlinkFlexibleGpu StopVms StartVms SetDefaultPolicyVersion ScaleUpVmGroup ScaleDownVmGroup RejectNetPeering RegisterVmsInLoadBalancer RebootVms ReadVpnConnections ReadVolumes ReadVmsState ReadVmsHealth ReadVms ReadVmTypes ReadVmTemplates ReadVmGroups ReadVirtualGateways ReadUsers ReadTags ReadSubregions ReadSubnets ReadSnapshots ReadSnapshotExportTasks ReadServerCertificates ReadSecurityGroups ReadSecretAccessKey ReadRouteTables ReadRegions ReadQuotas ReadPublicIps ReadPublicIpRanges ReadPublicCatalog ReadProductTypes ReadPolicyVersions ReadPolicyVersion ReadPolicy ReadPolicies ReadNics ReadNets ReadNetPeerings ReadNetAccessPoints ReadNetAccessPointServices ReadNatServices ReadLocations ReadLoadBalancers ReadLoadBalancerTags ReadListenerRules ReadLinkedPolicies ReadKeypairs ReadInternetServices ReadImages ReadImageExportTasks ReadFlexibleGpus ReadFlexibleGpuCatalog ReadDirectLinks ReadDirectLinkInterfaces ReadDhcpOptions ReadDedicatedGroups ReadConsumptionAccount ReadConsoleOutput ReadClientGateways ReadCatalogs ReadCatalog ReadCas ReadApiLogs ReadApiAccessRules ReadApiAccessPolicy ReadAdminPassword ReadAccounts ReadAccessKeys LinkVolume LinkVirtualGateway LinkRouteTable LinkPublicIp LinkPrivateIps LinkPolicy LinkNic LinkLoadBalancerBackendMachines LinkInternetService LinkFlexibleGpu DeregisterVmsInLoadBalancer DeleteVpnConnectionRoute DeleteVpnConnection DeleteVolume DeleteVms DeleteVmTemplate DeleteVmGroup DeleteVirtualGateway DeleteUser DeleteTags DeleteSubnet DeleteSnapshot DeleteServerCertificate DeleteSecurityGroupRule DeleteSecurityGroup DeleteRouteTable DeleteRoute DeletePublicIp DeletePolicyVersion DeletePolicy DeleteNic DeleteNetPeering DeleteNetAccessPoint DeleteNet DeleteNatService DeleteLoadBalancerTags DeleteLoadBalancerPolicy DeleteLoadBalancerListeners DeleteLoadBalancer DeleteListenerRule DeleteKeypair DeleteInternetService DeleteImage DeleteFlexibleGpu DeleteExportTask DeleteDirectLinkInterface DeleteDirectLink DeleteDhcpOptions DeleteDedicatedGroup DeleteClientGateway DeleteCa DeleteApiAccessRule DeleteAccessKey CreateVpnConnectionRoute CreateVpnConnection CreateVolume CreateVms CreateVmTemplate CreateVmGroup CreateVirtualGateway CreateUser CreateTags CreateSubnet CreateSnapshotExportTask CreateSnapshot CreateServerCertificate CreateSecurityGroupRule CreateSecurityGroup CreateRouteTable CreateRoute CreatePublicIp CreateProductType CreatePolicyVersion CreatePolicy CreateNic CreateNetPeering CreateNetAccessPoint CreateNet CreateNatService CreateLoadBalancerTags CreateLoadBalancerPolicy CreateLoadBalancerListeners CreateLoadBalancer CreateListenerRule CreateKeypair CreateInternetService CreateImageExportTask CreateImage CreateFlexibleGpu CreateDirectLinkInterface CreateDirectLink CreateDhcpOptions CreateDedicatedGroup CreateClientGateway CreateCa CreateApiAccessRule CreateAccount CreateAccessKey CheckAuthentication AcceptNetPeering" -- ${cur}))
+		    COMPREPLY=($(compgen -W "UpdateVpnConnection UpdateVolume UpdateVmTemplate UpdateVmGroup UpdateVm UpdateUserGroup UpdateUser UpdateSubnet UpdateSnapshot UpdateServerCertificate UpdateRouteTableLink UpdateRoutePropagation UpdateRoute UpdateNic UpdateNetAccessPoint UpdateNet UpdateLoadBalancer UpdateListenerRule UpdateImage UpdateFlexibleGpu UpdateDirectLinkInterface UpdateDedicatedGroup UpdateCa UpdateApiAccessRule UpdateApiAccessPolicy UpdateAccount UpdateAccessKey UnlinkVolume UnlinkVirtualGateway UnlinkRouteTable UnlinkPublicIp UnlinkPrivateIps UnlinkPolicy UnlinkNic UnlinkManagedPolicyFromUserGroup UnlinkLoadBalancerBackendMachines UnlinkInternetService UnlinkFlexibleGpu StopVms StartVms SetDefaultPolicyVersion ScaleUpVmGroup ScaleDownVmGroup RemoveUserFromUserGroup RejectNetPeering RegisterVmsInLoadBalancer RebootVms ReadVpnConnections ReadVolumes ReadVmsState ReadVmsHealth ReadVms ReadVmTypes ReadVmTemplates ReadVmGroups ReadVirtualGateways ReadUsers ReadUserGroupsPerUser ReadUserGroups ReadUserGroupPolicy ReadUserGroupPolicies ReadUserGroup ReadTags ReadSubregions ReadSubnets ReadSnapshots ReadSnapshotExportTasks ReadServerCertificates ReadSecurityGroups ReadSecretAccessKey ReadRouteTables ReadRegions ReadQuotas ReadPublicIps ReadPublicIpRanges ReadPublicCatalog ReadProductTypes ReadPolicyVersions ReadPolicyVersion ReadPolicy ReadPolicies ReadNics ReadNets ReadNetPeerings ReadNetAccessPoints ReadNetAccessPointServices ReadNatServices ReadManagedPoliciesLinkedToUserGroup ReadLocations ReadLoadBalancers ReadLoadBalancerTags ReadListenerRules ReadLinkedPolicies ReadKeypairs ReadInternetServices ReadImages ReadImageExportTasks ReadFlexibleGpus ReadFlexibleGpuCatalog ReadDirectLinks ReadDirectLinkInterfaces ReadDhcpOptions ReadDedicatedGroups ReadConsumptionAccount ReadConsoleOutput ReadClientGateways ReadCatalogs ReadCatalog ReadCas ReadApiLogs ReadApiAccessRules ReadApiAccessPolicy ReadAdminPassword ReadAccounts ReadAccessKeys PutUserGroupPolicy LinkVolume LinkVirtualGateway LinkRouteTable LinkPublicIp LinkPrivateIps LinkPolicy LinkNic LinkManagedPolicyToUserGroup LinkLoadBalancerBackendMachines LinkInternetService LinkFlexibleGpu DeregisterVmsInLoadBalancer DeleteVpnConnectionRoute DeleteVpnConnection DeleteVolume DeleteVms DeleteVmTemplate DeleteVmGroup DeleteVirtualGateway DeleteUserGroupPolicy DeleteUserGroup DeleteUser DeleteTags DeleteSubnet DeleteSnapshot DeleteServerCertificate DeleteSecurityGroupRule DeleteSecurityGroup DeleteRouteTable DeleteRoute DeletePublicIp DeletePolicyVersion DeletePolicy DeleteNic DeleteNetPeering DeleteNetAccessPoint DeleteNet DeleteNatService DeleteLoadBalancerTags DeleteLoadBalancerPolicy DeleteLoadBalancerListeners DeleteLoadBalancer DeleteListenerRule DeleteKeypair DeleteInternetService DeleteImage DeleteFlexibleGpu DeleteExportTask DeleteDirectLinkInterface DeleteDirectLink DeleteDhcpOptions DeleteDedicatedGroup DeleteClientGateway DeleteCa DeleteApiAccessRule DeleteAccessKey CreateVpnConnectionRoute CreateVpnConnection CreateVolume CreateVms CreateVmTemplate CreateVmGroup CreateVirtualGateway CreateUserGroup CreateUser CreateTags CreateSubnet CreateSnapshotExportTask CreateSnapshot CreateServerCertificate CreateSecurityGroupRule CreateSecurityGroup CreateRouteTable CreateRoute CreatePublicIp CreateProductType CreatePolicyVersion CreatePolicy CreateNic CreateNetPeering CreateNetAccessPoint CreateNet CreateNatService CreateLoadBalancerTags CreateLoadBalancerPolicy CreateLoadBalancerListeners CreateLoadBalancer CreateListenerRule CreateKeypair CreateInternetService CreateImageExportTask CreateImage CreateFlexibleGpu CreateDirectLinkInterface CreateDirectLink CreateDhcpOptions CreateDedicatedGroup CreateClientGateway CreateCa CreateApiAccessRule CreateAccount CreateAccessKey CheckAuthentication AddUserToUserGroup AcceptNetPeering" -- ${cur}))
 		    ;;
                 *)
                     PROFILES=$(_mk_profiles)
-                    COMPREPLY=($(compgen -W "$PROFILES --config --login --password --authentication_method --color --insecure --raw-print --verbose --help -h --list-calls --version UpdateVpnConnection UpdateVolume UpdateVmTemplate UpdateVmGroup UpdateVm UpdateUser UpdateSubnet UpdateSnapshot UpdateServerCertificate UpdateRouteTableLink UpdateRoutePropagation UpdateRoute UpdateNic UpdateNetAccessPoint UpdateNet UpdateLoadBalancer UpdateListenerRule UpdateImage UpdateFlexibleGpu UpdateDirectLinkInterface UpdateDedicatedGroup UpdateCa UpdateApiAccessRule UpdateApiAccessPolicy UpdateAccount UpdateAccessKey UnlinkVolume UnlinkVirtualGateway UnlinkRouteTable UnlinkPublicIp UnlinkPrivateIps UnlinkPolicy UnlinkNic UnlinkLoadBalancerBackendMachines UnlinkInternetService UnlinkFlexibleGpu StopVms StartVms SetDefaultPolicyVersion ScaleUpVmGroup ScaleDownVmGroup RejectNetPeering RegisterVmsInLoadBalancer RebootVms ReadVpnConnections ReadVolumes ReadVmsState ReadVmsHealth ReadVms ReadVmTypes ReadVmTemplates ReadVmGroups ReadVirtualGateways ReadUsers ReadTags ReadSubregions ReadSubnets ReadSnapshots ReadSnapshotExportTasks ReadServerCertificates ReadSecurityGroups ReadSecretAccessKey ReadRouteTables ReadRegions ReadQuotas ReadPublicIps ReadPublicIpRanges ReadPublicCatalog ReadProductTypes ReadPolicyVersions ReadPolicyVersion ReadPolicy ReadPolicies ReadNics ReadNets ReadNetPeerings ReadNetAccessPoints ReadNetAccessPointServices ReadNatServices ReadLocations ReadLoadBalancers ReadLoadBalancerTags ReadListenerRules ReadLinkedPolicies ReadKeypairs ReadInternetServices ReadImages ReadImageExportTasks ReadFlexibleGpus ReadFlexibleGpuCatalog ReadDirectLinks ReadDirectLinkInterfaces ReadDhcpOptions ReadDedicatedGroups ReadConsumptionAccount ReadConsoleOutput ReadClientGateways ReadCatalogs ReadCatalog ReadCas ReadApiLogs ReadApiAccessRules ReadApiAccessPolicy ReadAdminPassword ReadAccounts ReadAccessKeys LinkVolume LinkVirtualGateway LinkRouteTable LinkPublicIp LinkPrivateIps LinkPolicy LinkNic LinkLoadBalancerBackendMachines LinkInternetService LinkFlexibleGpu DeregisterVmsInLoadBalancer DeleteVpnConnectionRoute DeleteVpnConnection DeleteVolume DeleteVms DeleteVmTemplate DeleteVmGroup DeleteVirtualGateway DeleteUser DeleteTags DeleteSubnet DeleteSnapshot DeleteServerCertificate DeleteSecurityGroupRule DeleteSecurityGroup DeleteRouteTable DeleteRoute DeletePublicIp DeletePolicyVersion DeletePolicy DeleteNic DeleteNetPeering DeleteNetAccessPoint DeleteNet DeleteNatService DeleteLoadBalancerTags DeleteLoadBalancerPolicy DeleteLoadBalancerListeners DeleteLoadBalancer DeleteListenerRule DeleteKeypair DeleteInternetService DeleteImage DeleteFlexibleGpu DeleteExportTask DeleteDirectLinkInterface DeleteDirectLink DeleteDhcpOptions DeleteDedicatedGroup DeleteClientGateway DeleteCa DeleteApiAccessRule DeleteAccessKey CreateVpnConnectionRoute CreateVpnConnection CreateVolume CreateVms CreateVmTemplate CreateVmGroup CreateVirtualGateway CreateUser CreateTags CreateSubnet CreateSnapshotExportTask CreateSnapshot CreateServerCertificate CreateSecurityGroupRule CreateSecurityGroup CreateRouteTable CreateRoute CreatePublicIp CreateProductType CreatePolicyVersion CreatePolicy CreateNic CreateNetPeering CreateNetAccessPoint CreateNet CreateNatService CreateLoadBalancerTags CreateLoadBalancerPolicy CreateLoadBalancerListeners CreateLoadBalancer CreateListenerRule CreateKeypair CreateInternetService CreateImageExportTask CreateImage CreateFlexibleGpu CreateDirectLinkInterface CreateDirectLink CreateDhcpOptions CreateDedicatedGroup CreateClientGateway CreateCa CreateApiAccessRule CreateAccount CreateAccessKey CheckAuthentication AcceptNetPeering" -- ${cur}))
+                    COMPREPLY=($(compgen -W "$PROFILES --config --login --password --authentication_method --color --insecure --raw-print --verbose --help -h --list-calls --version UpdateVpnConnection UpdateVolume UpdateVmTemplate UpdateVmGroup UpdateVm UpdateUserGroup UpdateUser UpdateSubnet UpdateSnapshot UpdateServerCertificate UpdateRouteTableLink UpdateRoutePropagation UpdateRoute UpdateNic UpdateNetAccessPoint UpdateNet UpdateLoadBalancer UpdateListenerRule UpdateImage UpdateFlexibleGpu UpdateDirectLinkInterface UpdateDedicatedGroup UpdateCa UpdateApiAccessRule UpdateApiAccessPolicy UpdateAccount UpdateAccessKey UnlinkVolume UnlinkVirtualGateway UnlinkRouteTable UnlinkPublicIp UnlinkPrivateIps UnlinkPolicy UnlinkNic UnlinkManagedPolicyFromUserGroup UnlinkLoadBalancerBackendMachines UnlinkInternetService UnlinkFlexibleGpu StopVms StartVms SetDefaultPolicyVersion ScaleUpVmGroup ScaleDownVmGroup RemoveUserFromUserGroup RejectNetPeering RegisterVmsInLoadBalancer RebootVms ReadVpnConnections ReadVolumes ReadVmsState ReadVmsHealth ReadVms ReadVmTypes ReadVmTemplates ReadVmGroups ReadVirtualGateways ReadUsers ReadUserGroupsPerUser ReadUserGroups ReadUserGroupPolicy ReadUserGroupPolicies ReadUserGroup ReadTags ReadSubregions ReadSubnets ReadSnapshots ReadSnapshotExportTasks ReadServerCertificates ReadSecurityGroups ReadSecretAccessKey ReadRouteTables ReadRegions ReadQuotas ReadPublicIps ReadPublicIpRanges ReadPublicCatalog ReadProductTypes ReadPolicyVersions ReadPolicyVersion ReadPolicy ReadPolicies ReadNics ReadNets ReadNetPeerings ReadNetAccessPoints ReadNetAccessPointServices ReadNatServices ReadManagedPoliciesLinkedToUserGroup ReadLocations ReadLoadBalancers ReadLoadBalancerTags ReadListenerRules ReadLinkedPolicies ReadKeypairs ReadInternetServices ReadImages ReadImageExportTasks ReadFlexibleGpus ReadFlexibleGpuCatalog ReadDirectLinks ReadDirectLinkInterfaces ReadDhcpOptions ReadDedicatedGroups ReadConsumptionAccount ReadConsoleOutput ReadClientGateways ReadCatalogs ReadCatalog ReadCas ReadApiLogs ReadApiAccessRules ReadApiAccessPolicy ReadAdminPassword ReadAccounts ReadAccessKeys PutUserGroupPolicy LinkVolume LinkVirtualGateway LinkRouteTable LinkPublicIp LinkPrivateIps LinkPolicy LinkNic LinkManagedPolicyToUserGroup LinkLoadBalancerBackendMachines LinkInternetService LinkFlexibleGpu DeregisterVmsInLoadBalancer DeleteVpnConnectionRoute DeleteVpnConnection DeleteVolume DeleteVms DeleteVmTemplate DeleteVmGroup DeleteVirtualGateway DeleteUserGroupPolicy DeleteUserGroup DeleteUser DeleteTags DeleteSubnet DeleteSnapshot DeleteServerCertificate DeleteSecurityGroupRule DeleteSecurityGroup DeleteRouteTable DeleteRoute DeletePublicIp DeletePolicyVersion DeletePolicy DeleteNic DeleteNetPeering DeleteNetAccessPoint DeleteNet DeleteNatService DeleteLoadBalancerTags DeleteLoadBalancerPolicy DeleteLoadBalancerListeners DeleteLoadBalancer DeleteListenerRule DeleteKeypair DeleteInternetService DeleteImage DeleteFlexibleGpu DeleteExportTask DeleteDirectLinkInterface DeleteDirectLink DeleteDhcpOptions DeleteDedicatedGroup DeleteClientGateway DeleteCa DeleteApiAccessRule DeleteAccessKey CreateVpnConnectionRoute CreateVpnConnection CreateVolume CreateVms CreateVmTemplate CreateVmGroup CreateVirtualGateway CreateUserGroup CreateUser CreateTags CreateSubnet CreateSnapshotExportTask CreateSnapshot CreateServerCertificate CreateSecurityGroupRule CreateSecurityGroup CreateRouteTable CreateRoute CreatePublicIp CreateProductType CreatePolicyVersion CreatePolicy CreateNic CreateNetPeering CreateNetAccessPoint CreateNet CreateNatService CreateLoadBalancerTags CreateLoadBalancerPolicy CreateLoadBalancerListeners CreateLoadBalancer CreateListenerRule CreateKeypair CreateInternetService CreateImageExportTask CreateImage CreateFlexibleGpu CreateDirectLinkInterface CreateDirectLink CreateDhcpOptions CreateDedicatedGroup CreateClientGateway CreateCa CreateApiAccessRule CreateAccount CreateAccessKey CheckAuthentication AddUserToUserGroup AcceptNetPeering" -- ${cur}))
 		    ;;
             esac
             ;;

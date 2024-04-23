@@ -75,8 +75,8 @@ struct osc_str {
 
 #define OSC_ENV_FREE_AK_SK (OSC_ENV_FREE_AK | OSC_ENV_FREE_SK)
 
-#define OSC_API_VERSION "1.28.7"
-#define OSC_SDK_VERSION 0X000900
+#define OSC_API_VERSION "1.29.3"
+#define OSC_SDK_VERSION 0X001000
 
 enum osc_auth_method {
 	OSC_AKSK_METHOD,
@@ -308,7 +308,7 @@ struct api_access_policy {
 
 struct api_access_rule {
         /*
-         *  The ID of the API access rule.
+         * The ID of the API access rule.
          */
 	char *api_access_rule_id; /* string */
         /*
@@ -348,11 +348,11 @@ struct application_sticky_cookie_policy {
 
 struct backend_vm_health {
         /*
-         * The description of the state of the back-end VM.
+         * The description of the state of the backend VM.
          */
 	char *description; /* string */
         /*
-         * The state of the back-end VM (`InService` \\| `OutOfService` \\| 
+         * The state of the backend VM (`InService` \\| `OutOfService` \\| 
          * `Unknown`).
          */
 	char *state; /* string */
@@ -363,7 +363,7 @@ struct backend_vm_health {
          */
 	char *state_reason; /* string */
         /*
-         * The ID of the back-end VM.
+         * The ID of the backend VM.
          */
 	char *vm_id; /* string */
 };
@@ -376,8 +376,8 @@ struct bsu_created {
         int is_set_delete_on_vm_deletion;
 	int delete_on_vm_deletion; /* bool */
         /*
-         * The date and time of attachment of the volume to the VM, in ISO 8601 
-         * date-time format.
+         * The date and time (UTC) of attachment of the volume to the VM, in ISO 
+         * 8601 date-time format.
          */
 	char *link_date; /* string */
         /*
@@ -397,8 +397,8 @@ struct block_device_mapping_created {
          *     If true, the volume is deleted when terminating the VM. If 
          *     false, the volume is not deleted when terminating the VM.
          *   -LinkDate: string
-         *     The date and time of attachment of the volume to the VM, in 
-         *     ISO 8601 date-time format.
+         *     The date and time (UTC) of attachment of the volume to the VM, 
+         *     in ISO 8601 date-time format.
          *   -State: string
          *     The state of the volume.
          *   -VolumeId: string
@@ -702,7 +702,7 @@ struct catalogs {
         int nb_entries;
 	struct catalog_entry *entries; /* array ref CatalogEntry */
         /*
-         * The beginning of the time period, in ISO 8601 date-time format.
+         * The beginning of the time period (UTC).
          */
 	char *from_date; /* string */
         /*
@@ -710,7 +710,7 @@ struct catalogs {
          */
 	char *state; /* string */
         /*
-         * The end of the time period, in ISO 8601 date-time format.
+         * The end of the time period (UTC).
          */
 	char *to_date; /* string */
 };
@@ -765,7 +765,7 @@ struct consumption_entry {
          */
 	char *category; /* string */
         /*
-         * The beginning of the time period, in ISO 8601 date-time format.
+         * The beginning of the time period (UTC).
          */
 	char *from_date; /* string */
         /*
@@ -798,7 +798,7 @@ struct consumption_entry {
          */
 	char *title; /* string */
         /*
-         * The end of the time period, in ISO 8601 date-time format.
+         * The end of the time period (UTC).
          */
 	char *to_date; /* string */
         /*
@@ -1036,15 +1036,17 @@ struct direct_link_interfaces {
 
 struct errors {
         /*
-         * The code of the error.
+         * The code of the error (for example, `4078`). You can search for this 
+         * returned code in the [errors page](api-errors.html) to find more 
+         * details about the error.
          */
 	char *code; /* string */
         /*
-         * The details of the error.
+         * A description providing more details about the error.
          */
 	char *details; /* string */
         /*
-         * The type of the error.
+         * The type of the error (for example, `InvalidParameterValue`).
          */
 	char *type; /* string */
 };
@@ -1084,7 +1086,7 @@ struct filters_api_access_rule {
         char *descriptions_str;
 	char **descriptions; /* array string */
         /*
-         * One or more IP addresses or CIDR blocks (for example, `192.0.2.0/16`).
+         * One or more IPs or CIDR blocks (for example, `192.0.2.0/16`).
          */
         char *ip_ranges_str;
 	char **ip_ranges; /* array string */
@@ -1578,6 +1580,11 @@ struct filters_load_balancer {
 
 struct filters_nat_service {
         /*
+         * The idempotency tokens provided when creating the NAT services.
+         */
+        char *client_tokens_str;
+	char **client_tokens; /* array string */
+        /*
          * The IDs of the NAT services.
          */
         char *nat_service_ids_str;
@@ -1833,6 +1840,11 @@ struct filters_nic {
          */
         char *link_public_ip_link_public_ip_ids_str;
 	char **link_public_ip_link_public_ip_ids; /* array string */
+        /*
+         * The public DNS names associated with the public IPs.
+         */
+        char *link_public_ip_public_dns_names_str;
+	char **link_public_ip_public_dns_names; /* array string */
         /*
          * The allocation IDs returned when the public IPs were allocated to 
          * their accounts.
@@ -2293,7 +2305,8 @@ struct filters_snapshot {
         char *snapshot_ids_str;
 	char **snapshot_ids; /* array string */
         /*
-         * The states of the snapshots (`in-queue` \\| `completed` \\| `error`).
+         * The states of the snapshots (`in-queue` \\| `pending` \\| `completed` 
+         * \\| `error` \\| `deleting`).
          */
         char *states_str;
 	char **states; /* array string */
@@ -2432,6 +2445,19 @@ struct filters_tag {
          */
         char *values_str;
 	char **values; /* array string */
+};
+
+struct filters_user_group {
+        /*
+         * The path prefix of the groups. If not specified, it is set to a slash 
+         * (`/`).
+         */
+	char *path_prefix; /* string */
+        /*
+         * The IDs of the user groups.
+         */
+        char *user_group_ids_str;
+	char **user_group_ids; /* array string */
 };
 
 struct filters_virtual_gateway {
@@ -2586,7 +2612,7 @@ struct filters_vm {
         char *nic_link_nic_device_numbers_str;
 	int *nic_link_nic_device_numbers; /* array integer */
         /*
-         * The dates and time when the NICs were attached to the VMs.
+         * The dates and times (UTC) when the NICs were attached to the VMs.
          */
         char *nic_link_nic_link_nic_dates_str;
 	char **nic_link_nic_link_nic_dates; /* array string */
@@ -3010,12 +3036,12 @@ struct filters_vms_state {
         char *maintenance_event_descriptions_str;
 	char **maintenance_event_descriptions; /* array string */
         /*
-         * The latest time the event can end.
+         * The latest date and time (UTC) the event can end.
          */
         char *maintenance_events_not_after_str;
 	char **maintenance_events_not_after; /* array string */
         /*
-         * The earliest time the event can start.
+         * The earliest date and time (UTC) the event can start.
          */
         char *maintenance_events_not_before_str;
 	char **maintenance_events_not_before; /* array string */
@@ -3376,8 +3402,7 @@ struct image {
         int nb_block_device_mappings;
 	struct block_device_mapping_image *block_device_mappings; /* array ref BlockDeviceMappingImage */
         /*
-         * The date and time of creation of the OMI, in ISO 8601 date-time 
-         * format.
+         * The date and time (UTC) of creation of the OMI.
          */
 	char *creation_date; /* string */
         /*
@@ -3524,6 +3549,20 @@ struct image_export_task {
          * The ID of the OMI export task.
          */
 	char *task_id; /* string */
+};
+
+struct inline_policy {
+        /*
+         * The policy document, corresponding to a JSON string that contains the 
+         * policy. For more information, see [EIM Reference 
+         * Information](https://docs.outscale.com/en/userguide/EIM-Reference-Info
+         * rmation.html).
+         */
+	char *body; /* string */
+        /*
+         * The name of the policy.
+         */
+	char *name; /* string */
 };
 
 struct internet_service {
@@ -3702,7 +3741,8 @@ struct link_public_ip_light_for_vm {
 
 struct link_route_table {
         /*
-         * The ID of the association between the route table and the Subnet.
+         * The ID of the association between the route table and the Net or 
+         * Subnet.
          */
 	char *link_route_table_id; /* string */
         /*
@@ -3711,7 +3751,8 @@ struct link_route_table {
         int is_set_main;
 	int main; /* bool */
         /*
-         * The ID of the Net.
+         * The ID of the Net, if the route table is not explicitly linked to a 
+         * Subnet.
          */
 	char *net_id; /* string */
         /*
@@ -3719,22 +3760,23 @@ struct link_route_table {
          */
 	char *route_table_id; /* string */
         /*
-         * The ID of the Subnet.
+         * The ID of the Subnet, if the route table is explicitly linked to a 
+         * Subnet.
          */
 	char *subnet_id; /* string */
 };
 
 struct linked_policy {
         /*
-         * The date and time of creation of the attached policy.
+         * The date and time (UTC) of creation of the linked policy.
          */
 	char *creation_date; /* string */
         /*
-         * The date and time at which the attached policy was last modified.
+         * The date and time (UTC) at which the linked policy was last modified.
          */
 	char *last_modification_date; /* string */
         /*
-         * The Outscale Resource Name (ORN) of the policy. For more information, 
+         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
          * see [Resource 
          * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
          * rs.html).
@@ -3778,13 +3820,13 @@ struct linked_volume {
 
 struct listener {
         /*
-         * The port on which the back-end VM is listening (between `1` and 
+         * The port on which the backend VM is listening (between `1` and 
          * `65535`, both included).
          */
         int is_set_backend_port;
 	int backend_port; /* int */
         /*
-         * The protocol for routing traffic to back-end VMs (`HTTP` \\| `HTTPS` 
+         * The protocol for routing traffic to backend VMs (`HTTP` \\| `HTTPS` 
          * \\| `TCP` \\| `SSL`).
          */
 	char *backend_protocol; /* string */
@@ -3815,13 +3857,13 @@ struct listener {
 
 struct listener_for_creation {
         /*
-         * The port on which the back-end VM is listening (between `1` and 
+         * The port on which the backend VM is listening (between `1` and 
          * `65535`, both included).
          */
         int is_set_backend_port;
 	int backend_port; /* int */
         /*
-         * The protocol for routing traffic to back-end VMs (`HTTP` \\| `HTTPS` 
+         * The protocol for routing traffic to backend VMs (`HTTP` \\| `HTTPS` 
          * \\| `TCP` \\| `SSL`).
          */
 	char *backend_protocol; /* string */
@@ -3897,7 +3939,7 @@ struct listener_rule_for_creation {
         /*
          * A host-name pattern for the rule, with a maximum length of 128 
          * characters. This host-name pattern supports maximum three wildcards, 
-         * and must not contain any special characters except [-.?]. 
+         * and must not contain any special characters except [-.?].
          */
 	char *host_name_pattern; /* string */
         /*
@@ -3963,12 +4005,12 @@ struct load_balancer {
         int nb_application_sticky_cookie_policies;
 	struct application_sticky_cookie_policy *application_sticky_cookie_policies; /* array ref ApplicationStickyCookiePolicy */
         /*
-         * One or more public IPs of back-end VMs.
+         * One or more public IPs of backend VMs.
          */
         char *backend_ips_str;
 	char **backend_ips; /* array string */
         /*
-         * One or more IDs of back-end VMs for the load balancer.
+         * One or more IDs of backend VMs for the load balancer.
          */
         char *backend_vm_ids_str;
 	char **backend_vm_ids; /* array string */
@@ -4007,10 +4049,10 @@ struct load_balancer {
          * The listeners for the load balancer.
          *   Information about the listener.
          *   -BackendPort: int
-         *     The port on which the back-end VM is listening (between `1` 
-         *     and `65535`, both included).
+         *     The port on which the backend VM is listening (between `1` and 
+         *     `65535`, both included).
          *   -BackendProtocol: string
-         *     The protocol for routing traffic to back-end VMs (`HTTP` \\| 
+         *     The protocol for routing traffic to backend VMs (`HTTP` \\| 
          *     `HTTPS` \\| `TCP` \\| `SSL`).
          *   -LoadBalancerPort: int
          *     The port on which the load balancer is listening (between `1` 
@@ -4195,7 +4237,7 @@ struct log {
          */
 	char *query_call_name; /* string */
         /*
-         * The date and time of the logged call, in ISO 8601 date-time format.
+         * The date and time (UTC) of the logged call.
          */
 	char *query_date; /* string */
         /*
@@ -4252,16 +4294,20 @@ struct maintenance_event {
          */
 	char *description; /* string */
         /*
-         * The latest scheduled end time for the event.
+         * The latest scheduled end date and time (UTC) for the event.
          */
 	char *not_after; /* string */
         /*
-         * The earliest scheduled start time for the event.
+         * The earliest scheduled start date and time (UTC) for the event.
          */
 	char *not_before; /* string */
 };
 
 struct nat_service {
+        /*
+         * The idempotency token provided when creating the NAT service.
+         */
+	char *client_token; /* string */
         /*
          * The ID of the NAT service.
          */
@@ -4420,7 +4466,7 @@ struct net_peering {
         int is_set_accepter_net;
 	struct accepter_net accepter_net; /* ref AccepterNet */
         /*
-         * The date and time at which the Net peerings expire.
+         * The date and time (UTC) at which the Net peerings expire.
          */
 	char *expiration_date; /* string */
         /*
@@ -4946,15 +4992,6 @@ struct phase2_options {
 	char *pre_shared_key; /* string */
 };
 
-struct phase2_options_to_update {
-        /*
-         * The pre-shared key to establish the initial authentication between 
-         * the client gateway and the virtual gateway. This key can contain any 
-         * character except line breaks and double quotes (&quot;).
-         */
-	char *pre_shared_key; /* string */
-};
-
 struct placement {
         /*
          * The name of the Subregion. If you specify this parameter, you must 
@@ -4970,7 +5007,7 @@ struct placement {
 
 struct policy {
         /*
-         * The date and time of creation of the policy.
+         * The date and time (UTC) of creation of the policy.
          */
 	char *creation_date; /* string */
         /*
@@ -4983,7 +5020,7 @@ struct policy {
         int is_set_is_linkable;
 	int is_linkable; /* bool */
         /*
-         * The date and time at which the policy was last modified.
+         * The date and time (UTC) at which the policy was last modified.
          */
 	char *last_modification_date; /* string */
         /*
@@ -5018,11 +5055,14 @@ struct policy {
 
 struct policy_version {
         /*
-         * The policy document as a json string.
+         * The policy document, corresponding to a JSON string that contains the 
+         * policy. For more information, see [EIM Reference 
+         * Information](https://docs.outscale.com/en/userguide/EIM-Reference-Info
+         * rmation.html).
          */
 	char *body; /* string */
         /*
-         * The date and time of creation of the version.
+         * The date and time (UTC) of creation of the version.
          */
 	char *creation_date; /* string */
         /*
@@ -5244,7 +5284,8 @@ struct quota_types {
 
 struct read_linked_policies_filters {
         /*
-         * The path prefix of the policies, set to a slash (`/`) by default.
+         * The path prefix of the policies. If not specified, it is set to a 
+         * slash (`/`).
          */
 	char *path_prefix; /* string */
 };
@@ -5256,8 +5297,8 @@ struct read_policies_filters {
         int is_set_only_linked;
 	int only_linked; /* bool */
         /*
-         * The path prefix you can use to filter the results, set to a slash 
-         * (`/`) by default.
+         * The path prefix you can use to filter the results. If not specified, 
+         * it is set to a slash (`/`).
          */
 	char *path_prefix; /* string */
         /*
@@ -5330,7 +5371,7 @@ struct route {
          */
 	char *nic_id; /* string */
         /*
-         * The state of a route in the route table (always `active`). 
+         * The state of a route in the route table (always `active`).
          */
 	char *state; /* string */
         /*
@@ -5373,16 +5414,18 @@ struct route_table {
          *   One or more associations between the route table and the 
          *   Subnets.
          *   -LinkRouteTableId: string
-         *     The ID of the association between the route table and the 
-         *     Subnet.
+         *     The ID of the association between the route table and the Net 
+         *     or Subnet.
          *   -Main: bool
          *     If true, the route table is the main one.
          *   -NetId: string
-         *     The ID of the Net.
+         *     The ID of the Net, if the route table is not explicitly linked 
+         *     to a Subnet.
          *   -RouteTableId: string
          *     The ID of the route table.
          *   -SubnetId: string
-         *     The ID of the Subnet.
+         *     The ID of the Subnet, if the route table is explicitly linked 
+         *     to a Subnet.
          */
         char *link_route_tables_str;
         int nb_link_route_tables;
@@ -5426,7 +5469,7 @@ struct route_table {
          *   -NicId: string
          *     The ID of the NIC.
          *   -State: string
-         *     The state of a route in the route table (always `active`). 
+         *     The state of a route in the route table (always `active`).
          *   -VmAccountId: string
          *     The account ID of the owner of the VM.
          *   -VmId: string
@@ -5659,8 +5702,8 @@ struct server_certificate {
          */
 	char *name; /* string */
         /*
-         * The Outscale Resource Name (ORN) of the server certificate. For more 
-         * information, see [Resource Identifiers > Outscale Resource Names 
+         * The OUTSCALE Resource Name (ORN) of the server certificate. For more 
+         * information, see [Resource Identifiers > OUTSCALE Resource Names 
          * (ORNs)](https://docs.outscale.com/en/userguide/Resource-Identifiers.ht
          * ml#_outscale_resource_names_orns).
          */
@@ -5701,7 +5744,7 @@ struct snapshot {
          */
 	char *account_id; /* string */
         /*
-         * The date and time of creation of the snapshot.
+         * The date and time (UTC) of creation of the snapshot.
          */
 	char *creation_date; /* string */
         /*
@@ -5734,7 +5777,8 @@ struct snapshot {
          */
 	char *snapshot_id; /* string */
         /*
-         * The state of the snapshot (`in-queue` \\| `completed` \\| `error`).
+         * The state of the snapshot (`in-queue` \\| `pending` \\| `completed` 
+         * \\| `error` \\| `deleting`)).
          */
 	char *state; /* string */
         /*
@@ -5895,17 +5939,55 @@ struct tag {
 
 struct user {
         /*
+         * The date and time (UTC) of creation of the EIM user.
+         */
+	char *creation_date; /* string */
+        /*
+         * The date and time (UTC) of the last modification of the EIM user.
+         */
+	char *last_modification_date; /* string */
+        /*
          * The path to the EIM user.
          */
 	char *path; /* string */
         /*
-         *  The ID of the EIM user.
+         * The ID of the EIM user.
          */
 	char *user_id; /* string */
         /*
          * The name of the EIM user.
          */
 	char *user_name; /* string */
+};
+
+struct user_group {
+        /*
+         * The date and time (UTC) of creation of the user group.
+         */
+	char *creation_date; /* string */
+        /*
+         * The date and time (UTC) of the last modification of the user group.
+         */
+	char *last_modification_date; /* string */
+        /*
+         * The name of the user group.
+         */
+	char *name; /* string */
+        /*
+         * The Outscale Resource Name (ORN) of the user group. For more 
+         * information, see [Resource 
+         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
+         * rs.html).
+         */
+	char *orn; /* string */
+        /*
+         * The path to the user group.
+         */
+	char *path; /* string */
+        /*
+         * The ID of the user group.
+         */
+	char *user_group_id; /* string */
 };
 
 struct vgw_telemetry {
@@ -5987,8 +6069,9 @@ struct vm {
          *         If true, the volume is deleted when terminating the VM. If 
          *         false, the volume is not deleted when terminating the VM.
          *       -LinkDate: string
-         *         The date and time of attachment of the volume to the VM, in 
-         *         ISO 8601 date-time format.
+         *         The date and time (UTC) of attachment of the volume to the 
+         * VM, 
+         *         in ISO 8601 date-time format.
          *       -State: string
          *         The state of the volume.
          *       -VolumeId: string
@@ -6010,7 +6093,7 @@ struct vm {
          */
 	char *client_token; /* string */
         /*
-         * The date and time of creation of the VM.
+         * The date and time (UTC) of creation of the VM.
          */
 	char *creation_date; /* string */
         /*
@@ -6236,7 +6319,7 @@ struct vm {
 
 struct vm_group {
         /*
-         * The date and time of creation of the VM group.
+         * The date and time (UTC) of creation of the VM group.
          */
 	char *creation_date; /* string */
         /*
@@ -6258,8 +6341,6 @@ struct vm_group {
         char *security_group_ids_str;
 	char **security_group_ids; /* array string */
         /*
-         * The state of the VM group (`pending` \\| `available` \\| `scaling up` 
-         * \\| `scaling down` \\| `deleting` \\| `deleted`).
          */
 	char *state; /* string */
         /*
@@ -6267,7 +6348,7 @@ struct vm_group {
          */
 	char *subnet_id; /* string */
         /*
-         * One or more tags associated with the VM group.
+         * One or more tags associated with the VM.
          *   Information about the tag.
          *   -Key: string
          *     The key of the tag, with a minimum of 1 character.
@@ -6328,9 +6409,10 @@ struct vm_states {
          *   -Description: string
          *     The description of the event.
          *   -NotAfter: string
-         *     The latest scheduled end time for the event.
+         *     The latest scheduled end date and time (UTC) for the event.
          *   -NotBefore: string
-         *     The earliest scheduled start time for the event.
+         *     The earliest scheduled start date and time (UTC) for the 
+         *     event.
          */
         char *maintenance_events_str;
         int nb_maintenance_events;
@@ -6365,7 +6447,7 @@ struct vm_template {
          */
 	char *cpu_performance; /* string */
         /*
-         * The date and time of creation of the VM template.
+         * The date and time (UTC) of creation of the VM template.
          */
 	char *creation_date; /* string */
         /*
@@ -6460,7 +6542,7 @@ struct vm_type {
 
 struct volume {
         /*
-         * The date and time of creation of the volume.
+         * The date and time (UTC) of creation of the volume.
          */
 	char *creation_date; /* string */
         /*
@@ -6532,7 +6614,7 @@ struct vpn_options {
         /*
          *   Information about Phase 1 of the Internet Key Exchange (IKE) 
          *   negotiation. When Phase 1 finishes successfully, peers proceed 
-         *   to Phase 2 negotiations. 
+         *   to Phase 2 negotiations.
          *   -DpdTimeoutAction: string
          *     The action to carry out after a Dead Peer Detection (DPD) 
          *     timeout occurs.
@@ -6565,7 +6647,7 @@ struct vpn_options {
 	struct phase1_options phase1_options; /* ref Phase1Options */
         /*
          *   Information about Phase 2 of the Internet Key Exchange (IKE) 
-         *   negotiation. 
+         *   negotiation.
          *   -Phase2DhGroupNumbers: array integer
          *     The Diffie-Hellman (DH) group numbers allowed for the VPN 
          *     tunnel for phase 2.
@@ -6680,7 +6762,7 @@ struct vpn_connection {
          *   -Phase1Options: ref Phase1Options
          *       Information about Phase 1 of the Internet Key Exchange (IKE) 
          *       negotiation. When Phase 1 finishes successfully, peers proceed 
-         *       to Phase 2 negotiations. 
+         *       to Phase 2 negotiations.
          *       -DpdTimeoutAction: string
          *         The action to carry out after a Dead Peer Detection (DPD) 
          *         timeout occurs.
@@ -6710,7 +6792,7 @@ struct vpn_connection {
          *         connection.
          *   -Phase2Options: ref Phase2Options
          *       Information about Phase 2 of the Internet Key Exchange (IKE) 
-         *       negotiation. 
+         *       negotiation.
          *       -Phase2DhGroupNumbers: array integer
          *         The Diffie-Hellman (DH) group numbers allowed for the VPN 
          *         tunnel for phase 2.
@@ -6737,26 +6819,6 @@ struct vpn_connection {
         char *vpn_options_str;
         int is_set_vpn_options;
 	struct vpn_options vpn_options; /* ref VpnOptions */
-};
-
-struct vpn_options_to_update {
-        /*
-         *   Information about Phase 2 of the Internet Key Exchange (IKE) 
-         *   negotiation. 
-         *   -PreSharedKey: string
-         *     The pre-shared key to establish the initial authentication 
-         *     between the client gateway and the virtual gateway. This key 
-         *     can contain any character except line breaks and double quotes 
-         *     (&quot;).
-         */
-        char *phase2_options_str;
-        int is_set_phase2_options;
-	struct phase2_options_to_update phase2_options; /* ref Phase2OptionsToUpdate */
-        /*
-         * The range of inside IPs for the tunnel. This must be a /30 CIDR block 
-         * from the 169.254.254.0/24 range.
-         */
-	char *tunnel_inside_ip_range; /* string */
 };
 
 struct with {
@@ -6870,9 +6932,53 @@ struct osc_update_vpn_connection_arg  {
 	char *vpn_connection_id; /* string */
         /*
          *   Information about the VPN options.
-         *   -Phase2Options: ref Phase2OptionsToUpdate
+         *   -Phase1Options: ref Phase1Options
+         *       Information about Phase 1 of the Internet Key Exchange (IKE) 
+         *       negotiation. When Phase 1 finishes successfully, peers proceed 
+         *       to Phase 2 negotiations.
+         *       -DpdTimeoutAction: string
+         *         The action to carry out after a Dead Peer Detection (DPD) 
+         *         timeout occurs.
+         *       -DpdTimeoutSeconds: int
+         *         The maximum waiting time for a Dead Peer Detection (DPD) 
+         *         response before considering the peer as dead, in seconds.
+         *       -IkeVersions: array string
+         *         The Internet Key Exchange (IKE) versions allowed for the VPN 
+         *         tunnel.
+         *       -Phase1DhGroupNumbers: array integer
+         *         The Diffie-Hellman (DH) group numbers allowed for the VPN 
+         *         tunnel for phase 1.
+         *       -Phase1EncryptionAlgorithms: array string
+         *         The encryption algorithms allowed for the VPN tunnel for 
+         * phase 
+         *         1.
+         *       -Phase1IntegrityAlgorithms: array string
+         *         The integrity algorithms allowed for the VPN tunnel for phase 
+         *         1.
+         *       -Phase1LifetimeSeconds: int
+         *         The lifetime for phase 1 of the IKE negotiation process, in 
+         *         seconds.
+         *       -ReplayWindowSize: int
+         *         The number of packets in an IKE replay window.
+         *       -StartupAction: string
+         *         The action to carry out when establishing tunnels for a VPN 
+         *         connection.
+         *   -Phase2Options: ref Phase2Options
          *       Information about Phase 2 of the Internet Key Exchange (IKE) 
-         *       negotiation. 
+         *       negotiation.
+         *       -Phase2DhGroupNumbers: array integer
+         *         The Diffie-Hellman (DH) group numbers allowed for the VPN 
+         *         tunnel for phase 2.
+         *       -Phase2EncryptionAlgorithms: array string
+         *         The encryption algorithms allowed for the VPN tunnel for 
+         * phase 
+         *         2.
+         *       -Phase2IntegrityAlgorithms: array string
+         *         The integrity algorithms allowed for the VPN tunnel for phase 
+         *         2.
+         *       -Phase2LifetimeSeconds: int
+         *         The lifetime for phase 2 of the Internet Key Exchange (IKE) 
+         *         negociation process, in seconds.
          *       -PreSharedKey: string
          *         The pre-shared key to establish the initial authentication 
          *         between the client gateway and the virtual gateway. This key 
@@ -6885,7 +6991,7 @@ struct osc_update_vpn_connection_arg  {
          */
         char *vpn_options_str;
         int is_set_vpn_options;
-	struct vpn_options_to_update vpn_options; /* ref VpnOptionsToUpdate */
+	struct vpn_options vpn_options; /* ref VpnOptions */
 };
 
 struct osc_update_volume_arg  {
@@ -7100,6 +7206,33 @@ struct osc_update_vm_arg  {
          * Types](https://docs.outscale.com/en/userguide/VM-Types.html).
          */
 	char *vm_type; /* string */
+};
+
+struct osc_update_user_group_arg  {
+        /* Required: user_group_name */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * A new path for the group. If not specified, it is set to a slash 
+         * (`/`).
+         */
+	char *new_path; /* string */
+        /*
+         * A new name for the user group.
+         */
+	char *new_user_group_name; /* string */
+        /*
+         * The path to the group. If not specified, it is set to a slash (`/`).
+         */
+	char *path; /* string */
+        /*
+         * The name of the group you want to update.
+         */
+	char *user_group_name; /* string */
 };
 
 struct osc_update_user_arg  {
@@ -7468,8 +7601,8 @@ struct osc_update_load_balancer_arg  {
         char *security_groups_str;
 	char **security_groups; /* array string */
         /*
-         * The Outscale Resource Name (ORN) of the server certificate. For more 
-         * information, see [Resource Identifiers > Outscale Resource Names 
+         * The OUTSCALE Resource Name (ORN) of the server certificate. For more 
+         * information, see [Resource Identifiers > OUTSCALE Resource Names 
          * (ORNs)](https://docs.outscale.com/en/userguide/Resource-Identifiers.ht
          * ml#_outscale_resource_names_orns). If this parameter is specified, 
          * you must also specify the `LoadBalancerPort` parameter.
@@ -7504,7 +7637,11 @@ struct osc_update_listener_rule_arg  {
 };
 
 struct osc_update_image_arg  {
-        /* Required: image_id, permissions_to_launch */
+        /* Required: image_id */
+        /*
+         * A new description for the image.
+         */
+	char *description; /* string */
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -7650,7 +7787,7 @@ struct osc_update_api_access_rule_arg  {
         int is_set_dry_run;
 	int dry_run; /* bool */
         /*
-         * One or more IP addresses or CIDR blocks (for example, `192.0.2.0/16`).
+         * One or more IPs or CIDR blocks (for example, `192.0.2.0/16`).
          */
         char *ip_ranges_str;
 	char **ip_ranges; /* array string */
@@ -7916,26 +8053,47 @@ struct osc_unlink_nic_arg  {
 	char *link_nic_id; /* string */
 };
 
-struct osc_unlink_load_balancer_backend_machines_arg  {
-        /* Required: load_balancer_name */
+struct osc_unlink_managed_policy_from_user_group_arg  {
+        /* Required: policy_orn, user_group_name */
         /*
-         *  One or more public IPs of back-end VMs.
-         */
-        char *backend_ips_str;
-	char **backend_ips; /* array string */
-        /*
-         *  One or more IDs of back-end VMs.
-         */
-        char *backend_vm_ids_str;
-	char **backend_vm_ids; /* array string */
-        /*
-         *  If true, checks whether you have the required permissions to perform 
+         * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
 	int dry_run; /* bool */
         /*
-         *  The name of the load balancer.
+         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
+         * see [Resource 
+         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
+         * rs.html).
+         */
+	char *policy_orn; /* string */
+        /*
+         * The name of the group you want to unlink the policy from.
+         */
+	char *user_group_name; /* string */
+};
+
+struct osc_unlink_load_balancer_backend_machines_arg  {
+        /* Required: load_balancer_name */
+        /*
+         * One or more public IPs of backend VMs.
+         */
+        char *backend_ips_str;
+	char **backend_ips; /* array string */
+        /*
+         * One or more IDs of backend VMs.
+         */
+        char *backend_vm_ids_str;
+	char **backend_vm_ids; /* array string */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * The name of the load balancer.
          */
 	char *load_balancer_name; /* string */
 };
@@ -8060,6 +8218,32 @@ struct osc_scale_down_vm_group_arg  {
 	int vm_subtraction; /* int */
 };
 
+struct osc_remove_user_from_user_group_arg  {
+        /* Required: user_group_name, user_name */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * The name of the group you want to remove the user from.
+         */
+	char *user_group_name; /* string */
+        /*
+         * The path to the group. If not specified, it is set to a slash (`/`).
+         */
+	char *user_group_path; /* string */
+        /*
+         * The name of the user you want to remove from the group.
+         */
+	char *user_name; /* string */
+        /*
+         * The path to the user (by default, `/`).
+         */
+	char *user_path; /* string */
+};
+
 struct osc_reject_net_peering_arg  {
         /* Required: net_peering_id */
         /*
@@ -8077,8 +8261,8 @@ struct osc_reject_net_peering_arg  {
 struct osc_register_vms_in_load_balancer_arg  {
         /* Required: backend_vm_ids, load_balancer_name */
         /*
-         * One or more IDs of back-end VMs.<br />\nSpecifying the same ID 
-         * several times has no effect as each back-end VM has equal weight.
+         * One or more IDs of backend VMs.<br />\nSpecifying the same ID several 
+         * times has no effect as each backend VM has equal weight.
          */
         char *backend_vm_ids_str;
 	char **backend_vm_ids; /* array string */
@@ -8256,9 +8440,9 @@ struct osc_read_vms_state_arg  {
          *   -MaintenanceEventDescriptions: array string
          *     The description of the scheduled event.
          *   -MaintenanceEventsNotAfter: array string
-         *     The latest time the event can end.
+         *     The latest date and time (UTC) the event can end.
          *   -MaintenanceEventsNotBefore: array string
-         *     The earliest time the event can start.
+         *     The earliest date and time (UTC) the event can start.
          *   -SubregionNames: array string
          *     The names of the Subregions of the VMs.
          *   -VmIds: array string
@@ -8271,12 +8455,23 @@ struct osc_read_vms_state_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_vms_state filters; /* ref FiltersVmsState */
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token; /* string */
+        /*
+         * The maximum number of logs returned in a single response (between 
+         * `1`and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	int results_per_page; /* int */
 };
 
 struct osc_read_vms_health_arg  {
         /* Required: load_balancer_name */
         /*
-         * One or more IDs of back-end VMs.
+         * One or more IDs of backend VMs.
          */
         char *backend_vm_ids_str;
 	char **backend_vm_ids; /* array string */
@@ -8348,7 +8543,8 @@ struct osc_read_vms_arg  {
          *   -NicLinkNicDeviceNumbers: array integer
          *     The device numbers the NICs are attached to.
          *   -NicLinkNicLinkNicDates: array string
-         *     The dates and time when the NICs were attached to the VMs.
+         *     The dates and times (UTC) when the NICs were attached to the 
+         *     VMs.
          *   -NicLinkNicLinkNicIds: array string
          *     The IDs of the NIC attachments.
          *   -NicLinkNicStates: array string
@@ -8513,6 +8709,17 @@ struct osc_read_vm_types_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_vm_type filters; /* ref FiltersVmType */
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token; /* string */
+        /*
+         * The maximum number of logs returned in a single response (between 
+         * `1`and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	int results_per_page; /* int */
 };
 
 struct osc_read_vm_templates_arg  {
@@ -8524,7 +8731,7 @@ struct osc_read_vm_templates_arg  {
         int is_set_dry_run;
 	int dry_run; /* bool */
         /*
-         *   One or more filters.
+         *   See 'filters' type documentation
          *   -CpuCores: array integer
          *     The number of vCores.
          *   -CpuGenerations: array string
@@ -8657,6 +8864,125 @@ struct osc_read_users_arg  {
 	int dry_run; /* bool */
 };
 
+struct osc_read_user_groups_per_user_arg  {
+        /* Required: user_name */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * The name of the user.
+         */
+	char *user_name; /* string */
+        /*
+         * The path to the user (by default, `/`).
+         */
+	char *user_path; /* string */
+};
+
+struct osc_read_user_groups_arg  {
+        /* Required:none */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         *   One or more filters.
+         *   -PathPrefix: string
+         *     The path prefix of the groups. If not specified, it is set to 
+         *     a slash (`/`).
+         *   -UserGroupIds: array string
+         *     The IDs of the user groups.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_user_group filters; /* ref FiltersUserGroup */
+        /*
+         * The item starting the list of groups requested.
+         */
+        int is_set_first_item;
+	int first_item; /* int */
+        /*
+         * The maximum number of items that can be returned in a single response 
+         * (by default, `100`).
+         */
+        int is_set_results_per_page;
+	int results_per_page; /* int */
+};
+
+struct osc_read_user_group_policy_arg  {
+        /* Required: policy_name, user_group_name */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * The name of the policy.
+         */
+	char *policy_name; /* string */
+        /*
+         * The name of the group.
+         */
+	char *user_group_name; /* string */
+        /*
+         * The path to the group. If not specified, it is set to a slash (`/`).
+         */
+	char *user_group_path; /* string */
+};
+
+struct osc_read_user_group_policies_arg  {
+        /* Required: user_group_name */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * The item starting the list of policies requested.
+         */
+        int is_set_first_item;
+	int first_item; /* int */
+        /*
+         * The maximum number of items that can be returned in a single response 
+         * (by default, `100`).
+         */
+        int is_set_results_per_page;
+	int results_per_page; /* int */
+        /*
+         * The name of the group.
+         */
+	char *user_group_name; /* string */
+        /*
+         * The path to the group. If not specified, it is set to a slash (`/`).
+         */
+	char *user_group_path; /* string */
+};
+
+struct osc_read_user_group_arg  {
+        /* Required: user_group_name */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * The path to the group. If not specified, it is set to a slash (`/`).
+         */
+	char *path; /* string */
+        /*
+         * The name of the group.
+         */
+	char *user_group_name; /* string */
+};
+
 struct osc_read_tags_arg  {
         /* Required:none */
         /*
@@ -8690,6 +9016,17 @@ struct osc_read_tags_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_tag filters; /* ref FiltersTag */
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token; /* string */
+        /*
+         * The maximum number of logs returned in a single response (between 
+         * `1`and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	int results_per_page; /* int */
 };
 
 struct osc_read_subregions_arg  {
@@ -8712,6 +9049,17 @@ struct osc_read_subregions_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_subregion filters; /* ref FiltersSubregion */
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token; /* string */
+        /*
+         * The maximum number of logs returned in a single response (between 
+         * `1`and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	int results_per_page; /* int */
 };
 
 struct osc_read_subnets_arg  {
@@ -8751,6 +9099,17 @@ struct osc_read_subnets_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_subnet filters; /* ref FiltersSubnet */
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token; /* string */
+        /*
+         * The maximum number of logs returned in a single response (between 
+         * `1`and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	int results_per_page; /* int */
 };
 
 struct osc_read_snapshots_arg  {
@@ -8782,8 +9141,8 @@ struct osc_read_snapshots_arg  {
          *   -SnapshotIds: array string
          *     The IDs of the snapshots.
          *   -States: array string
-         *     The states of the snapshots (`in-queue` \\| `completed` \\| 
-         *     `error`).
+         *     The states of the snapshots (`in-queue` \\| `pending` \\| 
+         *     `completed` \\| `error` \\| `deleting`).
          *   -TagKeys: array string
          *     The keys of the tags associated with the snapshots.
          *   -TagValues: array string
@@ -8805,6 +9164,17 @@ struct osc_read_snapshots_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_snapshot filters; /* ref FiltersSnapshot */
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token; /* string */
+        /*
+         * The maximum number of logs returned in a single response (between 
+         * `1`and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	int results_per_page; /* int */
 };
 
 struct osc_read_snapshot_export_tasks_arg  {
@@ -8823,6 +9193,17 @@ struct osc_read_snapshot_export_tasks_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_export_task filters; /* ref FiltersExportTask */
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token; /* string */
+        /*
+         * The maximum number of logs returned in a single response (between 
+         * `1`and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	int results_per_page; /* int */
 };
 
 struct osc_read_server_certificates_arg  {
@@ -8915,6 +9296,17 @@ struct osc_read_security_groups_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_security_group filters; /* ref FiltersSecurityGroup */
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token; /* string */
+        /*
+         * The maximum number of logs returned in a single response (between 
+         * `1`and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	int results_per_page; /* int */
 };
 
 struct osc_read_secret_access_key_arg  {
@@ -9029,6 +9421,17 @@ struct osc_read_quotas_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_quota filters; /* ref FiltersQuota */
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token; /* string */
+        /*
+         * The maximum number of logs returned in a single response (between 
+         * `1`and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	int results_per_page; /* int */
 };
 
 struct osc_read_public_ips_arg  {
@@ -9093,6 +9496,17 @@ struct osc_read_public_ip_ranges_arg  {
          */
         int is_set_dry_run;
 	int dry_run; /* bool */
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token; /* string */
+        /*
+         * The maximum number of logs returned in a single response (between 
+         * `1`and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	int results_per_page; /* int */
 };
 
 struct osc_read_public_catalog_arg  {
@@ -9121,6 +9535,17 @@ struct osc_read_product_types_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_product_type filters; /* ref FiltersProductType */
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token; /* string */
+        /*
+         * The maximum number of logs returned in a single response (between 
+         * `1`and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	int results_per_page; /* int */
 };
 
 struct osc_read_policy_versions_arg  {
@@ -9139,7 +9564,7 @@ struct osc_read_policy_versions_arg  {
 	char *policy_orn; /* string */
         /*
          * The maximum number of items that can be returned in a single response 
-         * (by default, 100).
+         * (by default, `100`).
          */
         int is_set_results_per_page;
 	int results_per_page; /* int */
@@ -9184,8 +9609,8 @@ struct osc_read_policies_arg  {
          *   -OnlyLinked: bool
          *     If set to true, lists only the policies attached to a user.
          *   -PathPrefix: string
-         *     The path prefix you can use to filter the results, set to a 
-         *     slash (`/`) by default.
+         *     The path prefix you can use to filter the results. If not 
+         *     specified, it is set to a slash (`/`).
          *   -Scope: string
          *     The scope to filter policies (`OWS` \\| `LOCAL`).
          */
@@ -9199,7 +9624,7 @@ struct osc_read_policies_arg  {
 	int first_item; /* int */
         /*
          * The maximum number of items that can be returned in a single response 
-         * (by default, 100).
+         * (by default, `100`).
          */
         int is_set_results_per_page;
 	int results_per_page; /* int */
@@ -9240,6 +9665,8 @@ struct osc_read_nics_arg  {
          *   -LinkPublicIpLinkPublicIpIds: array string
          *     The association IDs returned when the public IPs were 
          *     associated with the NICs.
+         *   -LinkPublicIpPublicDnsNames: array string
+         *     The public DNS names associated with the public IPs.
          *   -LinkPublicIpPublicIpIds: array string
          *     The allocation IDs returned when the public IPs were allocated 
          *     to their accounts.
@@ -9323,6 +9750,17 @@ struct osc_read_nets_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_net filters; /* ref FiltersNet */
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token; /* string */
+        /*
+         * The maximum number of logs returned in a single response (between 
+         * `1`and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	int results_per_page; /* int */
 };
 
 struct osc_read_net_peerings_arg  {
@@ -9450,6 +9888,17 @@ struct osc_read_net_access_point_services_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_service filters; /* ref FiltersService */
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token; /* string */
+        /*
+         * The maximum number of logs returned in a single response (between 
+         * `1`and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	int results_per_page; /* int */
 };
 
 struct osc_read_nat_services_arg  {
@@ -9462,6 +9911,9 @@ struct osc_read_nat_services_arg  {
 	int dry_run; /* bool */
         /*
          *   One or more filters.
+         *   -ClientTokens: array string
+         *     The idempotency tokens provided when creating the NAT 
+         *     services.
          *   -NatServiceIds: array string
          *     The IDs of the NAT services.
          *   -NetIds: array string
@@ -9497,6 +9949,42 @@ struct osc_read_nat_services_arg  {
 	int results_per_page; /* int */
 };
 
+struct osc_read_managed_policies_linked_to_user_group_arg  {
+        /* Required: user_group_name */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         *   One or more filters.
+         *   -PathPrefix: string
+         *     The path prefix of the groups. If not specified, it is set to 
+         *     a slash (`/`).
+         *   -UserGroupIds: array string
+         *     The IDs of the user groups.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_user_group filters; /* ref FiltersUserGroup */
+        /*
+         * The item starting the list of policies requested.
+         */
+        int is_set_first_item;
+	int first_item; /* int */
+        /*
+         * The maximum number of items that can be returned in a single response 
+         * (by default, `100`).
+         */
+        int is_set_results_per_page;
+	int results_per_page; /* int */
+        /*
+         * The name of the group.
+         */
+	char *user_group_name; /* string */
+};
+
 struct osc_read_locations_arg  {
         /* Required:none */
         /*
@@ -9505,6 +9993,17 @@ struct osc_read_locations_arg  {
          */
         int is_set_dry_run;
 	int dry_run; /* bool */
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token; /* string */
+        /*
+         * The maximum number of logs returned in a single response (between 
+         * `1`and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	int results_per_page; /* int */
 };
 
 struct osc_read_load_balancers_arg  {
@@ -9559,7 +10058,7 @@ struct osc_read_listener_rules_arg  {
 };
 
 struct osc_read_linked_policies_arg  {
-        /* Required:none */
+        /* Required: user_name */
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -9569,8 +10068,8 @@ struct osc_read_linked_policies_arg  {
         /*
          *   One or more filters.
          *   -PathPrefix: string
-         *     The path prefix of the policies, set to a slash (`/`) by 
-         *     default.
+         *     The path prefix of the policies. If not specified, it is set 
+         *     to a slash (`/`).
          */
         char *filters_str;
         int is_set_filters;
@@ -9582,7 +10081,7 @@ struct osc_read_linked_policies_arg  {
 	int first_item; /* int */
         /*
          * The maximum number of items that can be returned in a single response 
-         * (by default, 100).
+         * (by default, `100`).
          */
         int is_set_results_per_page;
 	int results_per_page; /* int */
@@ -9614,6 +10113,17 @@ struct osc_read_keypairs_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_keypair filters; /* ref FiltersKeypair */
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token; /* string */
+        /*
+         * The maximum number of logs returned in a single response (between 
+         * `1`and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	int results_per_page; /* int */
 };
 
 struct osc_read_internet_services_arg  {
@@ -9647,6 +10157,17 @@ struct osc_read_internet_services_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_internet_service filters; /* ref FiltersInternetService */
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token; /* string */
+        /*
+         * The maximum number of logs returned in a single response (between 
+         * `1`and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	int results_per_page; /* int */
 };
 
 struct osc_read_images_arg  {
@@ -9747,6 +10268,17 @@ struct osc_read_image_export_tasks_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_export_task filters; /* ref FiltersExportTask */
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token; /* string */
+        /*
+         * The maximum number of logs returned in a single response (between 
+         * `1`and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	int results_per_page; /* int */
 };
 
 struct osc_read_flexible_gpus_arg  {
@@ -9809,6 +10341,17 @@ struct osc_read_direct_links_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_direct_link filters; /* ref FiltersDirectLink */
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token; /* string */
+        /*
+         * The maximum number of logs returned in a single response (between 
+         * `1`and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	int results_per_page; /* int */
 };
 
 struct osc_read_direct_link_interfaces_arg  {
@@ -9829,6 +10372,17 @@ struct osc_read_direct_link_interfaces_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_direct_link_interface filters; /* ref FiltersDirectLinkInterface */
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token; /* string */
+        /*
+         * The maximum number of logs returned in a single response (between 
+         * `1`and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	int results_per_page; /* int */
 };
 
 struct osc_read_dhcp_options_arg  {
@@ -9906,6 +10460,17 @@ struct osc_read_dedicated_groups_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_dedicated_group filters; /* ref FiltersDedicatedGroup */
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token; /* string */
+        /*
+         * The maximum number of logs returned in a single response (between 
+         * `1`and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	int results_per_page; /* int */
 };
 
 struct osc_read_consumption_account_arg  {
@@ -9920,7 +10485,8 @@ struct osc_read_consumption_account_arg  {
          * The beginning of the time period, in ISO 8601 date format (for 
          * example, `2020-06-14`). The date-time format is also accepted, but 
          * only with a time set to midnight (for example, 
-         * `2020-06-14T00:00:00.000Z`).
+         * `2020-06-14T00:00:00.000Z`). This value is included in the time 
+         * period.
          */
 	char *from_date; /* string */
         /*
@@ -9935,15 +10501,17 @@ struct osc_read_consumption_account_arg  {
         /*
          * If true, the response also includes the unit price of the consumed 
          * resource (`UnitPrice`) and the total price of the consumed resource 
-         * during the specified time period (`Price`), in the currency of the 
-         * Region's catalog.
+         * during the specified time period (`Price`), in the currency of your 
+         * account.
          */
         int is_set_show_price;
 	int show_price; /* bool */
         /*
          * The end of the time period, in ISO 8601 date format (for example, 
          * `2020-06-30`). The date-time format is also accepted, but only with a 
-         * time set to midnight (for example, `2020-06-30T00:00:00.000Z`).
+         * time set to midnight (for example, `2020-06-30T00:00:00.000Z`). This 
+         * value is excluded from the time period, and must be set to a later 
+         * date than `FromDate`.
          */
 	char *to_date; /* string */
 };
@@ -9998,6 +10566,17 @@ struct osc_read_client_gateways_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_client_gateway filters; /* ref FiltersClientGateway */
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token; /* string */
+        /*
+         * The maximum number of logs returned in a single response (between 
+         * `1`and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	int results_per_page; /* int */
 };
 
 struct osc_read_catalogs_arg  {
@@ -10184,8 +10763,7 @@ struct osc_read_api_access_rules_arg  {
          *   -Descriptions: array string
          *     One or more descriptions of API access rules.
          *   -IpRanges: array string
-         *     One or more IP addresses or CIDR blocks (for example, 
-         *     `192.0.2.0/16`).
+         *     One or more IPs or CIDR blocks (for example, `192.0.2.0/16`).
          */
         char *filters_str;
         int is_set_filters;
@@ -10249,6 +10827,35 @@ struct osc_read_access_keys_arg  {
          * (which can be the root account).
          */
 	char *user_name; /* string */
+};
+
+struct osc_put_user_group_policy_arg  {
+        /* Required: policy_name, policy_document, user_group_name */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * The policy document, corresponding to a JSON string that contains the 
+         * policy. For more information, see [EIM Reference 
+         * Information](https://docs.outscale.com/en/userguide/EIM-Reference-Info
+         * rmation.html).
+         */
+	char *policy_document; /* string */
+        /*
+         * The name of the policy.
+         */
+	char *policy_name; /* string */
+        /*
+         * The name of the group.
+         */
+	char *user_group_name; /* string */
+        /*
+         * The path to the group. If not specified, it is set to a slash (`/`).
+         */
+	char *user_group_path; /* string */
 };
 
 struct osc_link_volume_arg  {
@@ -10437,26 +11044,47 @@ struct osc_link_nic_arg  {
 	char *vm_id; /* string */
 };
 
-struct osc_link_load_balancer_backend_machines_arg  {
-        /* Required: load_balancer_name */
+struct osc_link_managed_policy_to_user_group_arg  {
+        /* Required: policy_orn, user_group_name */
         /*
-         *  One or more public IPs of back-end VMs.
-         */
-        char *backend_ips_str;
-	char **backend_ips; /* array string */
-        /*
-         *  One or more IDs of back-end VMs.
-         */
-        char *backend_vm_ids_str;
-	char **backend_vm_ids; /* array string */
-        /*
-         *  If true, checks whether you have the required permissions to perform 
+         * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
 	int dry_run; /* bool */
         /*
-         *  The name of the load balancer. 
+         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
+         * see [Resource 
+         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
+         * rs.html).
+         */
+	char *policy_orn; /* string */
+        /*
+         * The name of the group you want to link the policy to.
+         */
+	char *user_group_name; /* string */
+};
+
+struct osc_link_load_balancer_backend_machines_arg  {
+        /* Required: load_balancer_name */
+        /*
+         * One or more public IPs of backend VMs.
+         */
+        char *backend_ips_str;
+	char **backend_ips; /* array string */
+        /*
+         * One or more IDs of backend VMs.
+         */
+        char *backend_vm_ids_str;
+	char **backend_vm_ids; /* array string */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * The name of the load balancer.
          */
 	char *load_balancer_name; /* string */
 };
@@ -10500,7 +11128,7 @@ struct osc_link_flexible_gpu_arg  {
 struct osc_deregister_vms_in_load_balancer_arg  {
         /* Required: backend_vm_ids, load_balancer_name */
         /*
-         * One or more IDs of back-end VMs.
+         * One or more IDs of backend VMs.
          */
         char *backend_vm_ids_str;
 	char **backend_vm_ids; /* array string */
@@ -10587,7 +11215,7 @@ struct osc_delete_vm_template_arg  {
         int is_set_dry_run;
 	int dry_run; /* bool */
         /*
-         * The ID of the VM template you want to delete. 
+         * The ID of the VM template you want to delete.
          */
 	char *vm_template_id; /* string */
 };
@@ -10618,6 +11246,52 @@ struct osc_delete_virtual_gateway_arg  {
          * The ID of the virtual gateway you want to delete.
          */
 	char *virtual_gateway_id; /* string */
+};
+
+struct osc_delete_user_group_policy_arg  {
+        /* Required: user_group_name, policy_name */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * The name of the policy document you want to delete.
+         */
+	char *policy_name; /* string */
+        /*
+         * The name of the group.
+         */
+	char *user_group_name; /* string */
+        /*
+         * The path to the group. If not specified, it is set to a slash (`/`).
+         */
+	char *user_group_path; /* string */
+};
+
+struct osc_delete_user_group_arg  {
+        /* Required: user_group_name */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * If true, forces the deletion of the user group even if it is not 
+         * empty.
+         */
+        int is_set_force;
+	int force; /* bool */
+        /*
+         * The path to the group. If not specified, it is set to a slash (`/`).
+         */
+	char *path; /* string */
+        /*
+         * The name of the group you want to delete.
+         */
+	char *user_group_name; /* string */
 };
 
 struct osc_delete_user_arg  {
@@ -11322,7 +11996,7 @@ struct osc_create_volume_arg  {
         /*
          * The size of the volume, in gibibytes (GiB). The maximum allowed size 
          * for a volume is 14901 GiB. This parameter is required if the volume 
-         * is not created from a snapshot (`SnapshotId` unspecified). 
+         * is not created from a snapshot (`SnapshotId` unspecified).
          */
         int is_set_size;
 	int size; /* int */
@@ -11570,7 +12244,7 @@ struct osc_create_vm_template_arg  {
          */
 	char *cpu_generation; /* string */
         /*
-         * The performance of the VMs (`medium` \\| `high` \\| `highest`). 
+         * The performance of the VMs (`medium` \\| `high` \\| `highest`).
          */
 	char *cpu_performance; /* string */
         /*
@@ -11685,6 +12359,24 @@ struct osc_create_virtual_gateway_arg  {
 	int dry_run; /* bool */
 };
 
+struct osc_create_user_group_arg  {
+        /* Required: user_group_name */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * The path to the group. If not specified, it is set to a slash (`/`).
+         */
+	char *path; /* string */
+        /*
+         * The name of the group.
+         */
+	char *user_group_name; /* string */
+};
+
 struct osc_create_user_arg  {
         /* Required: user_name */
         /*
@@ -11695,16 +12387,15 @@ struct osc_create_user_arg  {
 	int dry_run; /* bool */
         /*
          * The path to the EIM user you want to create (by default, `/`). This 
-         * path name must begin and end with a slash (/), and contain between 1 
-         * and 512 alphanumeric characters and/or slashes (/), or underscores 
-         * (_).
+         * path name must begin and end with a slash (`/`), and contain between 
+         * 1 and 512 alphanumeric characters and/or slashes (`/`), or 
+         * underscores (_).
          */
 	char *path; /* string */
         /*
-         * The name of the EIM user you want to create. This user name must 
-         * contain between 1 and 64 alphanumeric characters and/or pluses (+), 
-         * equals (=), commas (,), periods (.), at signs (@), dashes (-), or 
-         * underscores (_).
+         * The name of the EIM user. This user name must contain between 1 and 
+         * 64 alphanumeric characters and/or pluses (+), equals (=), commas (,), 
+         * periods (.), at signs (@), dashes (-), or underscores (_).
          */
 	char *user_name; /* string */
 };
@@ -11850,14 +12541,14 @@ struct osc_create_server_certificate_arg  {
         /* Required: body, private_key, name */
         /*
          * The PEM-encoded X509 certificate.<br />With OSC CLI, use the 
-         * following syntax to make sure your CA file is correctly parsed: 
-         * `--CaPem=&quot;$(cat FILENAME)&quot;`.
+         * following syntax to make sure your certificate file is correctly 
+         * parsed: `--Body=&quot;$(cat FILENAME)&quot;`.
          */
 	char *body; /* string */
         /*
          * The PEM-encoded intermediate certification authorities.<br />With OSC 
-         * CLI, use the following syntax to make sure your CA file is correctly 
-         * parsed: `--CaPem=&quot;$(cat FILENAME)&quot;`.
+         * CLI, use the following syntax to make sure your certificate chain 
+         * file is correctly parsed: `--Chain=&quot;$(cat FILENAME)&quot;`.
          */
 	char *chain; /* string */
         /*
@@ -11879,8 +12570,8 @@ struct osc_create_server_certificate_arg  {
 	char *path; /* string */
         /*
          * The PEM-encoded private key matching the certificate.<br />With OSC 
-         * CLI, use the following syntax to make sure your CA file is correctly 
-         * parsed: `--CaPem=&quot;$(cat FILENAME)&quot;`.
+         * CLI, use the following syntax to make sure your key file is correctly 
+         * parsed: `--PrivateKey=&quot;$(cat FILENAME)&quot;`.
          */
 	char *private_key; /* string */
 };
@@ -12252,6 +12943,10 @@ struct osc_create_net_arg  {
 struct osc_create_nat_service_arg  {
         /* Required: public_ip_id, subnet_id */
         /*
+         * A unique identifier which enables you to manage the idempotency.
+         */
+	char *client_token; /* string */
+        /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
@@ -12344,10 +13039,10 @@ struct osc_create_load_balancer_listeners_arg  {
          * One or more listeners for the load balancer.
          *   Information about the listener to create.
          *   -BackendPort: int
-         *     The port on which the back-end VM is listening (between `1` 
-         *     and `65535`, both included).
+         *     The port on which the backend VM is listening (between `1` and 
+         *     `65535`, both included).
          *   -BackendProtocol: string
-         *     The protocol for routing traffic to back-end VMs (`HTTP` \\| 
+         *     The protocol for routing traffic to backend VMs (`HTTP` \\| 
          *     `HTTPS` \\| `TCP` \\| `SSL`).
          *   -LoadBalancerPort: int
          *     The port on which the load balancer is listening (between `1` 
@@ -12382,10 +13077,10 @@ struct osc_create_load_balancer_arg  {
          * One or more listeners to create.
          *   Information about the listener to create.
          *   -BackendPort: int
-         *     The port on which the back-end VM is listening (between `1` 
-         *     and `65535`, both included).
+         *     The port on which the backend VM is listening (between `1` and 
+         *     `65535`, both included).
          *   -BackendProtocol: string
-         *     The protocol for routing traffic to back-end VMs (`HTTP` \\| 
+         *     The protocol for routing traffic to backend VMs (`HTTP` \\| 
          *     `HTTPS` \\| `TCP` \\| `SSL`).
          *   -LoadBalancerPort: int
          *     The port on which the load balancer is listening (between `1` 
@@ -12481,7 +13176,7 @@ struct osc_create_listener_rule_arg  {
          *     A host-name pattern for the rule, with a maximum length of 128 
          *     characters. This host-name pattern supports maximum three 
          *     wildcards, and must not contain any special characters except 
-         *     [-.?]. 
+         *     [-.?].
          *   -ListenerRuleName: string
          *     A human-readable name for the listener rule.
          *   -PathPattern: string
@@ -12894,7 +13589,7 @@ struct osc_create_ca_arg  {
 struct osc_create_api_access_rule_arg  {
         /* Required:none */
         /*
-         *  One or more IDs of Client Certificate Authorities (CAs).
+         * One or more IDs of Client Certificate Authorities (CAs).
          */
         char *ca_ids_str;
 	char **ca_ids; /* array string */
@@ -12915,7 +13610,7 @@ struct osc_create_api_access_rule_arg  {
         int is_set_dry_run;
 	int dry_run; /* bool */
         /*
-         * One or more IP addresses or CIDR blocks (for example, `192.0.2.0/16`).
+         * One or more IPs or CIDR blocks (for example, `192.0.2.0/16`).
          */
         char *ip_ranges_str;
 	char **ip_ranges; /* array string */
@@ -13033,6 +13728,32 @@ struct osc_check_authentication_arg  {
 	char *password; /* string */
 };
 
+struct osc_add_user_to_user_group_arg  {
+        /* Required: user_group_name, user_name */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run; /* bool */
+        /*
+         * The name of the group you want to add a user to.
+         */
+	char *user_group_name; /* string */
+        /*
+         * The path to the group. If not specified, it is set to a slash (`/`).
+         */
+	char *user_group_path; /* string */
+        /*
+         * The name of the user you want to add to the group.
+         */
+	char *user_name; /* string */
+        /*
+         * The path to the user. If not specified, it is set to a slash (`/`).
+         */
+	char *user_path; /* string */
+};
+
 struct osc_accept_net_peering_arg  {
         /* Required: net_peering_id */
         /*
@@ -13139,6 +13860,7 @@ int osc_update_volume(struct osc_env *e, struct osc_str *out, struct osc_update_
 int osc_update_vm_template(struct osc_env *e, struct osc_str *out, struct osc_update_vm_template_arg *args);
 int osc_update_vm_group(struct osc_env *e, struct osc_str *out, struct osc_update_vm_group_arg *args);
 int osc_update_vm(struct osc_env *e, struct osc_str *out, struct osc_update_vm_arg *args);
+int osc_update_user_group(struct osc_env *e, struct osc_str *out, struct osc_update_user_group_arg *args);
 int osc_update_user(struct osc_env *e, struct osc_str *out, struct osc_update_user_arg *args);
 int osc_update_subnet(struct osc_env *e, struct osc_str *out, struct osc_update_subnet_arg *args);
 int osc_update_snapshot(struct osc_env *e, struct osc_str *out, struct osc_update_snapshot_arg *args);
@@ -13167,6 +13889,7 @@ int osc_unlink_public_ip(struct osc_env *e, struct osc_str *out, struct osc_unli
 int osc_unlink_private_ips(struct osc_env *e, struct osc_str *out, struct osc_unlink_private_ips_arg *args);
 int osc_unlink_policy(struct osc_env *e, struct osc_str *out, struct osc_unlink_policy_arg *args);
 int osc_unlink_nic(struct osc_env *e, struct osc_str *out, struct osc_unlink_nic_arg *args);
+int osc_unlink_managed_policy_from_user_group(struct osc_env *e, struct osc_str *out, struct osc_unlink_managed_policy_from_user_group_arg *args);
 int osc_unlink_load_balancer_backend_machines(struct osc_env *e, struct osc_str *out, struct osc_unlink_load_balancer_backend_machines_arg *args);
 int osc_unlink_internet_service(struct osc_env *e, struct osc_str *out, struct osc_unlink_internet_service_arg *args);
 int osc_unlink_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_unlink_flexible_gpu_arg *args);
@@ -13175,6 +13898,7 @@ int osc_start_vms(struct osc_env *e, struct osc_str *out, struct osc_start_vms_a
 int osc_set_default_policy_version(struct osc_env *e, struct osc_str *out, struct osc_set_default_policy_version_arg *args);
 int osc_scale_up_vm_group(struct osc_env *e, struct osc_str *out, struct osc_scale_up_vm_group_arg *args);
 int osc_scale_down_vm_group(struct osc_env *e, struct osc_str *out, struct osc_scale_down_vm_group_arg *args);
+int osc_remove_user_from_user_group(struct osc_env *e, struct osc_str *out, struct osc_remove_user_from_user_group_arg *args);
 int osc_reject_net_peering(struct osc_env *e, struct osc_str *out, struct osc_reject_net_peering_arg *args);
 int osc_register_vms_in_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_register_vms_in_load_balancer_arg *args);
 int osc_reboot_vms(struct osc_env *e, struct osc_str *out, struct osc_reboot_vms_arg *args);
@@ -13188,6 +13912,11 @@ int osc_read_vm_templates(struct osc_env *e, struct osc_str *out, struct osc_rea
 int osc_read_vm_groups(struct osc_env *e, struct osc_str *out, struct osc_read_vm_groups_arg *args);
 int osc_read_virtual_gateways(struct osc_env *e, struct osc_str *out, struct osc_read_virtual_gateways_arg *args);
 int osc_read_users(struct osc_env *e, struct osc_str *out, struct osc_read_users_arg *args);
+int osc_read_user_groups_per_user(struct osc_env *e, struct osc_str *out, struct osc_read_user_groups_per_user_arg *args);
+int osc_read_user_groups(struct osc_env *e, struct osc_str *out, struct osc_read_user_groups_arg *args);
+int osc_read_user_group_policy(struct osc_env *e, struct osc_str *out, struct osc_read_user_group_policy_arg *args);
+int osc_read_user_group_policies(struct osc_env *e, struct osc_str *out, struct osc_read_user_group_policies_arg *args);
+int osc_read_user_group(struct osc_env *e, struct osc_str *out, struct osc_read_user_group_arg *args);
 int osc_read_tags(struct osc_env *e, struct osc_str *out, struct osc_read_tags_arg *args);
 int osc_read_subregions(struct osc_env *e, struct osc_str *out, struct osc_read_subregions_arg *args);
 int osc_read_subnets(struct osc_env *e, struct osc_str *out, struct osc_read_subnets_arg *args);
@@ -13213,6 +13942,7 @@ int osc_read_net_peerings(struct osc_env *e, struct osc_str *out, struct osc_rea
 int osc_read_net_access_points(struct osc_env *e, struct osc_str *out, struct osc_read_net_access_points_arg *args);
 int osc_read_net_access_point_services(struct osc_env *e, struct osc_str *out, struct osc_read_net_access_point_services_arg *args);
 int osc_read_nat_services(struct osc_env *e, struct osc_str *out, struct osc_read_nat_services_arg *args);
+int osc_read_managed_policies_linked_to_user_group(struct osc_env *e, struct osc_str *out, struct osc_read_managed_policies_linked_to_user_group_arg *args);
 int osc_read_locations(struct osc_env *e, struct osc_str *out, struct osc_read_locations_arg *args);
 int osc_read_load_balancers(struct osc_env *e, struct osc_str *out, struct osc_read_load_balancers_arg *args);
 int osc_read_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct osc_read_load_balancer_tags_arg *args);
@@ -13240,6 +13970,7 @@ int osc_read_api_access_policy(struct osc_env *e, struct osc_str *out, struct os
 int osc_read_admin_password(struct osc_env *e, struct osc_str *out, struct osc_read_admin_password_arg *args);
 int osc_read_accounts(struct osc_env *e, struct osc_str *out, struct osc_read_accounts_arg *args);
 int osc_read_access_keys(struct osc_env *e, struct osc_str *out, struct osc_read_access_keys_arg *args);
+int osc_put_user_group_policy(struct osc_env *e, struct osc_str *out, struct osc_put_user_group_policy_arg *args);
 int osc_link_volume(struct osc_env *e, struct osc_str *out, struct osc_link_volume_arg *args);
 int osc_link_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_link_virtual_gateway_arg *args);
 int osc_link_route_table(struct osc_env *e, struct osc_str *out, struct osc_link_route_table_arg *args);
@@ -13247,6 +13978,7 @@ int osc_link_public_ip(struct osc_env *e, struct osc_str *out, struct osc_link_p
 int osc_link_private_ips(struct osc_env *e, struct osc_str *out, struct osc_link_private_ips_arg *args);
 int osc_link_policy(struct osc_env *e, struct osc_str *out, struct osc_link_policy_arg *args);
 int osc_link_nic(struct osc_env *e, struct osc_str *out, struct osc_link_nic_arg *args);
+int osc_link_managed_policy_to_user_group(struct osc_env *e, struct osc_str *out, struct osc_link_managed_policy_to_user_group_arg *args);
 int osc_link_load_balancer_backend_machines(struct osc_env *e, struct osc_str *out, struct osc_link_load_balancer_backend_machines_arg *args);
 int osc_link_internet_service(struct osc_env *e, struct osc_str *out, struct osc_link_internet_service_arg *args);
 int osc_link_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_link_flexible_gpu_arg *args);
@@ -13258,6 +13990,8 @@ int osc_delete_vms(struct osc_env *e, struct osc_str *out, struct osc_delete_vms
 int osc_delete_vm_template(struct osc_env *e, struct osc_str *out, struct osc_delete_vm_template_arg *args);
 int osc_delete_vm_group(struct osc_env *e, struct osc_str *out, struct osc_delete_vm_group_arg *args);
 int osc_delete_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_delete_virtual_gateway_arg *args);
+int osc_delete_user_group_policy(struct osc_env *e, struct osc_str *out, struct osc_delete_user_group_policy_arg *args);
+int osc_delete_user_group(struct osc_env *e, struct osc_str *out, struct osc_delete_user_group_arg *args);
 int osc_delete_user(struct osc_env *e, struct osc_str *out, struct osc_delete_user_arg *args);
 int osc_delete_tags(struct osc_env *e, struct osc_str *out, struct osc_delete_tags_arg *args);
 int osc_delete_subnet(struct osc_env *e, struct osc_str *out, struct osc_delete_subnet_arg *args);
@@ -13300,6 +14034,7 @@ int osc_create_vms(struct osc_env *e, struct osc_str *out, struct osc_create_vms
 int osc_create_vm_template(struct osc_env *e, struct osc_str *out, struct osc_create_vm_template_arg *args);
 int osc_create_vm_group(struct osc_env *e, struct osc_str *out, struct osc_create_vm_group_arg *args);
 int osc_create_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_create_virtual_gateway_arg *args);
+int osc_create_user_group(struct osc_env *e, struct osc_str *out, struct osc_create_user_group_arg *args);
 int osc_create_user(struct osc_env *e, struct osc_str *out, struct osc_create_user_arg *args);
 int osc_create_tags(struct osc_env *e, struct osc_str *out, struct osc_create_tags_arg *args);
 int osc_create_subnet(struct osc_env *e, struct osc_str *out, struct osc_create_subnet_arg *args);
@@ -13339,6 +14074,7 @@ int osc_create_api_access_rule(struct osc_env *e, struct osc_str *out, struct os
 int osc_create_account(struct osc_env *e, struct osc_str *out, struct osc_create_account_arg *args);
 int osc_create_access_key(struct osc_env *e, struct osc_str *out, struct osc_create_access_key_arg *args);
 int osc_check_authentication(struct osc_env *e, struct osc_str *out, struct osc_check_authentication_arg *args);
+int osc_add_user_to_user_group(struct osc_env *e, struct osc_str *out, struct osc_add_user_to_user_group_arg *args);
 int osc_accept_net_peering(struct osc_env *e, struct osc_str *out, struct osc_accept_net_peering_arg *args);
 
 #ifdef __cplusplus
