@@ -15,11 +15,11 @@ oapi-cli --help DeleteTags
 ```
 
 Examples of complex argument, with DeleteTags
-[Cascade notation](https://flutterbyexample.com/lesson/cascade-notation):
+[cascade notation](https://dart.dev/language/operators#cascade-notation):
 ```bash
 oapi-cli DeleteTags --ResourceIds '["ID0", "ID1"]' --Tags.0.Key k0 ..Value v0 --Tags.1.Key k1 ..Value v1
 ```
-Is the same as the line below but using [] syntax for `ResourceIds`, and without cascade argument, but in color.
+Is the same as the line below but using [] syntax for `ResourceIds`, and without de argument, but in color.
 ```bash
 oapi-cli --color DeleteTags --ResourceIds[] "ID0" --ResourceIds[] "ID1"  --Tags.0.Key k0 --Tags.0.Value v0 --Tags.1.Key k1 --Tags.1.Value v1
 ```
