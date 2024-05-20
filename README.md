@@ -76,6 +76,11 @@ bashcompinit
 source $HOME/oapi-cli-completion.bash
 ```
 
+If it is not in your .zshrc, you might need to add this line too:
+```
+autoload -Uz compinit && compinit
+```
+
 # oapi-cli Variables
 
 
