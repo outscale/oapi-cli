@@ -201,6 +201,18 @@ using appimage-extract-and-run extract the content of the AppImage in a temporar
 ## Arch Linux
 you can also install oapi-cli-git on Arch Linux using AUR: (yay -S oapi-cli-git)
 
+## Windows
+
+oapi-cli is pre-packaged for Widows as a zip archive.
+
+Download oapi-cli-x86_64-windows.zip from [release pages](https://github.com/outscale/oapi-cli/releases/latest).
+
+Extract it, run `oapi-cli`.
+
+Note: in comparaison to linux and macos packages, windows oapi-cli look for the config in the directory where it is run.
+(so config path is .\config.json)
+
+
 # Feedback
 Either open a github issue, or post a message here: https://github.com/outscale/oapi-cli/discussions/10
 
