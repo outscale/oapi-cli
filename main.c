@@ -61,6 +61,33 @@
 		if (f) {fprintf(stderr, args);  return -1;}	\
 	} while(0)
 
+#define META_ARGS()                                                     \
+	if (!strcmp(aa, "--file")) {                                        \
+		TRY(i + 3 >= ac, "file name require");                          \
+		++incr;                                                         \
+		aa = read_file(files_cnt, av[i + 3], 0);                        \
+		STRY(!aa);                                                      \
+	} else if (!strcmp(aa, "--jsonstr-file")) {                         \
+		TRY(i + 3 >= ac, "file name require");                          \
+		++incr;                                                         \
+		aa = read_file(files_cnt, av[i + 3], 1);                        \
+		STRY(!aa);                                                      \
+	} else if (!strcmp(aa, "--var")) {                                  \
+		TRY(i + 3 >= ac, "var name require");                           \
+		int var_found = 0;                                              \
+		for (int j = 0; j < nb_cli_vars; ++j) {                         \
+			if (!strcmp(cli_vars[j].name, av[i + 3])) {                 \
+				var_found = 1;                                          \
+				aa = cli_vars[j].val;                                   \
+			}                                                           \
+		}                                                               \
+		TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]); \
+		++incr;                                                         \
+		STRY(!aa);                                                      \
+	} else {                                                            \
+		aa = 0;                                                         \
+		incr = 1;                                                       \
+	}
 
 #define VAR_NAME_SIZE 128
 #define VAR_VAL_SIZE 512
@@ -10065,7 +10092,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -10081,32 +10109,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "ClientGatewayId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -10240,7 +10243,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -10256,32 +10260,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -10403,7 +10382,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -10419,32 +10399,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -10586,7 +10541,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -10602,32 +10558,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -10780,7 +10711,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -10796,32 +10728,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "BlockDeviceMappings")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -11073,7 +10980,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -11089,32 +10997,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -11236,7 +11119,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -11252,32 +11136,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -11388,7 +11247,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -11404,32 +11264,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -11534,7 +11369,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -11550,32 +11386,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -11687,7 +11498,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -11703,32 +11515,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -11839,7 +11626,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -11855,32 +11643,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -11980,7 +11743,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -11996,32 +11760,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -12137,7 +11876,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -12153,32 +11893,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DestinationIpRange")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -12333,7 +12048,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -12349,32 +12065,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -12510,7 +12201,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -12526,32 +12218,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "AddRouteTableIds")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -12666,7 +12333,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -12682,32 +12350,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DhcpOptionsSetId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -12807,7 +12450,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -12823,32 +12467,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "AccessLog")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -13058,7 +12677,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -13074,32 +12694,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -13210,7 +12805,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -13226,32 +12822,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -13374,7 +12945,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -13390,32 +12962,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DeleteOnVmDeletion")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -13520,7 +13067,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -13536,32 +13084,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DirectLinkInterfaceId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -13661,7 +13184,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -13677,32 +13201,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DedicatedGroupId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -13802,7 +13301,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -13818,32 +13318,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "CaId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -13943,7 +13418,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -13959,32 +13435,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "ApiAccessRuleId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -14123,7 +13574,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -14139,32 +13591,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -14269,7 +13696,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -14285,32 +13713,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "AdditionalEmails")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -14533,7 +13936,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -14549,32 +13953,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "AccessKeyId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -14696,7 +14075,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -14712,32 +14092,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -14842,7 +14197,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -14858,32 +14214,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -14983,7 +14314,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -14999,32 +14331,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -15113,7 +14420,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -15129,32 +14437,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -15254,7 +14537,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -15270,32 +14554,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -15397,7 +14656,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -15413,32 +14673,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -15538,7 +14773,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -15554,32 +14790,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -15668,7 +14879,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -15684,32 +14896,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -15809,7 +14996,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -15825,32 +15013,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "BackendIps")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -15965,7 +15128,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -15981,32 +15145,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -16106,7 +15245,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -16122,32 +15262,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -16236,7 +15351,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -16252,32 +15368,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -16384,7 +15475,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -16400,32 +15492,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -16516,7 +15583,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -16532,32 +15600,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "PolicyOrn")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -16641,7 +15684,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -16657,32 +15701,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -16782,7 +15801,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -16798,32 +15818,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -16923,7 +15918,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -16939,32 +15935,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -17086,7 +16057,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -17102,32 +16074,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -17216,7 +16163,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -17232,32 +16180,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "BackendVmIds")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -17359,7 +16282,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -17375,32 +16299,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -17491,7 +16390,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -17507,32 +16407,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -17655,7 +16530,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -17671,32 +16547,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -17819,7 +16670,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -17835,32 +16687,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "AllVms")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -17999,7 +16826,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -18015,32 +16843,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "BackendVmIds")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -18142,7 +16945,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -18158,32 +16962,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -18306,7 +17085,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -18322,32 +17102,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -18470,7 +17225,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -18486,32 +17242,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -18612,7 +17343,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -18628,32 +17360,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -18754,7 +17461,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -18770,32 +17478,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -18918,7 +17601,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -18934,32 +17618,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -19037,7 +17696,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -19053,32 +17713,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -19178,7 +17813,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -19194,32 +17830,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -19342,7 +17953,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -19358,32 +17970,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -19494,7 +18081,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -19510,32 +18098,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -19657,7 +18220,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -19673,32 +18237,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -19798,7 +18337,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -19814,32 +18354,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -19962,7 +18477,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -19978,32 +18494,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -20126,7 +18617,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -20142,32 +18634,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -20290,7 +18757,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -20306,32 +18774,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -20454,7 +18897,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -20470,32 +18914,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -20618,7 +19037,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -20634,32 +19054,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -20760,7 +19155,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -20776,32 +19172,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -20924,7 +19295,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -20940,32 +19312,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "AccessKeyId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -21054,7 +19401,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -21070,32 +19418,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -21218,7 +19541,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -21234,32 +19558,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -21337,7 +19636,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -21353,32 +19653,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -21501,7 +19776,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -21517,32 +19793,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -21665,7 +19916,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -21681,32 +19933,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -21806,7 +20033,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -21822,32 +20050,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -21925,7 +20128,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -21941,32 +20145,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -22089,7 +20268,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -22105,32 +20285,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "FirstItem")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -22225,7 +20380,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -22241,32 +20397,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "PolicyOrn")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -22350,7 +20481,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -22366,32 +20498,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "PolicyOrn")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -22464,7 +20571,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -22480,32 +20588,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -22628,7 +20711,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -22644,32 +20728,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -22770,7 +20829,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -22786,32 +20846,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -22934,7 +20969,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -22950,32 +20986,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -23098,7 +21109,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -23114,32 +21126,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -23262,7 +21249,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -23278,32 +21266,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -23426,7 +21389,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -23442,32 +21406,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -23590,7 +21529,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -23606,32 +21546,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -23765,7 +21680,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -23781,32 +21697,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -23906,7 +21797,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -23922,32 +21814,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -24048,7 +21915,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -24064,32 +21932,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -24180,7 +22023,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -24196,32 +22040,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -24322,7 +22141,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -24338,32 +22158,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -24497,7 +22292,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -24513,32 +22309,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -24661,7 +22432,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -24677,32 +22449,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -24825,7 +22572,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -24841,32 +22589,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -24989,7 +22712,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -25005,32 +22729,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -25153,7 +22852,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -25169,32 +22869,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -25295,7 +22970,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -25311,32 +22987,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -25414,7 +23065,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -25430,32 +23082,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -25578,7 +23205,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -25594,32 +23222,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -25742,7 +23345,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -25758,32 +23362,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -25906,7 +23485,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -25922,32 +23502,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -26070,7 +23625,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -26086,32 +23642,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -26243,7 +23774,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -26259,32 +23791,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -26373,7 +23880,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -26389,32 +23897,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -26537,7 +24020,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -26553,32 +24037,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -26679,7 +24138,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -26695,32 +24155,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -26798,7 +24233,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -26814,32 +24250,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -26940,7 +24351,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -26956,32 +24368,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -27127,7 +24514,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -27143,32 +24531,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -27269,7 +24632,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -27285,32 +24649,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -27388,7 +24727,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -27404,32 +24744,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -27518,7 +24833,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -27534,32 +24850,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -27637,7 +24928,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -27653,32 +24945,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -27790,7 +25057,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -27806,32 +25074,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -27953,7 +25196,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -27969,32 +25213,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DeviceName")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -28105,7 +25324,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -28121,32 +25341,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -28246,7 +25441,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -28262,32 +25458,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -28387,7 +25558,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -28403,32 +25575,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "AllowRelink")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -28577,7 +25724,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -28593,32 +25741,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "AllowRelink")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -28747,7 +25870,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -28763,32 +25887,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -28888,7 +25987,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -28904,32 +26004,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DeviceNumber")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -29040,7 +26115,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -29056,32 +26132,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -29181,7 +26232,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -29197,32 +26249,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "BackendIps")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -29337,7 +26364,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -29353,32 +26381,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -29478,7 +26481,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -29494,32 +26498,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -29619,7 +26598,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -29635,32 +26615,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "BackendVmIds")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -29762,7 +26717,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -29778,32 +26734,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DestinationIpRange")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -29903,7 +26834,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -29919,32 +26851,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -30033,7 +26940,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -30049,32 +26957,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -30163,7 +27046,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -30179,32 +27063,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -30295,7 +27154,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -30311,32 +27171,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -30425,7 +27260,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -30441,32 +27277,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -30555,7 +27366,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -30571,32 +27383,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -30685,7 +27472,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -30701,32 +27489,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -30837,7 +27600,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -30853,32 +27617,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -30994,7 +27733,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -31010,32 +27750,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -31124,7 +27839,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -31140,32 +27856,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -31287,7 +27978,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -31303,32 +27995,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -31417,7 +28084,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -31433,32 +28101,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -31547,7 +28190,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -31563,32 +28207,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -31677,7 +28296,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -31693,32 +28313,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -31915,7 +28510,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -31931,32 +28527,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -32056,7 +28627,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -32072,32 +28644,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -32186,7 +28733,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -32202,32 +28750,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DestinationIpRange")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -32327,7 +28850,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -32343,32 +28867,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -32468,7 +28967,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -32484,32 +28984,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "PolicyOrn")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -32593,7 +29068,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -32609,32 +29085,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -32723,7 +29174,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -32739,32 +29191,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -32853,7 +29280,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -32869,32 +29297,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -32983,7 +29386,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -32999,32 +29403,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -33113,7 +29492,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -33129,32 +29509,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -33243,7 +29598,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -33259,32 +29615,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -33373,7 +29704,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -33389,32 +29721,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -33536,7 +29843,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -33552,32 +29860,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -33677,7 +29960,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -33693,32 +29977,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -33820,7 +30079,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -33836,32 +30096,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -33950,7 +30185,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -33966,32 +30202,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -34080,7 +30291,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -34096,32 +30308,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -34210,7 +30397,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -34226,32 +30414,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -34340,7 +30503,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -34356,32 +30520,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -34470,7 +30609,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -34486,32 +30626,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -34600,7 +30715,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -34616,32 +30732,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -34730,7 +30821,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -34746,32 +30838,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DirectLinkInterfaceId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -34860,7 +30927,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -34876,32 +30944,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DirectLinkId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -34990,7 +31033,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -35006,32 +31050,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DhcpOptionsSetId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -35120,7 +31139,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -35136,32 +31156,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DedicatedGroupId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -35266,7 +31261,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -35282,32 +31278,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "ClientGatewayId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -35396,7 +31367,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -35412,32 +31384,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "CaId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -35526,7 +31473,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -35542,32 +31490,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "ApiAccessRuleId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -35656,7 +31579,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -35672,32 +31596,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "AccessKeyId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -35797,7 +31696,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -35813,32 +31713,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DestinationIpRange")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -35938,7 +31813,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -35954,32 +31830,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "ClientGatewayId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -36106,7 +31957,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -36122,32 +31974,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -36280,7 +32107,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -36296,32 +32124,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "BlockDeviceMappings")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -36697,7 +32500,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -36713,32 +32517,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "CpuCores")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -36935,7 +32714,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -36951,32 +32731,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -37164,7 +32919,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -37180,32 +32936,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "ConnectionType")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -37294,7 +33025,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -37310,32 +33042,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -37435,7 +33142,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -37451,32 +33159,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -37576,7 +33259,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -37592,32 +33276,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -37739,7 +33398,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -37755,32 +33415,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -37891,7 +33526,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -37907,32 +33543,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -38044,7 +33655,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -38060,32 +33672,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -38229,7 +33816,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -38245,32 +33833,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "Body")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -38403,7 +33966,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -38419,32 +33983,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -38641,7 +34180,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -38657,32 +34197,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -38793,7 +34308,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -38809,32 +34325,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -38923,7 +34414,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -38939,32 +34431,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DestinationIpRange")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -39119,7 +34586,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -39135,32 +34603,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -39238,7 +34681,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -39254,32 +34698,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -39379,7 +34798,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -39395,32 +34815,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "Document")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -39520,7 +34915,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -39536,32 +34932,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -39683,7 +35054,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -39699,32 +35071,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -39868,7 +35215,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -39884,32 +35232,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "AccepterNetId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -40009,7 +35332,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -40025,32 +35349,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -40163,7 +35462,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -40179,32 +35479,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -40304,7 +35579,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -40320,32 +35596,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "ClientToken")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -40456,7 +35707,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -40472,32 +35724,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -40619,7 +35846,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -40635,32 +35863,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "CookieExpirationPeriod")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -40793,7 +35996,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -40809,32 +36013,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -40954,7 +36133,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -40970,32 +36150,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -41207,7 +36362,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -41223,32 +36379,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -41385,7 +36516,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -41401,32 +36533,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -41526,7 +36633,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -41542,32 +36650,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -41645,7 +36728,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -41661,32 +36745,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -41798,7 +36857,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -41814,32 +36874,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "Architecture")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -42065,7 +37100,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -42081,32 +37117,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DeleteOnVmDeletion")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -42233,7 +37244,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -42249,32 +37261,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DirectLinkId")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -42386,7 +37373,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -42402,32 +37390,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "Bandwidth")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -42538,7 +37501,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -42554,32 +37518,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DomainName")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -42707,7 +37646,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -42723,32 +37663,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "CpuGeneration")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -42859,7 +37774,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -42875,32 +37791,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "BgpAsn")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -43011,7 +37902,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -43027,32 +37919,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "CaPem")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -43152,7 +38019,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -43168,32 +38036,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "CaIds")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -43321,7 +38164,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -43337,32 +38181,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "AdditionalEmails")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -43596,7 +38415,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -43612,32 +38432,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -43737,7 +38532,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -43753,32 +38549,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -43878,7 +38649,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -43894,32 +38666,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -44041,7 +38788,8 @@ int main(int ac, char **av)
 			      	  incr = 1;
 				  aa = eq_ptr + 1;
 			   } else {
-			     	  CHK_BAD_RET(!aa || aa[0] == '-', "cascade need an argument\n");
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS()
 			   }
 		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
 			   i += incr;
@@ -44057,32 +38805,7 @@ int main(int ac, char **av)
 
 			     (void)str;
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				if (!strcmp(aa, "--file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 0);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--jsonstr-file")) {
-				   	TRY(i + 3 >= ac, "file name require");
-					++incr;
-					aa = read_file(files_cnt, av[i + 3], 1);
-					STRY(!aa);
-				} else if (!strcmp(aa, "--var")) {
-				   	TRY(i + 3 >= ac, "var name require");
-					int var_found = 0;
-					for (int j = 0; j < nb_cli_vars; ++j) {
-					    if (!strcmp(cli_vars[j].name, av[i + 3])) {
-						var_found = 1;
-						aa = cli_vars[j].val;
-					    }
-					}
-					TRY(!var_found, "--var could not find osc variable '%s'", av[i + 3]);
-					++incr;
-					STRY(!aa);
-				} else {
-					aa = 0;
-					incr = 1;
-				}
+				 	META_ARGS();
 			     }
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '=' ) {
 			      	 char *eq_ptr = strchr(next_a, '=');
