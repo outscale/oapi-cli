@@ -9984,11 +9984,11 @@ int main(int ac, char **av)
 		       "\t    --file PATH           use content of PATH as an agrument for a call, example:\n"
 		       "\t\t\t\toapi-cli CreateCa  --CaPem --file /$CA_DIR/cert.pem\n"
 		       "\t    --jsonstr-file PATH   same as --file, except the content is surrounded by \"\n"
+		       "\t\t\t\tand \" inside the file are escape with a \\, this option is useful for CreatePolicy\n"
 		       "\t    --set-var ID=VARIABLE_PATH  Create an oapi-cli variable, that can be use with --var\n"
 		       "\t\t\t\tExamples: ./oapi-cli ReadVms --Filters.TagValues[] VM_NAME --set-var id=Vms.0.VmId ReadVms --Filters.VmIds[] --var id\n"
 		       "\t\t\t\twill find the vm with VM_NAME as it's tag, and read it again, but using it's VmId as filter this time\n"
 		       "\t    --var                 use variabble content created by --set-var\n"
-		       "\t\t\t\tand \" inside the file are escape with a \\, this option is useful for CreatePolicy\n"
                        "\t-h, --help [CallName]     this, can be used with call name, example:\n\t\t\t\t%s --help ReadVms\n"
                        "\t    --list-calls          list all calls\n"
                        "\t    --insecure            doesn't verify SSL certificats\n"
@@ -10200,7 +10200,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -10339,7 +10339,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -10498,7 +10498,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -10668,7 +10668,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -10937,7 +10937,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -11076,7 +11076,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -11204,7 +11204,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -11326,7 +11326,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -11455,7 +11455,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -11583,7 +11583,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -11700,7 +11700,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -11833,7 +11833,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -12005,7 +12005,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -12158,7 +12158,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -12290,7 +12290,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -12407,7 +12407,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -12634,7 +12634,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -12762,7 +12762,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -12902,7 +12902,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -13024,7 +13024,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -13141,7 +13141,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -13258,7 +13258,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -13375,7 +13375,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -13531,7 +13531,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -13653,7 +13653,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -13893,7 +13893,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -14032,7 +14032,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -14154,7 +14154,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -14271,7 +14271,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -14377,7 +14377,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -14494,7 +14494,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -14613,7 +14613,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -14730,7 +14730,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -14836,7 +14836,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -14953,7 +14953,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -15085,7 +15085,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -15202,7 +15202,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -15308,7 +15308,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -15432,7 +15432,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -15540,7 +15540,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -15641,7 +15641,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -15758,7 +15758,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -15875,7 +15875,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -16014,7 +16014,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -16120,7 +16120,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -16239,7 +16239,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -16347,7 +16347,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -16487,7 +16487,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -16627,7 +16627,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -16783,7 +16783,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -16902,7 +16902,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -17042,7 +17042,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -17182,7 +17182,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -17300,7 +17300,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -17418,7 +17418,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -17558,7 +17558,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -17653,7 +17653,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -17770,7 +17770,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -17910,7 +17910,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -18038,7 +18038,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -18177,7 +18177,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -18294,7 +18294,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -18434,7 +18434,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -18574,7 +18574,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -18714,7 +18714,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -18854,7 +18854,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -18994,7 +18994,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -19112,7 +19112,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -19252,7 +19252,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -19358,7 +19358,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -19498,7 +19498,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -19593,7 +19593,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -19733,7 +19733,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -19873,7 +19873,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -19990,7 +19990,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -20085,7 +20085,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -20225,7 +20225,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -20337,7 +20337,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -20438,7 +20438,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -20528,7 +20528,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -20668,7 +20668,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -20786,7 +20786,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -20926,7 +20926,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -21066,7 +21066,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -21206,7 +21206,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -21346,7 +21346,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -21486,7 +21486,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -21637,7 +21637,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -21754,7 +21754,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -21872,7 +21872,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -21980,7 +21980,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -22098,7 +22098,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -22249,7 +22249,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -22389,7 +22389,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -22529,7 +22529,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -22669,7 +22669,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -22809,7 +22809,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -22927,7 +22927,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -23022,7 +23022,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -23162,7 +23162,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -23302,7 +23302,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -23442,7 +23442,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -23582,7 +23582,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -23731,7 +23731,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -23837,7 +23837,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -23977,7 +23977,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -24095,7 +24095,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -24190,7 +24190,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -24308,7 +24308,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -24471,7 +24471,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -24589,7 +24589,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -24684,7 +24684,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -24790,7 +24790,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -24885,7 +24885,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -25014,7 +25014,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -25153,7 +25153,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -25281,7 +25281,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -25398,7 +25398,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -25515,7 +25515,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -25681,7 +25681,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -25827,7 +25827,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -25944,7 +25944,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -26072,7 +26072,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -26189,7 +26189,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -26321,7 +26321,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -26438,7 +26438,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -26555,7 +26555,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -26674,7 +26674,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -26791,7 +26791,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -26897,7 +26897,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -27003,7 +27003,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -27111,7 +27111,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -27217,7 +27217,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -27323,7 +27323,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -27429,7 +27429,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -27557,7 +27557,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -27690,7 +27690,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -27796,7 +27796,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -27935,7 +27935,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -28041,7 +28041,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -28147,7 +28147,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -28253,7 +28253,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -28467,7 +28467,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -28584,7 +28584,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -28690,7 +28690,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -28807,7 +28807,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -28924,7 +28924,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -29025,7 +29025,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -29131,7 +29131,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -29237,7 +29237,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -29343,7 +29343,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -29449,7 +29449,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -29555,7 +29555,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -29661,7 +29661,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -29800,7 +29800,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -29917,7 +29917,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -30036,7 +30036,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -30142,7 +30142,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -30248,7 +30248,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -30354,7 +30354,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -30460,7 +30460,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -30566,7 +30566,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -30672,7 +30672,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -30778,7 +30778,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -30884,7 +30884,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -30990,7 +30990,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -31096,7 +31096,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -31218,7 +31218,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -31324,7 +31324,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -31430,7 +31430,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -31536,7 +31536,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -31653,7 +31653,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -31770,7 +31770,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -31914,7 +31914,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -32064,7 +32064,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -32457,7 +32457,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -32671,7 +32671,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -32876,7 +32876,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -32982,7 +32982,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -33099,7 +33099,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -33216,7 +33216,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -33355,7 +33355,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -33483,7 +33483,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -33612,7 +33612,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -33773,7 +33773,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -33923,7 +33923,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -34137,7 +34137,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -34265,7 +34265,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -34371,7 +34371,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -34543,7 +34543,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -34638,7 +34638,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -34755,7 +34755,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -34872,7 +34872,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -35011,7 +35011,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -35172,7 +35172,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -35289,7 +35289,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -35419,7 +35419,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -35536,7 +35536,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -35664,7 +35664,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -35803,7 +35803,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -35953,7 +35953,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -36090,7 +36090,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -36319,7 +36319,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -36473,7 +36473,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -36590,7 +36590,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -36685,7 +36685,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -36814,7 +36814,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -37057,7 +37057,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -37201,7 +37201,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -37330,7 +37330,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -37458,7 +37458,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -37603,7 +37603,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -37731,7 +37731,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -37859,7 +37859,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -37976,7 +37976,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -38121,7 +38121,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -38372,7 +38372,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -38489,7 +38489,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -38606,7 +38606,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -38745,7 +38745,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
@@ -38851,7 +38851,7 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     }
-		     if (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
 		     	     if (!jobj)
