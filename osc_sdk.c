@@ -5073,7 +5073,8 @@ int osc_load_region_from_conf(const char *profile, char **region)
 	return 0;
 }
 
-int osc_load_cert_from_conf(const char *profile, char **cert, char **key)
+static int osc_load_cert_from_conf_(const char *profile, char **cert, char **key,
+	char **proxy)
 {
 	struct json_object *cert_obj, *key_obj, *js;
 	const char *cfg = cfg_path;
@@ -5106,7 +5107,20 @@ int osc_load_cert_from_conf(const char *profile, char **cert, char **key)
 		ret |= OSC_ENV_FREE_SSLKEY;
 	}
 
+	if (proxy) {
+		key_obj = json_object_object_get(js, "proxy");
+		if (key_obj) {
+			*key = osc_strdup(json_object_get_string(key_obj));
+			ret |= OSC_ENV_FREE_PROXY;
+		}
+	}
+
 	return 0;
+}
+
+int osc_load_cert_from_conf(const char *profile, char **cert, char **key)
+{
+	return osc_load_cert_from_conf_(profile, cert, key, NULL);
 }
 
 /* Function that will write the data inside a variable */
@@ -29929,7 +29943,12 @@ int osc_init_sdk_ext(struct osc_env *e, const char *profile, unsigned int flag,
 		}
 		if (!osc_load_region_from_conf(profile, &e->region))
 			e->flag |= OSC_ENV_FREE_REGION;
-		f = osc_load_cert_from_conf(profile, &e->cert, &e->sslkey);
+		f = osc_load_cert_from_conf_(profile, &e->cert, &e->sslkey,
+			&e->proxy);
+		if (e->cert)
+			cert = e->cert;
+		if (e->sslkey)
+			sslkey = e->sslkey;
 		if (f < 0)
 			return -1;
 		e->flag |= f;
@@ -29979,6 +29998,8 @@ int osc_init_sdk_ext(struct osc_env *e, const char *profile, unsigned int flag,
 		curl_easy_setopt(e->c, CURLOPT_SSLCERT, cert);
 	if (sslkey)
 		curl_easy_setopt(e->c, CURLOPT_SSLKEY, sslkey);
+	if (e->proxy)
+		curl_easy_setopt(e->c, CURLOPT_PROXY, e->proxy);
 	curl_easy_setopt(e->c, CURLOPT_WRITEFUNCTION, write_data);
 	curl_easy_setopt(e->c, CURLOPT_USERAGENT, user_agent);
 
@@ -30046,6 +30067,11 @@ void osc_deinit_sdk(struct osc_env *e)
 	if (e->flag & OSC_ENV_FREE_CERT) {
 		free(e->cert);
 	}
+
+	if (e->flag & OSC_ENV_FREE_PROXY) {
+		free(e->proxy);
+	}
+
 	if (e->flag & OSC_ENV_FREE_SSLKEY) {
 		free(e->sslkey);
 	}
