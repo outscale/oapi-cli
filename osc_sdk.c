@@ -5074,7 +5074,7 @@ int osc_load_region_from_conf(const char *profile, char **region)
 }
 
 static int osc_load_cert_from_conf_(const char *profile, char **cert, char **key,
-	char **proxy)
+				    char **proxy, char **endpoint)
 {
 	struct json_object *cert_obj, *key_obj, *js;
 	const char *cfg = cfg_path;
@@ -5110,8 +5110,21 @@ static int osc_load_cert_from_conf_(const char *profile, char **cert, char **key
 	if (proxy) {
 		key_obj = json_object_object_get(js, "proxy");
 		if (key_obj) {
-			*key = osc_strdup(json_object_get_string(key_obj));
+			*proxy = osc_strdup(json_object_get_string(key_obj));
 			ret |= OSC_ENV_FREE_PROXY;
+		}
+	}
+
+	if (endpoint) {
+		struct json_object *e = json_object_object_get(js, "endpoints");
+
+		if (e)
+			e = json_object_object_get(e, "api");
+		else
+			e = json_object_object_get(js, "endpoint");
+		if (e) {
+			*endpoint = osc_strdup(json_object_get_string(e));
+			ret |= OSC_ENV_FREE_ENDPOINT;
 		}
 	}
 
@@ -5120,7 +5133,7 @@ static int osc_load_cert_from_conf_(const char *profile, char **cert, char **key
 
 int osc_load_cert_from_conf(const char *profile, char **cert, char **key)
 {
-	return osc_load_cert_from_conf_(profile, cert, key, NULL);
+	return osc_load_cert_from_conf_(profile, cert, key, NULL, NULL);
 }
 
 /* Function that will write the data inside a variable */
@@ -29884,6 +29897,8 @@ int osc_init_sdk_ext(struct osc_env *e, const char *profile, unsigned int flag,
 	e->region = getenv("OSC_REGION");
 	e->flag = flag;
 	e->auth_method = cfg ? cfg->auth_method : OSC_AKSK_METHOD;
+	e->proxy = NULL;
+	e->endpoint_allocated_ = NULL;
 	endpoint = getenv("OSC_ENDPOINT_API");
 	osc_init_str(&e->endpoint);
 
@@ -29944,7 +29959,7 @@ int osc_init_sdk_ext(struct osc_env *e, const char *profile, unsigned int flag,
 		if (!osc_load_region_from_conf(profile, &e->region))
 			e->flag |= OSC_ENV_FREE_REGION;
 		f = osc_load_cert_from_conf_(profile, &e->cert, &e->sslkey,
-			&e->proxy);
+					     &e->proxy, &e->endpoint_allocated_);
 		if (e->cert)
 			cert = e->cert;
 		if (e->sslkey)
@@ -29957,12 +29972,17 @@ int osc_init_sdk_ext(struct osc_env *e, const char *profile, unsigned int flag,
 	if (!e->region)
 		e->region = "eu-west-2";
 
-	if (!endpoint) {
+	if (!endpoint && !e->endpoint_allocated_) {
 		osc_str_append_string(&e->endpoint, "https://api.");
 		osc_str_append_string(&e->endpoint, e->region);
 		osc_str_append_string(&e->endpoint, ".outscale.com");
 	} else {
-		osc_str_append_string(&e->endpoint, endpoint);
+		if (e->endpoint_allocated_) {
+			osc_str_append_string(&e->endpoint,
+					      e->endpoint_allocated_);
+		} else {
+			osc_str_append_string(&e->endpoint, endpoint);
+		}
 	}
 
 	if (e->auth_method == OSC_AKSK_METHOD) {
@@ -30074,6 +30094,10 @@ void osc_deinit_sdk(struct osc_env *e)
 
 	if (e->flag & OSC_ENV_FREE_SSLKEY) {
 		free(e->sslkey);
+	}
+
+	if (e->flag & OSC_ENV_FREE_ENDPOINT) {
+		free(e->endpoint_allocated_);
 	}
 
 	e->c = NULL;

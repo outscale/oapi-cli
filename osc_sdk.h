@@ -73,6 +73,7 @@ struct osc_str {
 #define OSC_ENV_FREE_SSLKEY 1 << 5
 #define OSC_ENV_FREE_SK 1 << 6
 #define OSC_ENV_FREE_PROXY 1 << 7
+#define OSC_ENV_FREE_ENDPOINT 1 << 8
 
 #define OSC_ENV_FREE_AK_SK (OSC_ENV_FREE_AK | OSC_ENV_FREE_SK)
 
@@ -98,6 +99,7 @@ struct osc_env {
 	char *cert;
 	char *sslkey;
 	char *proxy;
+	char *endpoint_allocated_;
 	int flag;
 	enum osc_auth_method auth_method;
 	struct curl_slist *headers;
