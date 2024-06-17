@@ -125,6 +125,16 @@ more examples [here](./variable.md)
 }
 ```
 
+avaible option for the profile are:
+`access_key`, `secret_key`, `region`, `x509_client_cert`, `client_certificate`, `x509_client_sslkey`, `proxy`, `endpoints` and `endpoint`.
+
+
+`x509_client_cert` and `client_certificate` are the same.
+
+`endpoint` take the endpoints directly (example: `"endpoint": "https://120.0.0.1:3000"`)
+
+where `endpoints` take an object. (example: `"endpoints: {"api": "https://120.0.0.1:3000"}"`)
+
 ## Environement Variables
 
 AK/SK:
