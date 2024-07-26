@@ -28,6 +28,8 @@ trap "echo [$MSG_BASE ReadImages --DryRun false FAIL]" ERR
 ./oapi-cli ReadImages --DryRun false | grep ImageId > /dev/null
 echo "[$MSG_BASE ReadImages --DryRun false  OK]"
 
+./oapi-cli --help ReadImages
+
 trap "echo [$MSG_BASE ReadImages --Filters.AccountAliases[] Outscale FAIL]" ERR
 ./oapi-cli ReadImages --Filters.AccountAliases[] Outscale | grep ImageId > /dev/null
 echo "[$MSG_BASE ReadImages --Filters.AccountAliases[] Outscale OK]"
