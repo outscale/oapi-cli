@@ -131,68 +131,68 @@ struct accepter_net {
         /*
          * The account ID of the owner of the accepter Net.
          */
-	char *account_id; /* string */
+	char *account_id;
         /*
          * The IP range for the accepter Net, in CIDR notation (for example, 
          * `10.0.0.0/16`).
          */
-	char *ip_range; /* string */
+	char *ip_range;
         /*
          * The ID of the accepter Net.
          */
-	char *net_id; /* string */
+	char *net_id;
 };
 
 struct access_key {
         /*
          * The ID of the access key.
          */
-	char *access_key_id; /* string */
+	char *access_key_id;
         /*
          * The date and time (UTC) of creation of the access key.
          */
-	char *creation_date; /* string */
+	char *creation_date;
         /*
          * The date (UTC) at which the access key expires.
          */
-	char *expiration_date; /* string */
+	char *expiration_date;
         /*
          * The date and time (UTC) of the last modification of the access key.
          */
-	char *last_modification_date; /* string */
+	char *last_modification_date;
         /*
          * The state of the access key (`ACTIVE` if the key is valid for API 
          * calls, or `INACTIVE` if not).
          */
-	char *state; /* string */
+	char *state;
 };
 
 struct access_key_secret_key {
         /*
          * The ID of the access key.
          */
-	char *access_key_id; /* string */
+	char *access_key_id;
         /*
          * The date and time (UTC) of creation of the access key.
          */
-	char *creation_date; /* string */
+	char *creation_date;
         /*
          * The date and time (UTC) at which the access key expires.
          */
-	char *expiration_date; /* string */
+	char *expiration_date;
         /*
          * The date and time (UTC) of the last modification of the access key.
          */
-	char *last_modification_date; /* string */
+	char *last_modification_date;
         /*
          * The access key that enables you to send requests.
          */
-	char *secret_key; /* string */
+	char *secret_key;
         /*
          * The state of the access key (`ACTIVE` if the key is valid for API 
          * calls, or `INACTIVE` if not).
          */
-	char *state; /* string */
+	char *state;
 };
 
 struct access_log {
@@ -202,89 +202,89 @@ struct access_log {
          * `OsuBucketName` parameter is required.
          */
         int is_set_is_enabled;
-	int is_enabled; /* bool */
+	int is_enabled;
         /*
          * The name of the OOS bucket for the access logs.
          */
-	char *osu_bucket_name; /* string */
+	char *osu_bucket_name;
         /*
          * The path to the folder of the access logs in your OOS bucket (by 
          * default, the `root` level of your bucket).
          */
-	char *osu_bucket_prefix; /* string */
+	char *osu_bucket_prefix;
         /*
          * The time interval for the publication of access logs in the OOS 
          * bucket, in minutes. This value can be either `5` or `60` (by default, 
          * `60`).
          */
         int is_set_publication_interval;
-	int publication_interval; /* int */
+	int publication_interval;
 };
 
 struct account {
         /*
          * The ID of the account.
          */
-	char *account_id; /* string */
+	char *account_id;
         /*
          * One or more additional email addresses for the account. These 
          * addresses are used for notifications only.
          */
         char *additional_emails_str;
-	char **additional_emails; /* array string */
+	char **additional_emails;
         /*
          * The city of the account owner.
          */
-	char *city; /* string */
+	char *city;
         /*
          * The name of the company for the account.
          */
-	char *company_name; /* string */
+	char *company_name;
         /*
          * The country of the account owner.
          */
-	char *country; /* string */
+	char *country;
         /*
          * The ID of the customer.
          */
-	char *customer_id; /* string */
+	char *customer_id;
         /*
          * The main email address for the account. This address is used for your 
          * credentials and for notifications.
          */
-	char *email; /* string */
+	char *email;
         /*
          * The first name of the account owner.
          */
-	char *first_name; /* string */
+	char *first_name;
         /*
          * The job title of the account owner.
          */
-	char *job_title; /* string */
+	char *job_title;
         /*
          * The last name of the account owner.
          */
-	char *last_name; /* string */
+	char *last_name;
         /*
          * The mobile phone number of the account owner.
          */
-	char *mobile_number; /* string */
+	char *mobile_number;
         /*
          * The landline phone number of the account owner.
          */
-	char *phone_number; /* string */
+	char *phone_number;
         /*
          * The state/province of the account.
          */
-	char *state_province; /* string */
+	char *state_province;
         /*
          * The value added tax (VAT) number for the account.
          */
-	char *vat_number; /* string */
+	char *vat_number;
         /*
          * The ZIP code of the city.
          */
-	char *zip_code; /* string */
+	char *zip_code;
 };
 
 struct api_access_policy {
@@ -293,7 +293,7 @@ struct api_access_policy {
          * `0`, your access keys can have unlimited lifetimes.
          */
         int is_set_max_access_key_expiration_seconds;
-	int max_access_key_expiration_seconds; /* int */
+	int max_access_key_expiration_seconds;
         /*
          * If true, a trusted session is activated, allowing you to bypass 
          * Certificate Authorities (CAs) enforcement. For more information, see 
@@ -307,69 +307,69 @@ struct api_access_policy {
          * ation.html#_multi_factor_authentication).
          */
         int is_set_require_trusted_env;
-	int require_trusted_env; /* bool */
+	int require_trusted_env;
 };
 
 struct api_access_rule {
         /*
          * The ID of the API access rule.
          */
-	char *api_access_rule_id; /* string */
+	char *api_access_rule_id;
         /*
          * One or more IDs of Client Certificate Authorities (CAs) used for the 
          * API access rule.
          */
         char *ca_ids_str;
-	char **ca_ids; /* array string */
+	char **ca_ids;
         /*
          * One or more Client Certificate Common Names (CNs).
          */
         char *cns_str;
-	char **cns; /* array string */
+	char **cns;
         /*
          * The description of the API access rule.
          */
-	char *description; /* string */
+	char *description;
         /*
          * One or more IP ranges used for the API access rule, in CIDR notation 
          * (for example, `192.0.2.0/16`).
          */
         char *ip_ranges_str;
-	char **ip_ranges; /* array string */
+	char **ip_ranges;
 };
 
 struct application_sticky_cookie_policy {
         /*
          * The name of the application cookie used for stickiness.
          */
-	char *cookie_name; /* string */
+	char *cookie_name;
         /*
          * The mnemonic name for the policy being created. The name must be 
          * unique within a set of policies for this load balancer.
          */
-	char *policy_name; /* string */
+	char *policy_name;
 };
 
 struct backend_vm_health {
         /*
          * The description of the state of the backend VM.
          */
-	char *description; /* string */
+	char *description;
         /*
          * The state of the backend VM (`InService` \\| `OutOfService` \\| 
          * `Unknown`).
          */
-	char *state; /* string */
+	char *state;
         /*
          * Information about the cause of `OutOfService` VMs.<br 
          * />\nSpecifically, whether the cause is Elastic Load Balancing or the 
          * VM (`ELB` \\| `Instance` \\| `N/A`).
          */
-	char *state_reason; /* string */
+	char *state_reason;
         /*
          * The ID of the backend VM.
          */
-	char *vm_id; /* string */
+	char *vm_id;
 };
 
 struct bsu_created {
@@ -378,43 +378,45 @@ struct bsu_created {
          * volume is not deleted when terminating the VM.
          */
         int is_set_delete_on_vm_deletion;
-	int delete_on_vm_deletion; /* bool */
+	int delete_on_vm_deletion;
         /*
          * The date and time (UTC) of attachment of the volume to the VM, in ISO 
          * 8601 date-time format.
          */
-	char *link_date; /* string */
+	char *link_date;
         /*
          * The state of the volume.
          */
-	char *state; /* string */
+	char *state;
         /*
          * The ID of the volume.
          */
-	char *volume_id; /* string */
+	char *volume_id;
 };
 
 struct block_device_mapping_created {
         /*
          *   Information about the created BSU volume.
-         *   -DeleteOnVmDeletion: bool
-         *     If true, the volume is deleted when terminating the VM. If 
-         *     false, the volume is not deleted when terminating the VM.
-         *   -LinkDate: string
-         *     The date and time (UTC) of attachment of the volume to the VM, 
-         *     in ISO 8601 date-time format.
-         *   -State: string
+         *   --Bsu.DeleteOnVmDeletion: bool
+         *     If true, the volume is deleted when terminating the VM. If false, 
+         * the 
+         *     volume is not deleted when terminating the VM.
+         *   --Bsu.LinkDate: string
+         *     The date and time (UTC) of attachment of the volume to the VM, in 
+         * ISO 
+         *     8601 date-time format.
+         *   --Bsu.State: string
          *     The state of the volume.
-         *   -VolumeId: string
+         *   --Bsu.VolumeId: string
          *     The ID of the volume.
          */
         char *bsu_str;
         int is_set_bsu;
-	struct bsu_created bsu; /* ref BsuCreated */
+	struct bsu_created bsu;
         /*
          * The name of the device.
          */
-	char *device_name; /* string */
+	char *device_name;
 };
 
 struct bsu_to_create {
@@ -423,7 +425,7 @@ struct bsu_to_create {
          * the VM. If false, the volume is not deleted when terminating the VM.
          */
         int is_set_delete_on_vm_deletion;
-	int delete_on_vm_deletion; /* bool */
+	int delete_on_vm_deletion;
         /*
          * The number of I/O operations per second (IOPS). This parameter must 
          * be specified only if you create an `io1` volume. The maximum number 
@@ -431,11 +433,11 @@ struct bsu_to_create {
          * performance ratio of 300 IOPS per gibibyte.
          */
         int is_set_iops;
-	int iops; /* int */
+	int iops;
         /*
          * The ID of the snapshot used to create the volume.
          */
-	char *snapshot_id; /* string */
+	char *snapshot_id;
         /*
          * The size of the volume, in gibibytes (GiB).<br />\nIf you specify a 
          * snapshot ID, the volume size must be at least equal to the snapshot 
@@ -443,7 +445,7 @@ struct bsu_to_create {
          * volume is created with a size similar to the snapshot one.
          */
         int is_set_volume_size;
-	int volume_size; /* int */
+	int volume_size;
         /*
          * The type of the volume (`standard` \\| `io1` \\| `gp2`). If not 
          * specified in the request, a `standard` volume is created.<br />\nFor 
@@ -452,100 +454,116 @@ struct bsu_to_create {
          * IOPS](https://docs.outscale.com/en/userguide/About-Volumes.html#_volum
          * e_types_and_iops).
          */
-	char *volume_type; /* string */
+	char *volume_type;
 };
 
 struct block_device_mapping_image {
         /*
          *   Information about the BSU volume to create.
-         *   -DeleteOnVmDeletion: bool
+         *   --Bsu.DeleteOnVmDeletion: bool
          *     By default or if set to true, the volume is deleted when 
-         *     terminating the VM. If false, the volume is not deleted when 
-         *     terminating the VM.
-         *   -Iops: int
+         * terminating the 
+         *     VM. If false, the volume is not deleted when terminating the VM.
+         *   --Bsu.Iops: int
          *     The number of I/O operations per second (IOPS). This parameter 
-         *     must be specified only if you create an `io1` volume. The 
-         *     maximum number of IOPS allowed for `io1` volumes is `13000` 
-         *     with a maximum performance ratio of 300 IOPS per gibibyte.
-         *   -SnapshotId: string
+         * must be 
+         *     specified only if you create an `io1` volume. The maximum number 
+         * of IOPS 
+         *     allowed for `io1` volumes is `13000` with a maximum performance 
+         * ratio of 
+         *     300 IOPS per gibibyte.
+         *   --Bsu.SnapshotId: string
          *     The ID of the snapshot used to create the volume.
-         *   -VolumeSize: int
-         *     The size of the volume, in gibibytes (GiB).<br />\nIf you 
-         *     specify a snapshot ID, the volume size must be at least equal 
-         *     to the snapshot size.<br />\nIf you specify a snapshot ID but 
-         *     no volume size, the volume is created with a size similar to 
-         *     the snapshot one.
-         *   -VolumeType: string
-         *     The type of the volume (`standard` \\| `io1` \\| `gp2`). If 
-         *     not specified in the request, a `standard` volume is 
-         *     created.<br />\nFor more information about volume types, see 
-         *     [About Volumes > Volume Types and 
-         *     IOPS](https://docs.outscale.com/en/userguide/About-Volumes.html#
-         *     _volume_types_and_iops).
+         *   --Bsu.VolumeSize: int
+         *     The size of the volume, in gibibytes (GiB).<br />\nIf you specify 
+         * a 
+         *     snapshot ID, the volume size must be at least equal to the 
+         * snapshot 
+         *     size.<br />\nIf you specify a snapshot ID but no volume size, the 
+         * volume 
+         *     is created with a size similar to the snapshot one.
+         *   --Bsu.VolumeType: string
+         *     The type of the volume (`standard` \\| `io1` \\| `gp2`). If not 
+         *     specified in the request, a `standard` volume is created.<br 
+         * />\nFor more 
+         *     information about volume types, see [About Volumes > Volume Types 
+         * and 
+         *     
+         * IOPS](https://docs.outscale.com/en/userguide/About-Volumes.html#_volum
+         * e_ty
+         *     pes_and_iops).
          */
         char *bsu_str;
         int is_set_bsu;
-	struct bsu_to_create bsu; /* ref BsuToCreate */
+	struct bsu_to_create bsu;
         /*
          * The device name for the volume. For a root device, you must use 
          * `/dev/sda1`. For other volumes, you must use `/dev/sdX`, `/dev/sdXX`, 
          * `/dev/xvdX`, or `/dev/xvdXX` (where the first `X` is a letter between 
          * `b` and `z`, and the second `X` is a letter between `a` and `z`).
          */
-	char *device_name; /* string */
+	char *device_name;
         /*
          * The name of the virtual device (`ephemeralN`).
          */
-	char *virtual_device_name; /* string */
+	char *virtual_device_name;
 };
 
 struct block_device_mapping_vm_creation {
         /*
          *   Information about the BSU volume to create.
-         *   -DeleteOnVmDeletion: bool
+         *   --Bsu.DeleteOnVmDeletion: bool
          *     By default or if set to true, the volume is deleted when 
-         *     terminating the VM. If false, the volume is not deleted when 
-         *     terminating the VM.
-         *   -Iops: int
+         * terminating the 
+         *     VM. If false, the volume is not deleted when terminating the VM.
+         *   --Bsu.Iops: int
          *     The number of I/O operations per second (IOPS). This parameter 
-         *     must be specified only if you create an `io1` volume. The 
-         *     maximum number of IOPS allowed for `io1` volumes is `13000` 
-         *     with a maximum performance ratio of 300 IOPS per gibibyte.
-         *   -SnapshotId: string
+         * must be 
+         *     specified only if you create an `io1` volume. The maximum number 
+         * of IOPS 
+         *     allowed for `io1` volumes is `13000` with a maximum performance 
+         * ratio of 
+         *     300 IOPS per gibibyte.
+         *   --Bsu.SnapshotId: string
          *     The ID of the snapshot used to create the volume.
-         *   -VolumeSize: int
-         *     The size of the volume, in gibibytes (GiB).<br />\nIf you 
-         *     specify a snapshot ID, the volume size must be at least equal 
-         *     to the snapshot size.<br />\nIf you specify a snapshot ID but 
-         *     no volume size, the volume is created with a size similar to 
-         *     the snapshot one.
-         *   -VolumeType: string
-         *     The type of the volume (`standard` \\| `io1` \\| `gp2`). If 
-         *     not specified in the request, a `standard` volume is 
-         *     created.<br />\nFor more information about volume types, see 
-         *     [About Volumes > Volume Types and 
-         *     IOPS](https://docs.outscale.com/en/userguide/About-Volumes.html#
-         *     _volume_types_and_iops).
+         *   --Bsu.VolumeSize: int
+         *     The size of the volume, in gibibytes (GiB).<br />\nIf you specify 
+         * a 
+         *     snapshot ID, the volume size must be at least equal to the 
+         * snapshot 
+         *     size.<br />\nIf you specify a snapshot ID but no volume size, the 
+         * volume 
+         *     is created with a size similar to the snapshot one.
+         *   --Bsu.VolumeType: string
+         *     The type of the volume (`standard` \\| `io1` \\| `gp2`). If not 
+         *     specified in the request, a `standard` volume is created.<br 
+         * />\nFor more 
+         *     information about volume types, see [About Volumes > Volume Types 
+         * and 
+         *     
+         * IOPS](https://docs.outscale.com/en/userguide/About-Volumes.html#_volum
+         * e_ty
+         *     pes_and_iops).
          */
         char *bsu_str;
         int is_set_bsu;
-	struct bsu_to_create bsu; /* ref BsuToCreate */
+	struct bsu_to_create bsu;
         /*
          * The device name for the volume. For a root device, you must use 
          * `/dev/sda1`. For other volumes, you must use `/dev/sdX`, `/dev/sdXX`, 
          * `/dev/xvdX`, or `/dev/xvdXX` (where the first `X` is a letter between 
          * `b` and `z`, and the second `X` is a letter between `a` and `z`).
          */
-	char *device_name; /* string */
+	char *device_name;
         /*
          * Removes the device which is included in the block device mapping of 
          * the OMI.
          */
-	char *no_device; /* string */
+	char *no_device;
         /*
          * The name of the virtual device (`ephemeralN`).
          */
-	char *virtual_device_name; /* string */
+	char *virtual_device_name;
 };
 
 struct bsu_to_update_vm {
@@ -554,169 +572,175 @@ struct bsu_to_update_vm {
          * to false, the volume is not deleted when terminating the VM.
          */
         int is_set_delete_on_vm_deletion;
-	int delete_on_vm_deletion; /* bool */
+	int delete_on_vm_deletion;
         /*
          * The ID of the volume.
          */
-	char *volume_id; /* string */
+	char *volume_id;
 };
 
 struct block_device_mapping_vm_update {
         /*
          *   Information about the BSU volume.
-         *   -DeleteOnVmDeletion: bool
-         *     If set to true, the volume is deleted when terminating the VM. 
-         *     If set to false, the volume is not deleted when terminating the 
-         *     VM.
-         *   -VolumeId: string
+         *   --Bsu.DeleteOnVmDeletion: bool
+         *     If set to true, the volume is deleted when terminating the VM. If 
+         * set to 
+         *     false, the volume is not deleted when terminating the VM.
+         *   --Bsu.VolumeId: string
          *     The ID of the volume.
          */
         char *bsu_str;
         int is_set_bsu;
-	struct bsu_to_update_vm bsu; /* ref BsuToUpdateVm */
+	struct bsu_to_update_vm bsu;
         /*
          * The device name for the volume. For a root device, you must use 
          * `/dev/sda1`. For other volumes, you must use `/dev/sdX`, `/dev/sdXX`, 
          * `/dev/xvdX`, or `/dev/xvdXX` (where the first `X` is a letter between 
          * `b` and `z`, and the second `X` is a letter between `a` and `z`).
          */
-	char *device_name; /* string */
+	char *device_name;
         /*
          * Removes the device which is included in the block device mapping of 
          * the OMI.
          */
-	char *no_device; /* string */
+	char *no_device;
         /*
          * The name of the virtual device (`ephemeralN`).
          */
-	char *virtual_device_name; /* string */
+	char *virtual_device_name;
 };
 
 struct ca {
         /*
          * The fingerprint of the CA.
          */
-	char *ca_fingerprint; /* string */
+	char *ca_fingerprint;
         /*
          * The ID of the CA.
          */
-	char *ca_id; /* string */
+	char *ca_id;
         /*
          * The description of the CA.
          */
-	char *description; /* string */
+	char *description;
 };
 
 struct catalog {
         /*
          * One or more catalog entries.
          *   Information about the catalog entry.
-         *   -Category: string
+         *   --Entries.INDEX.Category: string
          *     The category of the catalog entry (for example, `network`).
-         *   -Flags: string
-         *     When returned and equal to `PER_MONTH`, the price of the 
-         *     catalog entry is calculated on a monthly basis.
-         *   -Operation: string
+         *   --Entries.INDEX.Flags: string
+         *     When returned and equal to `PER_MONTH`, the price of the catalog 
+         * entry 
+         *     is calculated on a monthly basis.
+         *   --Entries.INDEX.Operation: string
          *     The API call associated with the catalog entry (for example, 
-         *     `CreateVms` or `RunInstances`).
-         *   -Service: string
+         * `CreateVms` 
+         *     or `RunInstances`).
+         *   --Entries.INDEX.Service: string
          *     The service associated with the catalog entry (`TinaOS-FCU`, 
          *     `TinaOS-LBU`, `TinaOS-DirectLink`, or `TinaOS-OOS`).
-         *   -SubregionName: string
+         *   --Entries.INDEX.SubregionName: string
          *     The Subregion associated with the catalog entry.
-         *   -Title: string
+         *   --Entries.INDEX.Title: string
          *     The description of the catalog entry.
-         *   -Type: string
+         *   --Entries.INDEX.Type: string
          *     The type of resource associated with the catalog entry.
-         *   -UnitPrice: double
+         *   --Entries.INDEX.UnitPrice: double
          *     The unit price of the catalog entry, in the currency of the 
-         *     Region's catalog.
+         * Region's 
+         *     catalog.
          */
         char *entries_str;
         int nb_entries;
-	struct catalog_entry *entries; /* array ref CatalogEntry */
+	struct catalog_entry *entries;
 };
 
 struct catalog_entry {
         /*
          * The category of the catalog entry (for example, `network`).
          */
-	char *category; /* string */
+	char *category;
         /*
          * When returned and equal to `PER_MONTH`, the price of the catalog 
          * entry is calculated on a monthly basis.
          */
-	char *flags; /* string */
+	char *flags;
         /*
          * The API call associated with the catalog entry (for example, 
          * `CreateVms` or `RunInstances`).
          */
-	char *operation; /* string */
+	char *operation;
         /*
          * The service associated with the catalog entry (`TinaOS-FCU`, 
          * `TinaOS-LBU`, `TinaOS-DirectLink`, or `TinaOS-OOS`).
          */
-	char *service; /* string */
+	char *service;
         /*
          * The Subregion associated with the catalog entry.
          */
-	char *subregion_name; /* string */
+	char *subregion_name;
         /*
          * The description of the catalog entry.
          */
-	char *title; /* string */
+	char *title;
         /*
          * The type of resource associated with the catalog entry.
          */
-	char *type; /* string */
+	char *type;
         /*
          * The unit price of the catalog entry, in the currency of the Region's 
          * catalog.
          */
         int is_set_unit_price;
-	double unit_price; /* double */
+	double unit_price;
 };
 
 struct catalogs {
         /*
          * One or more catalog entries.
          *   Information about the catalog entry.
-         *   -Category: string
+         *   --Entries.INDEX.Category: string
          *     The category of the catalog entry (for example, `network`).
-         *   -Flags: string
-         *     When returned and equal to `PER_MONTH`, the price of the 
-         *     catalog entry is calculated on a monthly basis.
-         *   -Operation: string
+         *   --Entries.INDEX.Flags: string
+         *     When returned and equal to `PER_MONTH`, the price of the catalog 
+         * entry 
+         *     is calculated on a monthly basis.
+         *   --Entries.INDEX.Operation: string
          *     The API call associated with the catalog entry (for example, 
-         *     `CreateVms` or `RunInstances`).
-         *   -Service: string
+         * `CreateVms` 
+         *     or `RunInstances`).
+         *   --Entries.INDEX.Service: string
          *     The service associated with the catalog entry (`TinaOS-FCU`, 
          *     `TinaOS-LBU`, `TinaOS-DirectLink`, or `TinaOS-OOS`).
-         *   -SubregionName: string
+         *   --Entries.INDEX.SubregionName: string
          *     The Subregion associated with the catalog entry.
-         *   -Title: string
+         *   --Entries.INDEX.Title: string
          *     The description of the catalog entry.
-         *   -Type: string
+         *   --Entries.INDEX.Type: string
          *     The type of resource associated with the catalog entry.
-         *   -UnitPrice: double
+         *   --Entries.INDEX.UnitPrice: double
          *     The unit price of the catalog entry, in the currency of the 
-         *     Region's catalog.
+         * Region's 
+         *     catalog.
          */
         char *entries_str;
         int nb_entries;
-	struct catalog_entry *entries; /* array ref CatalogEntry */
+	struct catalog_entry *entries;
         /*
          * The beginning of the time period (UTC).
          */
-	char *from_date; /* string */
+	char *from_date;
         /*
          * The state of the catalog (`CURRENT` \\| `OBSOLETE`).
          */
-	char *state; /* string */
+	char *state;
         /*
          * The end of the time period (UTC).
          */
-	char *to_date; /* string */
+	char *to_date;
 };
 
 struct client_gateway {
@@ -726,135 +750,135 @@ struct client_gateway {
          * Internet.
          */
         int is_set_bgp_asn;
-	int bgp_asn; /* int */
+	int bgp_asn;
         /*
          * The ID of the client gateway.
          */
-	char *client_gateway_id; /* string */
+	char *client_gateway_id;
         /*
          * The type of communication tunnel used by the client gateway (only 
          * `ipsec.1` is supported).
          */
-	char *connection_type; /* string */
+	char *connection_type;
         /*
          * The public IPv4 address of the client gateway (must be a fixed 
          * address into a NATed network).
          */
-	char *public_ip; /* string */
+	char *public_ip;
         /*
          * The state of the client gateway (`pending` \\| `available` \\| 
          * `deleting` \\| `deleted`).
          */
-	char *state; /* string */
+	char *state;
         /*
          * One or more tags associated with the client gateway.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
 };
 
 struct consumption_entry {
         /*
          * The ID of your TINA account.
          */
-	char *account_id; /* string */
+	char *account_id;
         /*
          * The category of the resource (for example, `network`).
          */
-	char *category; /* string */
+	char *category;
         /*
          * The beginning of the time period (UTC).
          */
-	char *from_date; /* string */
+	char *from_date;
         /*
          * The API call that triggered the resource consumption (for example, 
          * `RunInstances` or `CreateVolume`).
          */
-	char *operation; /* string */
+	char *operation;
         /*
          * The ID of the TINA account which is billed for your consumption. It 
          * can be different from your account in the `AccountId` parameter.
          */
-	char *paying_account_id; /* string */
+	char *paying_account_id;
         /*
          * The total price of the consumed resource during the specified time 
          * period, in the currency of the Region's catalog.
          */
         int is_set_price;
-	double price; /* double */
+	double price;
         /*
          * The service of the API call (`TinaOS-FCU`, `TinaOS-LBU`, 
          * `TinaOS-DirectLink`, `TinaOS-OOS`, or `TinaOS-OSU`).
          */
-	char *service; /* string */
+	char *service;
         /*
          * The name of the Subregion.
          */
-	char *subregion_name; /* string */
+	char *subregion_name;
         /*
          * A description of the consumed resource.
          */
-	char *title; /* string */
+	char *title;
         /*
          * The end of the time period (UTC).
          */
-	char *to_date; /* string */
+	char *to_date;
         /*
          * The type of resource, depending on the API call.
          */
-	char *type; /* string */
+	char *type;
         /*
          * The unit price of the consumed resource, in the currency of the 
          * Region's catalog.
          */
         int is_set_unit_price;
-	double unit_price; /* double */
+	double unit_price;
         /*
          * The consumed amount for the resource. The unit depends on the 
          * resource type. For more information, see the `Title` element.
          */
         int is_set_value;
-	double value; /* double */
+	double value;
 };
 
 struct dedicated_group {
         /*
          * The account ID of the owners of the dedicated group.
          */
-	char *account_id; /* string */
+	char *account_id;
         /*
          * The processor generation.
          */
         int is_set_cpu_generation;
-	int cpu_generation; /* int */
+	int cpu_generation;
         /*
          * The ID of the dedicated group.
          */
-	char *dedicated_group_id; /* string */
+	char *dedicated_group_id;
         /*
          * The name of the dedicated group.
          */
-	char *name; /* string */
+	char *name;
         /*
          * The IDs of the Nets in the dedicated group.
          */
         char *net_ids_str;
-	char **net_ids; /* array string */
+	char **net_ids;
         /*
          * The name of the Subregion in which the dedicated group is located.
          */
-	char *subregion_name; /* string */
+	char *subregion_name;
         /*
          * The IDs of the VMs in the dedicated group.
          */
         char *vm_ids_str;
-	char **vm_ids; /* array string */
+	char **vm_ids;
 };
 
 struct dhcp_options_set {
@@ -862,68 +886,68 @@ struct dhcp_options_set {
          * If true, the DHCP options set is a default one. If false, it is not.
          */
         int is_set_default_arg;
-	int default_arg; /* bool */
+	int default_arg;
         /*
          * The ID of the DHCP options set.
          */
-	char *dhcp_options_set_id; /* string */
+	char *dhcp_options_set_id;
         /*
          * The domain name.
          */
-	char *domain_name; /* string */
+	char *domain_name;
         /*
          * One or more IPs for the domain name servers.
          */
         char *domain_name_servers_str;
-	char **domain_name_servers; /* array string */
+	char **domain_name_servers;
         /*
          * One or more IPs for the log servers.
          */
         char *log_servers_str;
-	char **log_servers; /* array string */
+	char **log_servers;
         /*
          * One or more IPs for the NTP servers.
          */
         char *ntp_servers_str;
-	char **ntp_servers; /* array string */
+	char **ntp_servers;
         /*
          * One or more tags associated with the DHCP options set.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
 };
 
 struct direct_link {
         /*
          * The account ID of the owner of the DirectLink.
          */
-	char *account_id; /* string */
+	char *account_id;
         /*
          * The physical link bandwidth (either 1 Gbps or 10 Gbps).
          */
-	char *bandwidth; /* string */
+	char *bandwidth;
         /*
          * The ID of the DirectLink (for example, `dxcon-xxxxxxxx`).
          */
-	char *direct_link_id; /* string */
+	char *direct_link_id;
         /*
          * The name of the DirectLink.
          */
-	char *direct_link_name; /* string */
+	char *direct_link_name;
         /*
          * The datacenter where the DirectLink is located.
          */
-	char *location; /* string */
+	char *location;
         /*
          * The Region in which the DirectLink has been created.
          */
-	char *region_name; /* string */
+	char *region_name;
         /*
          * The state of the DirectLink.<br />\n* `requested`: The DirectLink is 
          * requested but the request has not been validated yet.<br />\n* 
@@ -933,7 +957,7 @@ struct direct_link {
          * ready to use.<br />\n* `deleting`: The deletion process is in 
          * progress.<br />\n* `deleted`: The DirectLink is deleted.
          */
-	char *state; /* string */
+	char *state;
 };
 
 struct direct_link_interface {
@@ -943,99 +967,99 @@ struct direct_link_interface {
          * between `64512` and `65534`.
          */
         int is_set_bgp_asn;
-	int bgp_asn; /* int */
+	int bgp_asn;
         /*
          * The BGP authentication key.
          */
-	char *bgp_key; /* string */
+	char *bgp_key;
         /*
          * The IP on the customer's side of the DirectLink interface.
          */
-	char *client_private_ip; /* string */
+	char *client_private_ip;
         /*
          * The name of the DirectLink interface.
          */
-	char *direct_link_interface_name; /* string */
+	char *direct_link_interface_name;
         /*
          * The IP on the OUTSCALE side of the DirectLink interface.
          */
-	char *outscale_private_ip; /* string */
+	char *outscale_private_ip;
         /*
          * The ID of the target virtual gateway.
          */
-	char *virtual_gateway_id; /* string */
+	char *virtual_gateway_id;
         /*
          * The VLAN number associated with the DirectLink interface. This number 
          * must be unique and be between `2` and `4094`.
          */
         int is_set_vlan;
-	int vlan; /* int */
+	int vlan;
 };
 
 struct direct_link_interfaces {
         /*
          * The account ID of the owner of the DirectLink interface.
          */
-	char *account_id; /* string */
+	char *account_id;
         /*
          * The BGP (Border Gateway Protocol) ASN (Autonomous System Number) on 
          * the customer's side of the DirectLink interface.
          */
         int is_set_bgp_asn;
-	int bgp_asn; /* int */
+	int bgp_asn;
         /*
          * The BGP authentication key.
          */
-	char *bgp_key; /* string */
+	char *bgp_key;
         /*
          * The IP on the customer's side of the DirectLink interface.
          */
-	char *client_private_ip; /* string */
+	char *client_private_ip;
         /*
          * The ID of the DirectLink.
          */
-	char *direct_link_id; /* string */
+	char *direct_link_id;
         /*
          * The ID of the DirectLink interface.
          */
-	char *direct_link_interface_id; /* string */
+	char *direct_link_interface_id;
         /*
          * The name of the DirectLink interface.
          */
-	char *direct_link_interface_name; /* string */
+	char *direct_link_interface_name;
         /*
          * The type of the DirectLink interface (always `private`).
          */
-	char *interface_type; /* string */
+	char *interface_type;
         /*
          * The datacenter where the DirectLink interface is located.
          */
-	char *location; /* string */
+	char *location;
         /*
          * The maximum transmission unit (MTU) of the DirectLink interface, in 
          * bytes (always `1500`).
          */
         int is_set_mtu;
-	int mtu; /* int */
+	int mtu;
         /*
          * The IP on the OUTSCALE side of the DirectLink interface.
          */
-	char *outscale_private_ip; /* string */
+	char *outscale_private_ip;
         /*
          * The state of the DirectLink interface (`pending` \\| `available` \\| 
          * `deleting` \\| `deleted` \\| `confirming` \\| `rejected` \\| 
          * `expired`).
          */
-	char *state; /* string */
+	char *state;
         /*
          * The ID of the target virtual gateway.
          */
-	char *virtual_gateway_id; /* string */
+	char *virtual_gateway_id;
         /*
          * The VLAN number associated with the DirectLink interface.
          */
         int is_set_vlan;
-	int vlan; /* int */
+	int vlan;
 };
 
 struct errors {
@@ -1044,15 +1068,15 @@ struct errors {
          * returned code in the [errors page](api-errors.html) to find more 
          * details about the error.
          */
-	char *code; /* string */
+	char *code;
         /*
          * A description providing more details about the error.
          */
-	char *details; /* string */
+	char *details;
         /*
          * The type of the error (for example, `InvalidParameterValue`).
          */
-	char *type; /* string */
+	char *type;
 };
 
 struct filters_access_keys {
@@ -1060,12 +1084,12 @@ struct filters_access_keys {
          * The IDs of the access keys.
          */
         char *access_key_ids_str;
-	char **access_key_ids; /* array string */
+	char **access_key_ids;
         /*
          * The states of the access keys (`ACTIVE` \\| `INACTIVE`).
          */
         char *states_str;
-	char **states; /* array string */
+	char **states;
 };
 
 struct filters_api_access_rule {
@@ -1073,27 +1097,27 @@ struct filters_api_access_rule {
          * One or more IDs of API access rules.
          */
         char *api_access_rule_ids_str;
-	char **api_access_rule_ids; /* array string */
+	char **api_access_rule_ids;
         /*
          * One or more IDs of Client Certificate Authorities (CAs).
          */
         char *ca_ids_str;
-	char **ca_ids; /* array string */
+	char **ca_ids;
         /*
          * One or more Client Certificate Common Names (CNs).
          */
         char *cns_str;
-	char **cns; /* array string */
+	char **cns;
         /*
          * One or more descriptions of API access rules.
          */
         char *descriptions_str;
-	char **descriptions; /* array string */
+	char **descriptions;
         /*
          * One or more IPs or CIDR blocks (for example, `192.0.2.0/16`).
          */
         char *ip_ranges_str;
-	char **ip_ranges; /* array string */
+	char **ip_ranges;
 };
 
 struct filters_api_log {
@@ -1101,52 +1125,52 @@ struct filters_api_log {
          * The access keys used for the logged calls.
          */
         char *query_access_keys_str;
-	char **query_access_keys; /* array string */
+	char **query_access_keys;
         /*
          * The names of the APIs of the logged calls (always `oapi` for the 
          * OUTSCALE API).
          */
         char *query_api_names_str;
-	char **query_api_names; /* array string */
+	char **query_api_names;
         /*
          * The names of the logged calls.
          */
         char *query_call_names_str;
-	char **query_call_names; /* array string */
+	char **query_call_names;
         /*
          * The date and time, or the date, after which you want to retrieve 
          * logged calls, in ISO 8601 format (for example, 
          * `2020-06-14T00:00:00.000Z` or `2020-06-14`). By default, this date is 
          * set to 48 hours before the `QueryDateBefore` parameter value.
          */
-	char *query_date_after; /* string */
+	char *query_date_after;
         /*
          * The date and time, or the date, before which you want to retrieve 
          * logged calls, in ISO 8601 format (for example, 
          * `2020-06-30T00:00:00.000Z` or `2020-06-14`). By default, this date is 
          * set to now, or 48 hours after the `QueryDateAfter` parameter value.
          */
-	char *query_date_before; /* string */
+	char *query_date_before;
         /*
          * The IPs used for the logged calls.
          */
         char *query_ip_addresses_str;
-	char **query_ip_addresses; /* array string */
+	char **query_ip_addresses;
         /*
          * The user agents of the HTTP requests of the logged calls.
          */
         char *query_user_agents_str;
-	char **query_user_agents; /* array string */
+	char **query_user_agents;
         /*
          * The request IDs provided in the responses of the logged calls.
          */
         char *request_ids_str;
-	char **request_ids; /* array string */
+	char **request_ids;
         /*
          * The HTTP status codes of the logged calls.
          */
         char *response_status_codes_str;
-	int *response_status_codes; /* array integer */
+	int *response_status_codes;
 };
 
 struct filters_ca {
@@ -1154,17 +1178,17 @@ struct filters_ca {
          * The fingerprints of the CAs.
          */
         char *ca_fingerprints_str;
-	char **ca_fingerprints; /* array string */
+	char **ca_fingerprints;
         /*
          * The IDs of the CAs.
          */
         char *ca_ids_str;
-	char **ca_ids; /* array string */
+	char **ca_ids;
         /*
          * The descriptions of the CAs.
          */
         char *descriptions_str;
-	char **descriptions; /* array string */
+	char **descriptions;
 };
 
 struct filters_catalogs {
@@ -1173,19 +1197,19 @@ struct filters_catalogs {
          * false, returns the current catalog and past catalogs.
          */
         int is_set_current_catalog_only;
-	int current_catalog_only; /* bool */
+	int current_catalog_only;
         /*
          * The beginning of the time period, in ISO 8601 date format (for 
          * example, `2020-06-14`). This date cannot be older than 3 years. You 
          * must specify the parameters `FromDate` and `ToDate` together.
          */
-	char *from_date; /* string */
+	char *from_date;
         /*
          * The end of the time period, in ISO 8601 date format (for example, 
          * `2020-06-30`). You must specify the parameters `FromDate` and 
          * `ToDate` together.
          */
-	char *to_date; /* string */
+	char *to_date;
 };
 
 struct filters_client_gateway {
@@ -1194,46 +1218,46 @@ struct filters_client_gateway {
          * the connections.
          */
         char *bgp_asns_str;
-	int *bgp_asns; /* array integer */
+	int *bgp_asns;
         /*
          * The IDs of the client gateways.
          */
         char *client_gateway_ids_str;
-	char **client_gateway_ids; /* array string */
+	char **client_gateway_ids;
         /*
          * The types of communication tunnels used by the client gateways (only 
          * `ipsec.1` is supported).
          */
         char *connection_types_str;
-	char **connection_types; /* array string */
+	char **connection_types;
         /*
          * The public IPv4 addresses of the client gateways.
          */
         char *public_ips_str;
-	char **public_ips; /* array string */
+	char **public_ips;
         /*
          * The states of the client gateways (`pending` \\| `available` \\| 
          * `deleting` \\| `deleted`).
          */
         char *states_str;
-	char **states; /* array string */
+	char **states;
         /*
          * The keys of the tags associated with the client gateways.
          */
         char *tag_keys_str;
-	char **tag_keys; /* array string */
+	char **tag_keys;
         /*
          * The values of the tags associated with the client gateways.
          */
         char *tag_values_str;
-	char **tag_values; /* array string */
+	char **tag_values;
         /*
          * The key/value combination of the tags associated with the client 
          * gateways, in the following format: 
          * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *tags_str;
-	char **tags; /* array string */
+	char **tags;
 };
 
 struct filters_dedicated_group {
@@ -1242,22 +1266,22 @@ struct filters_dedicated_group {
          * example, `4`).
          */
         char *cpu_generations_str;
-	int *cpu_generations; /* array integer */
+	int *cpu_generations;
         /*
          * The IDs of the dedicated groups.
          */
         char *dedicated_group_ids_str;
-	char **dedicated_group_ids; /* array string */
+	char **dedicated_group_ids;
         /*
          * The names of the dedicated groups.
          */
         char *names_str;
-	char **names; /* array string */
+	char **names;
         /*
          * The names of the Subregions in which the dedicated groups are located.
          */
         char *subregion_names_str;
-	char **subregion_names; /* array string */
+	char **subregion_names;
 };
 
 struct filters_dhcp_options {
@@ -1266,50 +1290,50 @@ struct filters_dhcp_options {
          * non-default DHCP options set.
          */
         int is_set_default_arg;
-	int default_arg; /* bool */
+	int default_arg;
         /*
          * The IDs of the DHCP options sets.
          */
         char *dhcp_options_set_ids_str;
-	char **dhcp_options_set_ids; /* array string */
+	char **dhcp_options_set_ids;
         /*
          * The IPs of the domain name servers used for the DHCP options sets.
          */
         char *domain_name_servers_str;
-	char **domain_name_servers; /* array string */
+	char **domain_name_servers;
         /*
          * The domain names used for the DHCP options sets.
          */
         char *domain_names_str;
-	char **domain_names; /* array string */
+	char **domain_names;
         /*
          * The IPs of the log servers used for the DHCP options sets.
          */
         char *log_servers_str;
-	char **log_servers; /* array string */
+	char **log_servers;
         /*
          * The IPs of the Network Time Protocol (NTP) servers used for the DHCP 
          * options sets.
          */
         char *ntp_servers_str;
-	char **ntp_servers; /* array string */
+	char **ntp_servers;
         /*
          * The keys of the tags associated with the DHCP options sets.
          */
         char *tag_keys_str;
-	char **tag_keys; /* array string */
+	char **tag_keys;
         /*
          * The values of the tags associated with the DHCP options sets.
          */
         char *tag_values_str;
-	char **tag_values; /* array string */
+	char **tag_values;
         /*
          * The key/value combination of the tags associated with the DHCP 
          * options sets, in the following format: 
          * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *tags_str;
-	char **tags; /* array string */
+	char **tags;
 };
 
 struct filters_direct_link {
@@ -1317,7 +1341,7 @@ struct filters_direct_link {
          * The IDs of the DirectLinks.
          */
         char *direct_link_ids_str;
-	char **direct_link_ids; /* array string */
+	char **direct_link_ids;
 };
 
 struct filters_direct_link_interface {
@@ -1325,12 +1349,12 @@ struct filters_direct_link_interface {
          * The IDs of the DirectLinks.
          */
         char *direct_link_ids_str;
-	char **direct_link_ids; /* array string */
+	char **direct_link_ids;
         /*
          * The IDs of the DirectLink interfaces.
          */
         char *direct_link_interface_ids_str;
-	char **direct_link_interface_ids; /* array string */
+	char **direct_link_interface_ids;
 };
 
 struct filters_export_task {
@@ -1338,7 +1362,7 @@ struct filters_export_task {
          * The IDs of the export tasks.
          */
         char *task_ids_str;
-	char **task_ids; /* array string */
+	char **task_ids;
 };
 
 struct filters_flexible_gpu {
@@ -1346,17 +1370,17 @@ struct filters_flexible_gpu {
          * Indicates whether the fGPU is deleted when terminating the VM.
          */
         int is_set_delete_on_vm_deletion;
-	int delete_on_vm_deletion; /* bool */
+	int delete_on_vm_deletion;
         /*
          * One or more IDs of fGPUs.
          */
         char *flexible_gpu_ids_str;
-	char **flexible_gpu_ids; /* array string */
+	char **flexible_gpu_ids;
         /*
          * The processor generations that the fGPUs are compatible with.
          */
         char *generations_str;
-	char **generations; /* array string */
+	char **generations;
         /*
          * One or more models of fGPUs. For more information, see [About 
          * Flexible 
@@ -1364,23 +1388,23 @@ struct filters_flexible_gpu {
          * .
          */
         char *model_names_str;
-	char **model_names; /* array string */
+	char **model_names;
         /*
          * The states of the fGPUs (`allocated` \\| `attaching` \\| `attached` 
          * \\| `detaching`).
          */
         char *states_str;
-	char **states; /* array string */
+	char **states;
         /*
          * The Subregions where the fGPUs are located.
          */
         char *subregion_names_str;
-	char **subregion_names; /* array string */
+	char **subregion_names;
         /*
          * One or more IDs of VMs.
          */
         char *vm_ids_str;
-	char **vm_ids; /* array string */
+	char **vm_ids;
 };
 
 struct filters_image {
@@ -1388,125 +1412,125 @@ struct filters_image {
          * The account aliases of the owners of the OMIs.
          */
         char *account_aliases_str;
-	char **account_aliases; /* array string */
+	char **account_aliases;
         /*
          * The account IDs of the owners of the OMIs. By default, all the OMIs 
          * for which you have launch permissions are described.
          */
         char *account_ids_str;
-	char **account_ids; /* array string */
+	char **account_ids;
         /*
          * The architectures of the OMIs (`i386` \\| `x86_64`).
          */
         char *architectures_str;
-	char **architectures; /* array string */
+	char **architectures;
         /*
          * Whether the volumes are deleted or not when terminating the VM.
          */
         int is_set_block_device_mapping_delete_on_vm_deletion;
-	int block_device_mapping_delete_on_vm_deletion; /* bool */
+	int block_device_mapping_delete_on_vm_deletion;
         /*
          * The device names for the volumes.
          */
         char *block_device_mapping_device_names_str;
-	char **block_device_mapping_device_names; /* array string */
+	char **block_device_mapping_device_names;
         /*
          * The IDs of the snapshots used to create the volumes.
          */
         char *block_device_mapping_snapshot_ids_str;
-	char **block_device_mapping_snapshot_ids; /* array string */
+	char **block_device_mapping_snapshot_ids;
         /*
          * The sizes of the volumes, in gibibytes (GiB).
          */
         char *block_device_mapping_volume_sizes_str;
-	int *block_device_mapping_volume_sizes; /* array integer */
+	int *block_device_mapping_volume_sizes;
         /*
          * The types of volumes (`standard` \\| `gp2` \\| `io1`).
          */
         char *block_device_mapping_volume_types_str;
-	char **block_device_mapping_volume_types; /* array string */
+	char **block_device_mapping_volume_types;
         /*
          * The descriptions of the OMIs, provided when they were created.
          */
         char *descriptions_str;
-	char **descriptions; /* array string */
+	char **descriptions;
         /*
          * The locations of the buckets where the OMI files are stored.
          */
         char *file_locations_str;
-	char **file_locations; /* array string */
+	char **file_locations;
         /*
          * The hypervisor type of the OMI (always `xen`).
          */
         char *hypervisors_str;
-	char **hypervisors; /* array string */
+	char **hypervisors;
         /*
          * The IDs of the OMIs.
          */
         char *image_ids_str;
-	char **image_ids; /* array string */
+	char **image_ids;
         /*
          * The names of the OMIs, provided when they were created.
          */
         char *image_names_str;
-	char **image_names; /* array string */
+	char **image_names;
         /*
          * The account IDs which have launch permissions for the OMIs.
          */
         char *permissions_to_launch_account_ids_str;
-	char **permissions_to_launch_account_ids; /* array string */
+	char **permissions_to_launch_account_ids;
         /*
          * If true, lists all public OMIs. If false, lists all private OMIs.
          */
         int is_set_permissions_to_launch_global_permission;
-	int permissions_to_launch_global_permission; /* bool */
+	int permissions_to_launch_global_permission;
         /*
          * The names of the product codes associated with the OMI.
          */
         char *product_code_names_str;
-	char **product_code_names; /* array string */
+	char **product_code_names;
         /*
          * The product codes associated with the OMI.
          */
         char *product_codes_str;
-	char **product_codes; /* array string */
+	char **product_codes;
         /*
          * The name of the root device. This value must be /dev/sda1.
          */
         char *root_device_names_str;
-	char **root_device_names; /* array string */
+	char **root_device_names;
         /*
          * The types of root device used by the OMIs (`bsu` or `ebs`).
          */
         char *root_device_types_str;
-	char **root_device_types; /* array string */
+	char **root_device_types;
         /*
          * The states of the OMIs (`pending` \\| `available` \\| `failed`).
          */
         char *states_str;
-	char **states; /* array string */
+	char **states;
         /*
          * The keys of the tags associated with the OMIs.
          */
         char *tag_keys_str;
-	char **tag_keys; /* array string */
+	char **tag_keys;
         /*
          * The values of the tags associated with the OMIs.
          */
         char *tag_values_str;
-	char **tag_values; /* array string */
+	char **tag_values;
         /*
          * The key/value combination of the tags associated with the OMIs, in 
          * the following format: 
          * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *tags_str;
-	char **tags; /* array string */
+	char **tags;
         /*
          * The virtualization types (always `hvm`).
          */
         char *virtualization_types_str;
-	char **virtualization_types; /* array string */
+	char **virtualization_types;
 };
 
 struct filters_internet_service {
@@ -1514,36 +1538,36 @@ struct filters_internet_service {
          * The IDs of the Internet services.
          */
         char *internet_service_ids_str;
-	char **internet_service_ids; /* array string */
+	char **internet_service_ids;
         /*
          * The IDs of the Nets the Internet services are attached to.
          */
         char *link_net_ids_str;
-	char **link_net_ids; /* array string */
+	char **link_net_ids;
         /*
          * The current states of the attachments between the Internet services 
          * and the Nets (only `available`, if the Internet gateway is attached 
          * to a Net).
          */
         char *link_states_str;
-	char **link_states; /* array string */
+	char **link_states;
         /*
          * The keys of the tags associated with the Internet services.
          */
         char *tag_keys_str;
-	char **tag_keys; /* array string */
+	char **tag_keys;
         /*
          * The values of the tags associated with the Internet services.
          */
         char *tag_values_str;
-	char **tag_values; /* array string */
+	char **tag_values;
         /*
          * The key/value combination of the tags associated with the Internet 
          * services, in the following format: 
          * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *tags_str;
-	char **tags; /* array string */
+	char **tags;
 };
 
 struct filters_keypair {
@@ -1551,19 +1575,19 @@ struct filters_keypair {
          * The fingerprints of the keypairs.
          */
         char *keypair_fingerprints_str;
-	char **keypair_fingerprints; /* array string */
+	char **keypair_fingerprints;
         /*
          * The names of the keypairs.
          */
         char *keypair_names_str;
-	char **keypair_names; /* array string */
+	char **keypair_names;
         /*
          * The types of the keypairs (`ssh-rsa`, `ssh-ed25519`, 
          * `ecdsa-sha2-nistp256`, `ecdsa-sha2-nistp384`, or 
          * `ecdsa-sha2-nistp521`).
          */
         char *keypair_types_str;
-	char **keypair_types; /* array string */
+	char **keypair_types;
 };
 
 struct filters_listener_rule {
@@ -1571,7 +1595,7 @@ struct filters_listener_rule {
          * The names of the listener rules.
          */
         char *listener_rule_names_str;
-	char **listener_rule_names; /* array string */
+	char **listener_rule_names;
 };
 
 struct filters_load_balancer {
@@ -1579,7 +1603,7 @@ struct filters_load_balancer {
          * The names of the load balancers.
          */
         char *load_balancer_names_str;
-	char **load_balancer_names; /* array string */
+	char **load_balancer_names;
 };
 
 struct filters_nat_service {
@@ -1587,45 +1611,45 @@ struct filters_nat_service {
          * The idempotency tokens provided when creating the NAT services.
          */
         char *client_tokens_str;
-	char **client_tokens; /* array string */
+	char **client_tokens;
         /*
          * The IDs of the NAT services.
          */
         char *nat_service_ids_str;
-	char **nat_service_ids; /* array string */
+	char **nat_service_ids;
         /*
          * The IDs of the Nets in which the NAT services are.
          */
         char *net_ids_str;
-	char **net_ids; /* array string */
+	char **net_ids;
         /*
          * The states of the NAT services (`pending` \\| `available` \\| 
          * `deleting` \\| `deleted`).
          */
         char *states_str;
-	char **states; /* array string */
+	char **states;
         /*
          * The IDs of the Subnets in which the NAT services are.
          */
         char *subnet_ids_str;
-	char **subnet_ids; /* array string */
+	char **subnet_ids;
         /*
          * The keys of the tags associated with the NAT services.
          */
         char *tag_keys_str;
-	char **tag_keys; /* array string */
+	char **tag_keys;
         /*
          * The values of the tags associated with the NAT services.
          */
         char *tag_values_str;
-	char **tag_values; /* array string */
+	char **tag_values;
         /*
          * The key/value combination of the tags associated with the NAT 
          * services, in the following format: 
          * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *tags_str;
-	char **tags; /* array string */
+	char **tags;
 };
 
 struct filters_net {
@@ -1633,45 +1657,45 @@ struct filters_net {
          * The IDs of the DHCP options sets.
          */
         char *dhcp_options_set_ids_str;
-	char **dhcp_options_set_ids; /* array string */
+	char **dhcp_options_set_ids;
         /*
          * The IP ranges for the Nets, in CIDR notation (for example, 
          * `10.0.0.0/16`).
          */
         char *ip_ranges_str;
-	char **ip_ranges; /* array string */
+	char **ip_ranges;
         /*
          * If true, the Net used is the default one.
          */
         int is_set_is_default;
-	int is_default; /* bool */
+	int is_default;
         /*
          * The IDs of the Nets.
          */
         char *net_ids_str;
-	char **net_ids; /* array string */
+	char **net_ids;
         /*
          * The states of the Nets (`pending` \\| `available` \\| `deleting`).
          */
         char *states_str;
-	char **states; /* array string */
+	char **states;
         /*
          * The keys of the tags associated with the Nets.
          */
         char *tag_keys_str;
-	char **tag_keys; /* array string */
+	char **tag_keys;
         /*
          * The values of the tags associated with the Nets.
          */
         char *tag_values_str;
-	char **tag_values; /* array string */
+	char **tag_values;
         /*
          * The key/value combination of the tags associated with the Nets, in 
          * the following format: 
          * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *tags_str;
-	char **tags; /* array string */
+	char **tags;
 };
 
 struct filters_net_access_point {
@@ -1679,41 +1703,41 @@ struct filters_net_access_point {
          * The IDs of the Net access points.
          */
         char *net_access_point_ids_str;
-	char **net_access_point_ids; /* array string */
+	char **net_access_point_ids;
         /*
          * The IDs of the Nets.
          */
         char *net_ids_str;
-	char **net_ids; /* array string */
+	char **net_ids;
         /*
          * The names of the services. For more information, see 
          * [ReadNetAccessPointServices](#readnetaccesspointservices).
          */
         char *service_names_str;
-	char **service_names; /* array string */
+	char **service_names;
         /*
          * The states of the Net access points (`pending` \\| `available` \\| 
          * `deleting` \\| `deleted`).
          */
         char *states_str;
-	char **states; /* array string */
+	char **states;
         /*
          * The keys of the tags associated with the Net access points.
          */
         char *tag_keys_str;
-	char **tag_keys; /* array string */
+	char **tag_keys;
         /*
          * The values of the tags associated with the Net access points.
          */
         char *tag_values_str;
-	char **tag_values; /* array string */
+	char **tag_values;
         /*
          * The key/value combination of the tags associated with the Net access 
          * points, in the following format: 
          * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *tags_str;
-	char **tags; /* array string */
+	char **tags;
 };
 
 struct filters_net_peering {
@@ -1721,72 +1745,72 @@ struct filters_net_peering {
          * The account IDs of the owners of the peer Nets.
          */
         char *accepter_net_account_ids_str;
-	char **accepter_net_account_ids; /* array string */
+	char **accepter_net_account_ids;
         /*
          * The IP ranges of the peer Nets, in CIDR notation (for example, 
          * `10.0.0.0/24`).
          */
         char *accepter_net_ip_ranges_str;
-	char **accepter_net_ip_ranges; /* array string */
+	char **accepter_net_ip_ranges;
         /*
          * The IDs of the peer Nets.
          */
         char *accepter_net_net_ids_str;
-	char **accepter_net_net_ids; /* array string */
+	char **accepter_net_net_ids;
         /*
          * The dates and times at which the Net peerings expire, in ISO 8601 
          * date-time format (for example, `2020-06-14T00:00:00.000Z`).
          */
         char *expiration_dates_str;
-	char **expiration_dates; /* array string */
+	char **expiration_dates;
         /*
          * The IDs of the Net peerings.
          */
         char *net_peering_ids_str;
-	char **net_peering_ids; /* array string */
+	char **net_peering_ids;
         /*
          * The account IDs of the owners of the peer Nets.
          */
         char *source_net_account_ids_str;
-	char **source_net_account_ids; /* array string */
+	char **source_net_account_ids;
         /*
          * The IP ranges of the peer Nets.
          */
         char *source_net_ip_ranges_str;
-	char **source_net_ip_ranges; /* array string */
+	char **source_net_ip_ranges;
         /*
          * The IDs of the peer Nets.
          */
         char *source_net_net_ids_str;
-	char **source_net_net_ids; /* array string */
+	char **source_net_net_ids;
         /*
          * Additional information about the states of the Net peerings.
          */
         char *state_messages_str;
-	char **state_messages; /* array string */
+	char **state_messages;
         /*
          * The states of the Net peerings (`pending-acceptance` \\| `active` \\| 
          * `rejected` \\| `failed` \\| `expired` \\| `deleted`).
          */
         char *state_names_str;
-	char **state_names; /* array string */
+	char **state_names;
         /*
          * The keys of the tags associated with the Net peerings.
          */
         char *tag_keys_str;
-	char **tag_keys; /* array string */
+	char **tag_keys;
         /*
          * The values of the tags associated with the Net peerings.
          */
         char *tag_values_str;
-	char **tag_values; /* array string */
+	char **tag_values;
         /*
          * The key/value combination of the tags associated with the Net 
          * peerings, in the following format: 
          * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *tags_str;
-	char **tags; /* array string */
+	char **tags;
 };
 
 struct filters_nic {
@@ -1794,155 +1818,155 @@ struct filters_nic {
          * The descriptions of the NICs.
          */
         char *descriptions_str;
-	char **descriptions; /* array string */
+	char **descriptions;
         /*
          * Whether the source/destination checking is enabled (true) or disabled 
          * (false).
          */
         int is_set_is_source_dest_check;
-	int is_source_dest_check; /* bool */
+	int is_source_dest_check;
         /*
          * Whether the NICs are deleted when the VMs they are attached to are 
          * terminated.
          */
         int is_set_link_nic_delete_on_vm_deletion;
-	int link_nic_delete_on_vm_deletion; /* bool */
+	int link_nic_delete_on_vm_deletion;
         /*
          * The device numbers the NICs are attached to.
          */
         char *link_nic_device_numbers_str;
-	int *link_nic_device_numbers; /* array integer */
+	int *link_nic_device_numbers;
         /*
          * The attachment IDs of the NICs.
          */
         char *link_nic_link_nic_ids_str;
-	char **link_nic_link_nic_ids; /* array string */
+	char **link_nic_link_nic_ids;
         /*
          * The states of the attachments.
          */
         char *link_nic_states_str;
-	char **link_nic_states; /* array string */
+	char **link_nic_states;
         /*
          * The account IDs of the owners of the VMs the NICs are attached to.
          */
         char *link_nic_vm_account_ids_str;
-	char **link_nic_vm_account_ids; /* array string */
+	char **link_nic_vm_account_ids;
         /*
          * The IDs of the VMs the NICs are attached to.
          */
         char *link_nic_vm_ids_str;
-	char **link_nic_vm_ids; /* array string */
+	char **link_nic_vm_ids;
         /*
          * The account IDs of the owners of the public IPs associated with the 
          * NICs.
          */
         char *link_public_ip_account_ids_str;
-	char **link_public_ip_account_ids; /* array string */
+	char **link_public_ip_account_ids;
         /*
          * The association IDs returned when the public IPs were associated with 
          * the NICs.
          */
         char *link_public_ip_link_public_ip_ids_str;
-	char **link_public_ip_link_public_ip_ids; /* array string */
+	char **link_public_ip_link_public_ip_ids;
         /*
          * The public DNS names associated with the public IPs.
          */
         char *link_public_ip_public_dns_names_str;
-	char **link_public_ip_public_dns_names; /* array string */
+	char **link_public_ip_public_dns_names;
         /*
          * The allocation IDs returned when the public IPs were allocated to 
          * their accounts.
          */
         char *link_public_ip_public_ip_ids_str;
-	char **link_public_ip_public_ip_ids; /* array string */
+	char **link_public_ip_public_ip_ids;
         /*
          * The public IPs associated with the NICs.
          */
         char *link_public_ip_public_ips_str;
-	char **link_public_ip_public_ips; /* array string */
+	char **link_public_ip_public_ips;
         /*
          * The Media Access Control (MAC) addresses of the NICs.
          */
         char *mac_addresses_str;
-	char **mac_addresses; /* array string */
+	char **mac_addresses;
         /*
          * The IDs of the Nets where the NICs are located.
          */
         char *net_ids_str;
-	char **net_ids; /* array string */
+	char **net_ids;
         /*
          * The IDs of the NICs.
          */
         char *nic_ids_str;
-	char **nic_ids; /* array string */
+	char **nic_ids;
         /*
          * The private DNS names associated with the primary private IPs.
          */
         char *private_dns_names_str;
-	char **private_dns_names; /* array string */
+	char **private_dns_names;
         /*
          * The account IDs of the owner of the public IPs associated with the 
          * private IPs.
          */
         char *private_ips_link_public_ip_account_ids_str;
-	char **private_ips_link_public_ip_account_ids; /* array string */
+	char **private_ips_link_public_ip_account_ids;
         /*
          * The public IPs associated with the private IPs.
          */
         char *private_ips_link_public_ip_public_ips_str;
-	char **private_ips_link_public_ip_public_ips; /* array string */
+	char **private_ips_link_public_ip_public_ips;
         /*
          * Whether the private IP is the primary IP associated with the NIC.
          */
         int is_set_private_ips_primary_ip;
-	int private_ips_primary_ip; /* bool */
+	int private_ips_primary_ip;
         /*
          * The private IPs of the NICs.
          */
         char *private_ips_private_ips_str;
-	char **private_ips_private_ips; /* array string */
+	char **private_ips_private_ips;
         /*
          * The IDs of the security groups associated with the NICs.
          */
         char *security_group_ids_str;
-	char **security_group_ids; /* array string */
+	char **security_group_ids;
         /*
          * The names of the security groups associated with the NICs.
          */
         char *security_group_names_str;
-	char **security_group_names; /* array string */
+	char **security_group_names;
         /*
          * The states of the NICs.
          */
         char *states_str;
-	char **states; /* array string */
+	char **states;
         /*
          * The IDs of the Subnets for the NICs.
          */
         char *subnet_ids_str;
-	char **subnet_ids; /* array string */
+	char **subnet_ids;
         /*
          * The Subregions where the NICs are located.
          */
         char *subregion_names_str;
-	char **subregion_names; /* array string */
+	char **subregion_names;
         /*
          * The keys of the tags associated with the NICs.
          */
         char *tag_keys_str;
-	char **tag_keys; /* array string */
+	char **tag_keys;
         /*
          * The values of the tags associated with the NICs.
          */
         char *tag_values_str;
-	char **tag_values; /* array string */
+	char **tag_values;
         /*
          * The key/value combination of the tags associated with the NICs, in 
          * the following format: 
          * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *tags_str;
-	char **tags; /* array string */
+	char **tags;
 };
 
 struct filters_product_type {
@@ -1950,7 +1974,7 @@ struct filters_product_type {
          * The IDs of the product types.
          */
         char *product_type_ids_str;
-	char **product_type_ids; /* array string */
+	char **product_type_ids;
 };
 
 struct filters_public_ip {
@@ -1958,59 +1982,59 @@ struct filters_public_ip {
          * The IDs representing the associations of public IPs with VMs or NICs.
          */
         char *link_public_ip_ids_str;
-	char **link_public_ip_ids; /* array string */
+	char **link_public_ip_ids;
         /*
          * The account IDs of the owners of the NICs.
          */
         char *nic_account_ids_str;
-	char **nic_account_ids; /* array string */
+	char **nic_account_ids;
         /*
          * The IDs of the NICs.
          */
         char *nic_ids_str;
-	char **nic_ids; /* array string */
+	char **nic_ids;
         /*
          * Whether the public IPs are for use in the public Cloud or in a Net.
          */
         char *placements_str;
-	char **placements; /* array string */
+	char **placements;
         /*
          * The private IPs associated with the public IPs.
          */
         char *private_ips_str;
-	char **private_ips; /* array string */
+	char **private_ips;
         /*
          * The IDs of the public IPs.
          */
         char *public_ip_ids_str;
-	char **public_ip_ids; /* array string */
+	char **public_ip_ids;
         /*
          * The public IPs.
          */
         char *public_ips_str;
-	char **public_ips; /* array string */
+	char **public_ips;
         /*
          * The keys of the tags associated with the public IPs.
          */
         char *tag_keys_str;
-	char **tag_keys; /* array string */
+	char **tag_keys;
         /*
          * The values of the tags associated with the public IPs.
          */
         char *tag_values_str;
-	char **tag_values; /* array string */
+	char **tag_values;
         /*
          * The key/value combination of the tags associated with the public IPs, 
          * in the following format: 
          * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *tags_str;
-	char **tags; /* array string */
+	char **tags;
         /*
          * The IDs of the VMs.
          */
         char *vm_ids_str;
-	char **vm_ids; /* array string */
+	char **vm_ids;
 };
 
 struct filters_quota {
@@ -2018,23 +2042,23 @@ struct filters_quota {
          * The group names of the quotas.
          */
         char *collections_str;
-	char **collections; /* array string */
+	char **collections;
         /*
          * The names of the quotas.
          */
         char *quota_names_str;
-	char **quota_names; /* array string */
+	char **quota_names;
         /*
          * The resource IDs if these are resource-specific quotas, `global` if 
          * they are not.
          */
         char *quota_types_str;
-	char **quota_types; /* array string */
+	char **quota_types;
         /*
          * The description of the quotas.
          */
         char *short_descriptions_str;
-	char **short_descriptions; /* array string */
+	char **short_descriptions;
 };
 
 struct filters_route_table {
@@ -2042,89 +2066,89 @@ struct filters_route_table {
          * The IDs of the route tables involved in the associations.
          */
         char *link_route_table_ids_str;
-	char **link_route_table_ids; /* array string */
+	char **link_route_table_ids;
         /*
          * The IDs of the associations between the route tables and the Subnets.
          */
         char *link_route_table_link_route_table_ids_str;
-	char **link_route_table_link_route_table_ids; /* array string */
+	char **link_route_table_link_route_table_ids;
         /*
          * If true, the route tables are the main ones for their Nets.
          */
         int is_set_link_route_table_main;
-	int link_route_table_main; /* bool */
+	int link_route_table_main;
         /*
          * The IDs of the Subnets involved in the associations.
          */
         char *link_subnet_ids_str;
-	char **link_subnet_ids; /* array string */
+	char **link_subnet_ids;
         /*
          * The IDs of the Nets for the route tables.
          */
         char *net_ids_str;
-	char **net_ids; /* array string */
+	char **net_ids;
         /*
          * The methods used to create a route.
          */
         char *route_creation_methods_str;
-	char **route_creation_methods; /* array string */
+	char **route_creation_methods;
         /*
          * The IP ranges specified in routes in the tables.
          */
         char *route_destination_ip_ranges_str;
-	char **route_destination_ip_ranges; /* array string */
+	char **route_destination_ip_ranges;
         /*
          * The service IDs specified in routes in the tables.
          */
         char *route_destination_service_ids_str;
-	char **route_destination_service_ids; /* array string */
+	char **route_destination_service_ids;
         /*
          * The IDs of the gateways specified in routes in the tables.
          */
         char *route_gateway_ids_str;
-	char **route_gateway_ids; /* array string */
+	char **route_gateway_ids;
         /*
          * The IDs of the NAT services specified in routes in the tables.
          */
         char *route_nat_service_ids_str;
-	char **route_nat_service_ids; /* array string */
+	char **route_nat_service_ids;
         /*
          * The IDs of the Net peerings specified in routes in the tables.
          */
         char *route_net_peering_ids_str;
-	char **route_net_peering_ids; /* array string */
+	char **route_net_peering_ids;
         /*
          * The states of routes in the route tables (always `active`).
          */
         char *route_states_str;
-	char **route_states; /* array string */
+	char **route_states;
         /*
          * The IDs of the route tables.
          */
         char *route_table_ids_str;
-	char **route_table_ids; /* array string */
+	char **route_table_ids;
         /*
          * The IDs of the VMs specified in routes in the tables.
          */
         char *route_vm_ids_str;
-	char **route_vm_ids; /* array string */
+	char **route_vm_ids;
         /*
          * The keys of the tags associated with the route tables.
          */
         char *tag_keys_str;
-	char **tag_keys; /* array string */
+	char **tag_keys;
         /*
          * The values of the tags associated with the route tables.
          */
         char *tag_values_str;
-	char **tag_values; /* array string */
+	char **tag_values;
         /*
          * The key/value combination of the tags associated with the route 
          * tables, in the following format: 
          * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *tags_str;
-	char **tags; /* array string */
+	char **tags;
 };
 
 struct filters_security_group {
@@ -2132,117 +2156,117 @@ struct filters_security_group {
          * The descriptions of the security groups.
          */
         char *descriptions_str;
-	char **descriptions; /* array string */
+	char **descriptions;
         /*
          * The account IDs that have been granted permissions.
          */
         char *inbound_rule_account_ids_str;
-	char **inbound_rule_account_ids; /* array string */
+	char **inbound_rule_account_ids;
         /*
          * The beginnings of the port ranges for the TCP and UDP protocols, or 
          * the ICMP type numbers.
          */
         char *inbound_rule_from_port_ranges_str;
-	int *inbound_rule_from_port_ranges; /* array integer */
+	int *inbound_rule_from_port_ranges;
         /*
          * The IP ranges that have been granted permissions, in CIDR notation 
          * (for example, `10.0.0.0/24`).
          */
         char *inbound_rule_ip_ranges_str;
-	char **inbound_rule_ip_ranges; /* array string */
+	char **inbound_rule_ip_ranges;
         /*
          * The IP protocols for the permissions (`tcp` \\| `udp` \\| `icmp`, or 
          * a protocol number, or `-1` for all protocols).
          */
         char *inbound_rule_protocols_str;
-	char **inbound_rule_protocols; /* array string */
+	char **inbound_rule_protocols;
         /*
          * The IDs of the security groups that have been granted permissions.
          */
         char *inbound_rule_security_group_ids_str;
-	char **inbound_rule_security_group_ids; /* array string */
+	char **inbound_rule_security_group_ids;
         /*
          * The names of the security groups that have been granted permissions.
          */
         char *inbound_rule_security_group_names_str;
-	char **inbound_rule_security_group_names; /* array string */
+	char **inbound_rule_security_group_names;
         /*
          * The ends of the port ranges for the TCP and UDP protocols, or the 
          * ICMP code numbers.
          */
         char *inbound_rule_to_port_ranges_str;
-	int *inbound_rule_to_port_ranges; /* array integer */
+	int *inbound_rule_to_port_ranges;
         /*
          * The IDs of the Nets specified when the security groups were created.
          */
         char *net_ids_str;
-	char **net_ids; /* array string */
+	char **net_ids;
         /*
          * The account IDs that have been granted permissions.
          */
         char *outbound_rule_account_ids_str;
-	char **outbound_rule_account_ids; /* array string */
+	char **outbound_rule_account_ids;
         /*
          * The beginnings of the port ranges for the TCP and UDP protocols, or 
          * the ICMP type numbers.
          */
         char *outbound_rule_from_port_ranges_str;
-	int *outbound_rule_from_port_ranges; /* array integer */
+	int *outbound_rule_from_port_ranges;
         /*
          * The IP ranges that have been granted permissions, in CIDR notation 
          * (for example, `10.0.0.0/24`).
          */
         char *outbound_rule_ip_ranges_str;
-	char **outbound_rule_ip_ranges; /* array string */
+	char **outbound_rule_ip_ranges;
         /*
          * The IP protocols for the permissions (`tcp` \\| `udp` \\| `icmp`, or 
          * a protocol number, or `-1` for all protocols).
          */
         char *outbound_rule_protocols_str;
-	char **outbound_rule_protocols; /* array string */
+	char **outbound_rule_protocols;
         /*
          * The IDs of the security groups that have been granted permissions.
          */
         char *outbound_rule_security_group_ids_str;
-	char **outbound_rule_security_group_ids; /* array string */
+	char **outbound_rule_security_group_ids;
         /*
          * The names of the security groups that have been granted permissions.
          */
         char *outbound_rule_security_group_names_str;
-	char **outbound_rule_security_group_names; /* array string */
+	char **outbound_rule_security_group_names;
         /*
          * The ends of the port ranges for the TCP and UDP protocols, or the 
          * ICMP code numbers.
          */
         char *outbound_rule_to_port_ranges_str;
-	int *outbound_rule_to_port_ranges; /* array integer */
+	int *outbound_rule_to_port_ranges;
         /*
          * The IDs of the security groups.
          */
         char *security_group_ids_str;
-	char **security_group_ids; /* array string */
+	char **security_group_ids;
         /*
          * The names of the security groups.
          */
         char *security_group_names_str;
-	char **security_group_names; /* array string */
+	char **security_group_names;
         /*
          * The keys of the tags associated with the security groups.
          */
         char *tag_keys_str;
-	char **tag_keys; /* array string */
+	char **tag_keys;
         /*
          * The values of the tags associated with the security groups.
          */
         char *tag_values_str;
-	char **tag_values; /* array string */
+	char **tag_values;
         /*
          * The key/value combination of the tags associated with the security 
          * groups, in the following format: 
          * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *tags_str;
-	char **tags; /* array string */
+	char **tags;
 };
 
 struct filters_server_certificate {
@@ -2250,7 +2274,7 @@ struct filters_server_certificate {
          * The paths to the server certificates.
          */
         char *paths_str;
-	char **paths; /* array string */
+	char **paths;
 };
 
 struct filters_service {
@@ -2258,12 +2282,12 @@ struct filters_service {
          * The IDs of the services.
          */
         char *service_ids_str;
-	char **service_ids; /* array string */
+	char **service_ids;
         /*
          * The names of the services.
          */
         char *service_names_str;
-	char **service_names; /* array string */
+	char **service_names;
 };
 
 struct filters_snapshot {
@@ -2271,82 +2295,82 @@ struct filters_snapshot {
          * The account aliases of the owners of the snapshots.
          */
         char *account_aliases_str;
-	char **account_aliases; /* array string */
+	char **account_aliases;
         /*
          * The account IDs of the owners of the snapshots.
          */
         char *account_ids_str;
-	char **account_ids; /* array string */
+	char **account_ids;
         /*
          * The descriptions of the snapshots.
          */
         char *descriptions_str;
-	char **descriptions; /* array string */
+	char **descriptions;
         /*
          * The beginning of the time period, in ISO 8601 date-time format (for 
          * example, `2020-06-14T00:00:00.000Z`).
          */
-	char *from_creation_date; /* string */
+	char *from_creation_date;
         /*
          * The account IDs which have permissions to create volumes.
          */
         char *permissions_to_create_volume_account_ids_str;
-	char **permissions_to_create_volume_account_ids; /* array string */
+	char **permissions_to_create_volume_account_ids;
         /*
          * If true, lists all public volumes. If false, lists all private 
          * volumes.
          */
         int is_set_permissions_to_create_volume_global_permission;
-	int permissions_to_create_volume_global_permission; /* bool */
+	int permissions_to_create_volume_global_permission;
         /*
          * The progresses of the snapshots, as a percentage.
          */
         char *progresses_str;
-	int *progresses; /* array integer */
+	int *progresses;
         /*
          * The IDs of the snapshots.
          */
         char *snapshot_ids_str;
-	char **snapshot_ids; /* array string */
+	char **snapshot_ids;
         /*
          * The states of the snapshots (`in-queue` \\| `pending` \\| `completed` 
          * \\| `error` \\| `deleting`).
          */
         char *states_str;
-	char **states; /* array string */
+	char **states;
         /*
          * The keys of the tags associated with the snapshots.
          */
         char *tag_keys_str;
-	char **tag_keys; /* array string */
+	char **tag_keys;
         /*
          * The values of the tags associated with the snapshots.
          */
         char *tag_values_str;
-	char **tag_values; /* array string */
+	char **tag_values;
         /*
          * The key/value combination of the tags associated with the snapshots, 
          * in the following format: 
          * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *tags_str;
-	char **tags; /* array string */
+	char **tags;
         /*
          * The end of the time period, in ISO 8601 date-time format (for 
          * example, `2020-06-30T00:00:00.000Z`).
          */
-	char *to_creation_date; /* string */
+	char *to_creation_date;
         /*
          * The IDs of the volumes used to create the snapshots.
          */
         char *volume_ids_str;
-	char **volume_ids; /* array string */
+	char **volume_ids;
         /*
          * The sizes of the volumes used to create the snapshots, in gibibytes 
          * (GiB).
          */
         char *volume_sizes_str;
-	int *volume_sizes; /* array integer */
+	int *volume_sizes;
 };
 
 struct filters_subnet {
@@ -2354,50 +2378,50 @@ struct filters_subnet {
          * The number of available IPs.
          */
         char *available_ips_counts_str;
-	int *available_ips_counts; /* array integer */
+	int *available_ips_counts;
         /*
          * The IP ranges in the Subnets, in CIDR notation (for example, 
          * `10.0.0.0/16`).
          */
         char *ip_ranges_str;
-	char **ip_ranges; /* array string */
+	char **ip_ranges;
         /*
          * The IDs of the Nets in which the Subnets are.
          */
         char *net_ids_str;
-	char **net_ids; /* array string */
+	char **net_ids;
         /*
          * The states of the Subnets (`pending` \\| `available` \\| `deleted`).
          */
         char *states_str;
-	char **states; /* array string */
+	char **states;
         /*
          * The IDs of the Subnets.
          */
         char *subnet_ids_str;
-	char **subnet_ids; /* array string */
+	char **subnet_ids;
         /*
          * The names of the Subregions in which the Subnets are located.
          */
         char *subregion_names_str;
-	char **subregion_names; /* array string */
+	char **subregion_names;
         /*
          * The keys of the tags associated with the Subnets.
          */
         char *tag_keys_str;
-	char **tag_keys; /* array string */
+	char **tag_keys;
         /*
          * The values of the tags associated with the Subnets.
          */
         char *tag_values_str;
-	char **tag_values; /* array string */
+	char **tag_values;
         /*
          * The key/value combination of the tags associated with the Subnets, in 
          * the following format: 
          * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *tags_str;
-	char **tags; /* array string */
+	char **tags;
 };
 
 struct filters_subregion {
@@ -2405,17 +2429,17 @@ struct filters_subregion {
          * The names of the Regions containing the Subregions.
          */
         char *region_names_str;
-	char **region_names; /* array string */
+	char **region_names;
         /*
          * The states of the Subregions.
          */
         char *states_str;
-	char **states; /* array string */
+	char **states;
         /*
          * The names of the Subregions.
          */
         char *subregion_names_str;
-	char **subregion_names; /* array string */
+	char **subregion_names;
 };
 
 struct filters_tag {
@@ -2426,12 +2450,12 @@ struct filters_tag {
          * filter.
          */
         char *keys_str;
-	char **keys; /* array string */
+	char **keys;
         /*
          * The IDs of the resources with which the tags are associated.
          */
         char *resource_ids_str;
-	char **resource_ids; /* array string */
+	char **resource_ids;
         /*
          * The resource type (`vm` \\| `image` \\| `volume` \\| `snapshot` \\| 
          * `public-ip` \\| `security-group` \\| `route-table` \\| `nic` \\| 
@@ -2440,7 +2464,7 @@ struct filters_tag {
          * `virtual-gateway` \\| `vpn-connection` \\| `dhcp-options` \\| `task`).
          */
         char *resource_types_str;
-	char **resource_types; /* array string */
+	char **resource_types;
         /*
          * The values of the tags that are assigned to the resources. You can 
          * use this filter alongside the `TagKeys` filter. In that case, you 
@@ -2448,7 +2472,7 @@ struct filters_tag {
          * other filter.
          */
         char *values_str;
-	char **values; /* array string */
+	char **values;
 };
 
 struct filters_user_group {
@@ -2456,12 +2480,12 @@ struct filters_user_group {
          * The path prefix of the groups. If not specified, it is set to a slash 
          * (`/`).
          */
-	char *path_prefix; /* string */
+	char *path_prefix;
         /*
          * The IDs of the user groups.
          */
         char *user_group_ids_str;
-	char **user_group_ids; /* array string */
+	char **user_group_ids;
 };
 
 struct filters_virtual_gateway {
@@ -2469,47 +2493,47 @@ struct filters_virtual_gateway {
          * The types of the virtual gateways (only `ipsec.1` is supported).
          */
         char *connection_types_str;
-	char **connection_types; /* array string */
+	char **connection_types;
         /*
          * The IDs of the Nets the virtual gateways are attached to.
          */
         char *link_net_ids_str;
-	char **link_net_ids; /* array string */
+	char **link_net_ids;
         /*
          * The current states of the attachments between the virtual gateways 
          * and the Nets (`attaching` \\| `attached` \\| `detaching` \\| 
          * `detached`).
          */
         char *link_states_str;
-	char **link_states; /* array string */
+	char **link_states;
         /*
          * The states of the virtual gateways (`pending` \\| `available` \\| 
          * `deleting` \\| `deleted`).
          */
         char *states_str;
-	char **states; /* array string */
+	char **states;
         /*
          * The keys of the tags associated with the virtual gateways.
          */
         char *tag_keys_str;
-	char **tag_keys; /* array string */
+	char **tag_keys;
         /*
          * The values of the tags associated with the virtual gateways.
          */
         char *tag_values_str;
-	char **tag_values; /* array string */
+	char **tag_values;
         /*
          * The key/value combination of the tags associated with the virtual 
          * gateways, in the following format: 
          * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *tags_str;
-	char **tags; /* array string */
+	char **tags;
         /*
          * The IDs of the virtual gateways.
          */
         char *virtual_gateway_ids_str;
-	char **virtual_gateway_ids; /* array string */
+	char **virtual_gateway_ids;
 };
 
 struct filters_vm {
@@ -2517,344 +2541,344 @@ struct filters_vm {
          * The architectures of the VMs (`i386` \\| `x86_64`).
          */
         char *architectures_str;
-	char **architectures; /* array string */
+	char **architectures;
         /*
          * Whether the BSU volumes are deleted when terminating the VMs.
          */
         int is_set_block_device_mapping_delete_on_vm_deletion;
-	int block_device_mapping_delete_on_vm_deletion; /* bool */
+	int block_device_mapping_delete_on_vm_deletion;
         /*
          * The device names for the BSU volumes (in the format `/dev/sdX`, 
          * `/dev/sdXX`, `/dev/xvdX`, or `/dev/xvdXX`).
          */
         char *block_device_mapping_device_names_str;
-	char **block_device_mapping_device_names; /* array string */
+	char **block_device_mapping_device_names;
         /*
          * The link dates for the BSU volumes mapped to the VMs (for example, 
          * `2016-01-23T18:45:30.000Z`).
          */
         char *block_device_mapping_link_dates_str;
-	char **block_device_mapping_link_dates; /* array string */
+	char **block_device_mapping_link_dates;
         /*
          * The states for the BSU volumes (`attaching` \\| `attached` \\| 
          * `detaching` \\| `detached`).
          */
         char *block_device_mapping_states_str;
-	char **block_device_mapping_states; /* array string */
+	char **block_device_mapping_states;
         /*
          * The volume IDs of the BSU volumes.
          */
         char *block_device_mapping_volume_ids_str;
-	char **block_device_mapping_volume_ids; /* array string */
+	char **block_device_mapping_volume_ids;
         /*
          * The idempotency tokens provided when launching the VMs.
          */
         char *client_tokens_str;
-	char **client_tokens; /* array string */
+	char **client_tokens;
         /*
          * The dates when the VMs were launched.
          */
         char *creation_dates_str;
-	char **creation_dates; /* array string */
+	char **creation_dates;
         /*
          * The IDs of the OMIs used to launch the VMs.
          */
         char *image_ids_str;
-	char **image_ids; /* array string */
+	char **image_ids;
         /*
          * Whether the source/destination checking is enabled (true) or disabled 
          * (false).
          */
         int is_set_is_source_dest_checked;
-	int is_source_dest_checked; /* bool */
+	int is_source_dest_checked;
         /*
          * The names of the keypairs used when launching the VMs.
          */
         char *keypair_names_str;
-	char **keypair_names; /* array string */
+	char **keypair_names;
         /*
          * The numbers for the VMs when launching a group of several VMs (for 
          * example, `0`, `1`, `2`, and so on).
          */
         char *launch_numbers_str;
-	int *launch_numbers; /* array integer */
+	int *launch_numbers;
         /*
          * Whether the VMs are Spot Instances (spot).
          */
         char *lifecycles_str;
-	char **lifecycles; /* array string */
+	char **lifecycles;
         /*
          * The IDs of the Nets in which the VMs are running.
          */
         char *net_ids_str;
-	char **net_ids; /* array string */
+	char **net_ids;
         /*
          * The IDs of the NICs.
          */
         char *nic_account_ids_str;
-	char **nic_account_ids; /* array string */
+	char **nic_account_ids;
         /*
          * The descriptions of the NICs.
          */
         char *nic_descriptions_str;
-	char **nic_descriptions; /* array string */
+	char **nic_descriptions;
         /*
          * Whether the source/destination checking is enabled (true) or disabled 
          * (false).
          */
         int is_set_nic_is_source_dest_checked;
-	int nic_is_source_dest_checked; /* bool */
+	int nic_is_source_dest_checked;
         /*
          * Whether the NICs are deleted when the VMs they are attached to are 
          * deleted.
          */
         int is_set_nic_link_nic_delete_on_vm_deletion;
-	int nic_link_nic_delete_on_vm_deletion; /* bool */
+	int nic_link_nic_delete_on_vm_deletion;
         /*
          * The device numbers the NICs are attached to.
          */
         char *nic_link_nic_device_numbers_str;
-	int *nic_link_nic_device_numbers; /* array integer */
+	int *nic_link_nic_device_numbers;
         /*
          * The dates and times (UTC) when the NICs were attached to the VMs.
          */
         char *nic_link_nic_link_nic_dates_str;
-	char **nic_link_nic_link_nic_dates; /* array string */
+	char **nic_link_nic_link_nic_dates;
         /*
          * The IDs of the NIC attachments.
          */
         char *nic_link_nic_link_nic_ids_str;
-	char **nic_link_nic_link_nic_ids; /* array string */
+	char **nic_link_nic_link_nic_ids;
         /*
          * The states of the attachments.
          */
         char *nic_link_nic_states_str;
-	char **nic_link_nic_states; /* array string */
+	char **nic_link_nic_states;
         /*
          * The account IDs of the owners of the VMs the NICs are attached to.
          */
         char *nic_link_nic_vm_account_ids_str;
-	char **nic_link_nic_vm_account_ids; /* array string */
+	char **nic_link_nic_vm_account_ids;
         /*
          * The IDs of the VMs the NICs are attached to.
          */
         char *nic_link_nic_vm_ids_str;
-	char **nic_link_nic_vm_ids; /* array string */
+	char **nic_link_nic_vm_ids;
         /*
          * The account IDs of the owners of the public IPs associated with the 
          * NICs.
          */
         char *nic_link_public_ip_account_ids_str;
-	char **nic_link_public_ip_account_ids; /* array string */
+	char **nic_link_public_ip_account_ids;
         /*
          * The association IDs returned when the public IPs were associated with 
          * the NICs.
          */
         char *nic_link_public_ip_link_public_ip_ids_str;
-	char **nic_link_public_ip_link_public_ip_ids; /* array string */
+	char **nic_link_public_ip_link_public_ip_ids;
         /*
          * The allocation IDs returned when the public IPs were allocated to 
          * their accounts.
          */
         char *nic_link_public_ip_public_ip_ids_str;
-	char **nic_link_public_ip_public_ip_ids; /* array string */
+	char **nic_link_public_ip_public_ip_ids;
         /*
          * The public IPs associated with the NICs.
          */
         char *nic_link_public_ip_public_ips_str;
-	char **nic_link_public_ip_public_ips; /* array string */
+	char **nic_link_public_ip_public_ips;
         /*
          * The Media Access Control (MAC) addresses of the NICs.
          */
         char *nic_mac_addresses_str;
-	char **nic_mac_addresses; /* array string */
+	char **nic_mac_addresses;
         /*
          * The IDs of the Nets where the NICs are located.
          */
         char *nic_net_ids_str;
-	char **nic_net_ids; /* array string */
+	char **nic_net_ids;
         /*
          * The IDs of the NICs.
          */
         char *nic_nic_ids_str;
-	char **nic_nic_ids; /* array string */
+	char **nic_nic_ids;
         /*
          * The account IDs of the owner of the public IPs associated with the 
          * private IPs.
          */
         char *nic_private_ips_link_public_ip_account_ids_str;
-	char **nic_private_ips_link_public_ip_account_ids; /* array string */
+	char **nic_private_ips_link_public_ip_account_ids;
         /*
          * The public IPs associated with the private IPs.
          */
         char *nic_private_ips_link_public_ip_ids_str;
-	char **nic_private_ips_link_public_ip_ids; /* array string */
+	char **nic_private_ips_link_public_ip_ids;
         /*
          * Whether the private IPs are the primary IPs associated with the NICs.
          */
         int is_set_nic_private_ips_primary_ip;
-	int nic_private_ips_primary_ip; /* bool */
+	int nic_private_ips_primary_ip;
         /*
          * The private IPs of the NICs.
          */
         char *nic_private_ips_private_ips_str;
-	char **nic_private_ips_private_ips; /* array string */
+	char **nic_private_ips_private_ips;
         /*
          * The IDs of the security groups associated with the NICs.
          */
         char *nic_security_group_ids_str;
-	char **nic_security_group_ids; /* array string */
+	char **nic_security_group_ids;
         /*
          * The names of the security groups associated with the NICs.
          */
         char *nic_security_group_names_str;
-	char **nic_security_group_names; /* array string */
+	char **nic_security_group_names;
         /*
          * The states of the NICs (`available` \\| `in-use`).
          */
         char *nic_states_str;
-	char **nic_states; /* array string */
+	char **nic_states;
         /*
          * The IDs of the Subnets for the NICs.
          */
         char *nic_subnet_ids_str;
-	char **nic_subnet_ids; /* array string */
+	char **nic_subnet_ids;
         /*
          * The Subregions where the NICs are located.
          */
         char *nic_subregion_names_str;
-	char **nic_subregion_names; /* array string */
+	char **nic_subregion_names;
         /*
          * The platforms. Use windows if you have Windows VMs. Otherwise, leave 
          * this filter blank.
          */
         char *platforms_str;
-	char **platforms; /* array string */
+	char **platforms;
         /*
          * The private IPs of the VMs.
          */
         char *private_ips_str;
-	char **private_ips; /* array string */
+	char **private_ips;
         /*
          * The product codes associated with the OMI used to create the VMs.
          */
         char *product_codes_str;
-	char **product_codes; /* array string */
+	char **product_codes;
         /*
          * The public IPs of the VMs.
          */
         char *public_ips_str;
-	char **public_ips; /* array string */
+	char **public_ips;
         /*
          * The IDs of the reservation of the VMs, created every time you launch 
          * VMs. These reservation IDs can be associated with several VMs when 
          * you lauch a group of VMs using the same launch request.
          */
         char *reservation_ids_str;
-	char **reservation_ids; /* array string */
+	char **reservation_ids;
         /*
          * The names of the root devices for the VMs (for example, `/dev/sda1`)
          */
         char *root_device_names_str;
-	char **root_device_names; /* array string */
+	char **root_device_names;
         /*
          * The root devices types used by the VMs (always `ebs`)
          */
         char *root_device_types_str;
-	char **root_device_types; /* array string */
+	char **root_device_types;
         /*
          * The IDs of the security groups for the VMs (only in the public Cloud).
          */
         char *security_group_ids_str;
-	char **security_group_ids; /* array string */
+	char **security_group_ids;
         /*
          * The names of the security groups for the VMs (only in the public 
          * Cloud).
          */
         char *security_group_names_str;
-	char **security_group_names; /* array string */
+	char **security_group_names;
         /*
          * The reason codes for the state changes.
          */
         char *state_reason_codes_str;
-	int *state_reason_codes; /* array integer */
+	int *state_reason_codes;
         /*
          * The messages describing the state changes.
          */
         char *state_reason_messages_str;
-	char **state_reason_messages; /* array string */
+	char **state_reason_messages;
         /*
          * The reasons explaining the current states of the VMs. This filter is 
          * like the `StateReasonCodes` one.
          */
         char *state_reasons_str;
-	char **state_reasons; /* array string */
+	char **state_reasons;
         /*
          * The IDs of the Subnets for the VMs.
          */
         char *subnet_ids_str;
-	char **subnet_ids; /* array string */
+	char **subnet_ids;
         /*
          * The names of the Subregions of the VMs.
          */
         char *subregion_names_str;
-	char **subregion_names; /* array string */
+	char **subregion_names;
         /*
          * The keys of the tags associated with the VMs.
          */
         char *tag_keys_str;
-	char **tag_keys; /* array string */
+	char **tag_keys;
         /*
          * The values of the tags associated with the VMs.
          */
         char *tag_values_str;
-	char **tag_values; /* array string */
+	char **tag_values;
         /*
          * The key/value combination of the tags associated with the VMs, in the 
          * following format: 
          * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *tags_str;
-	char **tags; /* array string */
+	char **tags;
         /*
          * The tenancies of the VMs (`dedicated` \\| `default` \\| `host`).
          */
         char *tenancies_str;
-	char **tenancies; /* array string */
+	char **tenancies;
         /*
          * One or more IDs of VMs.
          */
         char *vm_ids_str;
-	char **vm_ids; /* array string */
+	char **vm_ids;
         /*
          * The IDs of the security groups for the VMs.
          */
         char *vm_security_group_ids_str;
-	char **vm_security_group_ids; /* array string */
+	char **vm_security_group_ids;
         /*
          * The names of the security group for the VMs.
          */
         char *vm_security_group_names_str;
-	char **vm_security_group_names; /* array string */
+	char **vm_security_group_names;
         /*
          * The state codes of the VMs: `-1` (quarantine), `0` (pending), `16` 
          * (running), `32` (shutting-down), `48` (terminated), `64` (stopping), 
          * and `80` (stopped).
          */
         char *vm_state_codes_str;
-	int *vm_state_codes; /* array integer */
+	int *vm_state_codes;
         /*
          * The state names of the VMs (`pending` \\| `running` \\| `stopping` 
          * \\| `stopped` \\| `shutting-down` \\| `terminated` \\| `quarantine`).
          */
         char *vm_state_names_str;
-	char **vm_state_names; /* array string */
+	char **vm_state_names;
         /*
          * The VM types (for example, t2.micro). For more information, see [VM 
          * Types](https://docs.outscale.com/en/userguide/VM-Types.html).
          */
         char *vm_types_str;
-	char **vm_types; /* array string */
+	char **vm_types;
 };
 
 struct filters_vm_group {
@@ -2862,54 +2886,54 @@ struct filters_vm_group {
          * The descriptions of the VM groups.
          */
         char *descriptions_str;
-	char **descriptions; /* array string */
+	char **descriptions;
         /*
          * The IDs of the security groups.
          */
         char *security_group_ids_str;
-	char **security_group_ids; /* array string */
+	char **security_group_ids;
         /*
          * The IDs of the Subnets.
          */
         char *subnet_ids_str;
-	char **subnet_ids; /* array string */
+	char **subnet_ids;
         /*
          * The keys of the tags associated with the VM groups.
          */
         char *tag_keys_str;
-	char **tag_keys; /* array string */
+	char **tag_keys;
         /*
          * The values of the tags associated with the VM groups.
          */
         char *tag_values_str;
-	char **tag_values; /* array string */
+	char **tag_values;
         /*
          * The key/value combination of the tags associated with the VMs, in the 
          * following format: 
          * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *tags_str;
-	char **tags; /* array string */
+	char **tags;
         /*
          * The number of VMs in the VM group.
          */
         char *vm_counts_str;
-	int *vm_counts; /* array integer */
+	int *vm_counts;
         /*
          * The IDs of the VM groups.
          */
         char *vm_group_ids_str;
-	char **vm_group_ids; /* array string */
+	char **vm_group_ids;
         /*
          * The names of the VM groups.
          */
         char *vm_group_names_str;
-	char **vm_group_names; /* array string */
+	char **vm_group_names;
         /*
          * The IDs of the VM templates.
          */
         char *vm_template_ids_str;
-	char **vm_template_ids; /* array string */
+	char **vm_template_ids;
 };
 
 struct filters_vm_template {
@@ -2917,64 +2941,64 @@ struct filters_vm_template {
          * The number of vCores.
          */
         char *cpu_cores_str;
-	int *cpu_cores; /* array integer */
+	int *cpu_cores;
         /*
          * The processor generations (for example, `v4`).
          */
         char *cpu_generations_str;
-	char **cpu_generations; /* array string */
+	char **cpu_generations;
         /*
          * The performances of the VMs.
          */
         char *cpu_performances_str;
-	char **cpu_performances; /* array string */
+	char **cpu_performances;
         /*
          * The descriptions of the VM templates.
          */
         char *descriptions_str;
-	char **descriptions; /* array string */
+	char **descriptions;
         /*
          * The IDs of the OMIs.
          */
         char *image_ids_str;
-	char **image_ids; /* array string */
+	char **image_ids;
         /*
          * The names of the keypairs.
          */
         char *keypair_names_str;
-	char **keypair_names; /* array string */
+	char **keypair_names;
         /*
          * The amount of RAM.
          */
         char *rams_str;
-	int *rams; /* array integer */
+	int *rams;
         /*
          * The keys of the tags associated with the VM templates.
          */
         char *tag_keys_str;
-	char **tag_keys; /* array string */
+	char **tag_keys;
         /*
          * The values of the tags associated with the VM templates.
          */
         char *tag_values_str;
-	char **tag_values; /* array string */
+	char **tag_values;
         /*
          * The key/value combination of the tags associated with the VM 
          * templates, in the following format: 
          * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *tags_str;
-	char **tags; /* array string */
+	char **tags;
         /*
          * The IDs of the VM templates.
          */
         char *vm_template_ids_str;
-	char **vm_template_ids; /* array string */
+	char **vm_template_ids;
         /*
          * The names of the VM templates.
          */
         char *vm_template_names_str;
-	char **vm_template_names; /* array string */
+	char **vm_template_names;
 };
 
 struct filters_vm_type {
@@ -2983,48 +3007,48 @@ struct filters_vm_type {
          * sake of historical compatibility with AWS.
          */
         int is_set_bsu_optimized;
-	int bsu_optimized; /* bool */
+	int bsu_optimized;
         /*
          * The types of ephemeral storage disk.
          */
         char *ephemerals_types_str;
-	char **ephemerals_types; /* array string */
+	char **ephemerals_types;
         /*
          * The number of Ethernet interfaces available.
          */
         char *eths_str;
-	int *eths; /* array integer */
+	int *eths;
         /*
          * The number of GPUs available.
          */
         char *gpus_str;
-	int *gpus; /* array integer */
+	int *gpus;
         /*
          * The amounts of memory, in gibibytes (GiB).
          */
         char *memory_sizes_str;
-	double *memory_sizes; /* array double */
+	double *memory_sizes;
         /*
          * The numbers of vCores.
          */
         char *vcore_counts_str;
-	int *vcore_counts; /* array integer */
+	int *vcore_counts;
         /*
          * The names of the VM types. For more information, see [VM 
          * Types](https://docs.outscale.com/en/userguide/VM-Types.html).
          */
         char *vm_type_names_str;
-	char **vm_type_names; /* array string */
+	char **vm_type_names;
         /*
          * The maximum number of ephemeral storage disks.
          */
         char *volume_counts_str;
-	int *volume_counts; /* array integer */
+	int *volume_counts;
         /*
          * The size of one ephemeral storage disk, in gibibytes (GiB).
          */
         char *volume_sizes_str;
-	int *volume_sizes; /* array integer */
+	int *volume_sizes;
 };
 
 struct filters_vms_state {
@@ -3033,38 +3057,38 @@ struct filters_vms_state {
          * `system-maintenance`).
          */
         char *maintenance_event_codes_str;
-	char **maintenance_event_codes; /* array string */
+	char **maintenance_event_codes;
         /*
          * The description of the scheduled event.
          */
         char *maintenance_event_descriptions_str;
-	char **maintenance_event_descriptions; /* array string */
+	char **maintenance_event_descriptions;
         /*
          * The latest date and time (UTC) the event can end.
          */
         char *maintenance_events_not_after_str;
-	char **maintenance_events_not_after; /* array string */
+	char **maintenance_events_not_after;
         /*
          * The earliest date and time (UTC) the event can start.
          */
         char *maintenance_events_not_before_str;
-	char **maintenance_events_not_before; /* array string */
+	char **maintenance_events_not_before;
         /*
          * The names of the Subregions of the VMs.
          */
         char *subregion_names_str;
-	char **subregion_names; /* array string */
+	char **subregion_names;
         /*
          * One or more IDs of VMs.
          */
         char *vm_ids_str;
-	char **vm_ids; /* array string */
+	char **vm_ids;
         /*
          * The states of the VMs (`pending` \\| `running` \\| `stopping` \\| 
          * `stopped` \\| `shutting-down` \\| `terminated` \\| `quarantine`).
          */
         char *vm_states_str;
-	char **vm_states; /* array string */
+	char **vm_states;
 };
 
 struct filters_volume {
@@ -3073,82 +3097,82 @@ struct filters_volume {
          * format (for example, `2020-06-30T00:00:00.000Z`).
          */
         char *creation_dates_str;
-	char **creation_dates; /* array string */
+	char **creation_dates;
         /*
          * Whether the volumes are deleted or not when terminating the VMs.
          */
         int is_set_link_volume_delete_on_vm_deletion;
-	int link_volume_delete_on_vm_deletion; /* bool */
+	int link_volume_delete_on_vm_deletion;
         /*
          * The VM device names.
          */
         char *link_volume_device_names_str;
-	char **link_volume_device_names; /* array string */
+	char **link_volume_device_names;
         /*
          * The dates and times of creation of the volumes, in ISO 8601 date-time 
          * format (for example, `2020-06-30T00:00:00.000Z`).
          */
         char *link_volume_link_dates_str;
-	char **link_volume_link_dates; /* array string */
+	char **link_volume_link_dates;
         /*
          * The attachment states of the volumes (`attaching` \\| `detaching` \\| 
          * `attached` \\| `detached`).
          */
         char *link_volume_link_states_str;
-	char **link_volume_link_states; /* array string */
+	char **link_volume_link_states;
         /*
          * One or more IDs of VMs.
          */
         char *link_volume_vm_ids_str;
-	char **link_volume_vm_ids; /* array string */
+	char **link_volume_vm_ids;
         /*
          * The snapshots from which the volumes were created.
          */
         char *snapshot_ids_str;
-	char **snapshot_ids; /* array string */
+	char **snapshot_ids;
         /*
          * The names of the Subregions in which the volumes were created.
          */
         char *subregion_names_str;
-	char **subregion_names; /* array string */
+	char **subregion_names;
         /*
          * The keys of the tags associated with the volumes.
          */
         char *tag_keys_str;
-	char **tag_keys; /* array string */
+	char **tag_keys;
         /*
          * The values of the tags associated with the volumes.
          */
         char *tag_values_str;
-	char **tag_values; /* array string */
+	char **tag_values;
         /*
          * The key/value combination of the tags associated with the volumes, in 
          * the following format: 
          * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *tags_str;
-	char **tags; /* array string */
+	char **tags;
         /*
          * The IDs of the volumes.
          */
         char *volume_ids_str;
-	char **volume_ids; /* array string */
+	char **volume_ids;
         /*
          * The sizes of the volumes, in gibibytes (GiB).
          */
         char *volume_sizes_str;
-	int *volume_sizes; /* array integer */
+	int *volume_sizes;
         /*
          * The states of the volumes (`creating` \\| `available` \\| `in-use` 
          * \\| `updating` \\| `deleting` \\| `error`).
          */
         char *volume_states_str;
-	char **volume_states; /* array string */
+	char **volume_states;
         /*
          * The types of the volumes (`standard` \\| `gp2` \\| `io1`).
          */
         char *volume_types_str;
-	char **volume_types; /* array string */
+	char **volume_types;
 };
 
 struct filters_vpn_connection {
@@ -3157,28 +3181,28 @@ struct filters_vpn_connection {
          * the connections.
          */
         char *bgp_asns_str;
-	int *bgp_asns; /* array integer */
+	int *bgp_asns;
         /*
          * The IDs of the client gateways.
          */
         char *client_gateway_ids_str;
-	char **client_gateway_ids; /* array string */
+	char **client_gateway_ids;
         /*
          * The types of the VPN connections (only `ipsec.1` is supported).
          */
         char *connection_types_str;
-	char **connection_types; /* array string */
+	char **connection_types;
         /*
          * The destination IP ranges.
          */
         char *route_destination_ip_ranges_str;
-	char **route_destination_ip_ranges; /* array string */
+	char **route_destination_ip_ranges;
         /*
          * The states of the VPN connections (`pending` \\| `available` \\| 
          * `deleting` \\| `deleted`).
          */
         char *states_str;
-	char **states; /* array string */
+	char **states;
         /*
          * If false, the VPN connection uses dynamic routing with Border Gateway 
          * Protocol (BGP). If true, routing is controlled using static routes. 
@@ -3187,34 +3211,34 @@ struct filters_vpn_connection {
          * [DeleteVpnConnectionRoute](#deletevpnconnectionroute).
          */
         int is_set_static_routes_only;
-	int static_routes_only; /* bool */
+	int static_routes_only;
         /*
          * The keys of the tags associated with the VPN connections.
          */
         char *tag_keys_str;
-	char **tag_keys; /* array string */
+	char **tag_keys;
         /*
          * The values of the tags associated with the VPN connections.
          */
         char *tag_values_str;
-	char **tag_values; /* array string */
+	char **tag_values;
         /*
          * The key/value combination of the tags associated with the VPN 
          * connections, in the following format: 
          * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *tags_str;
-	char **tags; /* array string */
+	char **tags;
         /*
          * The IDs of the virtual gateways.
          */
         char *virtual_gateway_ids_str;
-	char **virtual_gateway_ids; /* array string */
+	char **virtual_gateway_ids;
         /*
          * The IDs of the VPN connections.
          */
         char *vpn_connection_ids_str;
-	char **vpn_connection_ids; /* array string */
+	char **vpn_connection_ids;
 };
 
 struct flexible_gpu {
@@ -3222,34 +3246,34 @@ struct flexible_gpu {
          * If true, the fGPU is deleted when the VM is terminated.
          */
         int is_set_delete_on_vm_deletion;
-	int delete_on_vm_deletion; /* bool */
+	int delete_on_vm_deletion;
         /*
          * The ID of the fGPU.
          */
-	char *flexible_gpu_id; /* string */
+	char *flexible_gpu_id;
         /*
          * The compatible processor generation.
          */
-	char *generation; /* string */
+	char *generation;
         /*
          * The model of fGPU. For more information, see [About Flexible 
          * GPUs](https://docs.outscale.com/en/userguide/About-Flexible-GPUs.html)
          * .
          */
-	char *model_name; /* string */
+	char *model_name;
         /*
          * The state of the fGPU (`allocated` \\| `attaching` \\| `attached` \\| 
          * `detaching`).
          */
-	char *state; /* string */
+	char *state;
         /*
          * The Subregion where the fGPU is located.
          */
-	char *subregion_name; /* string */
+	char *subregion_name;
         /*
          * The ID of the VM the fGPU is attached to, if any.
          */
-	char *vm_id; /* string */
+	char *vm_id;
 };
 
 struct flexible_gpu_catalog {
@@ -3257,26 +3281,26 @@ struct flexible_gpu_catalog {
          * The generations of VMs that the fGPU is compatible with.
          */
         char *generations_str;
-	char **generations; /* array string */
+	char **generations;
         /*
          * The maximum number of VM vCores that the fGPU is compatible with.
          */
         int is_set_max_cpu;
-	int max_cpu; /* int */
+	int max_cpu;
         /*
          * The maximum amount of VM memory that the fGPU is compatible with.
          */
         int is_set_max_ram;
-	int max_ram; /* int */
+	int max_ram;
         /*
          * The model of fGPU.
          */
-	char *model_name; /* string */
+	char *model_name;
         /*
          * The amount of video RAM (VRAM) of the fGPU.
          */
         int is_set_vram;
-	int vram; /* int */
+	int vram;
 };
 
 struct health_check {
@@ -3285,39 +3309,39 @@ struct health_check {
          * both included).
          */
         int is_set_check_interval;
-	int check_interval; /* int */
+	int check_interval;
         /*
          * The number of consecutive successful requests before considering the 
          * VM as healthy (between `2` and `10` both included).
          */
         int is_set_healthy_threshold;
-	int healthy_threshold; /* int */
+	int healthy_threshold;
         /*
          * If you use the HTTP or HTTPS protocols, the request URL path.
          */
-	char *path; /* string */
+	char *path;
         /*
          * The port number (between `1` and `65535`, both included).
          */
         int is_set_port;
-	int port; /* int */
+	int port;
         /*
          * The protocol for the URL of the VM (`HTTP` \\| `HTTPS` \\| `TCP` \\| 
          * `SSL`).
          */
-	char *protocol; /* string */
+	char *protocol;
         /*
          * The maximum waiting time for a response before considering the VM as 
          * unhealthy, in seconds (between `2` and `60` both included).
          */
         int is_set_timeout;
-	int timeout; /* int */
+	int timeout;
         /*
          * The number of consecutive failed requests before considering the VM 
          * as unhealthy (between `2` and `10` both included).
          */
         int is_set_unhealthy_threshold;
-	int unhealthy_threshold; /* int */
+	int unhealthy_threshold;
 };
 
 struct permissions_on_resource {
@@ -3325,7 +3349,7 @@ struct permissions_on_resource {
          * One or more account IDs that the permission is associated with.
          */
         char *account_ids_str;
-	char **account_ids; /* array string */
+	char **account_ids;
         /*
          * A global permission for all accounts.<br />\n(Request) Set this 
          * parameter to true to make the resource public (if the parent 
@@ -3334,225 +3358,236 @@ struct permissions_on_resource {
          * resource is public. If false, the resource is private.
          */
         int is_set_global_permission;
-	int global_permission; /* bool */
+	int global_permission;
 };
 
 struct state_comment {
         /*
          * The code of the change of state.
          */
-	char *state_code; /* string */
+	char *state_code;
         /*
          * A message explaining the change of state.
          */
-	char *state_message; /* string */
+	char *state_message;
 };
 
 struct image {
         /*
          * The account alias of the owner of the OMI.
          */
-	char *account_alias; /* string */
+	char *account_alias;
         /*
          * The account ID of the owner of the OMI.
          */
-	char *account_id; /* string */
+	char *account_id;
         /*
          * The architecture of the OMI.
          */
-	char *architecture; /* string */
+	char *architecture;
         /*
          * One or more block device mappings.
-         *   One or more parameters used to automatically set up volumes 
-         *   when the VM is created.
-         *   -Bsu: ref BsuToCreate
+         *   One or more parameters used to automatically set up volumes when 
+         * the VM 
+         *   is created.
+         *   --BlockDeviceMappings.INDEX.Bsu: ref BsuToCreate
          *       Information about the BSU volume to create.
-         *       -DeleteOnVmDeletion: bool
+         *       --BlockDeviceMappings.INDEX.Bsu.DeleteOnVmDeletion: bool
          *         By default or if set to true, the volume is deleted when 
-         *         terminating the VM. If false, the volume is not deleted when 
-         *         terminating the VM.
-         *       -Iops: int
+         * terminating the 
+         *         VM. If false, the volume is not deleted when terminating the 
+         * VM.
+         *       --BlockDeviceMappings.INDEX.Bsu.Iops: int
          *         The number of I/O operations per second (IOPS). This 
-         * parameter 
-         *         must be specified only if you create an `io1` volume. The 
-         *         maximum number of IOPS allowed for `io1` volumes is `13000` 
-         *         with a maximum performance ratio of 300 IOPS per gibibyte.
-         *       -SnapshotId: string
+         * parameter must be 
+         *         specified only if you create an `io1` volume. The maximum 
+         * number of IOPS 
+         *         allowed for `io1` volumes is `13000` with a maximum 
+         * performance ratio of 
+         *         300 IOPS per gibibyte.
+         *       --BlockDeviceMappings.INDEX.Bsu.SnapshotId: string
          *         The ID of the snapshot used to create the volume.
-         *       -VolumeSize: int
+         *       --BlockDeviceMappings.INDEX.Bsu.VolumeSize: int
          *         The size of the volume, in gibibytes (GiB).<br />\nIf you 
-         *         specify a snapshot ID, the volume size must be at least equal 
-         *         to the snapshot size.<br />\nIf you specify a snapshot ID but 
-         *         no volume size, the volume is created with a size similar to 
-         *         the snapshot one.
-         *       -VolumeType: string
+         * specify a 
+         *         snapshot ID, the volume size must be at least equal to the 
+         * snapshot 
+         *         size.<br />\nIf you specify a snapshot ID but no volume size, 
+         * the volume 
+         *         is created with a size similar to the snapshot one.
+         *       --BlockDeviceMappings.INDEX.Bsu.VolumeType: string
          *         The type of the volume (`standard` \\| `io1` \\| `gp2`). If 
-         *         not specified in the request, a `standard` volume is 
-         *         created.<br />\nFor more information about volume types, see 
-         *         [About Volumes > Volume Types and 
+         * not 
+         *         specified in the request, a `standard` volume is created.<br 
+         * />\nFor more 
+         *         information about volume types, see [About Volumes > Volume 
+         * Types and 
          *         
-         * IOPS](https://docs.outscale.com/en/userguide/About-Volumes.html#
-         *         _volume_types_and_iops).
-         *   -DeviceName: string
-         *     The device name for the volume. For a root device, you must 
-         *     use `/dev/sda1`. For other volumes, you must use `/dev/sdX`, 
-         *     `/dev/sdXX`, `/dev/xvdX`, or `/dev/xvdXX` (where the first `X` 
-         *     is a letter between `b` and `z`, and the second `X` is a letter 
-         *     between `a` and `z`).
-         *   -VirtualDeviceName: string
+         * IOPS](https://docs.outscale.com/en/userguide/About-Volumes.html#_volum
+         * e_ty
+         *         pes_and_iops).
+         *   --BlockDeviceMappings.INDEX.DeviceName: string
+         *     The device name for the volume. For a root device, you must use 
+         *     `/dev/sda1`. For other volumes, you must use `/dev/sdX`, 
+         * `/dev/sdXX`, 
+         *     `/dev/xvdX`, or `/dev/xvdXX` (where the first `X` is a letter 
+         * between `b` 
+         *     and `z`, and the second `X` is a letter between `a` and `z`).
+         *   --BlockDeviceMappings.INDEX.VirtualDeviceName: string
          *     The name of the virtual device (`ephemeralN`).
          */
         char *block_device_mappings_str;
         int nb_block_device_mappings;
-	struct block_device_mapping_image *block_device_mappings; /* array ref BlockDeviceMappingImage */
+	struct block_device_mapping_image *block_device_mappings;
         /*
          * The date and time (UTC) of creation of the OMI.
          */
-	char *creation_date; /* string */
+	char *creation_date;
         /*
          * The description of the OMI.
          */
-	char *description; /* string */
+	char *description;
         /*
          * The location from which the OMI files were created.
          */
-	char *file_location; /* string */
+	char *file_location;
         /*
          * The ID of the OMI.
          */
-	char *image_id; /* string */
+	char *image_id;
         /*
          * The name of the OMI.
          */
-	char *image_name; /* string */
+	char *image_name;
         /*
          * The type of the OMI.
          */
-	char *image_type; /* string */
+	char *image_type;
         /*
          *   Permissions for the resource.
-         *   -AccountIds: array string
-         *     One or more account IDs that the permission is associated 
-         *     with.
-         *   -GlobalPermission: bool
-         *     A global permission for all accounts.<br />\n(Request) Set 
-         *     this parameter to true to make the resource public (if the 
-         *     parent parameter is `Additions`) or to make the resource 
-         *     private (if the parent parameter is `Removals`).<br 
-         *     />\n(Response) If true, the resource is public. If false, the 
-         *     resource is private.
+         *   --PermissionsToLaunch.AccountIds: array string
+         *     One or more account IDs that the permission is associated with.
+         *   --PermissionsToLaunch.GlobalPermission: bool
+         *     A global permission for all accounts.<br />\n(Request) Set this 
+         *     parameter to true to make the resource public (if the parent 
+         * parameter is 
+         *     `Additions`) or to make the resource private (if the parent 
+         * parameter is 
+         *     `Removals`).<br />\n(Response) If true, the resource is public. 
+         * If false, 
+         *     the resource is private.
          */
         char *permissions_to_launch_str;
         int is_set_permissions_to_launch;
-	struct permissions_on_resource permissions_to_launch; /* ref PermissionsOnResource */
+	struct permissions_on_resource permissions_to_launch;
         /*
          * The product codes associated with the OMI.
          */
         char *product_codes_str;
-	char **product_codes; /* array string */
+	char **product_codes;
         /*
          * The name of the root device.
          */
-	char *root_device_name; /* string */
+	char *root_device_name;
         /*
          * The type of root device used by the OMI (always `bsu`).
          */
-	char *root_device_type; /* string */
+	char *root_device_type;
         /*
          * The state of the OMI (`pending` \\| `available` \\| `failed`).
          */
-	char *state; /* string */
+	char *state;
         /*
          *   Information about the change of state.
-         *   -StateCode: string
+         *   --StateComment.StateCode: string
          *     The code of the change of state.
-         *   -StateMessage: string
+         *   --StateComment.StateMessage: string
          *     A message explaining the change of state.
          */
         char *state_comment_str;
         int is_set_state_comment;
-	struct state_comment state_comment; /* ref StateComment */
+	struct state_comment state_comment;
         /*
          * One or more tags associated with the OMI.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
 };
 
 struct osu_export_image_export_task {
         /*
          * The format of the export disk (`qcow2` \\| `raw`).
          */
-	char *disk_image_format; /* string */
+	char *disk_image_format;
         /*
          * The name of the OOS bucket the OMI is exported to.
          */
-	char *osu_bucket; /* string */
+	char *osu_bucket;
         /*
          * The URL of the manifest file.
          */
-	char *osu_manifest_url; /* string */
+	char *osu_manifest_url;
         /*
          * The prefix for the key of the OOS object corresponding to the image.
          */
-	char *osu_prefix; /* string */
+	char *osu_prefix;
 };
 
 struct image_export_task {
         /*
          * If the OMI export task fails, an error message appears.
          */
-	char *comment; /* string */
+	char *comment;
         /*
          * The ID of the OMI to be exported.
          */
-	char *image_id; /* string */
+	char *image_id;
         /*
          *   Information about the OMI export task.
-         *   -DiskImageFormat: string
+         *   --OsuExport.DiskImageFormat: string
          *     The format of the export disk (`qcow2` \\| `raw`).
-         *   -OsuBucket: string
+         *   --OsuExport.OsuBucket: string
          *     The name of the OOS bucket the OMI is exported to.
-         *   -OsuManifestUrl: string
+         *   --OsuExport.OsuManifestUrl: string
          *     The URL of the manifest file.
-         *   -OsuPrefix: string
+         *   --OsuExport.OsuPrefix: string
          *     The prefix for the key of the OOS object corresponding to the 
-         *     image.
+         * image.
          */
         char *osu_export_str;
         int is_set_osu_export;
-	struct osu_export_image_export_task osu_export; /* ref OsuExportImageExportTask */
+	struct osu_export_image_export_task osu_export;
         /*
          * The progress of the OMI export task, as a percentage.
          */
         int is_set_progress;
-	int progress; /* int */
+	int progress;
         /*
          * The state of the OMI export task (`pending/queued` \\| `pending` \\| 
          * `completed` \\| `failed` \\| `cancelled`).
          */
-	char *state; /* string */
+	char *state;
         /*
          * One or more tags associated with the image export task.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
         /*
          * The ID of the OMI export task.
          */
-	char *task_id; /* string */
+	char *task_id;
 };
 
 struct inline_policy {
@@ -3562,79 +3597,79 @@ struct inline_policy {
          * Information](https://docs.outscale.com/en/userguide/EIM-Reference-Info
          * rmation.html).
          */
-	char *body; /* string */
+	char *body;
         /*
          * The name of the policy.
          */
-	char *name; /* string */
+	char *name;
 };
 
 struct internet_service {
         /*
          * The ID of the Internet service.
          */
-	char *internet_service_id; /* string */
+	char *internet_service_id;
         /*
          * The ID of the Net attached to the Internet service.
          */
-	char *net_id; /* string */
+	char *net_id;
         /*
          * The state of the attachment of the Internet service to the Net 
          * (always `available`).
          */
-	char *state; /* string */
+	char *state;
         /*
          * One or more tags associated with the Internet service.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
 };
 
 struct keypair {
         /*
          * The MD5 public key fingerprint as specified in section 4 of RFC 4716.
          */
-	char *keypair_fingerprint; /* string */
+	char *keypair_fingerprint;
         /*
          * The name of the keypair.
          */
-	char *keypair_name; /* string */
+	char *keypair_name;
         /*
          * The type of the keypair (`ssh-rsa`, `ssh-ed25519`, 
          * `ecdsa-sha2-nistp256`, `ecdsa-sha2-nistp384`, or 
          * `ecdsa-sha2-nistp521`).
          */
-	char *keypair_type; /* string */
+	char *keypair_type;
 };
 
 struct keypair_created {
         /*
          * The MD5 public key fingerprint, as specified in section 4 of RFC 4716.
          */
-	char *keypair_fingerprint; /* string */
+	char *keypair_fingerprint;
         /*
          * The name of the keypair.
          */
-	char *keypair_name; /* string */
+	char *keypair_name;
         /*
          * The type of the keypair (`ssh-rsa`, `ssh-ed25519`, 
          * `ecdsa-sha2-nistp256`, `ecdsa-sha2-nistp384`, or 
          * `ecdsa-sha2-nistp521`).
          */
-	char *keypair_type; /* string */
+	char *keypair_type;
         /*
          * The private key, returned only if you are creating a keypair (not if 
          * you are importing). When you save this private key in a .rsa file, 
          * make sure you replace the `\\n` escape sequences with real line 
          * breaks.
          */
-	char *private_key; /* string */
+	char *private_key;
 };
 
 struct link_nic {
@@ -3642,30 +3677,30 @@ struct link_nic {
          * If true, the NIC is deleted when the VM is terminated.
          */
         int is_set_delete_on_vm_deletion;
-	int delete_on_vm_deletion; /* bool */
+	int delete_on_vm_deletion;
         /*
          * The device index for the NIC attachment (between `1` and `7`, both 
          * included).
          */
         int is_set_device_number;
-	int device_number; /* int */
+	int device_number;
         /*
          * The ID of the NIC to attach.
          */
-	char *link_nic_id; /* string */
+	char *link_nic_id;
         /*
          * The state of the attachment (`attaching` \\| `attached` \\| 
          * `detaching` \\| `detached`).
          */
-	char *state; /* string */
+	char *state;
         /*
          * The account ID of the owner of the VM.
          */
-	char *vm_account_id; /* string */
+	char *vm_account_id;
         /*
          * The ID of the VM.
          */
-	char *vm_id; /* string */
+	char *vm_id;
 };
 
 struct link_nic_light {
@@ -3673,22 +3708,22 @@ struct link_nic_light {
          * If true, the NIC is deleted when the VM is terminated.
          */
         int is_set_delete_on_vm_deletion;
-	int delete_on_vm_deletion; /* bool */
+	int delete_on_vm_deletion;
         /*
          * The device index for the NIC attachment (between `1` and `7`, both 
          * included).
          */
         int is_set_device_number;
-	int device_number; /* int */
+	int device_number;
         /*
          * The ID of the NIC to attach.
          */
-	char *link_nic_id; /* string */
+	char *link_nic_id;
         /*
          * The state of the attachment (`attaching` \\| `attached` \\| 
          * `detaching` \\| `detached`).
          */
-	char *state; /* string */
+	char *state;
 };
 
 struct link_nic_to_update {
@@ -3697,11 +3732,11 @@ struct link_nic_to_update {
          * NIC is detached from the VM.
          */
         int is_set_delete_on_vm_deletion;
-	int delete_on_vm_deletion; /* bool */
+	int delete_on_vm_deletion;
         /*
          * The ID of the NIC attachment.
          */
-	char *link_nic_id; /* string */
+	char *link_nic_id;
 };
 
 struct link_public_ip {
@@ -3709,38 +3744,38 @@ struct link_public_ip {
          * (Required in a Net) The ID representing the association of the public 
          * IP with the VM or the NIC.
          */
-	char *link_public_ip_id; /* string */
+	char *link_public_ip_id;
         /*
          * The name of the public DNS.
          */
-	char *public_dns_name; /* string */
+	char *public_dns_name;
         /*
          * The public IP associated with the NIC.
          */
-	char *public_ip; /* string */
+	char *public_ip;
         /*
          * The account ID of the owner of the public IP.
          */
-	char *public_ip_account_id; /* string */
+	char *public_ip_account_id;
         /*
          * The allocation ID of the public IP.
          */
-	char *public_ip_id; /* string */
+	char *public_ip_id;
 };
 
 struct link_public_ip_light_for_vm {
         /*
          * The name of the public DNS.
          */
-	char *public_dns_name; /* string */
+	char *public_dns_name;
         /*
          * The public IP associated with the NIC.
          */
-	char *public_ip; /* string */
+	char *public_ip;
         /*
          * The account ID of the owner of the public IP.
          */
-	char *public_ip_account_id; /* string */
+	char *public_ip_account_id;
 };
 
 struct link_route_table {
@@ -3748,52 +3783,52 @@ struct link_route_table {
          * The ID of the association between the route table and the Net or 
          * Subnet.
          */
-	char *link_route_table_id; /* string */
+	char *link_route_table_id;
         /*
          * If true, the route table is the main one.
          */
         int is_set_main;
-	int main; /* bool */
+	int main;
         /*
          * The ID of the Net, if the route table is not explicitly linked to a 
          * Subnet.
          */
-	char *net_id; /* string */
+	char *net_id;
         /*
          * The ID of the route table.
          */
-	char *route_table_id; /* string */
+	char *route_table_id;
         /*
          * The ID of the Subnet, if the route table is explicitly linked to a 
          * Subnet.
          */
-	char *subnet_id; /* string */
+	char *subnet_id;
 };
 
 struct linked_policy {
         /*
          * The date and time (UTC) of creation of the linked policy.
          */
-	char *creation_date; /* string */
+	char *creation_date;
         /*
          * The date and time (UTC) at which the linked policy was last modified.
          */
-	char *last_modification_date; /* string */
+	char *last_modification_date;
         /*
          * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
          * see [Resource 
          * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
          * rs.html).
          */
-	char *orn; /* string */
+	char *orn;
         /*
          * The ID of the policy.
          */
-	char *policy_id; /* string */
+	char *policy_id;
         /*
          * The name of the policy.
          */
-	char *policy_name; /* string */
+	char *policy_name;
 };
 
 struct linked_volume {
@@ -3802,24 +3837,24 @@ struct linked_volume {
          * volume is not deleted when terminating the VM.
          */
         int is_set_delete_on_vm_deletion;
-	int delete_on_vm_deletion; /* bool */
+	int delete_on_vm_deletion;
         /*
          * The name of the device.
          */
-	char *device_name; /* string */
+	char *device_name;
         /*
          * The state of the attachment of the volume (`attaching` \\| 
          * `detaching` \\| `attached` \\| `detached`).
          */
-	char *state; /* string */
+	char *state;
         /*
          * The ID of the VM.
          */
-	char *vm_id; /* string */
+	char *vm_id;
         /*
          * The ID of the volume.
          */
-	char *volume_id; /* string */
+	char *volume_id;
 };
 
 struct listener {
@@ -3828,35 +3863,35 @@ struct listener {
          * `65535`, both included).
          */
         int is_set_backend_port;
-	int backend_port; /* int */
+	int backend_port;
         /*
          * The protocol for routing traffic to backend VMs (`HTTP` \\| `HTTPS` 
          * \\| `TCP` \\| `SSL`).
          */
-	char *backend_protocol; /* string */
+	char *backend_protocol;
         /*
          * The port on which the load balancer is listening (between `1` and 
          * `65535`, both included).
          */
         int is_set_load_balancer_port;
-	int load_balancer_port; /* int */
+	int load_balancer_port;
         /*
          * The routing protocol (`HTTP` \\| `HTTPS` \\| `TCP` \\| `SSL`).
          */
-	char *load_balancer_protocol; /* string */
+	char *load_balancer_protocol;
         /*
          * The names of the policies. If there are no policies enabled, the list 
          * is empty.
          */
         char *policy_names_str;
-	char **policy_names; /* array string */
+	char **policy_names;
         /*
          * The OUTSCALE Resource Name (ORN) of the server certificate. For more 
          * information, see [Resource Identifiers > OUTSCALE Resource Names 
          * (ORNs)](https://docs.outscale.com/en/userguide/Resource-Identifiers.ht
          * ml#_outscale_resource_names_orns).
          */
-	char *server_certificate_id; /* string */
+	char *server_certificate_id;
 };
 
 struct listener_for_creation {
@@ -3865,234 +3900,248 @@ struct listener_for_creation {
          * `65535`, both included).
          */
         int is_set_backend_port;
-	int backend_port; /* int */
+	int backend_port;
         /*
          * The protocol for routing traffic to backend VMs (`HTTP` \\| `HTTPS` 
          * \\| `TCP` \\| `SSL`).
          */
-	char *backend_protocol; /* string */
+	char *backend_protocol;
         /*
          * The port on which the load balancer is listening (between `1` and 
          * `65535`, both included).
          */
         int is_set_load_balancer_port;
-	int load_balancer_port; /* int */
+	int load_balancer_port;
         /*
          * The routing protocol (`HTTP` \\| `HTTPS` \\| `TCP` \\| `SSL`).
          */
-	char *load_balancer_protocol; /* string */
+	char *load_balancer_protocol;
         /*
          * The OUTSCALE Resource Name (ORN) of the server certificate. For more 
          * information, see [Resource Identifiers > OUTSCALE Resource Names 
          * (ORNs)](https://docs.outscale.com/en/userguide/Resource-Identifiers.ht
          * ml#_outscale_resource_names_orns).
          */
-	char *server_certificate_id; /* string */
+	char *server_certificate_id;
 };
 
 struct listener_rule {
         /*
          * The type of action for the rule (always `forward`).
          */
-	char *action; /* string */
+	char *action;
         /*
          * A host-name pattern for the rule, with a maximum length of 128 
          * characters. This host-name pattern supports maximum three wildcards, 
          * and must not contain any special characters except [-.?].
          */
-	char *host_name_pattern; /* string */
+	char *host_name_pattern;
         /*
          * The ID of the listener.
          */
         int is_set_listener_id;
-	int listener_id; /* int */
+	int listener_id;
         /*
          * The ID of the listener rule.
          */
         int is_set_listener_rule_id;
-	int listener_rule_id; /* int */
+	int listener_rule_id;
         /*
          * A human-readable name for the listener rule.
          */
-	char *listener_rule_name; /* string */
+	char *listener_rule_name;
         /*
          * A path pattern for the rule, with a maximum length of 128 characters. 
          * This path pattern supports maximum three wildcards, and must not 
          * contain any special characters except [_-.$/~&quot;'@:+?].
          */
-	char *path_pattern; /* string */
+	char *path_pattern;
         /*
          * The priority level of the listener rule, between `1` and `19999` both 
          * included. Each rule must have a unique priority level. Otherwise, an 
          * error is returned.
          */
         int is_set_priority;
-	int priority; /* int */
+	int priority;
         /*
          * The IDs of the backend VMs.
          */
         char *vm_ids_str;
-	char **vm_ids; /* array string */
+	char **vm_ids;
 };
 
 struct listener_rule_for_creation {
         /*
          * The type of action for the rule (always `forward`).
          */
-	char *action; /* string */
+	char *action;
         /*
          * A host-name pattern for the rule, with a maximum length of 128 
          * characters. This host-name pattern supports maximum three wildcards, 
          * and must not contain any special characters except [-.?].
          */
-	char *host_name_pattern; /* string */
+	char *host_name_pattern;
         /*
          * A human-readable name for the listener rule.
          */
-	char *listener_rule_name; /* string */
+	char *listener_rule_name;
         /*
          * A path pattern for the rule, with a maximum length of 128 characters. 
          * This path pattern supports maximum three wildcards, and must not 
          * contain any special characters except [_-.$/~&quot;'@:+?].
          */
-	char *path_pattern; /* string */
+	char *path_pattern;
         /*
          * The priority level of the listener rule, between `1` and `19999` both 
          * included. Each rule must have a unique priority level. Otherwise, an 
          * error is returned.
          */
         int is_set_priority;
-	int priority; /* int */
+	int priority;
 };
 
 struct source_security_group {
         /*
          * The account ID of the owner of the security group.
          */
-	char *security_group_account_id; /* string */
+	char *security_group_account_id;
         /*
          * The name of the security group.
          */
-	char *security_group_name; /* string */
+	char *security_group_name;
 };
 
 struct load_balancer {
         /*
          *   Information about access logs.
-         *   -IsEnabled: bool
+         *   --AccessLog.IsEnabled: bool
          *     If true, access logs are enabled for your load balancer. If 
-         *     false, they are not. If you set this to true in your request, 
-         *     the `OsuBucketName` parameter is required.
-         *   -OsuBucketName: string
+         * false, they 
+         *     are not. If you set this to true in your request, the 
+         * `OsuBucketName` 
+         *     parameter is required.
+         *   --AccessLog.OsuBucketName: string
          *     The name of the OOS bucket for the access logs.
-         *   -OsuBucketPrefix: string
-         *     The path to the folder of the access logs in your OOS bucket 
-         *     (by default, the `root` level of your bucket).
-         *   -PublicationInterval: int
-         *     The time interval for the publication of access logs in the 
-         *     OOS bucket, in minutes. This value can be either `5` or `60` 
-         *     (by default, `60`).
+         *   --AccessLog.OsuBucketPrefix: string
+         *     The path to the folder of the access logs in your OOS bucket (by 
+         *     default, the `root` level of your bucket).
+         *   --AccessLog.PublicationInterval: int
+         *     The time interval for the publication of access logs in the OOS 
+         * bucket, 
+         *     in minutes. This value can be either `5` or `60` (by default, 
+         * `60`).
          */
         char *access_log_str;
         int is_set_access_log;
-	struct access_log access_log; /* ref AccessLog */
+	struct access_log access_log;
         /*
          * The stickiness policies defined for the load balancer.
          *   Information about the stickiness policy.
-         *   -CookieName: string
+         *   --ApplicationStickyCookiePolicies.INDEX.CookieName: string
          *     The name of the application cookie used for stickiness.
-         *   -PolicyName: string
-         *     The mnemonic name for the policy being created. The name must 
-         *     be unique within a set of policies for this load balancer.
+         *   --ApplicationStickyCookiePolicies.INDEX.PolicyName: string
+         *     The mnemonic name for the policy being created. The name must be 
+         * unique 
+         *     within a set of policies for this load balancer.
          */
         char *application_sticky_cookie_policies_str;
         int nb_application_sticky_cookie_policies;
-	struct application_sticky_cookie_policy *application_sticky_cookie_policies; /* array ref ApplicationStickyCookiePolicy */
+	struct application_sticky_cookie_policy *application_sticky_cookie_policies;
         /*
          * One or more public IPs of backend VMs.
          */
         char *backend_ips_str;
-	char **backend_ips; /* array string */
+	char **backend_ips;
         /*
          * One or more IDs of backend VMs for the load balancer.
          */
         char *backend_vm_ids_str;
-	char **backend_vm_ids; /* array string */
+	char **backend_vm_ids;
         /*
          * The DNS name of the load balancer.
          */
-	char *dns_name; /* string */
+	char *dns_name;
         /*
          *   Information about the health check configuration.
-         *   -CheckInterval: int
-         *     The number of seconds between two requests (between `5` and 
-         *     `600` both included).
-         *   -HealthyThreshold: int
-         *     The number of consecutive successful requests before 
-         *     considering the VM as healthy (between `2` and `10` both 
+         *   --HealthCheck.CheckInterval: int
+         *     The number of seconds between two requests (between `5` and `600` 
+         * both 
          *     included).
-         *   -Path: string
+         *   --HealthCheck.HealthyThreshold: int
+         *     The number of consecutive successful requests before considering 
+         * the VM 
+         *     as healthy (between `2` and `10` both included).
+         *   --HealthCheck.Path: string
          *     If you use the HTTP or HTTPS protocols, the request URL path.
-         *   -Port: int
+         *   --HealthCheck.Port: int
          *     The port number (between `1` and `65535`, both included).
-         *   -Protocol: string
-         *     The protocol for the URL of the VM (`HTTP` \\| `HTTPS` \\| 
-         *     `TCP` \\| `SSL`).
-         *   -Timeout: int
-         *     The maximum waiting time for a response before considering the 
-         *     VM as unhealthy, in seconds (between `2` and `60` both 
-         *     included).
-         *   -UnhealthyThreshold: int
-         *     The number of consecutive failed requests before considering 
-         *     the VM as unhealthy (between `2` and `10` both included).
+         *   --HealthCheck.Protocol: string
+         *     The protocol for the URL of the VM (`HTTP` \\| `HTTPS` \\| `TCP` 
+         * \\| 
+         *     `SSL`).
+         *   --HealthCheck.Timeout: int
+         *     The maximum waiting time for a response before considering the VM 
+         * as 
+         *     unhealthy, in seconds (between `2` and `60` both included).
+         *   --HealthCheck.UnhealthyThreshold: int
+         *     The number of consecutive failed requests before considering the 
+         * VM as 
+         *     unhealthy (between `2` and `10` both included).
          */
         char *health_check_str;
         int is_set_health_check;
-	struct health_check health_check; /* ref HealthCheck */
+	struct health_check health_check;
         /*
          * The listeners for the load balancer.
          *   Information about the listener.
-         *   -BackendPort: int
+         *   --Listeners.INDEX.BackendPort: int
          *     The port on which the backend VM is listening (between `1` and 
-         *     `65535`, both included).
-         *   -BackendProtocol: string
+         * `65535`, 
+         *     both included).
+         *   --Listeners.INDEX.BackendProtocol: string
          *     The protocol for routing traffic to backend VMs (`HTTP` \\| 
-         *     `HTTPS` \\| `TCP` \\| `SSL`).
-         *   -LoadBalancerPort: int
-         *     The port on which the load balancer is listening (between `1` 
-         *     and `65535`, both included).
-         *   -LoadBalancerProtocol: string
+         * `HTTPS` \\| 
+         *     `TCP` \\| `SSL`).
+         *   --Listeners.INDEX.LoadBalancerPort: int
+         *     The port on which the load balancer is listening (between `1` and 
+         *     `65535`, both included).
+         *   --Listeners.INDEX.LoadBalancerProtocol: string
          *     The routing protocol (`HTTP` \\| `HTTPS` \\| `TCP` \\| `SSL`).
-         *   -PolicyNames: array string
-         *     The names of the policies. If there are no policies enabled, 
-         *     the list is empty.
-         *   -ServerCertificateId: string
-         *     The OUTSCALE Resource Name (ORN) of the server certificate. 
-         *     For more information, see [Resource Identifiers > OUTSCALE 
-         *     Resource Names 
-         *     (ORNs)](https://docs.outscale.com/en/userguide/Resource-Identifi
-         *     ers.html#_outscale_resource_names_orns).
+         *   --Listeners.INDEX.PolicyNames: array string
+         *     The names of the policies. If there are no policies enabled, the 
+         * list is 
+         *     empty.
+         *   --Listeners.INDEX.ServerCertificateId: string
+         *     The OUTSCALE Resource Name (ORN) of the server certificate. For 
+         * more 
+         *     information, see [Resource Identifiers > OUTSCALE Resource Names 
+         *     
+         * (ORNs)](https://docs.outscale.com/en/userguide/Resource-Identifiers.ht
+         * ml#_
+         *     outscale_resource_names_orns).
          */
         char *listeners_str;
         int nb_listeners;
-	struct listener *listeners; /* array ref Listener */
+	struct listener *listeners;
         /*
          * The name of the load balancer.
          */
-	char *load_balancer_name; /* string */
+	char *load_balancer_name;
         /*
          * The policies defined for the load balancer.
          *   Information about the stickiness policy.
-         *   -CookieExpirationPeriod: int
+         *   --LoadBalancerStickyCookiePolicies.INDEX.CookieExpirationPeriod: int
          *     The time period, in seconds, after which the cookie should be 
-         *     considered stale.<br />\nIf `1`, the stickiness session lasts 
-         *     for the duration of the browser session.
-         *   -PolicyName: string
+         * considered 
+         *     stale.<br />\nIf `1`, the stickiness session lasts for the 
+         * duration of 
+         *     the browser session.
+         *   --LoadBalancerStickyCookiePolicies.INDEX.PolicyName: string
          *     The name of the stickiness policy.
          */
         char *load_balancer_sticky_cookie_policies_str;
         int nb_load_balancer_sticky_cookie_policies;
-	struct load_balancer_sticky_cookie_policy *load_balancer_sticky_cookie_policies; /* array ref LoadBalancerStickyCookiePolicy */
+	struct load_balancer_sticky_cookie_policy *load_balancer_sticky_cookie_policies;
         /*
          * The type of load balancer. Valid only for load balancers in a Net.<br 
          * />\nIf `LoadBalancerType` is `internet-facing`, the load balancer has 
@@ -4100,75 +4149,77 @@ struct load_balancer {
          * `LoadBalancerType` is `internal`, the load balancer has a public DNS 
          * name that resolves to a private IP.
          */
-	char *load_balancer_type; /* string */
+	char *load_balancer_type;
         /*
          * The ID of the Net for the load balancer.
          */
-	char *net_id; /* string */
+	char *net_id;
         /*
          * (internet-facing only) The public IP associated with the load 
          * balancer.
          */
-	char *public_ip; /* string */
+	char *public_ip;
         /*
          * Whether secure cookies are enabled for the load balancer.
          */
         int is_set_secured_cookies;
-	int secured_cookies; /* bool */
+	int secured_cookies;
         /*
          * One or more IDs of security groups for the load balancers. Valid only 
          * for load balancers in a Net.
          */
         char *security_groups_str;
-	char **security_groups; /* array string */
+	char **security_groups;
         /*
-         *   Information about the source security group of the load 
-         *   balancer, which you can use as part of your inbound rules for 
-         *   your registered VMs.<br />\nTo only allow traffic from load 
-         *   balancers, add a security group rule that specifies this source 
-         *   security group as the inbound source.
-         *   -SecurityGroupAccountId: string
+         *   Information about the source security group of the load balancer, 
+         * which 
+         *   you can use as part of your inbound rules for your registered 
+         * VMs.<br 
+         *   />\nTo only allow traffic from load balancers, add a security group 
+         * rule 
+         *   that specifies this source security group as the inbound source.
+         *   --SourceSecurityGroup.SecurityGroupAccountId: string
          *     The account ID of the owner of the security group.
-         *   -SecurityGroupName: string
+         *   --SourceSecurityGroup.SecurityGroupName: string
          *     The name of the security group.
          */
         char *source_security_group_str;
         int is_set_source_security_group;
-	struct source_security_group source_security_group; /* ref SourceSecurityGroup */
+	struct source_security_group source_security_group;
         /*
          * The ID of the Subnet in which the load balancer was created.
          */
         char *subnets_str;
-	char **subnets; /* array string */
+	char **subnets;
         /*
          * The ID of the Subregion in which the load balancer was created.
          */
         char *subregion_names_str;
-	char **subregion_names; /* array string */
+	char **subregion_names;
         /*
          * One or more tags associated with the load balancer.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
 };
 
 struct load_balancer_light {
         /*
          * The name of the load balancer to which the listener is attached.
          */
-	char *load_balancer_name; /* string */
+	char *load_balancer_name;
         /*
          * The port of load balancer on which the load balancer is listening 
          * (between `1` and `65535` both included).
          */
         int is_set_load_balancer_port;
-	int load_balancer_port; /* int */
+	int load_balancer_port;
 };
 
 struct load_balancer_sticky_cookie_policy {
@@ -4178,26 +4229,26 @@ struct load_balancer_sticky_cookie_policy {
          * duration of the browser session.
          */
         int is_set_cookie_expiration_period;
-	int cookie_expiration_period; /* int */
+	int cookie_expiration_period;
         /*
          * The name of the stickiness policy.
          */
-	char *policy_name; /* string */
+	char *policy_name;
 };
 
 struct load_balancer_tag {
         /*
          * The key of the tag.
          */
-	char *key; /* string */
+	char *key;
         /*
          * The name of the load balancer.
          */
-	char *load_balancer_name; /* string */
+	char *load_balancer_name;
         /*
          * The value of the tag.
          */
-	char *value; /* string */
+	char *value;
 };
 
 struct location {
@@ -4205,154 +4256,154 @@ struct location {
          * The location code, to be set as the `Location` parameter of the 
          * *CreateDirectLink* method when creating a DirectLink.
          */
-	char *code; /* string */
+	char *code;
         /*
          * The name and description of the location, corresponding to a 
          * datacenter.
          */
-	char *name; /* string */
+	char *name;
 };
 
 struct log {
         /*
          * The account ID of the logged call.
          */
-	char *account_id; /* string */
+	char *account_id;
         /*
          * The duration of the logged call, in microseconds.
          */
         int is_set_call_duration;
-	int call_duration; /* int */
+	int call_duration;
         /*
          * The access key used for the logged call.
          */
-	char *query_access_key; /* string */
+	char *query_access_key;
         /*
          * The name of the API used by the logged call (always `oapi` for the 
          * OUTSCALE API).
          */
-	char *query_api_name; /* string */
+	char *query_api_name;
         /*
          * The version of the API used by the logged call.
          */
-	char *query_api_version; /* string */
+	char *query_api_version;
         /*
          * The name of the logged call.
          */
-	char *query_call_name; /* string */
+	char *query_call_name;
         /*
          * The date and time (UTC) of the logged call.
          */
-	char *query_date; /* string */
+	char *query_date;
         /*
          * The raw header of the HTTP request of the logged call.
          */
-	char *query_header_raw; /* string */
+	char *query_header_raw;
         /*
          * The size of the raw header of the HTTP request of the logged call, in 
          * bytes.
          */
         int is_set_query_header_size;
-	int query_header_size; /* int */
+	int query_header_size;
         /*
          * The IP used for the logged call.
          */
-	char *query_ip_address; /* string */
+	char *query_ip_address;
         /*
          * The raw payload of the HTTP request of the logged call.
          */
-	char *query_payload_raw; /* string */
+	char *query_payload_raw;
         /*
          * The size of the raw payload of the HTTP request of the logged call, 
          * in bytes.
          */
         int is_set_query_payload_size;
-	int query_payload_size; /* int */
+	int query_payload_size;
         /*
          * The user agent of the HTTP request of the logged call.
          */
-	char *query_user_agent; /* string */
+	char *query_user_agent;
         /*
          * The request ID provided in the response of the logged call.
          */
-	char *request_id; /* string */
+	char *request_id;
         /*
          * The size of the response of the logged call, in bytes.
          */
         int is_set_response_size;
-	int response_size; /* int */
+	int response_size;
         /*
          * The HTTP status code of the response of the logged call.
          */
         int is_set_response_status_code;
-	int response_status_code; /* int */
+	int response_status_code;
 };
 
 struct maintenance_event {
         /*
          * The code of the event (`system-reboot` \\| `system-maintenance`).
          */
-	char *code; /* string */
+	char *code;
         /*
          * The description of the event.
          */
-	char *description; /* string */
+	char *description;
         /*
          * The latest scheduled end date and time (UTC) for the event.
          */
-	char *not_after; /* string */
+	char *not_after;
         /*
          * The earliest scheduled start date and time (UTC) for the event.
          */
-	char *not_before; /* string */
+	char *not_before;
 };
 
 struct nat_service {
         /*
          * The idempotency token provided when creating the NAT service.
          */
-	char *client_token; /* string */
+	char *client_token;
         /*
          * The ID of the NAT service.
          */
-	char *nat_service_id; /* string */
+	char *nat_service_id;
         /*
          * The ID of the Net in which the NAT service is.
          */
-	char *net_id; /* string */
+	char *net_id;
         /*
          * Information about the public IP or IPs associated with the NAT 
          * service.
          *   Information about the public IP.
-         *   -PublicIp: string
+         *   --PublicIps.INDEX.PublicIp: string
          *     The public IP associated with the NAT service.
-         *   -PublicIpId: string
+         *   --PublicIps.INDEX.PublicIpId: string
          *     The allocation ID of the public IP associated with the NAT 
-         *     service.
+         * service.
          */
         char *public_ips_str;
         int nb_public_ips;
-	struct public_ip_light *public_ips; /* array ref PublicIpLight */
+	struct public_ip_light *public_ips;
         /*
          * The state of the NAT service (`pending` \\| `available` \\| 
          * `deleting` \\| `deleted`).
          */
-	char *state; /* string */
+	char *state;
         /*
          * The ID of the Subnet in which the NAT service is.
          */
-	char *subnet_id; /* string */
+	char *subnet_id;
         /*
          * One or more tags associated with the NAT service.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
 };
 
 struct net {
@@ -4360,304 +4411,307 @@ struct net {
          * The ID of the DHCP options set (or `default` if you want to associate 
          * the default one).
          */
-	char *dhcp_options_set_id; /* string */
+	char *dhcp_options_set_id;
         /*
          * The IP range for the Net, in CIDR notation (for example, 
          * `10.0.0.0/16`).
          */
-	char *ip_range; /* string */
+	char *ip_range;
         /*
          * The ID of the Net.
          */
-	char *net_id; /* string */
+	char *net_id;
         /*
          * The state of the Net (`pending` \\| `available` \\| `deleting`).
          */
-	char *state; /* string */
+	char *state;
         /*
          * One or more tags associated with the Net.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
         /*
          * The VM tenancy in a Net.
          */
-	char *tenancy; /* string */
+	char *tenancy;
 };
 
 struct net_access_point {
         /*
          * The ID of the Net access point.
          */
-	char *net_access_point_id; /* string */
+	char *net_access_point_id;
         /*
          * The ID of the Net with which the Net access point is associated.
          */
-	char *net_id; /* string */
+	char *net_id;
         /*
          * The ID of the route tables associated with the Net access point.
          */
         char *route_table_ids_str;
-	char **route_table_ids; /* array string */
+	char **route_table_ids;
         /*
          * The name of the service with which the Net access point is associated.
          */
-	char *service_name; /* string */
+	char *service_name;
         /*
          * The state of the Net access point (`pending` \\| `available` \\| 
          * `deleting` \\| `deleted`).
          */
-	char *state; /* string */
+	char *state;
         /*
          * One or more tags associated with the Net access point.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
 };
 
 struct source_net {
         /*
          * The account ID of the owner of the source Net.
          */
-	char *account_id; /* string */
+	char *account_id;
         /*
          * The IP range for the source Net, in CIDR notation (for example, 
          * `10.0.0.0/16`).
          */
-	char *ip_range; /* string */
+	char *ip_range;
         /*
          * The ID of the source Net.
          */
-	char *net_id; /* string */
+	char *net_id;
 };
 
 struct net_peering_state {
         /*
          * Additional information about the state of the Net peering.
          */
-	char *message; /* string */
+	char *message;
         /*
          * The state of the Net peering (`pending-acceptance` \\| `active` \\| 
          * `rejected` \\| `failed` \\| `expired` \\| `deleted`).
          */
-	char *name; /* string */
+	char *name;
 };
 
 struct net_peering {
         /*
          *   Information about the accepter Net.
-         *   -AccountId: string
+         *   --AccepterNet.AccountId: string
          *     The account ID of the owner of the accepter Net.
-         *   -IpRange: string
-         *     The IP range for the accepter Net, in CIDR notation (for 
-         *     example, `10.0.0.0/16`).
-         *   -NetId: string
+         *   --AccepterNet.IpRange: string
+         *     The IP range for the accepter Net, in CIDR notation (for example, 
+         *     `10.0.0.0/16`).
+         *   --AccepterNet.NetId: string
          *     The ID of the accepter Net.
          */
         char *accepter_net_str;
         int is_set_accepter_net;
-	struct accepter_net accepter_net; /* ref AccepterNet */
+	struct accepter_net accepter_net;
         /*
          * The date and time (UTC) at which the Net peerings expire.
          */
-	char *expiration_date; /* string */
+	char *expiration_date;
         /*
          * The ID of the Net peering.
          */
-	char *net_peering_id; /* string */
+	char *net_peering_id;
         /*
          *   Information about the source Net.
-         *   -AccountId: string
+         *   --SourceNet.AccountId: string
          *     The account ID of the owner of the source Net.
-         *   -IpRange: string
-         *     The IP range for the source Net, in CIDR notation (for 
-         *     example, `10.0.0.0/16`).
-         *   -NetId: string
+         *   --SourceNet.IpRange: string
+         *     The IP range for the source Net, in CIDR notation (for example, 
+         *     `10.0.0.0/16`).
+         *   --SourceNet.NetId: string
          *     The ID of the source Net.
          */
         char *source_net_str;
         int is_set_source_net;
-	struct source_net source_net; /* ref SourceNet */
+	struct source_net source_net;
         /*
          *   Information about the state of the Net peering.
-         *   -Message: string
+         *   --State.Message: string
          *     Additional information about the state of the Net peering.
-         *   -Name: string
-         *     The state of the Net peering (`pending-acceptance` \\| 
-         *     `active` \\| `rejected` \\| `failed` \\| `expired` \\| 
-         *     `deleted`).
+         *   --State.Name: string
+         *     The state of the Net peering (`pending-acceptance` \\| `active` 
+         * \\| 
+         *     `rejected` \\| `failed` \\| `expired` \\| `deleted`).
          */
         char *state_str;
         int is_set_state;
-	struct net_peering_state state; /* ref NetPeeringState */
+	struct net_peering_state state;
         /*
          * One or more tags associated with the Net peering.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
 };
 
 struct net_to_virtual_gateway_link {
         /*
          * The ID of the Net to which the virtual gateway is attached.
          */
-	char *net_id; /* string */
+	char *net_id;
         /*
          * The state of the attachment (`attaching` \\| `attached` \\| 
          * `detaching` \\| `detached`).
          */
-	char *state; /* string */
+	char *state;
 };
 
 struct nic {
         /*
          * The account ID of the owner of the NIC.
          */
-	char *account_id; /* string */
+	char *account_id;
         /*
          * The description of the NIC.
          */
-	char *description; /* string */
+	char *description;
         /*
          * (Net only) If true, the source/destination check is enabled. If 
          * false, it is disabled. This value must be false for a NAT VM to 
          * perform network address translation (NAT) in a Net.
          */
         int is_set_is_source_dest_checked;
-	int is_source_dest_checked; /* bool */
+	int is_source_dest_checked;
         /*
          *   Information about the NIC attachment.
-         *   -DeleteOnVmDeletion: bool
+         *   --LinkNic.DeleteOnVmDeletion: bool
          *     If true, the NIC is deleted when the VM is terminated.
-         *   -DeviceNumber: int
+         *   --LinkNic.DeviceNumber: int
          *     The device index for the NIC attachment (between `1` and `7`, 
-         *     both included).
-         *   -LinkNicId: string
+         * both 
+         *     included).
+         *   --LinkNic.LinkNicId: string
          *     The ID of the NIC to attach.
-         *   -State: string
+         *   --LinkNic.State: string
          *     The state of the attachment (`attaching` \\| `attached` \\| 
-         *     `detaching` \\| `detached`).
-         *   -VmAccountId: string
+         * `detaching` 
+         *     \\| `detached`).
+         *   --LinkNic.VmAccountId: string
          *     The account ID of the owner of the VM.
-         *   -VmId: string
+         *   --LinkNic.VmId: string
          *     The ID of the VM.
          */
         char *link_nic_str;
         int is_set_link_nic;
-	struct link_nic link_nic; /* ref LinkNic */
+	struct link_nic link_nic;
         /*
          *   Information about the public IP association.
-         *   -LinkPublicIpId: string
+         *   --LinkPublicIp.LinkPublicIpId: string
          *     (Required in a Net) The ID representing the association of the 
-         *     public IP with the VM or the NIC.
-         *   -PublicDnsName: string
+         * public IP 
+         *     with the VM or the NIC.
+         *   --LinkPublicIp.PublicDnsName: string
          *     The name of the public DNS.
-         *   -PublicIp: string
+         *   --LinkPublicIp.PublicIp: string
          *     The public IP associated with the NIC.
-         *   -PublicIpAccountId: string
+         *   --LinkPublicIp.PublicIpAccountId: string
          *     The account ID of the owner of the public IP.
-         *   -PublicIpId: string
+         *   --LinkPublicIp.PublicIpId: string
          *     The allocation ID of the public IP.
          */
         char *link_public_ip_str;
         int is_set_link_public_ip;
-	struct link_public_ip link_public_ip; /* ref LinkPublicIp */
+	struct link_public_ip link_public_ip;
         /*
          * The Media Access Control (MAC) address of the NIC.
          */
-	char *mac_address; /* string */
+	char *mac_address;
         /*
          * The ID of the Net for the NIC.
          */
-	char *net_id; /* string */
+	char *net_id;
         /*
          * The ID of the NIC.
          */
-	char *nic_id; /* string */
+	char *nic_id;
         /*
          * The name of the private DNS.
          */
-	char *private_dns_name; /* string */
+	char *private_dns_name;
         /*
          * The private IPs of the NIC.
          *   Information about the private IP.
-         *   -IsPrimary: bool
+         *   --PrivateIps.INDEX.IsPrimary: bool
          *     If true, the IP is the primary private IP of the NIC.
-         *   -LinkPublicIp: ref LinkPublicIp
+         *   --PrivateIps.INDEX.LinkPublicIp: ref LinkPublicIp
          *       Information about the public IP association.
-         *       -LinkPublicIpId: string
+         *       --PrivateIps.INDEX.LinkPublicIp.LinkPublicIpId: string
          *         (Required in a Net) The ID representing the association of 
-         * the 
-         *         public IP with the VM or the NIC.
-         *       -PublicDnsName: string
+         * the public IP 
+         *         with the VM or the NIC.
+         *       --PrivateIps.INDEX.LinkPublicIp.PublicDnsName: string
          *         The name of the public DNS.
-         *       -PublicIp: string
+         *       --PrivateIps.INDEX.LinkPublicIp.PublicIp: string
          *         The public IP associated with the NIC.
-         *       -PublicIpAccountId: string
+         *       --PrivateIps.INDEX.LinkPublicIp.PublicIpAccountId: string
          *         The account ID of the owner of the public IP.
-         *       -PublicIpId: string
+         *       --PrivateIps.INDEX.LinkPublicIp.PublicIpId: string
          *         The allocation ID of the public IP.
-         *   -PrivateDnsName: string
+         *   --PrivateIps.INDEX.PrivateDnsName: string
          *     The name of the private DNS.
-         *   -PrivateIp: string
+         *   --PrivateIps.INDEX.PrivateIp: string
          *     The private IP of the NIC.
          */
         char *private_ips_str;
         int nb_private_ips;
-	struct private_ip *private_ips; /* array ref PrivateIp */
+	struct private_ip *private_ips;
         /*
          * One or more IDs of security groups for the NIC.
          *   Information about the security group.
-         *   -SecurityGroupId: string
+         *   --SecurityGroups.INDEX.SecurityGroupId: string
          *     The ID of the security group.
-         *   -SecurityGroupName: string
+         *   --SecurityGroups.INDEX.SecurityGroupName: string
          *     The name of the security group.
          */
         char *security_groups_str;
         int nb_security_groups;
-	struct security_group_light *security_groups; /* array ref SecurityGroupLight */
+	struct security_group_light *security_groups;
         /*
          * The state of the NIC (`available` \\| `attaching` \\| `in-use` \\| 
          * `detaching`).
          */
-	char *state; /* string */
+	char *state;
         /*
          * The ID of the Subnet.
          */
-	char *subnet_id; /* string */
+	char *subnet_id;
         /*
          * The Subregion in which the NIC is located.
          */
-	char *subregion_name; /* string */
+	char *subregion_name;
         /*
          * One or more tags associated with the NIC.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
 };
 
 struct nic_for_vm_creation {
@@ -4667,252 +4721,256 @@ struct nic_for_vm_creation {
          * an existing NIC, see [UpdateNic](#updatenic).
          */
         int is_set_delete_on_vm_deletion;
-	int delete_on_vm_deletion; /* bool */
+	int delete_on_vm_deletion;
         /*
          * The description of the NIC, if you are creating a NIC when creating 
          * the VM.
          */
-	char *description; /* string */
+	char *description;
         /*
          * The index of the VM device for the NIC attachment (between `0` and 
          * `7`, both included). This parameter is required if you create a NIC 
          * when creating the VM.
          */
         int is_set_device_number;
-	int device_number; /* int */
+	int device_number;
         /*
          * The ID of the NIC, if you are attaching an existing NIC when creating 
          * a VM.
          */
-	char *nic_id; /* string */
+	char *nic_id;
         /*
          * One or more private IPs to assign to the NIC, if you create a NIC 
          * when creating a VM. Only one private IP can be the primary private IP.
          *   Information about the private IP.
-         *   -IsPrimary: bool
+         *   --PrivateIps.INDEX.IsPrimary: bool
          *     If true, the IP is the primary private IP of the NIC.
-         *   -PrivateIp: string
+         *   --PrivateIps.INDEX.PrivateIp: string
          *     The private IP of the NIC.
          */
         char *private_ips_str;
         int nb_private_ips;
-	struct private_ip_light *private_ips; /* array ref PrivateIpLight */
+	struct private_ip_light *private_ips;
         /*
          * The number of secondary private IPs, if you create a NIC when 
          * creating a VM. This parameter cannot be specified if you specified 
          * more than one private IP in the `PrivateIps` parameter.
          */
         int is_set_secondary_private_ip_count;
-	int secondary_private_ip_count; /* int */
+	int secondary_private_ip_count;
         /*
          * One or more IDs of security groups for the NIC, if you create a NIC 
          * when creating a VM.
          */
         char *security_group_ids_str;
-	char **security_group_ids; /* array string */
+	char **security_group_ids;
         /*
          * The ID of the Subnet for the NIC, if you create a NIC when creating a 
          * VM. This parameter is required if you create a NIC when creating the 
          * VM.
          */
-	char *subnet_id; /* string */
+	char *subnet_id;
 };
 
 struct nic_light {
         /*
          * The account ID of the owner of the NIC.
          */
-	char *account_id; /* string */
+	char *account_id;
         /*
          * The description of the NIC.
          */
-	char *description; /* string */
+	char *description;
         /*
          * (Net only) If true, the source/destination check is enabled. If 
          * false, it is disabled. This value must be false for a NAT VM to 
          * perform network address translation (NAT) in a Net.
          */
         int is_set_is_source_dest_checked;
-	int is_source_dest_checked; /* bool */
+	int is_source_dest_checked;
         /*
          *   Information about the network interface card (NIC).
-         *   -DeleteOnVmDeletion: bool
+         *   --LinkNic.DeleteOnVmDeletion: bool
          *     If true, the NIC is deleted when the VM is terminated.
-         *   -DeviceNumber: int
+         *   --LinkNic.DeviceNumber: int
          *     The device index for the NIC attachment (between `1` and `7`, 
-         *     both included).
-         *   -LinkNicId: string
+         * both 
+         *     included).
+         *   --LinkNic.LinkNicId: string
          *     The ID of the NIC to attach.
-         *   -State: string
+         *   --LinkNic.State: string
          *     The state of the attachment (`attaching` \\| `attached` \\| 
-         *     `detaching` \\| `detached`).
+         * `detaching` 
+         *     \\| `detached`).
          */
         char *link_nic_str;
         int is_set_link_nic;
-	struct link_nic_light link_nic; /* ref LinkNicLight */
+	struct link_nic_light link_nic;
         /*
          *   Information about the public IP associated with the NIC.
-         *   -PublicDnsName: string
+         *   --LinkPublicIp.PublicDnsName: string
          *     The name of the public DNS.
-         *   -PublicIp: string
+         *   --LinkPublicIp.PublicIp: string
          *     The public IP associated with the NIC.
-         *   -PublicIpAccountId: string
+         *   --LinkPublicIp.PublicIpAccountId: string
          *     The account ID of the owner of the public IP.
          */
         char *link_public_ip_str;
         int is_set_link_public_ip;
-	struct link_public_ip_light_for_vm link_public_ip; /* ref LinkPublicIpLightForVm */
+	struct link_public_ip_light_for_vm link_public_ip;
         /*
          * The Media Access Control (MAC) address of the NIC.
          */
-	char *mac_address; /* string */
+	char *mac_address;
         /*
          * The ID of the Net for the NIC.
          */
-	char *net_id; /* string */
+	char *net_id;
         /*
          * The ID of the NIC.
          */
-	char *nic_id; /* string */
+	char *nic_id;
         /*
          * The name of the private DNS.
          */
-	char *private_dns_name; /* string */
+	char *private_dns_name;
         /*
          * The private IP or IPs of the NIC.
          *   Information about the private IP of the NIC.
-         *   -IsPrimary: bool
+         *   --PrivateIps.INDEX.IsPrimary: bool
          *     If true, the IP is the primary private IP of the NIC.
-         *   -LinkPublicIp: ref LinkPublicIpLightForVm
+         *   --PrivateIps.INDEX.LinkPublicIp: ref LinkPublicIpLightForVm
          *       Information about the public IP associated with the NIC.
-         *       -PublicDnsName: string
+         *       --PrivateIps.INDEX.LinkPublicIp.PublicDnsName: string
          *         The name of the public DNS.
-         *       -PublicIp: string
+         *       --PrivateIps.INDEX.LinkPublicIp.PublicIp: string
          *         The public IP associated with the NIC.
-         *       -PublicIpAccountId: string
+         *       --PrivateIps.INDEX.LinkPublicIp.PublicIpAccountId: string
          *         The account ID of the owner of the public IP.
-         *   -PrivateDnsName: string
+         *   --PrivateIps.INDEX.PrivateDnsName: string
          *     The name of the private DNS.
-         *   -PrivateIp: string
+         *   --PrivateIps.INDEX.PrivateIp: string
          *     The private IP.
          */
         char *private_ips_str;
         int nb_private_ips;
-	struct private_ip_light_for_vm *private_ips; /* array ref PrivateIpLightForVm */
+	struct private_ip_light_for_vm *private_ips;
         /*
          * One or more IDs of security groups for the NIC.
          *   Information about the security group.
-         *   -SecurityGroupId: string
+         *   --SecurityGroups.INDEX.SecurityGroupId: string
          *     The ID of the security group.
-         *   -SecurityGroupName: string
+         *   --SecurityGroups.INDEX.SecurityGroupName: string
          *     The name of the security group.
          */
         char *security_groups_str;
         int nb_security_groups;
-	struct security_group_light *security_groups; /* array ref SecurityGroupLight */
+	struct security_group_light *security_groups;
         /*
          * The state of the NIC (`available` \\| `attaching` \\| `in-use` \\| 
          * `detaching`).
          */
-	char *state; /* string */
+	char *state;
         /*
          * The ID of the Subnet for the NIC.
          */
-	char *subnet_id; /* string */
+	char *subnet_id;
 };
 
 struct osu_api_key {
         /*
          * The API key of the OOS account that enables you to access the bucket.
          */
-	char *api_key_id; /* string */
+	char *api_key_id;
         /*
          * The secret key of the OOS account that enables you to access the 
          * bucket.
          */
-	char *secret_key; /* string */
+	char *secret_key;
 };
 
 struct osu_export_snapshot_export_task {
         /*
          * The format of the export disk (`qcow2` \\| `raw`).
          */
-	char *disk_image_format; /* string */
+	char *disk_image_format;
         /*
          * The name of the OOS bucket the snapshot is exported to.
          */
-	char *osu_bucket; /* string */
+	char *osu_bucket;
         /*
          * The prefix for the key of the OOS object corresponding to the 
          * snapshot.
          */
-	char *osu_prefix; /* string */
+	char *osu_prefix;
 };
 
 struct osu_export_to_create {
         /*
          * The format of the export disk (`qcow2` \\| `raw`).
          */
-	char *disk_image_format; /* string */
+	char *disk_image_format;
         /*
          *   Information about the OOS API key.
-         *   -ApiKeyId: string
+         *   --OsuApiKey.ApiKeyId: string
          *     The API key of the OOS account that enables you to access the 
-         *     bucket.
-         *   -SecretKey: string
-         *     The secret key of the OOS account that enables you to access 
-         *     the bucket.
+         * bucket.
+         *   --OsuApiKey.SecretKey: string
+         *     The secret key of the OOS account that enables you to access the 
+         * bucket.
          */
         char *osu_api_key_str;
         int is_set_osu_api_key;
-	struct osu_api_key osu_api_key; /* ref OsuApiKey */
+	struct osu_api_key osu_api_key;
         /*
          * The name of the OOS bucket where you want to export the object.
          */
-	char *osu_bucket; /* string */
+	char *osu_bucket;
         /*
          * The URL of the manifest file.
          */
-	char *osu_manifest_url; /* string */
+	char *osu_manifest_url;
         /*
          * The prefix for the key of the OOS object.
          */
-	char *osu_prefix; /* string */
+	char *osu_prefix;
 };
 
 struct permissions_on_resource_creation {
         /*
          *   Permissions for the resource.
-         *   -AccountIds: array string
-         *     One or more account IDs that the permission is associated 
-         *     with.
-         *   -GlobalPermission: bool
-         *     A global permission for all accounts.<br />\n(Request) Set 
-         *     this parameter to true to make the resource public (if the 
-         *     parent parameter is `Additions`) or to make the resource 
-         *     private (if the parent parameter is `Removals`).<br 
-         *     />\n(Response) If true, the resource is public. If false, the 
-         *     resource is private.
+         *   --Additions.AccountIds: array string
+         *     One or more account IDs that the permission is associated with.
+         *   --Additions.GlobalPermission: bool
+         *     A global permission for all accounts.<br />\n(Request) Set this 
+         *     parameter to true to make the resource public (if the parent 
+         * parameter is 
+         *     `Additions`) or to make the resource private (if the parent 
+         * parameter is 
+         *     `Removals`).<br />\n(Response) If true, the resource is public. 
+         * If false, 
+         *     the resource is private.
          */
         char *additions_str;
         int is_set_additions;
-	struct permissions_on_resource additions; /* ref PermissionsOnResource */
+	struct permissions_on_resource additions;
         /*
          *   Permissions for the resource.
-         *   -AccountIds: array string
-         *     One or more account IDs that the permission is associated 
-         *     with.
-         *   -GlobalPermission: bool
-         *     A global permission for all accounts.<br />\n(Request) Set 
-         *     this parameter to true to make the resource public (if the 
-         *     parent parameter is `Additions`) or to make the resource 
-         *     private (if the parent parameter is `Removals`).<br 
-         *     />\n(Response) If true, the resource is public. If false, the 
-         *     resource is private.
+         *   --Removals.AccountIds: array string
+         *     One or more account IDs that the permission is associated with.
+         *   --Removals.GlobalPermission: bool
+         *     A global permission for all accounts.<br />\n(Request) Set this 
+         *     parameter to true to make the resource public (if the parent 
+         * parameter is 
+         *     `Additions`) or to make the resource private (if the parent 
+         * parameter is 
+         *     `Removals`).<br />\n(Response) If true, the resource is public. 
+         * If false, 
+         *     the resource is private.
          */
         char *removals_str;
         int is_set_removals;
-	struct permissions_on_resource removals; /* ref PermissionsOnResource */
+	struct permissions_on_resource removals;
 };
 
 struct phase1_options {
@@ -4920,49 +4978,49 @@ struct phase1_options {
          * The action to carry out after a Dead Peer Detection (DPD) timeout 
          * occurs.
          */
-	char *dpd_timeout_action; /* string */
+	char *dpd_timeout_action;
         /*
          * The maximum waiting time for a Dead Peer Detection (DPD) response 
          * before considering the peer as dead, in seconds.
          */
         int is_set_dpd_timeout_seconds;
-	int dpd_timeout_seconds; /* int */
+	int dpd_timeout_seconds;
         /*
          * The Internet Key Exchange (IKE) versions allowed for the VPN tunnel.
          */
         char *ike_versions_str;
-	char **ike_versions; /* array string */
+	char **ike_versions;
         /*
          * The Diffie-Hellman (DH) group numbers allowed for the VPN tunnel for 
          * phase 1.
          */
         char *phase1_dh_group_numbers_str;
-	int *phase1_dh_group_numbers; /* array integer */
+	int *phase1_dh_group_numbers;
         /*
          * The encryption algorithms allowed for the VPN tunnel for phase 1.
          */
         char *phase1_encryption_algorithms_str;
-	char **phase1_encryption_algorithms; /* array string */
+	char **phase1_encryption_algorithms;
         /*
          * The integrity algorithms allowed for the VPN tunnel for phase 1.
          */
         char *phase1_integrity_algorithms_str;
-	char **phase1_integrity_algorithms; /* array string */
+	char **phase1_integrity_algorithms;
         /*
          * The lifetime for phase 1 of the IKE negotiation process, in seconds.
          */
         int is_set_phase1_lifetime_seconds;
-	int phase1_lifetime_seconds; /* int */
+	int phase1_lifetime_seconds;
         /*
          * The number of packets in an IKE replay window.
          */
         int is_set_replay_window_size;
-	int replay_window_size; /* int */
+	int replay_window_size;
         /*
          * The action to carry out when establishing tunnels for a VPN 
          * connection.
          */
-	char *startup_action; /* string */
+	char *startup_action;
 };
 
 struct phase2_options {
@@ -4971,29 +5029,29 @@ struct phase2_options {
          * phase 2.
          */
         char *phase2_dh_group_numbers_str;
-	int *phase2_dh_group_numbers; /* array integer */
+	int *phase2_dh_group_numbers;
         /*
          * The encryption algorithms allowed for the VPN tunnel for phase 2.
          */
         char *phase2_encryption_algorithms_str;
-	char **phase2_encryption_algorithms; /* array string */
+	char **phase2_encryption_algorithms;
         /*
          * The integrity algorithms allowed for the VPN tunnel for phase 2.
          */
         char *phase2_integrity_algorithms_str;
-	char **phase2_integrity_algorithms; /* array string */
+	char **phase2_integrity_algorithms;
         /*
          * The lifetime for phase 2 of the Internet Key Exchange (IKE) 
          * negociation process, in seconds.
          */
         int is_set_phase2_lifetime_seconds;
-	int phase2_lifetime_seconds; /* int */
+	int phase2_lifetime_seconds;
         /*
          * The pre-shared key to establish the initial authentication between 
          * the client gateway and the virtual gateway. This key can contain any 
          * character except line breaks and double quotes (&quot;).
          */
-	char *pre_shared_key; /* string */
+	char *pre_shared_key;
 };
 
 struct placement {
@@ -5001,60 +5059,60 @@ struct placement {
          * The name of the Subregion. If you specify this parameter, you must 
          * not specify the `Nics` parameter.
          */
-	char *subregion_name; /* string */
+	char *subregion_name;
         /*
          * The tenancy of the VM (`default`, `dedicated`, or a dedicated group 
          * ID).
          */
-	char *tenancy; /* string */
+	char *tenancy;
 };
 
 struct policy {
         /*
          * The date and time (UTC) of creation of the policy.
          */
-	char *creation_date; /* string */
+	char *creation_date;
         /*
          * A friendly name for the policy (between 0 and 1000 characters).
          */
-	char *description; /* string */
+	char *description;
         /*
          * Indicates whether the policy can be linked to a group or an EIM user.
          */
         int is_set_is_linkable;
-	int is_linkable; /* bool */
+	int is_linkable;
         /*
          * The date and time (UTC) at which the policy was last modified.
          */
-	char *last_modification_date; /* string */
+	char *last_modification_date;
         /*
          * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
          * see [Resource 
          * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
          * rs.html).
          */
-	char *orn; /* string */
+	char *orn;
         /*
          * The path to the policy.
          */
-	char *path; /* string */
+	char *path;
         /*
          * The ID of the policy default version.
          */
-	char *policy_default_version_id; /* string */
+	char *policy_default_version_id;
         /*
          * The ID of the policy.
          */
-	char *policy_id; /* string */
+	char *policy_id;
         /*
          * The name of the policy.
          */
-	char *policy_name; /* string */
+	char *policy_name;
         /*
          * The number of resources attached to the policy.
          */
         int is_set_resources_count;
-	int resources_count; /* int */
+	int resources_count;
 };
 
 struct policy_version {
@@ -5064,20 +5122,20 @@ struct policy_version {
          * Information](https://docs.outscale.com/en/userguide/EIM-Reference-Info
          * rmation.html).
          */
-	char *body; /* string */
+	char *body;
         /*
          * The date and time (UTC) of creation of the version.
          */
-	char *creation_date; /* string */
+	char *creation_date;
         /*
          * If true, the version is the default one.
          */
         int is_set_default_version;
-	int default_version; /* bool */
+	int default_version;
         /*
          * The ID of the version.
          */
-	char *version_id; /* string */
+	char *version_id;
 };
 
 struct private_ip {
@@ -5085,32 +5143,33 @@ struct private_ip {
          * If true, the IP is the primary private IP of the NIC.
          */
         int is_set_is_primary;
-	int is_primary; /* bool */
+	int is_primary;
         /*
          *   Information about the public IP association.
-         *   -LinkPublicIpId: string
+         *   --LinkPublicIp.LinkPublicIpId: string
          *     (Required in a Net) The ID representing the association of the 
-         *     public IP with the VM or the NIC.
-         *   -PublicDnsName: string
+         * public IP 
+         *     with the VM or the NIC.
+         *   --LinkPublicIp.PublicDnsName: string
          *     The name of the public DNS.
-         *   -PublicIp: string
+         *   --LinkPublicIp.PublicIp: string
          *     The public IP associated with the NIC.
-         *   -PublicIpAccountId: string
+         *   --LinkPublicIp.PublicIpAccountId: string
          *     The account ID of the owner of the public IP.
-         *   -PublicIpId: string
+         *   --LinkPublicIp.PublicIpId: string
          *     The allocation ID of the public IP.
          */
         char *link_public_ip_str;
         int is_set_link_public_ip;
-	struct link_public_ip link_public_ip; /* ref LinkPublicIp */
+	struct link_public_ip link_public_ip;
         /*
          * The name of the private DNS.
          */
-	char *private_dns_name; /* string */
+	char *private_dns_name;
         /*
          * The private IP of the NIC.
          */
-	char *private_ip; /* string */
+	char *private_ip;
 };
 
 struct private_ip_light {
@@ -5118,11 +5177,11 @@ struct private_ip_light {
          * If true, the IP is the primary private IP of the NIC.
          */
         int is_set_is_primary;
-	int is_primary; /* bool */
+	int is_primary;
         /*
          * The private IP of the NIC.
          */
-	char *private_ip; /* string */
+	char *private_ip;
 };
 
 struct private_ip_light_for_vm {
@@ -5130,42 +5189,42 @@ struct private_ip_light_for_vm {
          * If true, the IP is the primary private IP of the NIC.
          */
         int is_set_is_primary;
-	int is_primary; /* bool */
+	int is_primary;
         /*
          *   Information about the public IP associated with the NIC.
-         *   -PublicDnsName: string
+         *   --LinkPublicIp.PublicDnsName: string
          *     The name of the public DNS.
-         *   -PublicIp: string
+         *   --LinkPublicIp.PublicIp: string
          *     The public IP associated with the NIC.
-         *   -PublicIpAccountId: string
+         *   --LinkPublicIp.PublicIpAccountId: string
          *     The account ID of the owner of the public IP.
          */
         char *link_public_ip_str;
         int is_set_link_public_ip;
-	struct link_public_ip_light_for_vm link_public_ip; /* ref LinkPublicIpLightForVm */
+	struct link_public_ip_light_for_vm link_public_ip;
         /*
          * The name of the private DNS.
          */
-	char *private_dns_name; /* string */
+	char *private_dns_name;
         /*
          * The private IP.
          */
-	char *private_ip; /* string */
+	char *private_ip;
 };
 
 struct product_type {
         /*
          * The description of the product type.
          */
-	char *description; /* string */
+	char *description;
         /*
          * The ID of the product type.
          */
-	char *product_type_id; /* string */
+	char *product_type_id;
         /*
          * The vendor of the product type.
          */
-	char *vendor; /* string */
+	char *vendor;
 };
 
 struct public_ip {
@@ -5173,87 +5232,87 @@ struct public_ip {
          * (Required in a Net) The ID representing the association of the public 
          * IP with the VM or the NIC.
          */
-	char *link_public_ip_id; /* string */
+	char *link_public_ip_id;
         /*
          * The account ID of the owner of the NIC.
          */
-	char *nic_account_id; /* string */
+	char *nic_account_id;
         /*
          * The ID of the NIC the public IP is associated with (if any).
          */
-	char *nic_id; /* string */
+	char *nic_id;
         /*
          * The private IP associated with the public IP.
          */
-	char *private_ip; /* string */
+	char *private_ip;
         /*
          * The public IP.
          */
-	char *public_ip; /* string */
+	char *public_ip;
         /*
          * The allocation ID of the public IP.
          */
-	char *public_ip_id; /* string */
+	char *public_ip_id;
         /*
          * One or more tags associated with the public IP.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
         /*
          * The ID of the VM the public IP is associated with (if any).
          */
-	char *vm_id; /* string */
+	char *vm_id;
 };
 
 struct public_ip_light {
         /*
          * The public IP associated with the NAT service.
          */
-	char *public_ip; /* string */
+	char *public_ip;
         /*
          * The allocation ID of the public IP associated with the NAT service.
          */
-	char *public_ip_id; /* string */
+	char *public_ip_id;
 };
 
 struct quota {
         /*
          * The account ID of the owner of the quotas.
          */
-	char *account_id; /* string */
+	char *account_id;
         /*
          * The description of the quota.
          */
-	char *description; /* string */
+	char *description;
         /*
          * The maximum value of the quota for the account (if there is no limit, 
          * `0`).
          */
         int is_set_max_value;
-	int max_value; /* int */
+	int max_value;
         /*
          * The unique name of the quota.
          */
-	char *name; /* string */
+	char *name;
         /*
          * The group name of the quota.
          */
-	char *quota_collection; /* string */
+	char *quota_collection;
         /*
          * The description of the quota.
          */
-	char *short_description; /* string */
+	char *short_description;
         /*
          * The limit value currently used by the account.
          */
         int is_set_used_value;
-	int used_value; /* int */
+	int used_value;
 };
 
 struct quota_types {
@@ -5261,29 +5320,30 @@ struct quota_types {
          * The resource ID if it is a resource-specific quota, `global` if it is 
          * not.
          */
-	char *quota_type; /* string */
+	char *quota_type;
         /*
          * One or more quotas associated with the account.
          *   Information about the quota.
-         *   -AccountId: string
+         *   --Quotas.INDEX.AccountId: string
          *     The account ID of the owner of the quotas.
-         *   -Description: string
+         *   --Quotas.INDEX.Description: string
          *     The description of the quota.
-         *   -MaxValue: int
+         *   --Quotas.INDEX.MaxValue: int
          *     The maximum value of the quota for the account (if there is no 
-         *     limit, `0`).
-         *   -Name: string
+         * limit, 
+         *     `0`).
+         *   --Quotas.INDEX.Name: string
          *     The unique name of the quota.
-         *   -QuotaCollection: string
+         *   --Quotas.INDEX.QuotaCollection: string
          *     The group name of the quota.
-         *   -ShortDescription: string
+         *   --Quotas.INDEX.ShortDescription: string
          *     The description of the quota.
-         *   -UsedValue: int
+         *   --Quotas.INDEX.UsedValue: int
          *     The limit value currently used by the account.
          */
         char *quotas_str;
         int nb_quotas;
-	struct quota *quotas; /* array ref Quota */
+	struct quota *quotas;
 };
 
 struct read_linked_policies_filters {
@@ -5291,7 +5351,7 @@ struct read_linked_policies_filters {
          * The path prefix of the policies. If not specified, it is set to a 
          * slash (`/`).
          */
-	char *path_prefix; /* string */
+	char *path_prefix;
 };
 
 struct read_policies_filters {
@@ -5299,93 +5359,93 @@ struct read_policies_filters {
          * If set to true, lists only the policies attached to a user.
          */
         int is_set_only_linked;
-	int only_linked; /* bool */
+	int only_linked;
         /*
          * The path prefix you can use to filter the results. If not specified, 
          * it is set to a slash (`/`).
          */
-	char *path_prefix; /* string */
+	char *path_prefix;
         /*
          * The scope to filter policies (`OWS` \\| `LOCAL`).
          */
-	char *scope; /* string */
+	char *scope;
 };
 
 struct region {
         /*
          * The hostname of the gateway to access the Region.
          */
-	char *endpoint; /* string */
+	char *endpoint;
         /*
          * The administrative name of the Region.
          */
-	char *region_name; /* string */
+	char *region_name;
 };
 
 struct resource_load_balancer_tag {
         /*
          * The key of the tag, with a minimum of 1 character.
          */
-	char *key; /* string */
+	char *key;
 };
 
 struct resource_tag {
         /*
          * The key of the tag, with a minimum of 1 character.
          */
-	char *key; /* string */
+	char *key;
         /*
          * The value of the tag, between 0 and 255 characters.
          */
-	char *value; /* string */
+	char *value;
 };
 
 struct route {
         /*
          * The method used to create the route.
          */
-	char *creation_method; /* string */
+	char *creation_method;
         /*
          * The IP range used for the destination match, in CIDR notation (for 
          * example, `10.0.0.0/24`).
          */
-	char *destination_ip_range; /* string */
+	char *destination_ip_range;
         /*
          * The ID of the OUTSCALE service.
          */
-	char *destination_service_id; /* string */
+	char *destination_service_id;
         /*
          * The ID of the Internet service or virtual gateway attached to the Net.
          */
-	char *gateway_id; /* string */
+	char *gateway_id;
         /*
          * The ID of a NAT service attached to the Net.
          */
-	char *nat_service_id; /* string */
+	char *nat_service_id;
         /*
          * The ID of the Net access point.
          */
-	char *net_access_point_id; /* string */
+	char *net_access_point_id;
         /*
          * The ID of the Net peering.
          */
-	char *net_peering_id; /* string */
+	char *net_peering_id;
         /*
          * The ID of the NIC.
          */
-	char *nic_id; /* string */
+	char *nic_id;
         /*
          * The state of a route in the route table (always `active`).
          */
-	char *state; /* string */
+	char *state;
         /*
          * The account ID of the owner of the VM.
          */
-	char *vm_account_id; /* string */
+	char *vm_account_id;
         /*
          * The ID of a VM specified in a route in the table.
          */
-	char *vm_id; /* string */
+	char *vm_id;
 };
 
 struct route_light {
@@ -5393,233 +5453,261 @@ struct route_light {
          * The IP range used for the destination match, in CIDR notation (for 
          * example, `10.0.0.0/24`).
          */
-	char *destination_ip_range; /* string */
+	char *destination_ip_range;
         /*
          * The type of route (always `static`).
          */
-	char *route_type; /* string */
+	char *route_type;
         /*
          * The current state of the static route (`pending` \\| `available` \\| 
          * `deleting` \\| `deleted`).
          */
-	char *state; /* string */
+	char *state;
 };
 
 struct route_propagating_virtual_gateway {
         /*
          * The ID of the virtual gateway.
          */
-	char *virtual_gateway_id; /* string */
+	char *virtual_gateway_id;
 };
 
 struct route_table {
         /*
          * One or more associations between the route table and Subnets.
-         *   One or more associations between the route table and the 
-         *   Subnets.
-         *   -LinkRouteTableId: string
-         *     The ID of the association between the route table and the Net 
-         *     or Subnet.
-         *   -Main: bool
+         *   One or more associations between the route table and the Subnets.
+         *   --LinkRouteTables.INDEX.LinkRouteTableId: string
+         *     The ID of the association between the route table and the Net or 
+         * Subnet.
+         *   --LinkRouteTables.INDEX.Main: bool
          *     If true, the route table is the main one.
-         *   -NetId: string
-         *     The ID of the Net, if the route table is not explicitly linked 
-         *     to a Subnet.
-         *   -RouteTableId: string
+         *   --LinkRouteTables.INDEX.NetId: string
+         *     The ID of the Net, if the route table is not explicitly linked to 
+         * a 
+         *     Subnet.
+         *   --LinkRouteTables.INDEX.RouteTableId: string
          *     The ID of the route table.
-         *   -SubnetId: string
-         *     The ID of the Subnet, if the route table is explicitly linked 
-         *     to a Subnet.
+         *   --LinkRouteTables.INDEX.SubnetId: string
+         *     The ID of the Subnet, if the route table is explicitly linked to 
+         * a 
+         *     Subnet.
          */
         char *link_route_tables_str;
         int nb_link_route_tables;
-	struct link_route_table *link_route_tables; /* array ref LinkRouteTable */
+	struct link_route_table *link_route_tables;
         /*
          * The ID of the Net for the route table.
          */
-	char *net_id; /* string */
+	char *net_id;
         /*
          * Information about virtual gateways propagating routes.
          *   Information about the route propagating virtual gateway.
-         *   -VirtualGatewayId: string
+         *   --RoutePropagatingVirtualGateways.INDEX.VirtualGatewayId: string
          *     The ID of the virtual gateway.
          */
         char *route_propagating_virtual_gateways_str;
         int nb_route_propagating_virtual_gateways;
-	struct route_propagating_virtual_gateway *route_propagating_virtual_gateways; /* array ref RoutePropagatingVirtualGateway */
+	struct route_propagating_virtual_gateway *route_propagating_virtual_gateways;
         /*
          * The ID of the route table.
          */
-	char *route_table_id; /* string */
+	char *route_table_id;
         /*
          * One or more routes in the route table.
          *   Information about the route.
-         *   -CreationMethod: string
+         *   --Routes.INDEX.CreationMethod: string
          *     The method used to create the route.
-         *   -DestinationIpRange: string
+         *   --Routes.INDEX.DestinationIpRange: string
          *     The IP range used for the destination match, in CIDR notation 
-         *     (for example, `10.0.0.0/24`).
-         *   -DestinationServiceId: string
+         * (for 
+         *     example, `10.0.0.0/24`).
+         *   --Routes.INDEX.DestinationServiceId: string
          *     The ID of the OUTSCALE service.
-         *   -GatewayId: string
-         *     The ID of the Internet service or virtual gateway attached to 
-         *     the Net.
-         *   -NatServiceId: string
+         *   --Routes.INDEX.GatewayId: string
+         *     The ID of the Internet service or virtual gateway attached to the 
+         * Net.
+         *   --Routes.INDEX.NatServiceId: string
          *     The ID of a NAT service attached to the Net.
-         *   -NetAccessPointId: string
+         *   --Routes.INDEX.NetAccessPointId: string
          *     The ID of the Net access point.
-         *   -NetPeeringId: string
+         *   --Routes.INDEX.NetPeeringId: string
          *     The ID of the Net peering.
-         *   -NicId: string
+         *   --Routes.INDEX.NicId: string
          *     The ID of the NIC.
-         *   -State: string
+         *   --Routes.INDEX.State: string
          *     The state of a route in the route table (always `active`).
-         *   -VmAccountId: string
+         *   --Routes.INDEX.VmAccountId: string
          *     The account ID of the owner of the VM.
-         *   -VmId: string
+         *   --Routes.INDEX.VmId: string
          *     The ID of a VM specified in a route in the table.
          */
         char *routes_str;
         int nb_routes;
-	struct route *routes; /* array ref Route */
+	struct route *routes;
         /*
          * One or more tags associated with the route table.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
 };
 
 struct security_group {
         /*
          * The account ID that has been granted permission.
          */
-	char *account_id; /* string */
+	char *account_id;
         /*
          * The description of the security group.
          */
-	char *description; /* string */
+	char *description;
         /*
          * The inbound rules associated with the security group.
          *   Information about the security group rule.
-         *   -FromPortRange: int
-         *     The beginning of the port range for the TCP and UDP protocols, 
-         *     or an ICMP type number.
-         *   -IpProtocol: string
+         *   --InboundRules.INDEX.FromPortRange: int
+         *     The beginning of the port range for the TCP and UDP protocols, or 
+         * an 
+         *     ICMP type number.
+         *   --InboundRules.INDEX.IpProtocol: string
          *     The IP protocol name (`tcp`, `udp`, `icmp`, or `-1` for all 
-         *     protocols). By default, `-1`. In a Net, this can also be an IP 
-         *     protocol number. For more information, see the [IANA.org 
-         *     website](https://www.iana.org/assignments/protocol-numbers/proto
-         *     col-numbers.xhtml).
-         *   -IpRanges: array string
+         * protocols). 
+         *     By default, `-1`. In a Net, this can also be an IP protocol 
+         * number. For 
+         *     more information, see the [IANA.org 
+         *     
+         * website](https://www.iana.org/assignments/protocol-numbers/protocol-nu
+         * mber
+         *     s.xhtml).
+         *   --InboundRules.INDEX.IpRanges: array string
          *     One or more IP ranges for the security group rules, in CIDR 
-         *     notation (for example, `10.0.0.0/16`).
-         *   -SecurityGroupsMembers: array ref SecurityGroupsMember
+         * notation 
+         *     (for example, `10.0.0.0/16`).
+         *   --InboundRules.INDEX.SecurityGroupsMembers: array ref 
+         * SecurityGroupsMember
          *     Information about one or more source or destination security 
-         *     groups.
+         * groups.
          *       Information about a source or destination security group.
-         *       -AccountId: string
+         *       --InboundRules.INDEX.SecurityGroupsMembers.INDEX.AccountId: 
+         * string
          *         The account ID that owns the source or destination security 
-         *         group.
-         *       -SecurityGroupId: string
+         * group.
+         *       
+         * --InboundRules.INDEX.SecurityGroupsMembers.INDEX.SecurityGroupId: 
+         * string
          *         The ID of a source or destination security group that you 
-         * want 
-         *         to link to the security group of the rule.
-         *       -SecurityGroupName: string
+         * want to link 
+         *         to the security group of the rule.
+         *       
+         * --InboundRules.INDEX.SecurityGroupsMembers.INDEX.SecurityGroupName: 
+         * string
          *         (Public Cloud only) The name of a source or destination 
-         *         security group that you want to link to the security group of 
-         *         the rule.
-         *   -ServiceIds: array string
-         *     One or more service IDs to allow traffic from a Net to access 
-         *     the corresponding OUTSCALE services. For more information, see 
+         * security group 
+         *         that you want to link to the security group of the rule.
+         *   --InboundRules.INDEX.ServiceIds: array string
+         *     One or more service IDs to allow traffic from a Net to access the 
+         *     corresponding OUTSCALE services. For more information, see 
          *     [ReadNetAccessPointServices](#readnetaccesspointservices).
-         *   -ToPortRange: int
+         *   --InboundRules.INDEX.ToPortRange: int
          *     The end of the port range for the TCP and UDP protocols, or an 
-         *     ICMP code number.
+         * ICMP code 
+         *     number.
          */
         char *inbound_rules_str;
         int nb_inbound_rules;
-	struct security_group_rule *inbound_rules; /* array ref SecurityGroupRule */
+	struct security_group_rule *inbound_rules;
         /*
          * The ID of the Net for the security group.
          */
-	char *net_id; /* string */
+	char *net_id;
         /*
          * The outbound rules associated with the security group.
          *   Information about the security group rule.
-         *   -FromPortRange: int
-         *     The beginning of the port range for the TCP and UDP protocols, 
-         *     or an ICMP type number.
-         *   -IpProtocol: string
+         *   --OutboundRules.INDEX.FromPortRange: int
+         *     The beginning of the port range for the TCP and UDP protocols, or 
+         * an 
+         *     ICMP type number.
+         *   --OutboundRules.INDEX.IpProtocol: string
          *     The IP protocol name (`tcp`, `udp`, `icmp`, or `-1` for all 
-         *     protocols). By default, `-1`. In a Net, this can also be an IP 
-         *     protocol number. For more information, see the [IANA.org 
-         *     website](https://www.iana.org/assignments/protocol-numbers/proto
-         *     col-numbers.xhtml).
-         *   -IpRanges: array string
+         * protocols). 
+         *     By default, `-1`. In a Net, this can also be an IP protocol 
+         * number. For 
+         *     more information, see the [IANA.org 
+         *     
+         * website](https://www.iana.org/assignments/protocol-numbers/protocol-nu
+         * mber
+         *     s.xhtml).
+         *   --OutboundRules.INDEX.IpRanges: array string
          *     One or more IP ranges for the security group rules, in CIDR 
-         *     notation (for example, `10.0.0.0/16`).
-         *   -SecurityGroupsMembers: array ref SecurityGroupsMember
+         * notation 
+         *     (for example, `10.0.0.0/16`).
+         *   --OutboundRules.INDEX.SecurityGroupsMembers: array ref 
+         * SecurityGroupsMember
          *     Information about one or more source or destination security 
-         *     groups.
+         * groups.
          *       Information about a source or destination security group.
-         *       -AccountId: string
+         *       --OutboundRules.INDEX.SecurityGroupsMembers.INDEX.AccountId: 
+         * string
          *         The account ID that owns the source or destination security 
-         *         group.
-         *       -SecurityGroupId: string
+         * group.
+         *       
+         * --OutboundRules.INDEX.SecurityGroupsMembers.INDEX.SecurityGroupId: 
+         * string
          *         The ID of a source or destination security group that you 
-         * want 
-         *         to link to the security group of the rule.
-         *       -SecurityGroupName: string
+         * want to link 
+         *         to the security group of the rule.
+         *       
+         * --OutboundRules.INDEX.SecurityGroupsMembers.INDEX.SecurityGroupName: 
+         * string
          *         (Public Cloud only) The name of a source or destination 
-         *         security group that you want to link to the security group of 
-         *         the rule.
-         *   -ServiceIds: array string
-         *     One or more service IDs to allow traffic from a Net to access 
-         *     the corresponding OUTSCALE services. For more information, see 
+         * security group 
+         *         that you want to link to the security group of the rule.
+         *   --OutboundRules.INDEX.ServiceIds: array string
+         *     One or more service IDs to allow traffic from a Net to access the 
+         *     corresponding OUTSCALE services. For more information, see 
          *     [ReadNetAccessPointServices](#readnetaccesspointservices).
-         *   -ToPortRange: int
+         *   --OutboundRules.INDEX.ToPortRange: int
          *     The end of the port range for the TCP and UDP protocols, or an 
-         *     ICMP code number.
+         * ICMP code 
+         *     number.
          */
         char *outbound_rules_str;
         int nb_outbound_rules;
-	struct security_group_rule *outbound_rules; /* array ref SecurityGroupRule */
+	struct security_group_rule *outbound_rules;
         /*
          * The ID of the security group.
          */
-	char *security_group_id; /* string */
+	char *security_group_id;
         /*
          * The name of the security group.
          */
-	char *security_group_name; /* string */
+	char *security_group_name;
         /*
          * One or more tags associated with the security group.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
 };
 
 struct security_group_light {
         /*
          * The ID of the security group.
          */
-	char *security_group_id; /* string */
+	char *security_group_id;
         /*
          * The name of the security group.
          */
-	char *security_group_name; /* string */
+	char *security_group_name;
 };
 
 struct security_group_rule {
@@ -5628,7 +5716,7 @@ struct security_group_rule {
          * ICMP type number.
          */
         int is_set_from_port_range;
-	int from_port_range; /* int */
+	int from_port_range;
         /*
          * The IP protocol name (`tcp`, `udp`, `icmp`, or `-1` for all 
          * protocols). By default, `-1`. In a Net, this can also be an IP 
@@ -5636,90 +5724,90 @@ struct security_group_rule {
          * website](https://www.iana.org/assignments/protocol-numbers/protocol-nu
          * mbers.xhtml).
          */
-	char *ip_protocol; /* string */
+	char *ip_protocol;
         /*
          * One or more IP ranges for the security group rules, in CIDR notation 
          * (for example, `10.0.0.0/16`).
          */
         char *ip_ranges_str;
-	char **ip_ranges; /* array string */
+	char **ip_ranges;
         /*
          * Information about one or more source or destination security groups.
          *   Information about a source or destination security group.
-         *   -AccountId: string
-         *     The account ID that owns the source or destination security 
-         *     group.
-         *   -SecurityGroupId: string
-         *     The ID of a source or destination security group that you want 
-         *     to link to the security group of the rule.
-         *   -SecurityGroupName: string
-         *     (Public Cloud only) The name of a source or destination 
-         *     security group that you want to link to the security group of 
-         *     the rule.
+         *   --SecurityGroupsMembers.INDEX.AccountId: string
+         *     The account ID that owns the source or destination security group.
+         *   --SecurityGroupsMembers.INDEX.SecurityGroupId: string
+         *     The ID of a source or destination security group that you want to 
+         * link 
+         *     to the security group of the rule.
+         *   --SecurityGroupsMembers.INDEX.SecurityGroupName: string
+         *     (Public Cloud only) The name of a source or destination security 
+         * group 
+         *     that you want to link to the security group of the rule.
          */
         char *security_groups_members_str;
         int nb_security_groups_members;
-	struct security_groups_member *security_groups_members; /* array ref SecurityGroupsMember */
+	struct security_groups_member *security_groups_members;
         /*
          * One or more service IDs to allow traffic from a Net to access the 
          * corresponding OUTSCALE services. For more information, see 
          * [ReadNetAccessPointServices](#readnetaccesspointservices).
          */
         char *service_ids_str;
-	char **service_ids; /* array string */
+	char **service_ids;
         /*
          * The end of the port range for the TCP and UDP protocols, or an ICMP 
          * code number.
          */
         int is_set_to_port_range;
-	int to_port_range; /* int */
+	int to_port_range;
 };
 
 struct security_groups_member {
         /*
          * The account ID that owns the source or destination security group.
          */
-	char *account_id; /* string */
+	char *account_id;
         /*
          * The ID of a source or destination security group that you want to 
          * link to the security group of the rule.
          */
-	char *security_group_id; /* string */
+	char *security_group_id;
         /*
          * (Public Cloud only) The name of a source or destination security 
          * group that you want to link to the security group of the rule.
          */
-	char *security_group_name; /* string */
+	char *security_group_name;
 };
 
 struct server_certificate {
         /*
          * The date at which the server certificate expires.
          */
-	char *expiration_date; /* string */
+	char *expiration_date;
         /*
          * The ID of the server certificate.
          */
-	char *id; /* string */
+	char *id;
         /*
          * The name of the server certificate.
          */
-	char *name; /* string */
+	char *name;
         /*
          * The OUTSCALE Resource Name (ORN) of the server certificate. For more 
          * information, see [Resource Identifiers > OUTSCALE Resource Names 
          * (ORNs)](https://docs.outscale.com/en/userguide/Resource-Identifiers.ht
          * ml#_outscale_resource_names_orns).
          */
-	char *orn; /* string */
+	char *orn;
         /*
          * The path to the server certificate.
          */
-	char *path; /* string */
+	char *path;
         /*
          * The date at which the server certificate has been uploaded.
          */
-	char *upload_date; /* string */
+	char *upload_date;
 };
 
 struct service {
@@ -5727,134 +5815,135 @@ struct service {
          * The list of network prefixes used by the service, in CIDR notation.
          */
         char *ip_ranges_str;
-	char **ip_ranges; /* array string */
+	char **ip_ranges;
         /*
          * The ID of the service.
          */
-	char *service_id; /* string */
+	char *service_id;
         /*
          * The name of the service.
          */
-	char *service_name; /* string */
+	char *service_name;
 };
 
 struct snapshot {
         /*
          * The account alias of the owner of the snapshot.
          */
-	char *account_alias; /* string */
+	char *account_alias;
         /*
          * The account ID of the owner of the snapshot.
          */
-	char *account_id; /* string */
+	char *account_id;
         /*
          * The date and time (UTC) of creation of the snapshot.
          */
-	char *creation_date; /* string */
+	char *creation_date;
         /*
          * The description of the snapshot.
          */
-	char *description; /* string */
+	char *description;
         /*
          *   Permissions for the resource.
-         *   -AccountIds: array string
-         *     One or more account IDs that the permission is associated 
-         *     with.
-         *   -GlobalPermission: bool
-         *     A global permission for all accounts.<br />\n(Request) Set 
-         *     this parameter to true to make the resource public (if the 
-         *     parent parameter is `Additions`) or to make the resource 
-         *     private (if the parent parameter is `Removals`).<br 
-         *     />\n(Response) If true, the resource is public. If false, the 
-         *     resource is private.
+         *   --PermissionsToCreateVolume.AccountIds: array string
+         *     One or more account IDs that the permission is associated with.
+         *   --PermissionsToCreateVolume.GlobalPermission: bool
+         *     A global permission for all accounts.<br />\n(Request) Set this 
+         *     parameter to true to make the resource public (if the parent 
+         * parameter is 
+         *     `Additions`) or to make the resource private (if the parent 
+         * parameter is 
+         *     `Removals`).<br />\n(Response) If true, the resource is public. 
+         * If false, 
+         *     the resource is private.
          */
         char *permissions_to_create_volume_str;
         int is_set_permissions_to_create_volume;
-	struct permissions_on_resource permissions_to_create_volume; /* ref PermissionsOnResource */
+	struct permissions_on_resource permissions_to_create_volume;
         /*
          * The progress of the snapshot, as a percentage.
          */
         int is_set_progress;
-	int progress; /* int */
+	int progress;
         /*
          * The ID of the snapshot.
          */
-	char *snapshot_id; /* string */
+	char *snapshot_id;
         /*
          * The state of the snapshot (`in-queue` \\| `pending` \\| `completed` 
          * \\| `error` \\| `deleting`)).
          */
-	char *state; /* string */
+	char *state;
         /*
          * One or more tags associated with the snapshot.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
         /*
          * The ID of the volume used to create the snapshot.
          */
-	char *volume_id; /* string */
+	char *volume_id;
         /*
          * The size of the volume used to create the snapshot, in gibibytes 
          * (GiB).
          */
         int is_set_volume_size;
-	int volume_size; /* int */
+	int volume_size;
 };
 
 struct snapshot_export_task {
         /*
          * If the snapshot export task fails, an error message appears.
          */
-	char *comment; /* string */
+	char *comment;
         /*
          *   Information about the snapshot export task.
-         *   -DiskImageFormat: string
+         *   --OsuExport.DiskImageFormat: string
          *     The format of the export disk (`qcow2` \\| `raw`).
-         *   -OsuBucket: string
+         *   --OsuExport.OsuBucket: string
          *     The name of the OOS bucket the snapshot is exported to.
-         *   -OsuPrefix: string
+         *   --OsuExport.OsuPrefix: string
          *     The prefix for the key of the OOS object corresponding to the 
-         *     snapshot.
+         * snapshot.
          */
         char *osu_export_str;
         int is_set_osu_export;
-	struct osu_export_snapshot_export_task osu_export; /* ref OsuExportSnapshotExportTask */
+	struct osu_export_snapshot_export_task osu_export;
         /*
          * The progress of the snapshot export task, as a percentage.
          */
         int is_set_progress;
-	int progress; /* int */
+	int progress;
         /*
          * The ID of the snapshot to be exported.
          */
-	char *snapshot_id; /* string */
+	char *snapshot_id;
         /*
          * The state of the snapshot export task (`pending` \\| `active` \\| 
          * `completed` \\| `failed`).
          */
-	char *state; /* string */
+	char *state;
         /*
          * One or more tags associated with the snapshot export task.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
         /*
          * The ID of the snapshot export task.
          */
-	char *task_id; /* string */
+	char *task_id;
 };
 
 struct subnet {
@@ -5862,136 +5951,136 @@ struct subnet {
          * The number of available IPs in the Subnets.
          */
         int is_set_available_ips_count;
-	int available_ips_count; /* int */
+	int available_ips_count;
         /*
          * The IP range in the Subnet, in CIDR notation (for example, 
          * `10.0.0.0/16`).
          */
-	char *ip_range; /* string */
+	char *ip_range;
         /*
          * If true, a public IP is assigned to the network interface cards 
          * (NICs) created in the specified Subnet.
          */
         int is_set_map_public_ip_on_launch;
-	int map_public_ip_on_launch; /* bool */
+	int map_public_ip_on_launch;
         /*
          * The ID of the Net in which the Subnet is.
          */
-	char *net_id; /* string */
+	char *net_id;
         /*
          * The state of the Subnet (`pending` \\| `available` \\| `deleted`).
          */
-	char *state; /* string */
+	char *state;
         /*
          * The ID of the Subnet.
          */
-	char *subnet_id; /* string */
+	char *subnet_id;
         /*
          * The name of the Subregion in which the Subnet is located.
          */
-	char *subregion_name; /* string */
+	char *subregion_name;
         /*
          * One or more tags associated with the Subnet.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
 };
 
 struct subregion {
         /*
          * The location code of the Subregion.
          */
-	char *location_code; /* string */
+	char *location_code;
         /*
          * The name of the Region containing the Subregion.
          */
-	char *region_name; /* string */
+	char *region_name;
         /*
          * The state of the Subregion.
          */
-	char *state; /* string */
+	char *state;
         /*
          * The name of the Subregion.
          */
-	char *subregion_name; /* string */
+	char *subregion_name;
 };
 
 struct tag {
         /*
          * The key of the tag, with a minimum of 1 character.
          */
-	char *key; /* string */
+	char *key;
         /*
          * The ID of the resource.
          */
-	char *resource_id; /* string */
+	char *resource_id;
         /*
          * The type of the resource.
          */
-	char *resource_type; /* string */
+	char *resource_type;
         /*
          * The value of the tag, between 0 and 255 characters.
          */
-	char *value; /* string */
+	char *value;
 };
 
 struct user {
         /*
          * The date and time (UTC) of creation of the EIM user.
          */
-	char *creation_date; /* string */
+	char *creation_date;
         /*
          * The date and time (UTC) of the last modification of the EIM user.
          */
-	char *last_modification_date; /* string */
+	char *last_modification_date;
         /*
          * The path to the EIM user.
          */
-	char *path; /* string */
+	char *path;
         /*
          * The ID of the EIM user.
          */
-	char *user_id; /* string */
+	char *user_id;
         /*
          * The name of the EIM user.
          */
-	char *user_name; /* string */
+	char *user_name;
 };
 
 struct user_group {
         /*
          * The date and time (UTC) of creation of the user group.
          */
-	char *creation_date; /* string */
+	char *creation_date;
         /*
          * The date and time (UTC) of the last modification of the user group.
          */
-	char *last_modification_date; /* string */
+	char *last_modification_date;
         /*
          * The name of the user group.
          */
-	char *name; /* string */
+	char *name;
         /*
          * The Outscale Resource Name (ORN) of the user group. For more 
          * information, see [Resource 
          * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
          * rs.html).
          */
-	char *orn; /* string */
+	char *orn;
         /*
          * The path to the user group.
          */
-	char *path; /* string */
+	char *path;
         /*
          * The ID of the user group.
          */
-	char *user_group_id; /* string */
+	char *user_group_id;
 };
 
 struct vgw_telemetry {
@@ -6000,23 +6089,23 @@ struct vgw_telemetry {
          * route exchanges.
          */
         int is_set_accepted_route_count;
-	int accepted_route_count; /* int */
+	int accepted_route_count;
         /*
          * The date and time (UTC) of the latest state update.
          */
-	char *last_state_change_date; /* string */
+	char *last_state_change_date;
         /*
          * The IP on the OUTSCALE side of the tunnel.
          */
-	char *outside_ip_address; /* string */
+	char *outside_ip_address;
         /*
          * The state of the IPSEC tunnel (`UP` \\| `DOWN`).
          */
-	char *state; /* string */
+	char *state;
         /*
          * A description of the current state of the tunnel.
          */
-	char *state_description; /* string */
+	char *state_description;
 };
 
 struct virtual_gateway {
@@ -6024,312 +6113,323 @@ struct virtual_gateway {
          * The type of VPN connection supported by the virtual gateway (only 
          * `ipsec.1` is supported).
          */
-	char *connection_type; /* string */
+	char *connection_type;
         /*
          * The Net to which the virtual gateway is attached.
          *   Information about the attachment.
-         *   -NetId: string
+         *   --NetToVirtualGatewayLinks.INDEX.NetId: string
          *     The ID of the Net to which the virtual gateway is attached.
-         *   -State: string
+         *   --NetToVirtualGatewayLinks.INDEX.State: string
          *     The state of the attachment (`attaching` \\| `attached` \\| 
-         *     `detaching` \\| `detached`).
+         * `detaching` 
+         *     \\| `detached`).
          */
         char *net_to_virtual_gateway_links_str;
         int nb_net_to_virtual_gateway_links;
-	struct net_to_virtual_gateway_link *net_to_virtual_gateway_links; /* array ref NetToVirtualGatewayLink */
+	struct net_to_virtual_gateway_link *net_to_virtual_gateway_links;
         /*
          * The state of the virtual gateway (`pending` \\| `available` \\| 
          * `deleting` \\| `deleted`).
          */
-	char *state; /* string */
+	char *state;
         /*
          * One or more tags associated with the virtual gateway.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
         /*
          * The ID of the virtual gateway.
          */
-	char *virtual_gateway_id; /* string */
+	char *virtual_gateway_id;
 };
 
 struct vm {
         /*
          * The architecture of the VM (`i386` \\| `x86_64`).
          */
-	char *architecture; /* string */
+	char *architecture;
         /*
          * The block device mapping of the VM.
          *   Information about the created block device mapping.
-         *   -Bsu: ref BsuCreated
+         *   --BlockDeviceMappings.INDEX.Bsu: ref BsuCreated
          *       Information about the created BSU volume.
-         *       -DeleteOnVmDeletion: bool
+         *       --BlockDeviceMappings.INDEX.Bsu.DeleteOnVmDeletion: bool
          *         If true, the volume is deleted when terminating the VM. If 
-         *         false, the volume is not deleted when terminating the VM.
-         *       -LinkDate: string
+         * false, the 
+         *         volume is not deleted when terminating the VM.
+         *       --BlockDeviceMappings.INDEX.Bsu.LinkDate: string
          *         The date and time (UTC) of attachment of the volume to the 
-         * VM, 
-         *         in ISO 8601 date-time format.
-         *       -State: string
+         * VM, in ISO 
+         *         8601 date-time format.
+         *       --BlockDeviceMappings.INDEX.Bsu.State: string
          *         The state of the volume.
-         *       -VolumeId: string
+         *       --BlockDeviceMappings.INDEX.Bsu.VolumeId: string
          *         The ID of the volume.
-         *   -DeviceName: string
+         *   --BlockDeviceMappings.INDEX.DeviceName: string
          *     The name of the device.
          */
         char *block_device_mappings_str;
         int nb_block_device_mappings;
-	struct block_device_mapping_created *block_device_mappings; /* array ref BlockDeviceMappingCreated */
+	struct block_device_mapping_created *block_device_mappings;
         /*
          * This parameter is not available. It is present in our API for the 
          * sake of historical compatibility with AWS.
          */
         int is_set_bsu_optimized;
-	int bsu_optimized; /* bool */
+	int bsu_optimized;
         /*
          * The idempotency token provided when launching the VM.
          */
-	char *client_token; /* string */
+	char *client_token;
         /*
          * The date and time (UTC) of creation of the VM.
          */
-	char *creation_date; /* string */
+	char *creation_date;
         /*
          * If true, you cannot delete the VM unless you change this parameter 
          * back to false.
          */
         int is_set_deletion_protection;
-	int deletion_protection; /* bool */
+	int deletion_protection;
         /*
          * The hypervisor type of the VMs (`ovm` \\| `xen`).
          */
-	char *hypervisor; /* string */
+	char *hypervisor;
         /*
          * The ID of the OMI used to create the VM.
          */
-	char *image_id; /* string */
+	char *image_id;
         /*
          * (Net only) If true, the source/destination check is enabled. If 
          * false, it is disabled. This value must be false for a NAT VM to 
          * perform network address translation (NAT) in a Net.
          */
         int is_set_is_source_dest_checked;
-	int is_source_dest_checked; /* bool */
+	int is_source_dest_checked;
         /*
          * The name of the keypair used when launching the VM.
          */
-	char *keypair_name; /* string */
+	char *keypair_name;
         /*
          * The number for the VM when launching a group of several VMs (for 
          * example, `0`, `1`, `2`, and so on).
          */
         int is_set_launch_number;
-	int launch_number; /* int */
+	int launch_number;
         /*
          * If true, nested virtualization is enabled. If false, it is disabled.
          */
         int is_set_nested_virtualization;
-	int nested_virtualization; /* bool */
+	int nested_virtualization;
         /*
          * The ID of the Net in which the VM is running.
          */
-	char *net_id; /* string */
+	char *net_id;
         /*
          * (Net only) The network interface cards (NICs) the VMs are attached to.
          *   Information about the network interface card (NIC).
-         *   -AccountId: string
+         *   --Nics.INDEX.AccountId: string
          *     The account ID of the owner of the NIC.
-         *   -Description: string
+         *   --Nics.INDEX.Description: string
          *     The description of the NIC.
-         *   -IsSourceDestChecked: bool
-         *     (Net only) If true, the source/destination check is enabled. 
-         *     If false, it is disabled. This value must be false for a NAT VM 
-         *     to perform network address translation (NAT) in a Net.
-         *   -LinkNic: ref LinkNicLight
+         *   --Nics.INDEX.IsSourceDestChecked: bool
+         *     (Net only) If true, the source/destination check is enabled. If 
+         * false, 
+         *     it is disabled. This value must be false for a NAT VM to perform 
+         * network 
+         *     address translation (NAT) in a Net.
+         *   --Nics.INDEX.LinkNic: ref LinkNicLight
          *       Information about the network interface card (NIC).
-         *       -DeleteOnVmDeletion: bool
+         *       --Nics.INDEX.LinkNic.DeleteOnVmDeletion: bool
          *         If true, the NIC is deleted when the VM is terminated.
-         *       -DeviceNumber: int
+         *       --Nics.INDEX.LinkNic.DeviceNumber: int
          *         The device index for the NIC attachment (between `1` and `7`, 
-         *         both included).
-         *       -LinkNicId: string
+         * both 
+         *         included).
+         *       --Nics.INDEX.LinkNic.LinkNicId: string
          *         The ID of the NIC to attach.
-         *       -State: string
+         *       --Nics.INDEX.LinkNic.State: string
          *         The state of the attachment (`attaching` \\| `attached` \\| 
-         *         `detaching` \\| `detached`).
-         *   -LinkPublicIp: ref LinkPublicIpLightForVm
+         * `detaching` 
+         *         \\| `detached`).
+         *   --Nics.INDEX.LinkPublicIp: ref LinkPublicIpLightForVm
          *       Information about the public IP associated with the NIC.
-         *       -PublicDnsName: string
+         *       --Nics.INDEX.LinkPublicIp.PublicDnsName: string
          *         The name of the public DNS.
-         *       -PublicIp: string
+         *       --Nics.INDEX.LinkPublicIp.PublicIp: string
          *         The public IP associated with the NIC.
-         *       -PublicIpAccountId: string
+         *       --Nics.INDEX.LinkPublicIp.PublicIpAccountId: string
          *         The account ID of the owner of the public IP.
-         *   -MacAddress: string
+         *   --Nics.INDEX.MacAddress: string
          *     The Media Access Control (MAC) address of the NIC.
-         *   -NetId: string
+         *   --Nics.INDEX.NetId: string
          *     The ID of the Net for the NIC.
-         *   -NicId: string
+         *   --Nics.INDEX.NicId: string
          *     The ID of the NIC.
-         *   -PrivateDnsName: string
+         *   --Nics.INDEX.PrivateDnsName: string
          *     The name of the private DNS.
-         *   -PrivateIps: array ref PrivateIpLightForVm
+         *   --Nics.INDEX.PrivateIps: array ref PrivateIpLightForVm
          *     The private IP or IPs of the NIC.
          *       Information about the private IP of the NIC.
-         *       -IsPrimary: bool
+         *       --Nics.INDEX.PrivateIps.INDEX.IsPrimary: bool
          *         If true, the IP is the primary private IP of the NIC.
-         *       -LinkPublicIp: ref LinkPublicIpLightForVm
+         *       --Nics.INDEX.PrivateIps.INDEX.LinkPublicIp: ref 
+         * LinkPublicIpLightForVm
          *           Information about the public IP associated with the NIC.
-         *           -PublicDnsName: string
+         *           --Nics.INDEX.PrivateIps.INDEX.LinkPublicIp.PublicDnsName: 
+         * string
          *             The name of the public DNS.
-         *           -PublicIp: string
+         *           --Nics.INDEX.PrivateIps.INDEX.LinkPublicIp.PublicIp: string
          *             The public IP associated with the NIC.
-         *           -PublicIpAccountId: string
+         *           
+         * --Nics.INDEX.PrivateIps.INDEX.LinkPublicIp.PublicIpAccountId: string
          *             The account ID of the owner of the public IP.
-         *       -PrivateDnsName: string
+         *       --Nics.INDEX.PrivateIps.INDEX.PrivateDnsName: string
          *         The name of the private DNS.
-         *       -PrivateIp: string
+         *       --Nics.INDEX.PrivateIps.INDEX.PrivateIp: string
          *         The private IP.
-         *   -SecurityGroups: array ref SecurityGroupLight
+         *   --Nics.INDEX.SecurityGroups: array ref SecurityGroupLight
          *     One or more IDs of security groups for the NIC.
          *       Information about the security group.
-         *       -SecurityGroupId: string
+         *       --Nics.INDEX.SecurityGroups.INDEX.SecurityGroupId: string
          *         The ID of the security group.
-         *       -SecurityGroupName: string
+         *       --Nics.INDEX.SecurityGroups.INDEX.SecurityGroupName: string
          *         The name of the security group.
-         *   -State: string
+         *   --Nics.INDEX.State: string
          *     The state of the NIC (`available` \\| `attaching` \\| `in-use` 
-         *     \\| `detaching`).
-         *   -SubnetId: string
+         * \\| 
+         *     `detaching`).
+         *   --Nics.INDEX.SubnetId: string
          *     The ID of the Subnet for the NIC.
          */
         char *nics_str;
         int nb_nics;
-	struct nic_light *nics; /* array ref NicLight */
+	struct nic_light *nics;
         /*
          * Indicates the operating system (OS) of the VM.
          */
-	char *os_family; /* string */
+	char *os_family;
         /*
          * The performance of the VM (`medium` \\| `high` \\| `highest`).
          */
-	char *performance; /* string */
+	char *performance;
         /*
          *   Information about the placement of the VM.
-         *   -SubregionName: string
+         *   --Placement.SubregionName: string
          *     The name of the Subregion. If you specify this parameter, you 
-         *     must not specify the `Nics` parameter.
-         *   -Tenancy: string
+         * must not 
+         *     specify the `Nics` parameter.
+         *   --Placement.Tenancy: string
          *     The tenancy of the VM (`default`, `dedicated`, or a dedicated 
-         *     group ID).
+         * group ID).
          */
         char *placement_str;
         int is_set_placement;
-	struct placement placement; /* ref Placement */
+	struct placement placement;
         /*
          * The name of the private DNS.
          */
-	char *private_dns_name; /* string */
+	char *private_dns_name;
         /*
          * The primary private IP of the VM.
          */
-	char *private_ip; /* string */
+	char *private_ip;
         /*
          * The product codes associated with the OMI used to create the VM.
          */
         char *product_codes_str;
-	char **product_codes; /* array string */
+	char **product_codes;
         /*
          * The name of the public DNS.
          */
-	char *public_dns_name; /* string */
+	char *public_dns_name;
         /*
          * The public IP of the VM.
          */
-	char *public_ip; /* string */
+	char *public_ip;
         /*
          * The reservation ID of the VM.
          */
-	char *reservation_id; /* string */
+	char *reservation_id;
         /*
          * The name of the root device for the VM (for example, `/dev/sda1`).
          */
-	char *root_device_name; /* string */
+	char *root_device_name;
         /*
          * The type of root device used by the VM (always `bsu`).
          */
-	char *root_device_type; /* string */
+	char *root_device_type;
         /*
          * One or more security groups associated with the VM.
          *   Information about the security group.
-         *   -SecurityGroupId: string
+         *   --SecurityGroups.INDEX.SecurityGroupId: string
          *     The ID of the security group.
-         *   -SecurityGroupName: string
+         *   --SecurityGroups.INDEX.SecurityGroupName: string
          *     The name of the security group.
          */
         char *security_groups_str;
         int nb_security_groups;
-	struct security_group_light *security_groups; /* array ref SecurityGroupLight */
+	struct security_group_light *security_groups;
         /*
          * The state of the VM (`pending` \\| `running` \\| `stopping` \\| 
          * `stopped` \\| `shutting-down` \\| `terminated` \\| `quarantine`).
          */
-	char *state; /* string */
+	char *state;
         /*
          * The reason explaining the current state of the VM.
          */
-	char *state_reason; /* string */
+	char *state_reason;
         /*
          * The ID of the Subnet for the VM.
          */
-	char *subnet_id; /* string */
+	char *subnet_id;
         /*
          * One or more tags associated with the VM.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
         /*
          * The Base64-encoded MIME user data.
          */
-	char *user_data; /* string */
+	char *user_data;
         /*
          * The ID of the VM.
          */
-	char *vm_id; /* string */
+	char *vm_id;
         /*
          * The VM behavior when you stop it. If set to `stop`, the VM stops. If 
          * set to `restart`, the VM stops then automatically restarts. If set to 
          * `terminate`, the VM stops and is deleted.
          */
-	char *vm_initiated_shutdown_behavior; /* string */
+	char *vm_initiated_shutdown_behavior;
         /*
          * The type of VM. For more information, see [VM 
          * Types](https://docs.outscale.com/en/userguide/VM-Types.html).
          */
-	char *vm_type; /* string */
+	char *vm_type;
 };
 
 struct vm_group {
         /*
          * The date and time (UTC) of creation of the VM group.
          */
-	char *creation_date; /* string */
+	char *creation_date;
         /*
          * The description of the VM group.
          */
-	char *description; /* string */
+	char *description;
         /*
          * The positioning strategy of the VMs on hypervisors. By default, or if 
          * set to `no-strategy`, TINA determines the most adequate position for 
@@ -6338,52 +6438,52 @@ struct vm_group {
          * the VMs are deployed on a different hypervisor, which improves fault 
          * tolerance.
          */
-	char *positioning_strategy; /* string */
+	char *positioning_strategy;
         /*
          * One or more IDs of security groups for the VM group.
          */
         char *security_group_ids_str;
-	char **security_group_ids; /* array string */
+	char **security_group_ids;
         /*
          */
-	char *state; /* string */
+	char *state;
         /*
          * The ID of the Subnet for the VM group.
          */
-	char *subnet_id; /* string */
+	char *subnet_id;
         /*
          * One or more tags associated with the VM.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
         /*
          * The number of VMs in the VM group.
          */
         int is_set_vm_count;
-	int vm_count; /* int */
+	int vm_count;
         /*
          * The ID of the VM group.
          */
-	char *vm_group_id; /* string */
+	char *vm_group_id;
         /*
          * The name of the VM group.
          */
-	char *vm_group_name; /* string */
+	char *vm_group_name;
         /*
          * The IDs of the VMs in the VM group.
          */
         char *vm_ids_str;
-	char **vm_ids; /* array string */
+	char **vm_ids;
         /*
          * The ID of the VM template used by the VM group.
          */
-	char *vm_template_id; /* string */
+	char *vm_template_id;
 };
 
 struct vm_state {
@@ -6391,49 +6491,47 @@ struct vm_state {
          * The current state of the VM (`InService` \\| `OutOfService` \\| 
          * `Unknown`).
          */
-	char *current_state; /* string */
+	char *current_state;
         /*
          * The previous state of the VM (`InService` \\| `OutOfService` \\| 
          * `Unknown`).
          */
-	char *previous_state; /* string */
+	char *previous_state;
         /*
          * The ID of the VM.
          */
-	char *vm_id; /* string */
+	char *vm_id;
 };
 
 struct vm_states {
         /*
          * One or more scheduled events associated with the VM.
          *   Information about the maintenance event.
-         *   -Code: string
-         *     The code of the event (`system-reboot` \\| 
-         *     `system-maintenance`).
-         *   -Description: string
+         *   --MaintenanceEvents.INDEX.Code: string
+         *     The code of the event (`system-reboot` \\| `system-maintenance`).
+         *   --MaintenanceEvents.INDEX.Description: string
          *     The description of the event.
-         *   -NotAfter: string
+         *   --MaintenanceEvents.INDEX.NotAfter: string
          *     The latest scheduled end date and time (UTC) for the event.
-         *   -NotBefore: string
-         *     The earliest scheduled start date and time (UTC) for the 
-         *     event.
+         *   --MaintenanceEvents.INDEX.NotBefore: string
+         *     The earliest scheduled start date and time (UTC) for the event.
          */
         char *maintenance_events_str;
         int nb_maintenance_events;
-	struct maintenance_event *maintenance_events; /* array ref MaintenanceEvent */
+	struct maintenance_event *maintenance_events;
         /*
          * The name of the Subregion of the VM.
          */
-	char *subregion_name; /* string */
+	char *subregion_name;
         /*
          * The ID of the VM.
          */
-	char *vm_id; /* string */
+	char *vm_id;
         /*
          * The state of the VM (`pending` \\| `running` \\| `stopping` \\| 
          * `stopped` \\| `shutting-down` \\| `terminated` \\| `quarantine`).
          */
-	char *vm_state; /* string */
+	char *vm_state;
 };
 
 struct vm_template {
@@ -6441,55 +6539,55 @@ struct vm_template {
          * The number of vCores.
          */
         int is_set_cpu_cores;
-	int cpu_cores; /* int */
+	int cpu_cores;
         /*
          * The processor generation.
          */
-	char *cpu_generation; /* string */
+	char *cpu_generation;
         /*
          * The performance of the VMs.
          */
-	char *cpu_performance; /* string */
+	char *cpu_performance;
         /*
          * The date and time (UTC) of creation of the VM template.
          */
-	char *creation_date; /* string */
+	char *creation_date;
         /*
          * The description of the VM template.
          */
-	char *description; /* string */
+	char *description;
         /*
          * The ID of the OMI.
          */
-	char *image_id; /* string */
+	char *image_id;
         /*
          * The name of the keypair.
          */
-	char *keypair_name; /* string */
+	char *keypair_name;
         /*
          * The amount of RAM.
          */
         int is_set_ram;
-	int ram; /* int */
+	int ram;
         /*
          * One or more tags associated with the VM template.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
         /*
          * The ID of the VM template.
          */
-	char *vm_template_id; /* string */
+	char *vm_template_id;
         /*
          * The name of the VM template.
          */
-	char *vm_template_name; /* string */
+	char *vm_template_name;
 };
 
 struct vm_type {
@@ -6498,222 +6596,227 @@ struct vm_type {
          * sake of historical compatibility with AWS.
          */
         int is_set_bsu_optimized;
-	int bsu_optimized; /* bool */
+	int bsu_optimized;
         /*
          * The type of ephemeral storage disk.
          */
-	char *ephemerals_type; /* string */
+	char *ephemerals_type;
         /*
          * The number of Ethernet interface available.
          */
         int is_set_eth;
-	int eth; /* int */
+	int eth;
         /*
          * The number of GPU available.
          */
         int is_set_gpu;
-	int gpu; /* int */
+	int gpu;
         /*
          * The maximum number of private IPs per network interface card (NIC).
          */
         int is_set_max_private_ips;
-	int max_private_ips; /* int */
+	int max_private_ips;
         /*
          * The amount of memory, in gibibytes.
          */
         int is_set_memory_size;
-	double memory_size; /* double */
+	double memory_size;
         /*
          * The number of vCores.
          */
         int is_set_vcore_count;
-	int vcore_count; /* int */
+	int vcore_count;
         /*
          * The name of the VM type.
          */
-	char *vm_type_name; /* string */
+	char *vm_type_name;
         /*
          * The maximum number of ephemeral storage disks.
          */
         int is_set_volume_count;
-	int volume_count; /* int */
+	int volume_count;
         /*
          * The size of one ephemeral storage disk, in gibibytes (GiB).
          */
         int is_set_volume_size;
-	int volume_size; /* int */
+	int volume_size;
 };
 
 struct volume {
         /*
          * The date and time (UTC) of creation of the volume.
          */
-	char *creation_date; /* string */
+	char *creation_date;
         /*
          * The number of I/O operations per second (IOPS):<br />\n- For `io1` 
          * volumes, the number of provisioned IOPS<br />\n- For `gp2` volumes, 
          * the baseline performance of the volume
          */
         int is_set_iops;
-	int iops; /* int */
+	int iops;
         /*
          * Information about your volume attachment.
          *   Information about volume attachment.
-         *   -DeleteOnVmDeletion: bool
-         *     If true, the volume is deleted when terminating the VM. If 
-         *     false, the volume is not deleted when terminating the VM.
-         *   -DeviceName: string
+         *   --LinkedVolumes.INDEX.DeleteOnVmDeletion: bool
+         *     If true, the volume is deleted when terminating the VM. If false, 
+         * the 
+         *     volume is not deleted when terminating the VM.
+         *   --LinkedVolumes.INDEX.DeviceName: string
          *     The name of the device.
-         *   -State: string
+         *   --LinkedVolumes.INDEX.State: string
          *     The state of the attachment of the volume (`attaching` \\| 
-         *     `detaching` \\| `attached` \\| `detached`).
-         *   -VmId: string
+         * `detaching` 
+         *     \\| `attached` \\| `detached`).
+         *   --LinkedVolumes.INDEX.VmId: string
          *     The ID of the VM.
-         *   -VolumeId: string
+         *   --LinkedVolumes.INDEX.VolumeId: string
          *     The ID of the volume.
          */
         char *linked_volumes_str;
         int nb_linked_volumes;
-	struct linked_volume *linked_volumes; /* array ref LinkedVolume */
+	struct linked_volume *linked_volumes;
         /*
          * The size of the volume, in gibibytes (GiB).
          */
         int is_set_size;
-	int size; /* int */
+	int size;
         /*
          * The snapshot from which the volume was created.
          */
-	char *snapshot_id; /* string */
+	char *snapshot_id;
         /*
          * The state of the volume (`creating` \\| `available` \\| `in-use` \\| 
          * `updating` \\| `deleting` \\| `error`).
          */
-	char *state; /* string */
+	char *state;
         /*
          * The Subregion in which the volume was created.
          */
-	char *subregion_name; /* string */
+	char *subregion_name;
         /*
          * One or more tags associated with the volume.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
         /*
          * The ID of the volume.
          */
-	char *volume_id; /* string */
+	char *volume_id;
         /*
          * The type of the volume (`standard` \\| `gp2` \\| `io1`).
          */
-	char *volume_type; /* string */
+	char *volume_type;
 };
 
 struct vpn_options {
         /*
          *   Information about Phase 1 of the Internet Key Exchange (IKE) 
-         *   negotiation. When Phase 1 finishes successfully, peers proceed 
-         *   to Phase 2 negotiations.
-         *   -DpdTimeoutAction: string
-         *     The action to carry out after a Dead Peer Detection (DPD) 
-         *     timeout occurs.
-         *   -DpdTimeoutSeconds: int
-         *     The maximum waiting time for a Dead Peer Detection (DPD) 
-         *     response before considering the peer as dead, in seconds.
-         *   -IkeVersions: array string
+         *   negotiation. When Phase 1 finishes successfully, peers proceed to 
+         * Phase 2 
+         *   negotiations.
+         *   --Phase1Options.DpdTimeoutAction: string
+         *     The action to carry out after a Dead Peer Detection (DPD) timeout 
+         *     occurs.
+         *   --Phase1Options.DpdTimeoutSeconds: int
+         *     The maximum waiting time for a Dead Peer Detection (DPD) response 
+         * before 
+         *     considering the peer as dead, in seconds.
+         *   --Phase1Options.IkeVersions: array string
          *     The Internet Key Exchange (IKE) versions allowed for the VPN 
-         *     tunnel.
-         *   -Phase1DhGroupNumbers: array integer
-         *     The Diffie-Hellman (DH) group numbers allowed for the VPN 
-         *     tunnel for phase 1.
-         *   -Phase1EncryptionAlgorithms: array string
-         *     The encryption algorithms allowed for the VPN tunnel for phase 
-         *     1.
-         *   -Phase1IntegrityAlgorithms: array string
-         *     The integrity algorithms allowed for the VPN tunnel for phase 
-         *     1.
-         *   -Phase1LifetimeSeconds: int
+         * tunnel.
+         *   --Phase1Options.Phase1DhGroupNumbers: array integer
+         *     The Diffie-Hellman (DH) group numbers allowed for the VPN tunnel 
+         * for 
+         *     phase 1.
+         *   --Phase1Options.Phase1EncryptionAlgorithms: array string
+         *     The encryption algorithms allowed for the VPN tunnel for phase 1.
+         *   --Phase1Options.Phase1IntegrityAlgorithms: array string
+         *     The integrity algorithms allowed for the VPN tunnel for phase 1.
+         *   --Phase1Options.Phase1LifetimeSeconds: int
          *     The lifetime for phase 1 of the IKE negotiation process, in 
-         *     seconds.
-         *   -ReplayWindowSize: int
+         * seconds.
+         *   --Phase1Options.ReplayWindowSize: int
          *     The number of packets in an IKE replay window.
-         *   -StartupAction: string
+         *   --Phase1Options.StartupAction: string
          *     The action to carry out when establishing tunnels for a VPN 
-         *     connection.
+         * connection.
          */
         char *phase1_options_str;
         int is_set_phase1_options;
-	struct phase1_options phase1_options; /* ref Phase1Options */
+	struct phase1_options phase1_options;
         /*
          *   Information about Phase 2 of the Internet Key Exchange (IKE) 
          *   negotiation.
-         *   -Phase2DhGroupNumbers: array integer
-         *     The Diffie-Hellman (DH) group numbers allowed for the VPN 
-         *     tunnel for phase 2.
-         *   -Phase2EncryptionAlgorithms: array string
-         *     The encryption algorithms allowed for the VPN tunnel for phase 
-         *     2.
-         *   -Phase2IntegrityAlgorithms: array string
-         *     The integrity algorithms allowed for the VPN tunnel for phase 
-         *     2.
-         *   -Phase2LifetimeSeconds: int
+         *   --Phase2Options.Phase2DhGroupNumbers: array integer
+         *     The Diffie-Hellman (DH) group numbers allowed for the VPN tunnel 
+         * for 
+         *     phase 2.
+         *   --Phase2Options.Phase2EncryptionAlgorithms: array string
+         *     The encryption algorithms allowed for the VPN tunnel for phase 2.
+         *   --Phase2Options.Phase2IntegrityAlgorithms: array string
+         *     The integrity algorithms allowed for the VPN tunnel for phase 2.
+         *   --Phase2Options.Phase2LifetimeSeconds: int
          *     The lifetime for phase 2 of the Internet Key Exchange (IKE) 
-         *     negociation process, in seconds.
-         *   -PreSharedKey: string
+         * negociation 
+         *     process, in seconds.
+         *   --Phase2Options.PreSharedKey: string
          *     The pre-shared key to establish the initial authentication 
-         *     between the client gateway and the virtual gateway. This key 
-         *     can contain any character except line breaks and double quotes 
-         *     (&quot;).
+         * between the 
+         *     client gateway and the virtual gateway. This key can contain any 
+         *     character except line breaks and double quotes (&quot;).
          */
         char *phase2_options_str;
         int is_set_phase2_options;
-	struct phase2_options phase2_options; /* ref Phase2Options */
+	struct phase2_options phase2_options;
         /*
          * The range of inside IPs for the tunnel. This must be a /30 CIDR block 
          * from the 169.254.254.0/24 range.
          */
-	char *tunnel_inside_ip_range; /* string */
+	char *tunnel_inside_ip_range;
 };
 
 struct vpn_connection {
         /*
          * Example configuration for the client gateway.
          */
-	char *client_gateway_configuration; /* string */
+	char *client_gateway_configuration;
         /*
          * The ID of the client gateway used on the client end of the connection.
          */
-	char *client_gateway_id; /* string */
+	char *client_gateway_id;
         /*
          * The type of VPN connection (always `ipsec.1`).
          */
-	char *connection_type; /* string */
+	char *connection_type;
         /*
          * Information about one or more static routes associated with the VPN 
          * connection, if any.
          *   Information about the route.
-         *   -DestinationIpRange: string
+         *   --Routes.INDEX.DestinationIpRange: string
          *     The IP range used for the destination match, in CIDR notation 
-         *     (for example, `10.0.0.0/24`).
-         *   -RouteType: string
+         * (for 
+         *     example, `10.0.0.0/24`).
+         *   --Routes.INDEX.RouteType: string
          *     The type of route (always `static`).
-         *   -State: string
-         *     The current state of the static route (`pending` \\| 
-         *     `available` \\| `deleting` \\| `deleted`).
+         *   --Routes.INDEX.State: string
+         *     The current state of the static route (`pending` \\| `available` 
+         * \\| 
+         *     `deleting` \\| `deleted`).
          */
         char *routes_str;
         int nb_routes;
-	struct route_light *routes; /* array ref RouteLight */
+	struct route_light *routes;
         /*
          * The state of the VPN connection (`pending` \\| `available` \\| 
          * `deleting` \\| `deleted`).
          */
-	char *state; /* string */
+	char *state;
         /*
          * If false, the VPN connection uses dynamic routing with Border Gateway 
          * Protocol (BGP). If true, routing is controlled using static routes. 
@@ -6722,107 +6825,117 @@ struct vpn_connection {
          * [DeleteVpnConnectionRoute](#deletevpnconnectionroute).
          */
         int is_set_static_routes_only;
-	int static_routes_only; /* bool */
+	int static_routes_only;
         /*
          * One or more tags associated with the VPN connection.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
         /*
          * Information about the current state of one or more of the VPN tunnels.
          *   Information about the current state of a VPN tunnel.
-         *   -AcceptedRouteCount: int
+         *   --VgwTelemetries.INDEX.AcceptedRouteCount: int
          *     The number of routes accepted through BGP (Border Gateway 
-         *     Protocol) route exchanges.
-         *   -LastStateChangeDate: string
+         * Protocol) 
+         *     route exchanges.
+         *   --VgwTelemetries.INDEX.LastStateChangeDate: string
          *     The date and time (UTC) of the latest state update.
-         *   -OutsideIpAddress: string
+         *   --VgwTelemetries.INDEX.OutsideIpAddress: string
          *     The IP on the OUTSCALE side of the tunnel.
-         *   -State: string
+         *   --VgwTelemetries.INDEX.State: string
          *     The state of the IPSEC tunnel (`UP` \\| `DOWN`).
-         *   -StateDescription: string
+         *   --VgwTelemetries.INDEX.StateDescription: string
          *     A description of the current state of the tunnel.
          */
         char *vgw_telemetries_str;
         int nb_vgw_telemetries;
-	struct vgw_telemetry *vgw_telemetries; /* array ref VgwTelemetry */
+	struct vgw_telemetry *vgw_telemetries;
         /*
          * The ID of the virtual gateway used on the OUTSCALE end of the 
          * connection.
          */
-	char *virtual_gateway_id; /* string */
+	char *virtual_gateway_id;
         /*
          * The ID of the VPN connection.
          */
-	char *vpn_connection_id; /* string */
+	char *vpn_connection_id;
         /*
          *   Information about the VPN options.
-         *   -Phase1Options: ref Phase1Options
+         *   --VpnOptions.Phase1Options: ref Phase1Options
          *       Information about Phase 1 of the Internet Key Exchange (IKE) 
          *       negotiation. When Phase 1 finishes successfully, peers proceed 
-         *       to Phase 2 negotiations.
-         *       -DpdTimeoutAction: string
+         * to Phase 2 
+         *       negotiations.
+         *       --VpnOptions.Phase1Options.DpdTimeoutAction: string
          *         The action to carry out after a Dead Peer Detection (DPD) 
-         *         timeout occurs.
-         *       -DpdTimeoutSeconds: int
+         * timeout 
+         *         occurs.
+         *       --VpnOptions.Phase1Options.DpdTimeoutSeconds: int
          *         The maximum waiting time for a Dead Peer Detection (DPD) 
-         *         response before considering the peer as dead, in seconds.
-         *       -IkeVersions: array string
+         * response before 
+         *         considering the peer as dead, in seconds.
+         *       --VpnOptions.Phase1Options.IkeVersions: array string
          *         The Internet Key Exchange (IKE) versions allowed for the VPN 
-         *         tunnel.
-         *       -Phase1DhGroupNumbers: array integer
+         * tunnel.
+         *       --VpnOptions.Phase1Options.Phase1DhGroupNumbers: array integer
          *         The Diffie-Hellman (DH) group numbers allowed for the VPN 
-         *         tunnel for phase 1.
-         *       -Phase1EncryptionAlgorithms: array string
+         * tunnel for 
+         *         phase 1.
+         *       --VpnOptions.Phase1Options.Phase1EncryptionAlgorithms: array 
+         * string
          *         The encryption algorithms allowed for the VPN tunnel for 
-         * phase 
-         *         1.
-         *       -Phase1IntegrityAlgorithms: array string
+         * phase 1.
+         *       --VpnOptions.Phase1Options.Phase1IntegrityAlgorithms: array 
+         * string
          *         The integrity algorithms allowed for the VPN tunnel for phase 
-         *         1.
-         *       -Phase1LifetimeSeconds: int
+         * 1.
+         *       --VpnOptions.Phase1Options.Phase1LifetimeSeconds: int
          *         The lifetime for phase 1 of the IKE negotiation process, in 
-         *         seconds.
-         *       -ReplayWindowSize: int
+         * seconds.
+         *       --VpnOptions.Phase1Options.ReplayWindowSize: int
          *         The number of packets in an IKE replay window.
-         *       -StartupAction: string
+         *       --VpnOptions.Phase1Options.StartupAction: string
          *         The action to carry out when establishing tunnels for a VPN 
-         *         connection.
-         *   -Phase2Options: ref Phase2Options
+         * connection.
+         *   --VpnOptions.Phase2Options: ref Phase2Options
          *       Information about Phase 2 of the Internet Key Exchange (IKE) 
          *       negotiation.
-         *       -Phase2DhGroupNumbers: array integer
+         *       --VpnOptions.Phase2Options.Phase2DhGroupNumbers: array integer
          *         The Diffie-Hellman (DH) group numbers allowed for the VPN 
-         *         tunnel for phase 2.
-         *       -Phase2EncryptionAlgorithms: array string
+         * tunnel for 
+         *         phase 2.
+         *       --VpnOptions.Phase2Options.Phase2EncryptionAlgorithms: array 
+         * string
          *         The encryption algorithms allowed for the VPN tunnel for 
-         * phase 
-         *         2.
-         *       -Phase2IntegrityAlgorithms: array string
+         * phase 2.
+         *       --VpnOptions.Phase2Options.Phase2IntegrityAlgorithms: array 
+         * string
          *         The integrity algorithms allowed for the VPN tunnel for phase 
-         *         2.
-         *       -Phase2LifetimeSeconds: int
+         * 2.
+         *       --VpnOptions.Phase2Options.Phase2LifetimeSeconds: int
          *         The lifetime for phase 2 of the Internet Key Exchange (IKE) 
-         *         negociation process, in seconds.
-         *       -PreSharedKey: string
+         * negociation 
+         *         process, in seconds.
+         *       --VpnOptions.Phase2Options.PreSharedKey: string
          *         The pre-shared key to establish the initial authentication 
-         *         between the client gateway and the virtual gateway. This key 
-         *         can contain any character except line breaks and double 
-         * quotes 
-         *         (&quot;).
-         *   -TunnelInsideIpRange: string
-         *     The range of inside IPs for the tunnel. This must be a /30 
-         *     CIDR block from the 169.254.254.0/24 range.
+         * between the 
+         *         client gateway and the virtual gateway. This key can contain 
+         * any 
+         *         character except line breaks and double quotes (&quot;).
+         *   --VpnOptions.TunnelInsideIpRange: string
+         *     The range of inside IPs for the tunnel. This must be a /30 CIDR 
+         * block 
+         *     from the 169.254.254.0/24 range.
          */
         char *vpn_options_str;
         int is_set_vpn_options;
-	struct vpn_options vpn_options; /* ref VpnOptions */
+	struct vpn_options vpn_options;
 };
 
 struct with {
@@ -6830,88 +6943,88 @@ struct with {
          * By default or if set to true, the account ID is displayed.
          */
         int is_set_account_id;
-	int account_id; /* bool */
+	int account_id;
         /*
          * By default or if set to true, the duration of the call is displayed.
          */
         int is_set_call_duration;
-	int call_duration; /* bool */
+	int call_duration;
         /*
          * By default or if set to true, the access key is displayed.
          */
         int is_set_query_access_key;
-	int query_access_key; /* bool */
+	int query_access_key;
         /*
          * By default or if set to true, the name of the API is displayed.
          */
         int is_set_query_api_name;
-	int query_api_name; /* bool */
+	int query_api_name;
         /*
          * By default or if set to true, the version of the API is displayed.
          */
         int is_set_query_api_version;
-	int query_api_version; /* bool */
+	int query_api_version;
         /*
          * By default or if set to true, the name of the call is displayed.
          */
         int is_set_query_call_name;
-	int query_call_name; /* bool */
+	int query_call_name;
         /*
          * By default or if set to true, the date of the call is displayed.
          */
         int is_set_query_date;
-	int query_date; /* bool */
+	int query_date;
         /*
          * By default or if set to true, the raw header of the HTTP request is 
          * displayed.
          */
         int is_set_query_header_raw;
-	int query_header_raw; /* bool */
+	int query_header_raw;
         /*
          * By default or if set to true, the size of the raw header of the HTTP 
          * request is displayed.
          */
         int is_set_query_header_size;
-	int query_header_size; /* bool */
+	int query_header_size;
         /*
          * By default or if set to true, the IP is displayed.
          */
         int is_set_query_ip_address;
-	int query_ip_address; /* bool */
+	int query_ip_address;
         /*
          * By default or if set to true, the raw payload of the HTTP request is 
          * displayed.
          */
         int is_set_query_payload_raw;
-	int query_payload_raw; /* bool */
+	int query_payload_raw;
         /*
          * By default or if set to true, the size of the raw payload of the HTTP 
          * request is displayed.
          */
         int is_set_query_payload_size;
-	int query_payload_size; /* bool */
+	int query_payload_size;
         /*
          * By default or if set to true, the user agent of the HTTP request is 
          * displayed.
          */
         int is_set_query_user_agent;
-	int query_user_agent; /* bool */
+	int query_user_agent;
         /*
          * By default or if set to true, the request ID is displayed.
          */
         int is_set_request_id;
-	int request_id; /* bool */
+	int request_id;
         /*
          * By default or if set to true, the size of the response is displayed.
          */
         int is_set_response_size;
-	int response_size; /* bool */
+	int response_size;
         /*
          * By default or if set to true, the HTTP status code of the response is 
          * displayed.
          */
         int is_set_response_status_code;
-	int response_status_code; /* bool */
+	int response_status_code;
 };
 
 struct osc_update_vpn_connection_arg  {
@@ -6919,83 +7032,92 @@ struct osc_update_vpn_connection_arg  {
         /*
          * The ID of the client gateway.
          */
-	char *client_gateway_id; /* string */
+	char *client_gateway_id;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the virtual gateway.
          */
-	char *virtual_gateway_id; /* string */
+	char *virtual_gateway_id;
         /*
          * The ID of the VPN connection you want to modify.
          */
-	char *vpn_connection_id; /* string */
+	char *vpn_connection_id;
         /*
          *   Information about the VPN options.
-         *   -Phase1Options: ref Phase1Options
+         *   --VpnOptions.Phase1Options: ref Phase1Options
          *       Information about Phase 1 of the Internet Key Exchange (IKE) 
          *       negotiation. When Phase 1 finishes successfully, peers proceed 
-         *       to Phase 2 negotiations.
-         *       -DpdTimeoutAction: string
+         * to Phase 2 
+         *       negotiations.
+         *       --VpnOptions.Phase1Options.DpdTimeoutAction: string
          *         The action to carry out after a Dead Peer Detection (DPD) 
-         *         timeout occurs.
-         *       -DpdTimeoutSeconds: int
+         * timeout 
+         *         occurs.
+         *       --VpnOptions.Phase1Options.DpdTimeoutSeconds: int
          *         The maximum waiting time for a Dead Peer Detection (DPD) 
-         *         response before considering the peer as dead, in seconds.
-         *       -IkeVersions: array string
+         * response before 
+         *         considering the peer as dead, in seconds.
+         *       --VpnOptions.Phase1Options.IkeVersions: array string
          *         The Internet Key Exchange (IKE) versions allowed for the VPN 
-         *         tunnel.
-         *       -Phase1DhGroupNumbers: array integer
+         * tunnel.
+         *       --VpnOptions.Phase1Options.Phase1DhGroupNumbers: array integer
          *         The Diffie-Hellman (DH) group numbers allowed for the VPN 
-         *         tunnel for phase 1.
-         *       -Phase1EncryptionAlgorithms: array string
+         * tunnel for 
+         *         phase 1.
+         *       --VpnOptions.Phase1Options.Phase1EncryptionAlgorithms: array 
+         * string
          *         The encryption algorithms allowed for the VPN tunnel for 
-         * phase 
-         *         1.
-         *       -Phase1IntegrityAlgorithms: array string
+         * phase 1.
+         *       --VpnOptions.Phase1Options.Phase1IntegrityAlgorithms: array 
+         * string
          *         The integrity algorithms allowed for the VPN tunnel for phase 
-         *         1.
-         *       -Phase1LifetimeSeconds: int
+         * 1.
+         *       --VpnOptions.Phase1Options.Phase1LifetimeSeconds: int
          *         The lifetime for phase 1 of the IKE negotiation process, in 
-         *         seconds.
-         *       -ReplayWindowSize: int
+         * seconds.
+         *       --VpnOptions.Phase1Options.ReplayWindowSize: int
          *         The number of packets in an IKE replay window.
-         *       -StartupAction: string
+         *       --VpnOptions.Phase1Options.StartupAction: string
          *         The action to carry out when establishing tunnels for a VPN 
-         *         connection.
-         *   -Phase2Options: ref Phase2Options
+         * connection.
+         *   --VpnOptions.Phase2Options: ref Phase2Options
          *       Information about Phase 2 of the Internet Key Exchange (IKE) 
          *       negotiation.
-         *       -Phase2DhGroupNumbers: array integer
+         *       --VpnOptions.Phase2Options.Phase2DhGroupNumbers: array integer
          *         The Diffie-Hellman (DH) group numbers allowed for the VPN 
-         *         tunnel for phase 2.
-         *       -Phase2EncryptionAlgorithms: array string
+         * tunnel for 
+         *         phase 2.
+         *       --VpnOptions.Phase2Options.Phase2EncryptionAlgorithms: array 
+         * string
          *         The encryption algorithms allowed for the VPN tunnel for 
-         * phase 
-         *         2.
-         *       -Phase2IntegrityAlgorithms: array string
+         * phase 2.
+         *       --VpnOptions.Phase2Options.Phase2IntegrityAlgorithms: array 
+         * string
          *         The integrity algorithms allowed for the VPN tunnel for phase 
-         *         2.
-         *       -Phase2LifetimeSeconds: int
+         * 2.
+         *       --VpnOptions.Phase2Options.Phase2LifetimeSeconds: int
          *         The lifetime for phase 2 of the Internet Key Exchange (IKE) 
-         *         negociation process, in seconds.
-         *       -PreSharedKey: string
+         * negociation 
+         *         process, in seconds.
+         *       --VpnOptions.Phase2Options.PreSharedKey: string
          *         The pre-shared key to establish the initial authentication 
-         *         between the client gateway and the virtual gateway. This key 
-         *         can contain any character except line breaks and double 
-         * quotes 
-         *         (&quot;).
-         *   -TunnelInsideIpRange: string
-         *     The range of inside IPs for the tunnel. This must be a /30 
-         *     CIDR block from the 169.254.254.0/24 range.
+         * between the 
+         *         client gateway and the virtual gateway. This key can contain 
+         * any 
+         *         character except line breaks and double quotes (&quot;).
+         *   --VpnOptions.TunnelInsideIpRange: string
+         *     The range of inside IPs for the tunnel. This must be a /30 CIDR 
+         * block 
+         *     from the 169.254.254.0/24 range.
          */
         char *vpn_options_str;
         int is_set_vpn_options;
-	struct vpn_options vpn_options; /* ref VpnOptions */
+	struct vpn_options vpn_options;
 };
 
 struct osc_update_volume_arg  {
@@ -7005,7 +7127,7 @@ struct osc_update_volume_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * **Cold volume**: the new number of I/O operations per second (IOPS). 
          * This parameter can be specified only if you update an `io1` volume or 
@@ -7017,7 +7139,7 @@ struct osc_update_volume_arg  {
          * `13000` with a maximum performance ratio of 300 IOPS per gibibyte.
          */
         int is_set_iops;
-	int iops; /* int */
+	int iops;
         /*
          * **Cold volume**: the new size of the volume, in gibibytes (GiB). This 
          * value must be equal to or greater than the current size of the 
@@ -7025,18 +7147,18 @@ struct osc_update_volume_arg  {
          * volume**: you cannot change the size of a hot volume.
          */
         int is_set_size;
-	int size; /* int */
+	int size;
         /*
          * The ID of the volume you want to update.
          */
-	char *volume_id; /* string */
+	char *volume_id;
         /*
          * **Cold volume**: the new type of the volume (`standard` \\| `io1` \\| 
          * `gp2`). This modification is instantaneous. If you update to an `io1` 
          * volume, you must also specify the `Iops` parameter.<br />\n**Hot 
          * volume**: you cannot change the type of a hot volume.
          */
-	char *volume_type; /* string */
+	char *volume_type;
 };
 
 struct osc_update_vm_template_arg  {
@@ -7044,32 +7166,32 @@ struct osc_update_vm_template_arg  {
         /*
          * A new description for the VM template.
          */
-	char *description; /* string */
+	char *description;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * New tags for your VM template.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
         /*
          * The ID of the VM template you want to update.
          */
-	char *vm_template_id; /* string */
+	char *vm_template_id;
         /*
          * A new name for your VM template.
          */
-	char *vm_template_name; /* string */
+	char *vm_template_name;
 };
 
 struct osc_update_vm_group_arg  {
@@ -7077,36 +7199,36 @@ struct osc_update_vm_group_arg  {
         /*
          * A new description for the VM group.
          */
-	char *description; /* string */
+	char *description;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * New tags for your VM group.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
         /*
          * The ID of the VM group you want to update.
          */
-	char *vm_group_id; /* string */
+	char *vm_group_id;
         /*
          * A new name for your VM group.
          */
-	char *vm_group_name; /* string */
+	char *vm_group_name;
         /*
          * A new VM template ID for your VM group.
          */
-	char *vm_template_id; /* string */
+	char *vm_template_id;
 };
 
 struct osc_update_vm_arg  {
@@ -7114,56 +7236,56 @@ struct osc_update_vm_arg  {
         /*
          * One or more block device mappings of the VM.
          *   Information about the block device mapping.
-         *   -Bsu: ref BsuToUpdateVm
+         *   --BlockDeviceMappings.INDEX.Bsu: ref BsuToUpdateVm
          *       Information about the BSU volume.
-         *       -DeleteOnVmDeletion: bool
+         *       --BlockDeviceMappings.INDEX.Bsu.DeleteOnVmDeletion: bool
          *         If set to true, the volume is deleted when terminating the 
-         * VM. 
-         *         If set to false, the volume is not deleted when terminating 
-         * the 
-         *         VM.
-         *       -VolumeId: string
+         * VM. If set to 
+         *         false, the volume is not deleted when terminating the VM.
+         *       --BlockDeviceMappings.INDEX.Bsu.VolumeId: string
          *         The ID of the volume.
-         *   -DeviceName: string
-         *     The device name for the volume. For a root device, you must 
-         *     use `/dev/sda1`. For other volumes, you must use `/dev/sdX`, 
-         *     `/dev/sdXX`, `/dev/xvdX`, or `/dev/xvdXX` (where the first `X` 
-         *     is a letter between `b` and `z`, and the second `X` is a letter 
-         *     between `a` and `z`).
-         *   -NoDevice: string
-         *     Removes the device which is included in the block device 
-         *     mapping of the OMI.
-         *   -VirtualDeviceName: string
+         *   --BlockDeviceMappings.INDEX.DeviceName: string
+         *     The device name for the volume. For a root device, you must use 
+         *     `/dev/sda1`. For other volumes, you must use `/dev/sdX`, 
+         * `/dev/sdXX`, 
+         *     `/dev/xvdX`, or `/dev/xvdXX` (where the first `X` is a letter 
+         * between `b` 
+         *     and `z`, and the second `X` is a letter between `a` and `z`).
+         *   --BlockDeviceMappings.INDEX.NoDevice: string
+         *     Removes the device which is included in the block device mapping 
+         * of the 
+         *     OMI.
+         *   --BlockDeviceMappings.INDEX.VirtualDeviceName: string
          *     The name of the virtual device (`ephemeralN`).
          */
         char *block_device_mappings_str;
         int nb_block_device_mappings;
-	struct block_device_mapping_vm_update *block_device_mappings; /* array ref BlockDeviceMappingVmUpdate */
+	struct block_device_mapping_vm_update *block_device_mappings;
         /*
          * This parameter is not available. It is present in our API for the 
          * sake of historical compatibility with AWS.
          */
         int is_set_bsu_optimized;
-	int bsu_optimized; /* bool */
+	int bsu_optimized;
         /*
          * If true, you cannot delete the VM unless you change this parameter 
          * back to false.
          */
         int is_set_deletion_protection;
-	int deletion_protection; /* bool */
+	int deletion_protection;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * (Net only) If true, the source/destination check is enabled. If 
          * false, it is disabled. This value must be false for a NAT VM to 
          * perform network address translation (NAT) in a Net.
          */
         int is_set_is_source_dest_checked;
-	int is_source_dest_checked; /* bool */
+	int is_source_dest_checked;
         /*
          * The name of a keypair you want to associate with the VM.<br />\nWhen 
          * you replace the keypair of a VM with another one, the metadata of the 
@@ -7175,41 +7297,41 @@ struct osc_update_vm_arg  {
          * VM](https://docs.outscale.com/en/userguide/Modifying-the-Keypair-of-a-
          * VM.html).
          */
-	char *keypair_name; /* string */
+	char *keypair_name;
         /*
          * (dedicated tenancy only) If true, nested virtualization is enabled. 
          * If false, it is disabled.
          */
         int is_set_nested_virtualization;
-	int nested_virtualization; /* bool */
+	int nested_virtualization;
         /*
          * The performance of the VM (`medium` \\| `high` \\| `highest`).
          */
-	char *performance; /* string */
+	char *performance;
         /*
          * One or more IDs of security groups for the VM.
          */
         char *security_group_ids_str;
-	char **security_group_ids; /* array string */
+	char **security_group_ids;
         /*
          * The Base64-encoded MIME user data, limited to 500 kibibytes (KiB).
          */
-	char *user_data; /* string */
+	char *user_data;
         /*
          * The ID of the VM.
          */
-	char *vm_id; /* string */
+	char *vm_id;
         /*
          * The VM behavior when you stop it. If set to `stop`, the VM stops. If 
          * set to `restart`, the VM stops then automatically restarts. If set to 
          * `terminate`, the VM stops and is terminated.
          */
-	char *vm_initiated_shutdown_behavior; /* string */
+	char *vm_initiated_shutdown_behavior;
         /*
          * The type of VM. For more information, see [VM 
          * Types](https://docs.outscale.com/en/userguide/VM-Types.html).
          */
-	char *vm_type; /* string */
+	char *vm_type;
 };
 
 struct osc_update_user_group_arg  {
@@ -7219,24 +7341,24 @@ struct osc_update_user_group_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * A new path for the group. If not specified, it is set to a slash 
          * (`/`).
          */
-	char *new_path; /* string */
+	char *new_path;
         /*
          * A new name for the user group.
          */
-	char *new_user_group_name; /* string */
+	char *new_user_group_name;
         /*
          * The path to the group. If not specified, it is set to a slash (`/`).
          */
-	char *path; /* string */
+	char *path;
         /*
          * The name of the group you want to update.
          */
-	char *user_group_name; /* string */
+	char *user_group_name;
 };
 
 struct osc_update_user_arg  {
@@ -7246,19 +7368,19 @@ struct osc_update_user_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * A new path for the EIM user.
          */
-	char *new_path; /* string */
+	char *new_path;
         /*
          * A new name for the EIM user.
          */
-	char *new_user_name; /* string */
+	char *new_user_name;
         /*
          * The name of the EIM user you want to modify.
          */
-	char *user_name; /* string */
+	char *user_name;
 };
 
 struct osc_update_subnet_arg  {
@@ -7268,17 +7390,17 @@ struct osc_update_subnet_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * If true, a public IP is assigned to the network interface cards 
          * (NICs) created in the specified Subnet.
          */
         int is_set_map_public_ip_on_launch;
-	int map_public_ip_on_launch; /* bool */
+	int map_public_ip_on_launch;
         /*
          * The ID of the Subnet.
          */
-	char *subnet_id; /* string */
+	char *subnet_id;
 };
 
 struct osc_update_snapshot_arg  {
@@ -7288,42 +7410,48 @@ struct osc_update_snapshot_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
-         *   Information about the permissions for the resource.<br 
-         *   />\nSpecify either the `Additions` or the `Removals` parameter.
-         *   -Additions: ref PermissionsOnResource
+         *   Information about the permissions for the resource.<br />\nSpecify 
+         *   either the `Additions` or the `Removals` parameter.
+         *   --PermissionsToCreateVolume.Additions: ref PermissionsOnResource
          *       Permissions for the resource.
-         *       -AccountIds: array string
+         *       --PermissionsToCreateVolume.Additions.AccountIds: array string
          *         One or more account IDs that the permission is associated 
-         *         with.
-         *       -GlobalPermission: bool
+         * with.
+         *       --PermissionsToCreateVolume.Additions.GlobalPermission: bool
          *         A global permission for all accounts.<br />\n(Request) Set 
-         *         this parameter to true to make the resource public (if the 
-         *         parent parameter is `Additions`) or to make the resource 
-         *         private (if the parent parameter is `Removals`).<br 
-         *         />\n(Response) If true, the resource is public. If false, the 
-         *         resource is private.
-         *   -Removals: ref PermissionsOnResource
+         * this 
+         *         parameter to true to make the resource public (if the parent 
+         * parameter is 
+         *         `Additions`) or to make the resource private (if the parent 
+         * parameter is 
+         *         `Removals`).<br />\n(Response) If true, the resource is 
+         * public. If false, 
+         *         the resource is private.
+         *   --PermissionsToCreateVolume.Removals: ref PermissionsOnResource
          *       Permissions for the resource.
-         *       -AccountIds: array string
+         *       --PermissionsToCreateVolume.Removals.AccountIds: array string
          *         One or more account IDs that the permission is associated 
-         *         with.
-         *       -GlobalPermission: bool
+         * with.
+         *       --PermissionsToCreateVolume.Removals.GlobalPermission: bool
          *         A global permission for all accounts.<br />\n(Request) Set 
-         *         this parameter to true to make the resource public (if the 
-         *         parent parameter is `Additions`) or to make the resource 
-         *         private (if the parent parameter is `Removals`).<br 
-         *         />\n(Response) If true, the resource is public. If false, the 
-         *         resource is private.
+         * this 
+         *         parameter to true to make the resource public (if the parent 
+         * parameter is 
+         *         `Additions`) or to make the resource private (if the parent 
+         * parameter is 
+         *         `Removals`).<br />\n(Response) If true, the resource is 
+         * public. If false, 
+         *         the resource is private.
          */
         char *permissions_to_create_volume_str;
         int is_set_permissions_to_create_volume;
-	struct permissions_on_resource_creation permissions_to_create_volume; /* ref PermissionsOnResourceCreation */
+	struct permissions_on_resource_creation permissions_to_create_volume;
         /*
          * The ID of the snapshot.
          */
-	char *snapshot_id; /* string */
+	char *snapshot_id;
 };
 
 struct osc_update_server_certificate_arg  {
@@ -7333,19 +7461,19 @@ struct osc_update_server_certificate_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The name of the server certificate you want to modify.
          */
-	char *name; /* string */
+	char *name;
         /*
          * A new name for the server certificate.
          */
-	char *new_name; /* string */
+	char *new_name;
         /*
          * A new path for the server certificate.
          */
-	char *new_path; /* string */
+	char *new_path;
 };
 
 struct osc_update_route_table_link_arg  {
@@ -7355,15 +7483,15 @@ struct osc_update_route_table_link_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the current route table link.
          */
-	char *link_route_table_id; /* string */
+	char *link_route_table_id;
         /*
          * The ID of the new route table to associate with the Subnet.
          */
-	char *route_table_id; /* string */
+	char *route_table_id;
 };
 
 struct osc_update_route_propagation_arg  {
@@ -7373,21 +7501,21 @@ struct osc_update_route_propagation_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * If true, a virtual gateway can propagate routes to a specified route 
          * table of a Net. If false, the propagation is disabled.
          */
         int is_set_enable;
-	int enable; /* bool */
+	int enable;
         /*
          * The ID of the route table.
          */
-	char *route_table_id; /* string */
+	char *route_table_id;
         /*
          * The ID of the virtual gateway.
          */
-	char *virtual_gateway_id; /* string */
+	char *virtual_gateway_id;
 };
 
 struct osc_update_route_arg  {
@@ -7396,37 +7524,37 @@ struct osc_update_route_arg  {
          * The IP range used for the destination match, in CIDR notation (for 
          * example, `10.0.0.0/24`).
          */
-	char *destination_ip_range; /* string */
+	char *destination_ip_range;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of an Internet service or virtual gateway attached to your Net.
          */
-	char *gateway_id; /* string */
+	char *gateway_id;
         /*
          * The ID of a NAT service.
          */
-	char *nat_service_id; /* string */
+	char *nat_service_id;
         /*
          * The ID of a Net peering.
          */
-	char *net_peering_id; /* string */
+	char *net_peering_id;
         /*
          * The ID of a network interface card (NIC).
          */
-	char *nic_id; /* string */
+	char *nic_id;
         /*
          * The ID of the route table.
          */
-	char *route_table_id; /* string */
+	char *route_table_id;
         /*
          * The ID of a NAT VM in your Net.
          */
-	char *vm_id; /* string */
+	char *vm_id;
 };
 
 struct osc_update_nic_arg  {
@@ -7434,37 +7562,38 @@ struct osc_update_nic_arg  {
         /*
          * A new description for the NIC.
          */
-	char *description; /* string */
+	char *description;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   Information about the NIC attachment. If you are modifying the 
-         *   `DeleteOnVmDeletion` attribute, you must specify the ID of the 
-         *   NIC attachment.
-         *   -DeleteOnVmDeletion: bool
-         *     If true, the NIC is deleted when the VM is terminated. If 
-         *     false, the NIC is detached from the VM.
-         *   -LinkNicId: string
+         *   `DeleteOnVmDeletion` attribute, you must specify the ID of the NIC 
+         *   attachment.
+         *   --LinkNic.DeleteOnVmDeletion: bool
+         *     If true, the NIC is deleted when the VM is terminated. If false, 
+         * the NIC 
+         *     is detached from the VM.
+         *   --LinkNic.LinkNicId: string
          *     The ID of the NIC attachment.
          */
         char *link_nic_str;
         int is_set_link_nic;
-	struct link_nic_to_update link_nic; /* ref LinkNicToUpdate */
+	struct link_nic_to_update link_nic;
         /*
          * The ID of the NIC you want to modify.
          */
-	char *nic_id; /* string */
+	char *nic_id;
         /*
          * One or more IDs of security groups for the NIC.<br />\nYou must 
          * specify at least one group, even if you use the default security 
          * group in the Net.
          */
         char *security_group_ids_str;
-	char **security_group_ids; /* array string */
+	char **security_group_ids;
 };
 
 struct osc_update_net_access_point_arg  {
@@ -7474,23 +7603,23 @@ struct osc_update_net_access_point_arg  {
          * access point.
          */
         char *add_route_table_ids_str;
-	char **add_route_table_ids; /* array string */
+	char **add_route_table_ids;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the Net access point.
          */
-	char *net_access_point_id; /* string */
+	char *net_access_point_id;
         /*
          * One or more IDs of route tables to disassociate from the specified 
          * Net access point.
          */
         char *remove_route_table_ids_str;
-	char **remove_route_table_ids; /* array string */
+	char **remove_route_table_ids;
 };
 
 struct osc_update_net_arg  {
@@ -7499,89 +7628,95 @@ struct osc_update_net_arg  {
          * The ID of the DHCP options set (or `default` if you want to associate 
          * the default one).
          */
-	char *dhcp_options_set_id; /* string */
+	char *dhcp_options_set_id;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the Net.
          */
-	char *net_id; /* string */
+	char *net_id;
 };
 
 struct osc_update_load_balancer_arg  {
         /* Required: load_balancer_name */
         /*
          *   Information about access logs.
-         *   -IsEnabled: bool
+         *   --AccessLog.IsEnabled: bool
          *     If true, access logs are enabled for your load balancer. If 
-         *     false, they are not. If you set this to true in your request, 
-         *     the `OsuBucketName` parameter is required.
-         *   -OsuBucketName: string
+         * false, they 
+         *     are not. If you set this to true in your request, the 
+         * `OsuBucketName` 
+         *     parameter is required.
+         *   --AccessLog.OsuBucketName: string
          *     The name of the OOS bucket for the access logs.
-         *   -OsuBucketPrefix: string
-         *     The path to the folder of the access logs in your OOS bucket 
-         *     (by default, the `root` level of your bucket).
-         *   -PublicationInterval: int
-         *     The time interval for the publication of access logs in the 
-         *     OOS bucket, in minutes. This value can be either `5` or `60` 
-         *     (by default, `60`).
+         *   --AccessLog.OsuBucketPrefix: string
+         *     The path to the folder of the access logs in your OOS bucket (by 
+         *     default, the `root` level of your bucket).
+         *   --AccessLog.PublicationInterval: int
+         *     The time interval for the publication of access logs in the OOS 
+         * bucket, 
+         *     in minutes. This value can be either `5` or `60` (by default, 
+         * `60`).
          */
         char *access_log_str;
         int is_set_access_log;
-	struct access_log access_log; /* ref AccessLog */
+	struct access_log access_log;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   Information about the health check configuration.
-         *   -CheckInterval: int
-         *     The number of seconds between two requests (between `5` and 
-         *     `600` both included).
-         *   -HealthyThreshold: int
-         *     The number of consecutive successful requests before 
-         *     considering the VM as healthy (between `2` and `10` both 
+         *   --HealthCheck.CheckInterval: int
+         *     The number of seconds between two requests (between `5` and `600` 
+         * both 
          *     included).
-         *   -Path: string
+         *   --HealthCheck.HealthyThreshold: int
+         *     The number of consecutive successful requests before considering 
+         * the VM 
+         *     as healthy (between `2` and `10` both included).
+         *   --HealthCheck.Path: string
          *     If you use the HTTP or HTTPS protocols, the request URL path.
-         *   -Port: int
+         *   --HealthCheck.Port: int
          *     The port number (between `1` and `65535`, both included).
-         *   -Protocol: string
-         *     The protocol for the URL of the VM (`HTTP` \\| `HTTPS` \\| 
-         *     `TCP` \\| `SSL`).
-         *   -Timeout: int
-         *     The maximum waiting time for a response before considering the 
-         *     VM as unhealthy, in seconds (between `2` and `60` both 
-         *     included).
-         *   -UnhealthyThreshold: int
-         *     The number of consecutive failed requests before considering 
-         *     the VM as unhealthy (between `2` and `10` both included).
+         *   --HealthCheck.Protocol: string
+         *     The protocol for the URL of the VM (`HTTP` \\| `HTTPS` \\| `TCP` 
+         * \\| 
+         *     `SSL`).
+         *   --HealthCheck.Timeout: int
+         *     The maximum waiting time for a response before considering the VM 
+         * as 
+         *     unhealthy, in seconds (between `2` and `60` both included).
+         *   --HealthCheck.UnhealthyThreshold: int
+         *     The number of consecutive failed requests before considering the 
+         * VM as 
+         *     unhealthy (between `2` and `10` both included).
          */
         char *health_check_str;
         int is_set_health_check;
-	struct health_check health_check; /* ref HealthCheck */
+	struct health_check health_check;
         /*
          * The name of the load balancer.
          */
-	char *load_balancer_name; /* string */
+	char *load_balancer_name;
         /*
          * The port on which the load balancer is listening (between `1` and 
          * `65535`, both included). This parameter is required if you want to 
          * update the server certificate.
          */
         int is_set_load_balancer_port;
-	int load_balancer_port; /* int */
+	int load_balancer_port;
         /*
          * The name of the policy you want to enable for the listener.
          */
         char *policy_names_str;
-	char **policy_names; /* array string */
+	char **policy_names;
         /*
          * (internet-facing only) The public IP you want to associate with the 
          * load balancer. The former public IP of the load balancer is then 
@@ -7589,12 +7724,12 @@ struct osc_update_load_balancer_arg  {
          * IP belonged to you, it is disassociated and replaced by a public IP 
          * owned by 3DS OUTSCALE.
          */
-	char *public_ip; /* string */
+	char *public_ip;
         /*
          * If true, secure cookies are enabled for the load balancer.
          */
         int is_set_secured_cookies;
-	int secured_cookies; /* bool */
+	int secured_cookies;
         /*
          * (Net only) One or more IDs of security groups you want to assign to 
          * the load balancer. You need to specify the already assigned security 
@@ -7603,7 +7738,7 @@ struct osc_update_load_balancer_arg  {
          * Net is assigned to the load balancer.
          */
         char *security_groups_str;
-	char **security_groups; /* array string */
+	char **security_groups;
         /*
          * The OUTSCALE Resource Name (ORN) of the server certificate. For more 
          * information, see [Resource Identifiers > OUTSCALE Resource Names 
@@ -7611,7 +7746,7 @@ struct osc_update_load_balancer_arg  {
          * ml#_outscale_resource_names_orns). If this parameter is specified, 
          * you must also specify the `LoadBalancerPort` parameter.
          */
-	char *server_certificate_id; /* string */
+	char *server_certificate_id;
 };
 
 struct osc_update_listener_rule_arg  {
@@ -7621,23 +7756,23 @@ struct osc_update_listener_rule_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * A host-name pattern for the rule, with a maximum length of 128 
          * characters. This host-name pattern supports maximum three wildcards, 
          * and must not contain any special characters except [-.?].
          */
-	char *host_pattern; /* string */
+	char *host_pattern;
         /*
          * The name of the listener rule.
          */
-	char *listener_rule_name; /* string */
+	char *listener_rule_name;
         /*
          * A path pattern for the rule, with a maximum length of 128 characters. 
          * This path pattern supports maximum three wildcards, and must not 
          * contain any special characters except [_-.$/~&quot;'@:+?].
          */
-	char *path_pattern; /* string */
+	char *path_pattern;
 };
 
 struct osc_update_image_arg  {
@@ -7645,48 +7780,54 @@ struct osc_update_image_arg  {
         /*
          * A new description for the image.
          */
-	char *description; /* string */
+	char *description;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the OMI you want to modify.
          */
-	char *image_id; /* string */
+	char *image_id;
         /*
-         *   Information about the permissions for the resource.<br 
-         *   />\nSpecify either the `Additions` or the `Removals` parameter.
-         *   -Additions: ref PermissionsOnResource
+         *   Information about the permissions for the resource.<br />\nSpecify 
+         *   either the `Additions` or the `Removals` parameter.
+         *   --PermissionsToLaunch.Additions: ref PermissionsOnResource
          *       Permissions for the resource.
-         *       -AccountIds: array string
+         *       --PermissionsToLaunch.Additions.AccountIds: array string
          *         One or more account IDs that the permission is associated 
-         *         with.
-         *       -GlobalPermission: bool
+         * with.
+         *       --PermissionsToLaunch.Additions.GlobalPermission: bool
          *         A global permission for all accounts.<br />\n(Request) Set 
-         *         this parameter to true to make the resource public (if the 
-         *         parent parameter is `Additions`) or to make the resource 
-         *         private (if the parent parameter is `Removals`).<br 
-         *         />\n(Response) If true, the resource is public. If false, the 
-         *         resource is private.
-         *   -Removals: ref PermissionsOnResource
+         * this 
+         *         parameter to true to make the resource public (if the parent 
+         * parameter is 
+         *         `Additions`) or to make the resource private (if the parent 
+         * parameter is 
+         *         `Removals`).<br />\n(Response) If true, the resource is 
+         * public. If false, 
+         *         the resource is private.
+         *   --PermissionsToLaunch.Removals: ref PermissionsOnResource
          *       Permissions for the resource.
-         *       -AccountIds: array string
+         *       --PermissionsToLaunch.Removals.AccountIds: array string
          *         One or more account IDs that the permission is associated 
-         *         with.
-         *       -GlobalPermission: bool
+         * with.
+         *       --PermissionsToLaunch.Removals.GlobalPermission: bool
          *         A global permission for all accounts.<br />\n(Request) Set 
-         *         this parameter to true to make the resource public (if the 
-         *         parent parameter is `Additions`) or to make the resource 
-         *         private (if the parent parameter is `Removals`).<br 
-         *         />\n(Response) If true, the resource is public. If false, the 
-         *         resource is private.
+         * this 
+         *         parameter to true to make the resource public (if the parent 
+         * parameter is 
+         *         `Additions`) or to make the resource private (if the parent 
+         * parameter is 
+         *         `Removals`).<br />\n(Response) If true, the resource is 
+         * public. If false, 
+         *         the resource is private.
          */
         char *permissions_to_launch_str;
         int is_set_permissions_to_launch;
-	struct permissions_on_resource_creation permissions_to_launch; /* ref PermissionsOnResourceCreation */
+	struct permissions_on_resource_creation permissions_to_launch;
 };
 
 struct osc_update_flexible_gpu_arg  {
@@ -7695,17 +7836,17 @@ struct osc_update_flexible_gpu_arg  {
          * If true, the fGPU is deleted when the VM is terminated.
          */
         int is_set_delete_on_vm_deletion;
-	int delete_on_vm_deletion; /* bool */
+	int delete_on_vm_deletion;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the fGPU you want to modify.
          */
-	char *flexible_gpu_id; /* string */
+	char *flexible_gpu_id;
 };
 
 struct osc_update_direct_link_interface_arg  {
@@ -7713,19 +7854,19 @@ struct osc_update_direct_link_interface_arg  {
         /*
          * The ID of the DirectLink interface you want to update.
          */
-	char *direct_link_interface_id; /* string */
+	char *direct_link_interface_id;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The maximum transmission unit (MTU) of the DirectLink interface, in 
          * bytes (always `1500`).
          */
         int is_set_mtu;
-	int mtu; /* int */
+	int mtu;
 };
 
 struct osc_update_dedicated_group_arg  {
@@ -7733,17 +7874,17 @@ struct osc_update_dedicated_group_arg  {
         /*
          * The ID of the dedicated group you want to update.
          */
-	char *dedicated_group_id; /* string */
+	char *dedicated_group_id;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The new name of the dedicated group.
          */
-	char *name; /* string */
+	char *name;
 };
 
 struct osc_update_ca_arg  {
@@ -7751,17 +7892,17 @@ struct osc_update_ca_arg  {
         /*
          * The ID of the CA.
          */
-	char *ca_id; /* string */
+	char *ca_id;
         /*
          * The description of the CA.
          */
-	char *description; /* string */
+	char *description;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
 };
 
 struct osc_update_api_access_rule_arg  {
@@ -7769,32 +7910,32 @@ struct osc_update_api_access_rule_arg  {
         /*
          * The ID of the API access rule you want to update.
          */
-	char *api_access_rule_id; /* string */
+	char *api_access_rule_id;
         /*
          * One or more IDs of Client Certificate Authorities (CAs).
          */
         char *ca_ids_str;
-	char **ca_ids; /* array string */
+	char **ca_ids;
         /*
          * One or more Client Certificate Common Names (CNs).
          */
         char *cns_str;
-	char **cns; /* array string */
+	char **cns;
         /*
          * A new description for the API access rule.
          */
-	char *description; /* string */
+	char *description;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * One or more IPs or CIDR blocks (for example, `192.0.2.0/16`).
          */
         char *ip_ranges_str;
-	char **ip_ranges; /* array string */
+	char **ip_ranges;
 };
 
 struct osc_update_api_access_policy_arg  {
@@ -7804,7 +7945,7 @@ struct osc_update_api_access_policy_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The maximum possible lifetime for your access keys, in seconds 
          * (between `0` and `3153600000`, both included). If set to `O`, your 
@@ -7814,7 +7955,7 @@ struct osc_update_api_access_policy_arg  {
          * lifetime of each access key of your account.
          */
         int is_set_max_access_key_expiration_seconds;
-	int max_access_key_expiration_seconds; /* int */
+	int max_access_key_expiration_seconds;
         /*
          * If true, a trusted session is activated, provided that you specify 
          * the `MaxAccessKeyExpirationSeconds` parameter with a value greater 
@@ -7826,7 +7967,7 @@ struct osc_update_api_access_policy_arg  {
          * ation.html#_multi_factor_authentication).
          */
         int is_set_require_trusted_env;
-	int require_trusted_env; /* bool */
+	int require_trusted_env;
 };
 
 struct osc_update_account_arg  {
@@ -7838,62 +7979,62 @@ struct osc_update_account_arg  {
          * it. To remove all registered additional emails, specify an empty list.
          */
         char *additional_emails_str;
-	char **additional_emails; /* array string */
+	char **additional_emails;
         /*
          * The new city of the account owner.
          */
-	char *city; /* string */
+	char *city;
         /*
          * The new name of the company for the account.
          */
-	char *company_name; /* string */
+	char *company_name;
         /*
          * The new country of the account owner.
          */
-	char *country; /* string */
+	char *country;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The main email address for the account. This address is used for your 
          * credentials and notifications.
          */
-	char *email; /* string */
+	char *email;
         /*
          * The new first name of the account owner.
          */
-	char *first_name; /* string */
+	char *first_name;
         /*
          * The new job title of the account owner.
          */
-	char *job_title; /* string */
+	char *job_title;
         /*
          * The new last name of the account owner.
          */
-	char *last_name; /* string */
+	char *last_name;
         /*
          * The new mobile phone number of the account owner.
          */
-	char *mobile_number; /* string */
+	char *mobile_number;
         /*
          * The new landline phone number of the account owner.
          */
-	char *phone_number; /* string */
+	char *phone_number;
         /*
          * The new state/province of the account owner.
          */
-	char *state_province; /* string */
+	char *state_province;
         /*
          * The new value added tax (VAT) number for the account.
          */
-	char *vat_number; /* string */
+	char *vat_number;
         /*
          * The new ZIP code of the city.
          */
-	char *zip_code; /* string */
+	char *zip_code;
 };
 
 struct osc_update_access_key_arg  {
@@ -7901,33 +8042,33 @@ struct osc_update_access_key_arg  {
         /*
          * The ID of the access key.
          */
-	char *access_key_id; /* string */
+	char *access_key_id;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The date and time, or the date, at which you want the access key to 
          * expire, in ISO 8601 format (for example, `2020-06-14T00:00:00.000Z` 
          * or `2020-06-14`). If not specified, the access key is set to not 
          * expire.
          */
-	char *expiration_date; /* string */
+	char *expiration_date;
         /*
          * The new state for the access key (`ACTIVE` \\| `INACTIVE`). When set 
          * to `ACTIVE`, the access key is enabled and can be used to send 
          * requests. When set to `INACTIVE`, the access key is disabled.
          */
-	char *state; /* string */
+	char *state;
         /*
          * The name of the EIM user that the access key you want to modify is 
          * associated with. If you do not specify a user name, this action 
          * modifies the access key of the user who sends the request (which can 
          * be the root account).
          */
-	char *user_name; /* string */
+	char *user_name;
 };
 
 struct osc_unlink_volume_arg  {
@@ -7937,17 +8078,17 @@ struct osc_unlink_volume_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * Forces the detachment of the volume in case of previous failure. 
          * Important: This action may damage your data or file systems.
          */
         int is_set_force_unlink;
-	int force_unlink; /* bool */
+	int force_unlink;
         /*
          * The ID of the volume you want to detach.
          */
-	char *volume_id; /* string */
+	char *volume_id;
 };
 
 struct osc_unlink_virtual_gateway_arg  {
@@ -7957,15 +8098,15 @@ struct osc_unlink_virtual_gateway_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the Net from which you want to detach the virtual gateway.
          */
-	char *net_id; /* string */
+	char *net_id;
         /*
          * The ID of the virtual gateway.
          */
-	char *virtual_gateway_id; /* string */
+	char *virtual_gateway_id;
 };
 
 struct osc_unlink_route_table_arg  {
@@ -7975,11 +8116,11 @@ struct osc_unlink_route_table_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the association between the route table and the Subnet.
          */
-	char *link_route_table_id; /* string */
+	char *link_route_table_id;
 };
 
 struct osc_unlink_public_ip_arg  {
@@ -7989,18 +8130,18 @@ struct osc_unlink_public_ip_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID representing the association of the public IP with the VM or 
          * the NIC. This parameter is required unless you use the `PublicIp` 
          * parameter.
          */
-	char *link_public_ip_id; /* string */
+	char *link_public_ip_id;
         /*
          * The public IP. This parameter is required unless you use the 
          * `LinkPublicIpId` parameter.
          */
-	char *public_ip; /* string */
+	char *public_ip;
 };
 
 struct osc_unlink_private_ips_arg  {
@@ -8010,16 +8151,16 @@ struct osc_unlink_private_ips_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the NIC.
          */
-	char *nic_id; /* string */
+	char *nic_id;
         /*
          * One or more secondary private IPs you want to unassign from the NIC.
          */
         char *private_ips_str;
-	char **private_ips; /* array string */
+	char **private_ips;
 };
 
 struct osc_unlink_policy_arg  {
@@ -8029,18 +8170,18 @@ struct osc_unlink_policy_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
          * see [Resource 
          * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
          * rs.html).
          */
-	char *policy_orn; /* string */
+	char *policy_orn;
         /*
          * The name of the user you want to detach the policy from.
          */
-	char *user_name; /* string */
+	char *user_name;
 };
 
 struct osc_unlink_nic_arg  {
@@ -8050,11 +8191,11 @@ struct osc_unlink_nic_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the attachment operation.
          */
-	char *link_nic_id; /* string */
+	char *link_nic_id;
 };
 
 struct osc_unlink_managed_policy_from_user_group_arg  {
@@ -8064,18 +8205,18 @@ struct osc_unlink_managed_policy_from_user_group_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
          * see [Resource 
          * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
          * rs.html).
          */
-	char *policy_orn; /* string */
+	char *policy_orn;
         /*
          * The name of the group you want to unlink the policy from.
          */
-	char *user_group_name; /* string */
+	char *user_group_name;
 };
 
 struct osc_unlink_load_balancer_backend_machines_arg  {
@@ -8084,22 +8225,22 @@ struct osc_unlink_load_balancer_backend_machines_arg  {
          * One or more public IPs of backend VMs.
          */
         char *backend_ips_str;
-	char **backend_ips; /* array string */
+	char **backend_ips;
         /*
          * One or more IDs of backend VMs.
          */
         char *backend_vm_ids_str;
-	char **backend_vm_ids; /* array string */
+	char **backend_vm_ids;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The name of the load balancer.
          */
-	char *load_balancer_name; /* string */
+	char *load_balancer_name;
 };
 
 struct osc_unlink_internet_service_arg  {
@@ -8109,15 +8250,15 @@ struct osc_unlink_internet_service_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the Internet service you want to detach.
          */
-	char *internet_service_id; /* string */
+	char *internet_service_id;
         /*
          * The ID of the Net from which you want to detach the Internet service.
          */
-	char *net_id; /* string */
+	char *net_id;
 };
 
 struct osc_unlink_flexible_gpu_arg  {
@@ -8127,11 +8268,11 @@ struct osc_unlink_flexible_gpu_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the fGPU you want to detach from your VM.
          */
-	char *flexible_gpu_id; /* string */
+	char *flexible_gpu_id;
 };
 
 struct osc_stop_vms_arg  {
@@ -8141,17 +8282,17 @@ struct osc_stop_vms_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * Forces the VM to stop.
          */
         int is_set_force_stop;
-	int force_stop; /* bool */
+	int force_stop;
         /*
          * One or more IDs of VMs.
          */
         char *vm_ids_str;
-	char **vm_ids; /* array string */
+	char **vm_ids;
 };
 
 struct osc_start_vms_arg  {
@@ -8161,12 +8302,12 @@ struct osc_start_vms_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * One or more IDs of VMs.
          */
         char *vm_ids_str;
-	char **vm_ids; /* array string */
+	char **vm_ids;
 };
 
 struct osc_set_default_policy_version_arg  {
@@ -8177,11 +8318,11 @@ struct osc_set_default_policy_version_arg  {
          * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
          * rs.html).
          */
-	char *policy_orn; /* string */
+	char *policy_orn;
         /*
          * The ID of the version.
          */
-	char *version_id; /* string */
+	char *version_id;
 };
 
 struct osc_scale_up_vm_group_arg  {
@@ -8191,16 +8332,16 @@ struct osc_scale_up_vm_group_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The number of VMs you want to add to the VM group.
          */
         int is_set_vm_addition;
-	int vm_addition; /* int */
+	int vm_addition;
         /*
          * The ID of the VM group you want to scale up.
          */
-	char *vm_group_id; /* string */
+	char *vm_group_id;
 };
 
 struct osc_scale_down_vm_group_arg  {
@@ -8210,16 +8351,16 @@ struct osc_scale_down_vm_group_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the VM group you want to scale down.
          */
-	char *vm_group_id; /* string */
+	char *vm_group_id;
         /*
          * The number of VMs you want to delete from the VM group.
          */
         int is_set_vm_subtraction;
-	int vm_subtraction; /* int */
+	int vm_subtraction;
 };
 
 struct osc_remove_user_from_user_group_arg  {
@@ -8229,23 +8370,23 @@ struct osc_remove_user_from_user_group_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The name of the group you want to remove the user from.
          */
-	char *user_group_name; /* string */
+	char *user_group_name;
         /*
          * The path to the group. If not specified, it is set to a slash (`/`).
          */
-	char *user_group_path; /* string */
+	char *user_group_path;
         /*
          * The name of the user you want to remove from the group.
          */
-	char *user_name; /* string */
+	char *user_name;
         /*
          * The path to the user (by default, `/`).
          */
-	char *user_path; /* string */
+	char *user_path;
 };
 
 struct osc_reject_net_peering_arg  {
@@ -8255,11 +8396,11 @@ struct osc_reject_net_peering_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the Net peering you want to reject.
          */
-	char *net_peering_id; /* string */
+	char *net_peering_id;
 };
 
 struct osc_register_vms_in_load_balancer_arg  {
@@ -8269,17 +8410,17 @@ struct osc_register_vms_in_load_balancer_arg  {
          * times has no effect as each backend VM has equal weight.
          */
         char *backend_vm_ids_str;
-	char **backend_vm_ids; /* array string */
+	char **backend_vm_ids;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The name of the load balancer.
          */
-	char *load_balancer_name; /* string */
+	char *load_balancer_name;
 };
 
 struct osc_reboot_vms_arg  {
@@ -8289,12 +8430,12 @@ struct osc_reboot_vms_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * One or more IDs of the VMs you want to reboot.
          */
         char *vm_ids_str;
-	char **vm_ids; /* array string */
+	char **vm_ids;
 };
 
 struct osc_read_vpn_connections_arg  {
@@ -8304,57 +8445,59 @@ struct osc_read_vpn_connections_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -BgpAsns: array integer
+         *   --Filters.BgpAsns: array integer
          *     The Border Gateway Protocol (BGP) Autonomous System Numbers 
-         *     (ASNs) of the connections.
-         *   -ClientGatewayIds: array string
+         * (ASNs) of 
+         *     the connections.
+         *   --Filters.ClientGatewayIds: array string
          *     The IDs of the client gateways.
-         *   -ConnectionTypes: array string
-         *     The types of the VPN connections (only `ipsec.1` is 
-         *     supported).
-         *   -RouteDestinationIpRanges: array string
+         *   --Filters.ConnectionTypes: array string
+         *     The types of the VPN connections (only `ipsec.1` is supported).
+         *   --Filters.RouteDestinationIpRanges: array string
          *     The destination IP ranges.
-         *   -States: array string
-         *     The states of the VPN connections (`pending` \\| `available` 
-         *     \\| `deleting` \\| `deleted`).
-         *   -StaticRoutesOnly: bool
+         *   --Filters.States: array string
+         *     The states of the VPN connections (`pending` \\| `available` \\| 
+         *     `deleting` \\| `deleted`).
+         *   --Filters.StaticRoutesOnly: bool
          *     If false, the VPN connection uses dynamic routing with Border 
-         *     Gateway Protocol (BGP). If true, routing is controlled using 
-         *     static routes. For more information about how to create and 
-         *     delete static routes, see 
+         * Gateway 
+         *     Protocol (BGP). If true, routing is controlled using static 
+         * routes. For 
+         *     more information about how to create and delete static routes, 
+         * see 
          *     [CreateVpnConnectionRoute](#createvpnconnectionroute) and 
          *     [DeleteVpnConnectionRoute](#deletevpnconnectionroute).
-         *   -TagKeys: array string
+         *   --Filters.TagKeys: array string
          *     The keys of the tags associated with the VPN connections.
-         *   -TagValues: array string
+         *   --Filters.TagValues: array string
          *     The values of the tags associated with the VPN connections.
-         *   -Tags: array string
+         *   --Filters.Tags: array string
          *     The key/value combination of the tags associated with the VPN 
          *     connections, in the following format: 
-         *     &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quo
-         *     t;]}.
-         *   -VirtualGatewayIds: array string
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         *   --Filters.VirtualGatewayIds: array string
          *     The IDs of the virtual gateways.
-         *   -VpnConnectionIds: array string
+         *   --Filters.VpnConnectionIds: array string
          *     The IDs of the VPN connections.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_vpn_connection filters; /* ref FiltersVpnConnection */
+	struct filters_vpn_connection filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_volumes_arg  {
@@ -8364,62 +8507,66 @@ struct osc_read_volumes_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -CreationDates: array string
+         *   --Filters.CreationDates: array string
          *     The dates and times of creation of the volumes, in ISO 8601 
-         *     date-time format (for example, `2020-06-30T00:00:00.000Z`).
-         *   -LinkVolumeDeleteOnVmDeletion: bool
-         *     Whether the volumes are deleted or not when terminating the 
-         *     VMs.
-         *   -LinkVolumeDeviceNames: array string
+         * date-time 
+         *     format (for example, `2020-06-30T00:00:00.000Z`).
+         *   --Filters.LinkVolumeDeleteOnVmDeletion: bool
+         *     Whether the volumes are deleted or not when terminating the VMs.
+         *   --Filters.LinkVolumeDeviceNames: array string
          *     The VM device names.
-         *   -LinkVolumeLinkDates: array string
+         *   --Filters.LinkVolumeLinkDates: array string
          *     The dates and times of creation of the volumes, in ISO 8601 
-         *     date-time format (for example, `2020-06-30T00:00:00.000Z`).
-         *   -LinkVolumeLinkStates: array string
-         *     The attachment states of the volumes (`attaching` \\| 
-         *     `detaching` \\| `attached` \\| `detached`).
-         *   -LinkVolumeVmIds: array string
+         * date-time 
+         *     format (for example, `2020-06-30T00:00:00.000Z`).
+         *   --Filters.LinkVolumeLinkStates: array string
+         *     The attachment states of the volumes (`attaching` \\| `detaching` 
+         * \\| 
+         *     `attached` \\| `detached`).
+         *   --Filters.LinkVolumeVmIds: array string
          *     One or more IDs of VMs.
-         *   -SnapshotIds: array string
+         *   --Filters.SnapshotIds: array string
          *     The snapshots from which the volumes were created.
-         *   -SubregionNames: array string
+         *   --Filters.SubregionNames: array string
          *     The names of the Subregions in which the volumes were created.
-         *   -TagKeys: array string
+         *   --Filters.TagKeys: array string
          *     The keys of the tags associated with the volumes.
-         *   -TagValues: array string
+         *   --Filters.TagValues: array string
          *     The values of the tags associated with the volumes.
-         *   -Tags: array string
+         *   --Filters.Tags: array string
          *     The key/value combination of the tags associated with the 
-         *     volumes, in the following format: 
-         *     &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quo
-         *     t;]}.
-         *   -VolumeIds: array string
+         * volumes, in 
+         *     the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         *   --Filters.VolumeIds: array string
          *     The IDs of the volumes.
-         *   -VolumeSizes: array integer
+         *   --Filters.VolumeSizes: array integer
          *     The sizes of the volumes, in gibibytes (GiB).
-         *   -VolumeStates: array string
+         *   --Filters.VolumeStates: array string
          *     The states of the volumes (`creating` \\| `available` \\| 
-         *     `in-use` \\| `updating` \\| `deleting` \\| `error`).
-         *   -VolumeTypes: array string
+         * `in-use` \\| 
+         *     `updating` \\| `deleting` \\| `error`).
+         *   --Filters.VolumeTypes: array string
          *     The types of the volumes (`standard` \\| `gp2` \\| `io1`).
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_volume filters; /* ref FiltersVolume */
+	struct filters_volume filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_vms_state_arg  {
@@ -8429,47 +8576,46 @@ struct osc_read_vms_state_arg  {
          * false, only includes the status of running VMs.
          */
         int is_set_all_vms;
-	int all_vms; /* bool */
+	int all_vms;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -MaintenanceEventCodes: array string
+         *   --Filters.MaintenanceEventCodes: array string
          *     The code for the scheduled event (`system-reboot` \\| 
          *     `system-maintenance`).
-         *   -MaintenanceEventDescriptions: array string
+         *   --Filters.MaintenanceEventDescriptions: array string
          *     The description of the scheduled event.
-         *   -MaintenanceEventsNotAfter: array string
+         *   --Filters.MaintenanceEventsNotAfter: array string
          *     The latest date and time (UTC) the event can end.
-         *   -MaintenanceEventsNotBefore: array string
+         *   --Filters.MaintenanceEventsNotBefore: array string
          *     The earliest date and time (UTC) the event can start.
-         *   -SubregionNames: array string
+         *   --Filters.SubregionNames: array string
          *     The names of the Subregions of the VMs.
-         *   -VmIds: array string
+         *   --Filters.VmIds: array string
          *     One or more IDs of VMs.
-         *   -VmStates: array string
-         *     The states of the VMs (`pending` \\| `running` \\| `stopping` 
-         *     \\| `stopped` \\| `shutting-down` \\| `terminated` \\| 
-         *     `quarantine`).
+         *   --Filters.VmStates: array string
+         *     The states of the VMs (`pending` \\| `running` \\| `stopping` \\| 
+         *     `stopped` \\| `shutting-down` \\| `terminated` \\| `quarantine`).
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_vms_state filters; /* ref FiltersVmsState */
+	struct filters_vms_state filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_vms_health_arg  {
@@ -8478,17 +8624,17 @@ struct osc_read_vms_health_arg  {
          * One or more IDs of backend VMs.
          */
         char *backend_vm_ids_str;
-	char **backend_vm_ids; /* array string */
+	char **backend_vm_ids;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The name of the load balancer.
          */
-	char *load_balancer_name; /* string */
+	char *load_balancer_name;
 };
 
 struct osc_read_vms_arg  {
@@ -8498,185 +8644,196 @@ struct osc_read_vms_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -Architectures: array string
+         *   --Filters.Architectures: array string
          *     The architectures of the VMs (`i386` \\| `x86_64`).
-         *   -BlockDeviceMappingDeleteOnVmDeletion: bool
+         *   --Filters.BlockDeviceMappingDeleteOnVmDeletion: bool
          *     Whether the BSU volumes are deleted when terminating the VMs.
-         *   -BlockDeviceMappingDeviceNames: array string
-         *     The device names for the BSU volumes (in the format 
-         *     `/dev/sdX`, `/dev/sdXX`, `/dev/xvdX`, or `/dev/xvdXX`).
-         *   -BlockDeviceMappingLinkDates: array string
+         *   --Filters.BlockDeviceMappingDeviceNames: array string
+         *     The device names for the BSU volumes (in the format `/dev/sdX`, 
+         *     `/dev/sdXX`, `/dev/xvdX`, or `/dev/xvdXX`).
+         *   --Filters.BlockDeviceMappingLinkDates: array string
          *     The link dates for the BSU volumes mapped to the VMs (for 
-         *     example, `2016-01-23T18:45:30.000Z`).
-         *   -BlockDeviceMappingStates: array string
+         * example, 
+         *     `2016-01-23T18:45:30.000Z`).
+         *   --Filters.BlockDeviceMappingStates: array string
          *     The states for the BSU volumes (`attaching` \\| `attached` \\| 
          *     `detaching` \\| `detached`).
-         *   -BlockDeviceMappingVolumeIds: array string
+         *   --Filters.BlockDeviceMappingVolumeIds: array string
          *     The volume IDs of the BSU volumes.
-         *   -ClientTokens: array string
+         *   --Filters.ClientTokens: array string
          *     The idempotency tokens provided when launching the VMs.
-         *   -CreationDates: array string
+         *   --Filters.CreationDates: array string
          *     The dates when the VMs were launched.
-         *   -ImageIds: array string
+         *   --Filters.ImageIds: array string
          *     The IDs of the OMIs used to launch the VMs.
-         *   -IsSourceDestChecked: bool
+         *   --Filters.IsSourceDestChecked: bool
          *     Whether the source/destination checking is enabled (true) or 
-         *     disabled (false).
-         *   -KeypairNames: array string
+         * disabled 
+         *     (false).
+         *   --Filters.KeypairNames: array string
          *     The names of the keypairs used when launching the VMs.
-         *   -LaunchNumbers: array integer
+         *   --Filters.LaunchNumbers: array integer
          *     The numbers for the VMs when launching a group of several VMs 
-         *     (for example, `0`, `1`, `2`, and so on).
-         *   -Lifecycles: array string
+         * (for 
+         *     example, `0`, `1`, `2`, and so on).
+         *   --Filters.Lifecycles: array string
          *     Whether the VMs are Spot Instances (spot).
-         *   -NetIds: array string
+         *   --Filters.NetIds: array string
          *     The IDs of the Nets in which the VMs are running.
-         *   -NicAccountIds: array string
+         *   --Filters.NicAccountIds: array string
          *     The IDs of the NICs.
-         *   -NicDescriptions: array string
+         *   --Filters.NicDescriptions: array string
          *     The descriptions of the NICs.
-         *   -NicIsSourceDestChecked: bool
+         *   --Filters.NicIsSourceDestChecked: bool
          *     Whether the source/destination checking is enabled (true) or 
-         *     disabled (false).
-         *   -NicLinkNicDeleteOnVmDeletion: bool
+         * disabled 
+         *     (false).
+         *   --Filters.NicLinkNicDeleteOnVmDeletion: bool
          *     Whether the NICs are deleted when the VMs they are attached to 
-         *     are deleted.
-         *   -NicLinkNicDeviceNumbers: array integer
+         * are 
+         *     deleted.
+         *   --Filters.NicLinkNicDeviceNumbers: array integer
          *     The device numbers the NICs are attached to.
-         *   -NicLinkNicLinkNicDates: array string
-         *     The dates and times (UTC) when the NICs were attached to the 
-         *     VMs.
-         *   -NicLinkNicLinkNicIds: array string
+         *   --Filters.NicLinkNicLinkNicDates: array string
+         *     The dates and times (UTC) when the NICs were attached to the VMs.
+         *   --Filters.NicLinkNicLinkNicIds: array string
          *     The IDs of the NIC attachments.
-         *   -NicLinkNicStates: array string
+         *   --Filters.NicLinkNicStates: array string
          *     The states of the attachments.
-         *   -NicLinkNicVmAccountIds: array string
-         *     The account IDs of the owners of the VMs the NICs are attached 
-         *     to.
-         *   -NicLinkNicVmIds: array string
+         *   --Filters.NicLinkNicVmAccountIds: array string
+         *     The account IDs of the owners of the VMs the NICs are attached to.
+         *   --Filters.NicLinkNicVmIds: array string
          *     The IDs of the VMs the NICs are attached to.
-         *   -NicLinkPublicIpAccountIds: array string
-         *     The account IDs of the owners of the public IPs associated 
-         *     with the NICs.
-         *   -NicLinkPublicIpLinkPublicIpIds: array string
-         *     The association IDs returned when the public IPs were 
-         *     associated with the NICs.
-         *   -NicLinkPublicIpPublicIpIds: array string
-         *     The allocation IDs returned when the public IPs were allocated 
-         *     to their accounts.
-         *   -NicLinkPublicIpPublicIps: array string
-         *     The public IPs associated with the NICs.
-         *   -NicMacAddresses: array string
-         *     The Media Access Control (MAC) addresses of the NICs.
-         *   -NicNetIds: array string
-         *     The IDs of the Nets where the NICs are located.
-         *   -NicNicIds: array string
-         *     The IDs of the NICs.
-         *   -NicPrivateIpsLinkPublicIpAccountIds: array string
-         *     The account IDs of the owner of the public IPs associated with 
-         *     the private IPs.
-         *   -NicPrivateIpsLinkPublicIpIds: array string
-         *     The public IPs associated with the private IPs.
-         *   -NicPrivateIpsPrimaryIp: bool
-         *     Whether the private IPs are the primary IPs associated with 
+         *   --Filters.NicLinkPublicIpAccountIds: array string
+         *     The account IDs of the owners of the public IPs associated with 
+         * the 
+         *     NICs.
+         *   --Filters.NicLinkPublicIpLinkPublicIpIds: array string
+         *     The association IDs returned when the public IPs were associated 
+         * with 
          *     the NICs.
-         *   -NicPrivateIpsPrivateIps: array string
+         *   --Filters.NicLinkPublicIpPublicIpIds: array string
+         *     The allocation IDs returned when the public IPs were allocated to 
+         * their 
+         *     accounts.
+         *   --Filters.NicLinkPublicIpPublicIps: array string
+         *     The public IPs associated with the NICs.
+         *   --Filters.NicMacAddresses: array string
+         *     The Media Access Control (MAC) addresses of the NICs.
+         *   --Filters.NicNetIds: array string
+         *     The IDs of the Nets where the NICs are located.
+         *   --Filters.NicNicIds: array string
+         *     The IDs of the NICs.
+         *   --Filters.NicPrivateIpsLinkPublicIpAccountIds: array string
+         *     The account IDs of the owner of the public IPs associated with 
+         * the 
+         *     private IPs.
+         *   --Filters.NicPrivateIpsLinkPublicIpIds: array string
+         *     The public IPs associated with the private IPs.
+         *   --Filters.NicPrivateIpsPrimaryIp: bool
+         *     Whether the private IPs are the primary IPs associated with the 
+         * NICs.
+         *   --Filters.NicPrivateIpsPrivateIps: array string
          *     The private IPs of the NICs.
-         *   -NicSecurityGroupIds: array string
+         *   --Filters.NicSecurityGroupIds: array string
          *     The IDs of the security groups associated with the NICs.
-         *   -NicSecurityGroupNames: array string
+         *   --Filters.NicSecurityGroupNames: array string
          *     The names of the security groups associated with the NICs.
-         *   -NicStates: array string
+         *   --Filters.NicStates: array string
          *     The states of the NICs (`available` \\| `in-use`).
-         *   -NicSubnetIds: array string
+         *   --Filters.NicSubnetIds: array string
          *     The IDs of the Subnets for the NICs.
-         *   -NicSubregionNames: array string
+         *   --Filters.NicSubregionNames: array string
          *     The Subregions where the NICs are located.
-         *   -Platforms: array string
+         *   --Filters.Platforms: array string
          *     The platforms. Use windows if you have Windows VMs. Otherwise, 
-         *     leave this filter blank.
-         *   -PrivateIps: array string
+         * leave 
+         *     this filter blank.
+         *   --Filters.PrivateIps: array string
          *     The private IPs of the VMs.
-         *   -ProductCodes: array string
-         *     The product codes associated with the OMI used to create the 
-         *     VMs.
-         *   -PublicIps: array string
+         *   --Filters.ProductCodes: array string
+         *     The product codes associated with the OMI used to create the VMs.
+         *   --Filters.PublicIps: array string
          *     The public IPs of the VMs.
-         *   -ReservationIds: array string
+         *   --Filters.ReservationIds: array string
          *     The IDs of the reservation of the VMs, created every time you 
-         *     launch VMs. These reservation IDs can be associated with 
-         *     several VMs when you lauch a group of VMs using the same launch 
-         *     request.
-         *   -RootDeviceNames: array string
+         * launch 
+         *     VMs. These reservation IDs can be associated with several VMs 
+         * when you 
+         *     lauch a group of VMs using the same launch request.
+         *   --Filters.RootDeviceNames: array string
          *     The names of the root devices for the VMs (for example, 
-         *     `/dev/sda1`)
-         *   -RootDeviceTypes: array string
+         * `/dev/sda1`)
+         *   --Filters.RootDeviceTypes: array string
          *     The root devices types used by the VMs (always `ebs`)
-         *   -SecurityGroupIds: array string
+         *   --Filters.SecurityGroupIds: array string
          *     The IDs of the security groups for the VMs (only in the public 
-         *     Cloud).
-         *   -SecurityGroupNames: array string
-         *     The names of the security groups for the VMs (only in the 
-         *     public Cloud).
-         *   -StateReasonCodes: array integer
+         * Cloud).
+         *   --Filters.SecurityGroupNames: array string
+         *     The names of the security groups for the VMs (only in the public 
+         * Cloud).
+         *   --Filters.StateReasonCodes: array integer
          *     The reason codes for the state changes.
-         *   -StateReasonMessages: array string
+         *   --Filters.StateReasonMessages: array string
          *     The messages describing the state changes.
-         *   -StateReasons: array string
-         *     The reasons explaining the current states of the VMs. This 
-         *     filter is like the `StateReasonCodes` one.
-         *   -SubnetIds: array string
+         *   --Filters.StateReasons: array string
+         *     The reasons explaining the current states of the VMs. This filter 
+         * is 
+         *     like the `StateReasonCodes` one.
+         *   --Filters.SubnetIds: array string
          *     The IDs of the Subnets for the VMs.
-         *   -SubregionNames: array string
+         *   --Filters.SubregionNames: array string
          *     The names of the Subregions of the VMs.
-         *   -TagKeys: array string
+         *   --Filters.TagKeys: array string
          *     The keys of the tags associated with the VMs.
-         *   -TagValues: array string
+         *   --Filters.TagValues: array string
          *     The values of the tags associated with the VMs.
-         *   -Tags: array string
-         *     The key/value combination of the tags associated with the VMs, 
-         *     in the following format: 
-         *     &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quo
-         *     t;]}.
-         *   -Tenancies: array string
-         *     The tenancies of the VMs (`dedicated` \\| `default` \\| 
-         *     `host`).
-         *   -VmIds: array string
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the VMs, in 
+         * the 
+         *     following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         *   --Filters.Tenancies: array string
+         *     The tenancies of the VMs (`dedicated` \\| `default` \\| `host`).
+         *   --Filters.VmIds: array string
          *     One or more IDs of VMs.
-         *   -VmSecurityGroupIds: array string
+         *   --Filters.VmSecurityGroupIds: array string
          *     The IDs of the security groups for the VMs.
-         *   -VmSecurityGroupNames: array string
+         *   --Filters.VmSecurityGroupNames: array string
          *     The names of the security group for the VMs.
-         *   -VmStateCodes: array integer
+         *   --Filters.VmStateCodes: array integer
          *     The state codes of the VMs: `-1` (quarantine), `0` (pending), 
-         *     `16` (running), `32` (shutting-down), `48` (terminated), `64` 
-         *     (stopping), and `80` (stopped).
-         *   -VmStateNames: array string
+         * `16` 
+         *     (running), `32` (shutting-down), `48` (terminated), `64` 
+         * (stopping), and 
+         *     `80` (stopped).
+         *   --Filters.VmStateNames: array string
          *     The state names of the VMs (`pending` \\| `running` \\| 
-         *     `stopping` \\| `stopped` \\| `shutting-down` \\| `terminated` 
-         *     \\| `quarantine`).
-         *   -VmTypes: array string
-         *     The VM types (for example, t2.micro). For more information, 
-         *     see [VM 
+         * `stopping` \\| 
+         *     `stopped` \\| `shutting-down` \\| `terminated` \\| `quarantine`).
+         *   --Filters.VmTypes: array string
+         *     The VM types (for example, t2.micro). For more information, see 
+         * [VM 
          *     Types](https://docs.outscale.com/en/userguide/VM-Types.html).
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_vm filters; /* ref FiltersVm */
+	struct filters_vm filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_vm_types_arg  {
@@ -8686,44 +8843,45 @@ struct osc_read_vm_types_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -BsuOptimized: bool
-         *     This parameter is not available. It is present in our API for 
-         *     the sake of historical compatibility with AWS.
-         *   -EphemeralsTypes: array string
+         *   --Filters.BsuOptimized: bool
+         *     This parameter is not available. It is present in our API for the 
+         * sake 
+         *     of historical compatibility with AWS.
+         *   --Filters.EphemeralsTypes: array string
          *     The types of ephemeral storage disk.
-         *   -Eths: array integer
+         *   --Filters.Eths: array integer
          *     The number of Ethernet interfaces available.
-         *   -Gpus: array integer
+         *   --Filters.Gpus: array integer
          *     The number of GPUs available.
-         *   -MemorySizes: array double
+         *   --Filters.MemorySizes: array double
          *     The amounts of memory, in gibibytes (GiB).
-         *   -VcoreCounts: array integer
+         *   --Filters.VcoreCounts: array integer
          *     The numbers of vCores.
-         *   -VmTypeNames: array string
+         *   --Filters.VmTypeNames: array string
          *     The names of the VM types. For more information, see [VM 
          *     Types](https://docs.outscale.com/en/userguide/VM-Types.html).
-         *   -VolumeCounts: array integer
+         *   --Filters.VolumeCounts: array integer
          *     The maximum number of ephemeral storage disks.
-         *   -VolumeSizes: array integer
+         *   --Filters.VolumeSizes: array integer
          *     The size of one ephemeral storage disk, in gibibytes (GiB).
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_vm_type filters; /* ref FiltersVmType */
+	struct filters_vm_type filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_vm_templates_arg  {
@@ -8733,40 +8891,41 @@ struct osc_read_vm_templates_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   See 'filters' type documentation
-         *   -CpuCores: array integer
+         *   --Filters.CpuCores: array integer
          *     The number of vCores.
-         *   -CpuGenerations: array string
+         *   --Filters.CpuGenerations: array string
          *     The processor generations (for example, `v4`).
-         *   -CpuPerformances: array string
+         *   --Filters.CpuPerformances: array string
          *     The performances of the VMs.
-         *   -Descriptions: array string
+         *   --Filters.Descriptions: array string
          *     The descriptions of the VM templates.
-         *   -ImageIds: array string
+         *   --Filters.ImageIds: array string
          *     The IDs of the OMIs.
-         *   -KeypairNames: array string
+         *   --Filters.KeypairNames: array string
          *     The names of the keypairs.
-         *   -Rams: array integer
+         *   --Filters.Rams: array integer
          *     The amount of RAM.
-         *   -TagKeys: array string
+         *   --Filters.TagKeys: array string
          *     The keys of the tags associated with the VM templates.
-         *   -TagValues: array string
+         *   --Filters.TagValues: array string
          *     The values of the tags associated with the VM templates.
-         *   -Tags: array string
+         *   --Filters.Tags: array string
          *     The key/value combination of the tags associated with the VM 
-         *     templates, in the following format: 
-         *     &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quo
-         *     t;]}.
-         *   -VmTemplateIds: array string
+         * templates, 
+         *     in the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         *   --Filters.VmTemplateIds: array string
          *     The IDs of the VM templates.
-         *   -VmTemplateNames: array string
+         *   --Filters.VmTemplateNames: array string
          *     The names of the VM templates.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_vm_template filters; /* ref FiltersVmTemplate */
+	struct filters_vm_template filters;
 };
 
 struct osc_read_vm_groups_arg  {
@@ -8776,36 +8935,37 @@ struct osc_read_vm_groups_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -Descriptions: array string
+         *   --Filters.Descriptions: array string
          *     The descriptions of the VM groups.
-         *   -SecurityGroupIds: array string
+         *   --Filters.SecurityGroupIds: array string
          *     The IDs of the security groups.
-         *   -SubnetIds: array string
+         *   --Filters.SubnetIds: array string
          *     The IDs of the Subnets.
-         *   -TagKeys: array string
+         *   --Filters.TagKeys: array string
          *     The keys of the tags associated with the VM groups.
-         *   -TagValues: array string
+         *   --Filters.TagValues: array string
          *     The values of the tags associated with the VM groups.
-         *   -Tags: array string
-         *     The key/value combination of the tags associated with the VMs, 
-         *     in the following format: 
-         *     &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quo
-         *     t;]}.
-         *   -VmCounts: array integer
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the VMs, in 
+         * the 
+         *     following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         *   --Filters.VmCounts: array integer
          *     The number of VMs in the VM group.
-         *   -VmGroupIds: array string
+         *   --Filters.VmGroupIds: array string
          *     The IDs of the VM groups.
-         *   -VmGroupNames: array string
+         *   --Filters.VmGroupNames: array string
          *     The names of the VM groups.
-         *   -VmTemplateIds: array string
+         *   --Filters.VmTemplateIds: array string
          *     The IDs of the VM templates.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_vm_group filters; /* ref FiltersVmGroup */
+	struct filters_vm_group filters;
 };
 
 struct osc_read_virtual_gateways_arg  {
@@ -8815,47 +8975,47 @@ struct osc_read_virtual_gateways_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -ConnectionTypes: array string
-         *     The types of the virtual gateways (only `ipsec.1` is 
-         *     supported).
-         *   -LinkNetIds: array string
+         *   --Filters.ConnectionTypes: array string
+         *     The types of the virtual gateways (only `ipsec.1` is supported).
+         *   --Filters.LinkNetIds: array string
          *     The IDs of the Nets the virtual gateways are attached to.
-         *   -LinkStates: array string
+         *   --Filters.LinkStates: array string
          *     The current states of the attachments between the virtual 
-         *     gateways and the Nets (`attaching` \\| `attached` \\| 
-         *     `detaching` \\| `detached`).
-         *   -States: array string
-         *     The states of the virtual gateways (`pending` \\| `available` 
-         *     \\| `deleting` \\| `deleted`).
-         *   -TagKeys: array string
+         * gateways and 
+         *     the Nets (`attaching` \\| `attached` \\| `detaching` \\| 
+         * `detached`).
+         *   --Filters.States: array string
+         *     The states of the virtual gateways (`pending` \\| `available` \\| 
+         *     `deleting` \\| `deleted`).
+         *   --Filters.TagKeys: array string
          *     The keys of the tags associated with the virtual gateways.
-         *   -TagValues: array string
+         *   --Filters.TagValues: array string
          *     The values of the tags associated with the virtual gateways.
-         *   -Tags: array string
-         *     The key/value combination of the tags associated with the 
-         *     virtual gateways, in the following format: 
-         *     &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quo
-         *     t;]}.
-         *   -VirtualGatewayIds: array string
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the virtual 
+         *     gateways, in the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         *   --Filters.VirtualGatewayIds: array string
          *     The IDs of the virtual gateways.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_virtual_gateway filters; /* ref FiltersVirtualGateway */
+	struct filters_virtual_gateway filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_users_arg  {
@@ -8865,7 +9025,7 @@ struct osc_read_users_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
 };
 
 struct osc_read_user_groups_per_user_arg  {
@@ -8875,15 +9035,15 @@ struct osc_read_user_groups_per_user_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The name of the user.
          */
-	char *user_name; /* string */
+	char *user_name;
         /*
          * The path to the user (by default, `/`).
          */
-	char *user_path; /* string */
+	char *user_path;
 };
 
 struct osc_read_user_groups_arg  {
@@ -8893,29 +9053,30 @@ struct osc_read_user_groups_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -PathPrefix: string
-         *     The path prefix of the groups. If not specified, it is set to 
-         *     a slash (`/`).
-         *   -UserGroupIds: array string
+         *   --Filters.PathPrefix: string
+         *     The path prefix of the groups. If not specified, it is set to a 
+         * slash 
+         *     (`/`).
+         *   --Filters.UserGroupIds: array string
          *     The IDs of the user groups.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_user_group filters; /* ref FiltersUserGroup */
+	struct filters_user_group filters;
         /*
          * The item starting the list of groups requested.
          */
         int is_set_first_item;
-	int first_item; /* int */
+	int first_item;
         /*
          * The maximum number of items that can be returned in a single response 
          * (by default, `100`).
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_user_group_policy_arg  {
@@ -8925,19 +9086,19 @@ struct osc_read_user_group_policy_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The name of the policy.
          */
-	char *policy_name; /* string */
+	char *policy_name;
         /*
          * The name of the group.
          */
-	char *user_group_name; /* string */
+	char *user_group_name;
         /*
          * The path to the group. If not specified, it is set to a slash (`/`).
          */
-	char *user_group_path; /* string */
+	char *user_group_path;
 };
 
 struct osc_read_user_group_policies_arg  {
@@ -8947,26 +9108,26 @@ struct osc_read_user_group_policies_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The item starting the list of policies requested.
          */
         int is_set_first_item;
-	int first_item; /* int */
+	int first_item;
         /*
          * The maximum number of items that can be returned in a single response 
          * (by default, `100`).
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
         /*
          * The name of the group.
          */
-	char *user_group_name; /* string */
+	char *user_group_name;
         /*
          * The path to the group. If not specified, it is set to a slash (`/`).
          */
-	char *user_group_path; /* string */
+	char *user_group_path;
 };
 
 struct osc_read_user_group_arg  {
@@ -8976,15 +9137,15 @@ struct osc_read_user_group_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The path to the group. If not specified, it is set to a slash (`/`).
          */
-	char *path; /* string */
+	char *path;
         /*
          * The name of the group.
          */
-	char *user_group_name; /* string */
+	char *user_group_name;
 };
 
 struct osc_read_tags_arg  {
@@ -8994,43 +9155,50 @@ struct osc_read_tags_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -Keys: array string
-         *     The keys of the tags that are assigned to the resources. You 
-         *     can use this filter alongside the `Values` filter. In that 
-         *     case, you filter the resources corresponding to each tag, 
-         *     regardless of the other filter.
-         *   -ResourceIds: array string
+         *   --Filters.Keys: array string
+         *     The keys of the tags that are assigned to the resources. You can 
+         * use 
+         *     this filter alongside the `Values` filter. In that case, you 
+         * filter the 
+         *     resources corresponding to each tag, regardless of the other 
+         * filter.
+         *   --Filters.ResourceIds: array string
          *     The IDs of the resources with which the tags are associated.
-         *   -ResourceTypes: array string
-         *     The resource type (`vm` \\| `image` \\| `volume` \\| 
-         *     `snapshot` \\| `public-ip` \\| `security-group` \\| 
-         *     `route-table` \\| `nic` \\| `net` \\| `subnet` \\| 
-         *     `net-peering` \\| `net-access-point` \\| `nat-service` \\| 
-         *     `internet-service` \\| `client-gateway` \\| `virtual-gateway` 
-         *     \\| `vpn-connection` \\| `dhcp-options` \\| `task`).
-         *   -Values: array string
+         *   --Filters.ResourceTypes: array string
+         *     The resource type (`vm` \\| `image` \\| `volume` \\| `snapshot` 
+         * \\| 
+         *     `public-ip` \\| `security-group` \\| `route-table` \\| `nic` \\| 
+         * `net` 
+         *     \\| `subnet` \\| `net-peering` \\| `net-access-point` \\| 
+         * `nat-service` 
+         *     \\| `internet-service` \\| `client-gateway` \\| `virtual-gateway` 
+         * \\| 
+         *     `vpn-connection` \\| `dhcp-options` \\| `task`).
+         *   --Filters.Values: array string
          *     The values of the tags that are assigned to the resources. You 
-         *     can use this filter alongside the `TagKeys` filter. In that 
-         *     case, you filter the resources corresponding to each tag, 
-         *     regardless of the other filter.
+         * can use 
+         *     this filter alongside the `TagKeys` filter. In that case, you 
+         * filter the 
+         *     resources corresponding to each tag, regardless of the other 
+         * filter.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_tag filters; /* ref FiltersTag */
+	struct filters_tag filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_subregions_arg  {
@@ -9040,30 +9208,30 @@ struct osc_read_subregions_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -RegionNames: array string
+         *   --Filters.RegionNames: array string
          *     The names of the Regions containing the Subregions.
-         *   -States: array string
+         *   --Filters.States: array string
          *     The states of the Subregions.
-         *   -SubregionNames: array string
+         *   --Filters.SubregionNames: array string
          *     The names of the Subregions.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_subregion filters; /* ref FiltersSubregion */
+	struct filters_subregion filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_subnets_arg  {
@@ -9073,47 +9241,48 @@ struct osc_read_subnets_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -AvailableIpsCounts: array integer
+         *   --Filters.AvailableIpsCounts: array integer
          *     The number of available IPs.
-         *   -IpRanges: array string
+         *   --Filters.IpRanges: array string
          *     The IP ranges in the Subnets, in CIDR notation (for example, 
          *     `10.0.0.0/16`).
-         *   -NetIds: array string
+         *   --Filters.NetIds: array string
          *     The IDs of the Nets in which the Subnets are.
-         *   -States: array string
+         *   --Filters.States: array string
          *     The states of the Subnets (`pending` \\| `available` \\| 
-         *     `deleted`).
-         *   -SubnetIds: array string
+         * `deleted`).
+         *   --Filters.SubnetIds: array string
          *     The IDs of the Subnets.
-         *   -SubregionNames: array string
+         *   --Filters.SubregionNames: array string
          *     The names of the Subregions in which the Subnets are located.
-         *   -TagKeys: array string
+         *   --Filters.TagKeys: array string
          *     The keys of the tags associated with the Subnets.
-         *   -TagValues: array string
+         *   --Filters.TagValues: array string
          *     The values of the tags associated with the Subnets.
-         *   -Tags: array string
+         *   --Filters.Tags: array string
          *     The key/value combination of the tags associated with the 
-         *     Subnets, in the following format: 
-         *     &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quo
-         *     t;]}.
+         * Subnets, in 
+         *     the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_subnet filters; /* ref FiltersSubnet */
+	struct filters_subnet filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_snapshots_arg  {
@@ -9123,62 +9292,67 @@ struct osc_read_snapshots_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -AccountAliases: array string
+         *   --Filters.AccountAliases: array string
          *     The account aliases of the owners of the snapshots.
-         *   -AccountIds: array string
+         *   --Filters.AccountIds: array string
          *     The account IDs of the owners of the snapshots.
-         *   -Descriptions: array string
+         *   --Filters.Descriptions: array string
          *     The descriptions of the snapshots.
-         *   -FromCreationDate: string
+         *   --Filters.FromCreationDate: string
          *     The beginning of the time period, in ISO 8601 date-time format 
-         *     (for example, `2020-06-14T00:00:00.000Z`).
-         *   -PermissionsToCreateVolumeAccountIds: array string
+         * (for 
+         *     example, `2020-06-14T00:00:00.000Z`).
+         *   --Filters.PermissionsToCreateVolumeAccountIds: array string
          *     The account IDs which have permissions to create volumes.
-         *   -PermissionsToCreateVolumeGlobalPermission: bool
+         *   --Filters.PermissionsToCreateVolumeGlobalPermission: bool
          *     If true, lists all public volumes. If false, lists all private 
-         *     volumes.
-         *   -Progresses: array integer
+         * volumes.
+         *   --Filters.Progresses: array integer
          *     The progresses of the snapshots, as a percentage.
-         *   -SnapshotIds: array string
+         *   --Filters.SnapshotIds: array string
          *     The IDs of the snapshots.
-         *   -States: array string
+         *   --Filters.States: array string
          *     The states of the snapshots (`in-queue` \\| `pending` \\| 
-         *     `completed` \\| `error` \\| `deleting`).
-         *   -TagKeys: array string
+         * `completed` 
+         *     \\| `error` \\| `deleting`).
+         *   --Filters.TagKeys: array string
          *     The keys of the tags associated with the snapshots.
-         *   -TagValues: array string
+         *   --Filters.TagValues: array string
          *     The values of the tags associated with the snapshots.
-         *   -Tags: array string
+         *   --Filters.Tags: array string
          *     The key/value combination of the tags associated with the 
-         *     snapshots, in the following format: 
-         *     &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quo
-         *     t;]}.
-         *   -ToCreationDate: string
+         * snapshots, in 
+         *     the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         *   --Filters.ToCreationDate: string
          *     The end of the time period, in ISO 8601 date-time format (for 
-         *     example, `2020-06-30T00:00:00.000Z`).
-         *   -VolumeIds: array string
+         * example, 
+         *     `2020-06-30T00:00:00.000Z`).
+         *   --Filters.VolumeIds: array string
          *     The IDs of the volumes used to create the snapshots.
-         *   -VolumeSizes: array integer
+         *   --Filters.VolumeSizes: array integer
          *     The sizes of the volumes used to create the snapshots, in 
-         *     gibibytes (GiB).
+         * gibibytes 
+         *     (GiB).
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_snapshot filters; /* ref FiltersSnapshot */
+	struct filters_snapshot filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_snapshot_export_tasks_arg  {
@@ -9188,26 +9362,26 @@ struct osc_read_snapshot_export_tasks_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -TaskIds: array string
+         *   --Filters.TaskIds: array string
          *     The IDs of the export tasks.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_export_task filters; /* ref FiltersExportTask */
+	struct filters_export_task filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_server_certificates_arg  {
@@ -9217,15 +9391,15 @@ struct osc_read_server_certificates_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -Paths: array string
+         *   --Filters.Paths: array string
          *     The paths to the server certificates.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_server_certificate filters; /* ref FiltersServerCertificate */
+	struct filters_server_certificate filters;
 };
 
 struct osc_read_security_groups_arg  {
@@ -9235,82 +9409,89 @@ struct osc_read_security_groups_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -Descriptions: array string
+         *   --Filters.Descriptions: array string
          *     The descriptions of the security groups.
-         *   -InboundRuleAccountIds: array string
+         *   --Filters.InboundRuleAccountIds: array string
          *     The account IDs that have been granted permissions.
-         *   -InboundRuleFromPortRanges: array integer
-         *     The beginnings of the port ranges for the TCP and UDP 
-         *     protocols, or the ICMP type numbers.
-         *   -InboundRuleIpRanges: array string
+         *   --Filters.InboundRuleFromPortRanges: array integer
+         *     The beginnings of the port ranges for the TCP and UDP protocols, 
+         * or the 
+         *     ICMP type numbers.
+         *   --Filters.InboundRuleIpRanges: array string
          *     The IP ranges that have been granted permissions, in CIDR 
-         *     notation (for example, `10.0.0.0/24`).
-         *   -InboundRuleProtocols: array string
-         *     The IP protocols for the permissions (`tcp` \\| `udp` \\| 
-         *     `icmp`, or a protocol number, or `-1` for all protocols).
-         *   -InboundRuleSecurityGroupIds: array string
-         *     The IDs of the security groups that have been granted 
-         *     permissions.
-         *   -InboundRuleSecurityGroupNames: array string
+         * notation (for 
+         *     example, `10.0.0.0/24`).
+         *   --Filters.InboundRuleProtocols: array string
+         *     The IP protocols for the permissions (`tcp` \\| `udp` \\| `icmp`, 
+         * or a 
+         *     protocol number, or `-1` for all protocols).
+         *   --Filters.InboundRuleSecurityGroupIds: array string
+         *     The IDs of the security groups that have been granted permissions.
+         *   --Filters.InboundRuleSecurityGroupNames: array string
          *     The names of the security groups that have been granted 
-         *     permissions.
-         *   -InboundRuleToPortRanges: array integer
-         *     The ends of the port ranges for the TCP and UDP protocols, or 
-         *     the ICMP code numbers.
-         *   -NetIds: array string
+         * permissions.
+         *   --Filters.InboundRuleToPortRanges: array integer
+         *     The ends of the port ranges for the TCP and UDP protocols, or the 
+         * ICMP 
+         *     code numbers.
+         *   --Filters.NetIds: array string
          *     The IDs of the Nets specified when the security groups were 
-         *     created.
-         *   -OutboundRuleAccountIds: array string
+         * created.
+         *   --Filters.OutboundRuleAccountIds: array string
          *     The account IDs that have been granted permissions.
-         *   -OutboundRuleFromPortRanges: array integer
-         *     The beginnings of the port ranges for the TCP and UDP 
-         *     protocols, or the ICMP type numbers.
-         *   -OutboundRuleIpRanges: array string
+         *   --Filters.OutboundRuleFromPortRanges: array integer
+         *     The beginnings of the port ranges for the TCP and UDP protocols, 
+         * or the 
+         *     ICMP type numbers.
+         *   --Filters.OutboundRuleIpRanges: array string
          *     The IP ranges that have been granted permissions, in CIDR 
-         *     notation (for example, `10.0.0.0/24`).
-         *   -OutboundRuleProtocols: array string
-         *     The IP protocols for the permissions (`tcp` \\| `udp` \\| 
-         *     `icmp`, or a protocol number, or `-1` for all protocols).
-         *   -OutboundRuleSecurityGroupIds: array string
-         *     The IDs of the security groups that have been granted 
-         *     permissions.
-         *   -OutboundRuleSecurityGroupNames: array string
+         * notation (for 
+         *     example, `10.0.0.0/24`).
+         *   --Filters.OutboundRuleProtocols: array string
+         *     The IP protocols for the permissions (`tcp` \\| `udp` \\| `icmp`, 
+         * or a 
+         *     protocol number, or `-1` for all protocols).
+         *   --Filters.OutboundRuleSecurityGroupIds: array string
+         *     The IDs of the security groups that have been granted permissions.
+         *   --Filters.OutboundRuleSecurityGroupNames: array string
          *     The names of the security groups that have been granted 
-         *     permissions.
-         *   -OutboundRuleToPortRanges: array integer
-         *     The ends of the port ranges for the TCP and UDP protocols, or 
-         *     the ICMP code numbers.
-         *   -SecurityGroupIds: array string
+         * permissions.
+         *   --Filters.OutboundRuleToPortRanges: array integer
+         *     The ends of the port ranges for the TCP and UDP protocols, or the 
+         * ICMP 
+         *     code numbers.
+         *   --Filters.SecurityGroupIds: array string
          *     The IDs of the security groups.
-         *   -SecurityGroupNames: array string
+         *   --Filters.SecurityGroupNames: array string
          *     The names of the security groups.
-         *   -TagKeys: array string
+         *   --Filters.TagKeys: array string
          *     The keys of the tags associated with the security groups.
-         *   -TagValues: array string
+         *   --Filters.TagValues: array string
          *     The values of the tags associated with the security groups.
-         *   -Tags: array string
+         *   --Filters.Tags: array string
          *     The key/value combination of the tags associated with the 
-         *     security groups, in the following format: 
-         *     &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quo
-         *     t;]}.
+         * security 
+         *     groups, in the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_security_group filters; /* ref FiltersSecurityGroup */
+	struct filters_security_group filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_secret_access_key_arg  {
@@ -9318,13 +9499,13 @@ struct osc_read_secret_access_key_arg  {
         /*
          * The ID of the access key.
          */
-	char *access_key_id; /* string */
+	char *access_key_id;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
 };
 
 struct osc_read_route_tables_arg  {
@@ -9334,62 +9515,63 @@ struct osc_read_route_tables_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -LinkRouteTableIds: array string
+         *   --Filters.LinkRouteTableIds: array string
          *     The IDs of the route tables involved in the associations.
-         *   -LinkRouteTableLinkRouteTableIds: array string
+         *   --Filters.LinkRouteTableLinkRouteTableIds: array string
          *     The IDs of the associations between the route tables and the 
-         *     Subnets.
-         *   -LinkRouteTableMain: bool
+         * Subnets.
+         *   --Filters.LinkRouteTableMain: bool
          *     If true, the route tables are the main ones for their Nets.
-         *   -LinkSubnetIds: array string
+         *   --Filters.LinkSubnetIds: array string
          *     The IDs of the Subnets involved in the associations.
-         *   -NetIds: array string
+         *   --Filters.NetIds: array string
          *     The IDs of the Nets for the route tables.
-         *   -RouteCreationMethods: array string
+         *   --Filters.RouteCreationMethods: array string
          *     The methods used to create a route.
-         *   -RouteDestinationIpRanges: array string
+         *   --Filters.RouteDestinationIpRanges: array string
          *     The IP ranges specified in routes in the tables.
-         *   -RouteDestinationServiceIds: array string
+         *   --Filters.RouteDestinationServiceIds: array string
          *     The service IDs specified in routes in the tables.
-         *   -RouteGatewayIds: array string
+         *   --Filters.RouteGatewayIds: array string
          *     The IDs of the gateways specified in routes in the tables.
-         *   -RouteNatServiceIds: array string
+         *   --Filters.RouteNatServiceIds: array string
          *     The IDs of the NAT services specified in routes in the tables.
-         *   -RouteNetPeeringIds: array string
+         *   --Filters.RouteNetPeeringIds: array string
          *     The IDs of the Net peerings specified in routes in the tables.
-         *   -RouteStates: array string
+         *   --Filters.RouteStates: array string
          *     The states of routes in the route tables (always `active`).
-         *   -RouteTableIds: array string
+         *   --Filters.RouteTableIds: array string
          *     The IDs of the route tables.
-         *   -RouteVmIds: array string
+         *   --Filters.RouteVmIds: array string
          *     The IDs of the VMs specified in routes in the tables.
-         *   -TagKeys: array string
+         *   --Filters.TagKeys: array string
          *     The keys of the tags associated with the route tables.
-         *   -TagValues: array string
+         *   --Filters.TagValues: array string
          *     The values of the tags associated with the route tables.
-         *   -Tags: array string
-         *     The key/value combination of the tags associated with the 
-         *     route tables, in the following format: 
-         *     &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quo
-         *     t;]}.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the route 
+         * tables, 
+         *     in the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_route_table filters; /* ref FiltersRouteTable */
+	struct filters_route_table filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_regions_arg  {
@@ -9399,7 +9581,7 @@ struct osc_read_regions_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
 };
 
 struct osc_read_quotas_arg  {
@@ -9409,33 +9591,34 @@ struct osc_read_quotas_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -Collections: array string
+         *   --Filters.Collections: array string
          *     The group names of the quotas.
-         *   -QuotaNames: array string
+         *   --Filters.QuotaNames: array string
          *     The names of the quotas.
-         *   -QuotaTypes: array string
-         *     The resource IDs if these are resource-specific quotas, 
-         *     `global` if they are not.
-         *   -ShortDescriptions: array string
+         *   --Filters.QuotaTypes: array string
+         *     The resource IDs if these are resource-specific quotas, `global` 
+         * if they 
+         *     are not.
+         *   --Filters.ShortDescriptions: array string
          *     The description of the quotas.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_quota filters; /* ref FiltersQuota */
+	struct filters_quota filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_public_ips_arg  {
@@ -9445,51 +9628,52 @@ struct osc_read_public_ips_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -LinkPublicIpIds: array string
-         *     The IDs representing the associations of public IPs with VMs 
-         *     or NICs.
-         *   -NicAccountIds: array string
+         *   --Filters.LinkPublicIpIds: array string
+         *     The IDs representing the associations of public IPs with VMs or 
+         * NICs.
+         *   --Filters.NicAccountIds: array string
          *     The account IDs of the owners of the NICs.
-         *   -NicIds: array string
+         *   --Filters.NicIds: array string
          *     The IDs of the NICs.
-         *   -Placements: array string
+         *   --Filters.Placements: array string
          *     Whether the public IPs are for use in the public Cloud or in a 
-         *     Net.
-         *   -PrivateIps: array string
+         * Net.
+         *   --Filters.PrivateIps: array string
          *     The private IPs associated with the public IPs.
-         *   -PublicIpIds: array string
+         *   --Filters.PublicIpIds: array string
          *     The IDs of the public IPs.
-         *   -PublicIps: array string
+         *   --Filters.PublicIps: array string
          *     The public IPs.
-         *   -TagKeys: array string
+         *   --Filters.TagKeys: array string
          *     The keys of the tags associated with the public IPs.
-         *   -TagValues: array string
+         *   --Filters.TagValues: array string
          *     The values of the tags associated with the public IPs.
-         *   -Tags: array string
-         *     The key/value combination of the tags associated with the 
-         *     public IPs, in the following format: 
-         *     &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quo
-         *     t;]}.
-         *   -VmIds: array string
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the public 
+         * IPs, in 
+         *     the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         *   --Filters.VmIds: array string
          *     The IDs of the VMs.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_public_ip filters; /* ref FiltersPublicIp */
+	struct filters_public_ip filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_public_ip_ranges_arg  {
@@ -9499,18 +9683,18 @@ struct osc_read_public_ip_ranges_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_public_catalog_arg  {
@@ -9520,7 +9704,7 @@ struct osc_read_public_catalog_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
 };
 
 struct osc_read_product_types_arg  {
@@ -9530,26 +9714,26 @@ struct osc_read_product_types_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -ProductTypeIds: array string
+         *   --Filters.ProductTypeIds: array string
          *     The IDs of the product types.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_product_type filters; /* ref FiltersProductType */
+	struct filters_product_type filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_policy_versions_arg  {
@@ -9558,20 +9742,20 @@ struct osc_read_policy_versions_arg  {
          * The item starting the list of policies requested.
          */
         int is_set_first_item;
-	int first_item; /* int */
+	int first_item;
         /*
          * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
          * see [Resource 
          * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
          * rs.html).
          */
-	char *policy_orn; /* string */
+	char *policy_orn;
         /*
          * The maximum number of items that can be returned in a single response 
          * (by default, `100`).
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_policy_version_arg  {
@@ -9582,11 +9766,11 @@ struct osc_read_policy_version_arg  {
          * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
          * rs.html).
          */
-	char *policy_orn; /* string */
+	char *policy_orn;
         /*
          * The ID of the policy version.
          */
-	char *version_id; /* string */
+	char *version_id;
 };
 
 struct osc_read_policy_arg  {
@@ -9597,7 +9781,7 @@ struct osc_read_policy_arg  {
          * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
          * rs.html).
          */
-	char *policy_orn; /* string */
+	char *policy_orn;
 };
 
 struct osc_read_policies_arg  {
@@ -9607,31 +9791,32 @@ struct osc_read_policies_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -OnlyLinked: bool
+         *   --Filters.OnlyLinked: bool
          *     If set to true, lists only the policies attached to a user.
-         *   -PathPrefix: string
+         *   --Filters.PathPrefix: string
          *     The path prefix you can use to filter the results. If not 
-         *     specified, it is set to a slash (`/`).
-         *   -Scope: string
+         * specified, it 
+         *     is set to a slash (`/`).
+         *   --Filters.Scope: string
          *     The scope to filter policies (`OWS` \\| `LOCAL`).
          */
         char *filters_str;
         int is_set_filters;
-	struct read_policies_filters filters; /* ref ReadPoliciesFilters */
+	struct read_policies_filters filters;
         /*
          * The item starting the list of policies requested.
          */
         int is_set_first_item;
-	int first_item; /* int */
+	int first_item;
         /*
          * The maximum number of items that can be returned in a single response 
          * (by default, `100`).
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_nics_arg  {
@@ -9641,82 +9826,87 @@ struct osc_read_nics_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -Descriptions: array string
+         *   --Filters.Descriptions: array string
          *     The descriptions of the NICs.
-         *   -IsSourceDestCheck: bool
+         *   --Filters.IsSourceDestCheck: bool
          *     Whether the source/destination checking is enabled (true) or 
-         *     disabled (false).
-         *   -LinkNicDeleteOnVmDeletion: bool
+         * disabled 
+         *     (false).
+         *   --Filters.LinkNicDeleteOnVmDeletion: bool
          *     Whether the NICs are deleted when the VMs they are attached to 
-         *     are terminated.
-         *   -LinkNicDeviceNumbers: array integer
+         * are 
+         *     terminated.
+         *   --Filters.LinkNicDeviceNumbers: array integer
          *     The device numbers the NICs are attached to.
-         *   -LinkNicLinkNicIds: array string
+         *   --Filters.LinkNicLinkNicIds: array string
          *     The attachment IDs of the NICs.
-         *   -LinkNicStates: array string
+         *   --Filters.LinkNicStates: array string
          *     The states of the attachments.
-         *   -LinkNicVmAccountIds: array string
-         *     The account IDs of the owners of the VMs the NICs are attached 
-         *     to.
-         *   -LinkNicVmIds: array string
+         *   --Filters.LinkNicVmAccountIds: array string
+         *     The account IDs of the owners of the VMs the NICs are attached to.
+         *   --Filters.LinkNicVmIds: array string
          *     The IDs of the VMs the NICs are attached to.
-         *   -LinkPublicIpAccountIds: array string
-         *     The account IDs of the owners of the public IPs associated 
-         *     with the NICs.
-         *   -LinkPublicIpLinkPublicIpIds: array string
-         *     The association IDs returned when the public IPs were 
-         *     associated with the NICs.
-         *   -LinkPublicIpPublicDnsNames: array string
+         *   --Filters.LinkPublicIpAccountIds: array string
+         *     The account IDs of the owners of the public IPs associated with 
+         * the 
+         *     NICs.
+         *   --Filters.LinkPublicIpLinkPublicIpIds: array string
+         *     The association IDs returned when the public IPs were associated 
+         * with 
+         *     the NICs.
+         *   --Filters.LinkPublicIpPublicDnsNames: array string
          *     The public DNS names associated with the public IPs.
-         *   -LinkPublicIpPublicIpIds: array string
-         *     The allocation IDs returned when the public IPs were allocated 
-         *     to their accounts.
-         *   -LinkPublicIpPublicIps: array string
+         *   --Filters.LinkPublicIpPublicIpIds: array string
+         *     The allocation IDs returned when the public IPs were allocated to 
+         * their 
+         *     accounts.
+         *   --Filters.LinkPublicIpPublicIps: array string
          *     The public IPs associated with the NICs.
-         *   -MacAddresses: array string
+         *   --Filters.MacAddresses: array string
          *     The Media Access Control (MAC) addresses of the NICs.
-         *   -NetIds: array string
+         *   --Filters.NetIds: array string
          *     The IDs of the Nets where the NICs are located.
-         *   -NicIds: array string
+         *   --Filters.NicIds: array string
          *     The IDs of the NICs.
-         *   -PrivateDnsNames: array string
+         *   --Filters.PrivateDnsNames: array string
          *     The private DNS names associated with the primary private IPs.
-         *   -PrivateIpsLinkPublicIpAccountIds: array string
+         *   --Filters.PrivateIpsLinkPublicIpAccountIds: array string
          *     The account IDs of the owner of the public IPs associated with 
-         *     the private IPs.
-         *   -PrivateIpsLinkPublicIpPublicIps: array string
+         * the 
+         *     private IPs.
+         *   --Filters.PrivateIpsLinkPublicIpPublicIps: array string
          *     The public IPs associated with the private IPs.
-         *   -PrivateIpsPrimaryIp: bool
-         *     Whether the private IP is the primary IP associated with the 
-         *     NIC.
-         *   -PrivateIpsPrivateIps: array string
+         *   --Filters.PrivateIpsPrimaryIp: bool
+         *     Whether the private IP is the primary IP associated with the NIC.
+         *   --Filters.PrivateIpsPrivateIps: array string
          *     The private IPs of the NICs.
-         *   -SecurityGroupIds: array string
+         *   --Filters.SecurityGroupIds: array string
          *     The IDs of the security groups associated with the NICs.
-         *   -SecurityGroupNames: array string
+         *   --Filters.SecurityGroupNames: array string
          *     The names of the security groups associated with the NICs.
-         *   -States: array string
+         *   --Filters.States: array string
          *     The states of the NICs.
-         *   -SubnetIds: array string
+         *   --Filters.SubnetIds: array string
          *     The IDs of the Subnets for the NICs.
-         *   -SubregionNames: array string
+         *   --Filters.SubregionNames: array string
          *     The Subregions where the NICs are located.
-         *   -TagKeys: array string
+         *   --Filters.TagKeys: array string
          *     The keys of the tags associated with the NICs.
-         *   -TagValues: array string
+         *   --Filters.TagValues: array string
          *     The values of the tags associated with the NICs.
-         *   -Tags: array string
-         *     The key/value combination of the tags associated with the 
-         *     NICs, in the following format: 
-         *     &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quo
-         *     t;]}.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the NICs, 
+         * in the 
+         *     following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_nic filters; /* ref FiltersNic */
+	struct filters_nic filters;
 };
 
 struct osc_read_nets_arg  {
@@ -9726,45 +9916,45 @@ struct osc_read_nets_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -DhcpOptionsSetIds: array string
+         *   --Filters.DhcpOptionsSetIds: array string
          *     The IDs of the DHCP options sets.
-         *   -IpRanges: array string
+         *   --Filters.IpRanges: array string
          *     The IP ranges for the Nets, in CIDR notation (for example, 
          *     `10.0.0.0/16`).
-         *   -IsDefault: bool
+         *   --Filters.IsDefault: bool
          *     If true, the Net used is the default one.
-         *   -NetIds: array string
+         *   --Filters.NetIds: array string
          *     The IDs of the Nets.
-         *   -States: array string
-         *     The states of the Nets (`pending` \\| `available` \\| 
-         *     `deleting`).
-         *   -TagKeys: array string
+         *   --Filters.States: array string
+         *     The states of the Nets (`pending` \\| `available` \\| `deleting`).
+         *   --Filters.TagKeys: array string
          *     The keys of the tags associated with the Nets.
-         *   -TagValues: array string
+         *   --Filters.TagValues: array string
          *     The values of the tags associated with the Nets.
-         *   -Tags: array string
-         *     The key/value combination of the tags associated with the 
-         *     Nets, in the following format: 
-         *     &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quo
-         *     t;]}.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the Nets, 
+         * in the 
+         *     following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_net filters; /* ref FiltersNet */
+	struct filters_net filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_net_peerings_arg  {
@@ -9774,58 +9964,58 @@ struct osc_read_net_peerings_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -AccepterNetAccountIds: array string
+         *   --Filters.AccepterNetAccountIds: array string
          *     The account IDs of the owners of the peer Nets.
-         *   -AccepterNetIpRanges: array string
+         *   --Filters.AccepterNetIpRanges: array string
          *     The IP ranges of the peer Nets, in CIDR notation (for example, 
          *     `10.0.0.0/24`).
-         *   -AccepterNetNetIds: array string
+         *   --Filters.AccepterNetNetIds: array string
          *     The IDs of the peer Nets.
-         *   -ExpirationDates: array string
-         *     The dates and times at which the Net peerings expire, in ISO 
-         *     8601 date-time format (for example, 
-         *     `2020-06-14T00:00:00.000Z`).
-         *   -NetPeeringIds: array string
+         *   --Filters.ExpirationDates: array string
+         *     The dates and times at which the Net peerings expire, in ISO 8601 
+         *     date-time format (for example, `2020-06-14T00:00:00.000Z`).
+         *   --Filters.NetPeeringIds: array string
          *     The IDs of the Net peerings.
-         *   -SourceNetAccountIds: array string
+         *   --Filters.SourceNetAccountIds: array string
          *     The account IDs of the owners of the peer Nets.
-         *   -SourceNetIpRanges: array string
+         *   --Filters.SourceNetIpRanges: array string
          *     The IP ranges of the peer Nets.
-         *   -SourceNetNetIds: array string
+         *   --Filters.SourceNetNetIds: array string
          *     The IDs of the peer Nets.
-         *   -StateMessages: array string
+         *   --Filters.StateMessages: array string
          *     Additional information about the states of the Net peerings.
-         *   -StateNames: array string
-         *     The states of the Net peerings (`pending-acceptance` \\| 
-         *     `active` \\| `rejected` \\| `failed` \\| `expired` \\| 
-         *     `deleted`).
-         *   -TagKeys: array string
+         *   --Filters.StateNames: array string
+         *     The states of the Net peerings (`pending-acceptance` \\| `active` 
+         * \\| 
+         *     `rejected` \\| `failed` \\| `expired` \\| `deleted`).
+         *   --Filters.TagKeys: array string
          *     The keys of the tags associated with the Net peerings.
-         *   -TagValues: array string
+         *   --Filters.TagValues: array string
          *     The values of the tags associated with the Net peerings.
-         *   -Tags: array string
+         *   --Filters.Tags: array string
          *     The key/value combination of the tags associated with the Net 
-         *     peerings, in the following format: 
-         *     &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quo
-         *     t;]}.
+         * peerings, 
+         *     in the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_net_peering filters; /* ref FiltersNetPeering */
+	struct filters_net_peering filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_net_access_points_arg  {
@@ -9835,43 +10025,45 @@ struct osc_read_net_access_points_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -NetAccessPointIds: array string
+         *   --Filters.NetAccessPointIds: array string
          *     The IDs of the Net access points.
-         *   -NetIds: array string
+         *   --Filters.NetIds: array string
          *     The IDs of the Nets.
-         *   -ServiceNames: array string
+         *   --Filters.ServiceNames: array string
          *     The names of the services. For more information, see 
          *     [ReadNetAccessPointServices](#readnetaccesspointservices).
-         *   -States: array string
+         *   --Filters.States: array string
          *     The states of the Net access points (`pending` \\| `available` 
-         *     \\| `deleting` \\| `deleted`).
-         *   -TagKeys: array string
+         * \\| 
+         *     `deleting` \\| `deleted`).
+         *   --Filters.TagKeys: array string
          *     The keys of the tags associated with the Net access points.
-         *   -TagValues: array string
+         *   --Filters.TagValues: array string
          *     The values of the tags associated with the Net access points.
-         *   -Tags: array string
+         *   --Filters.Tags: array string
          *     The key/value combination of the tags associated with the Net 
-         *     access points, in the following format: 
-         *     &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quo
-         *     t;]}.
+         * access 
+         *     points, in the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_net_access_point filters; /* ref FiltersNetAccessPoint */
+	struct filters_net_access_point filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_net_access_point_services_arg  {
@@ -9881,28 +10073,28 @@ struct osc_read_net_access_point_services_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -ServiceIds: array string
+         *   --Filters.ServiceIds: array string
          *     The IDs of the services.
-         *   -ServiceNames: array string
+         *   --Filters.ServiceNames: array string
          *     The names of the services.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_service filters; /* ref FiltersService */
+	struct filters_service filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_nat_services_arg  {
@@ -9912,45 +10104,46 @@ struct osc_read_nat_services_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -ClientTokens: array string
-         *     The idempotency tokens provided when creating the NAT 
-         *     services.
-         *   -NatServiceIds: array string
+         *   --Filters.ClientTokens: array string
+         *     The idempotency tokens provided when creating the NAT services.
+         *   --Filters.NatServiceIds: array string
          *     The IDs of the NAT services.
-         *   -NetIds: array string
+         *   --Filters.NetIds: array string
          *     The IDs of the Nets in which the NAT services are.
-         *   -States: array string
+         *   --Filters.States: array string
          *     The states of the NAT services (`pending` \\| `available` \\| 
-         *     `deleting` \\| `deleted`).
-         *   -SubnetIds: array string
+         * `deleting` 
+         *     \\| `deleted`).
+         *   --Filters.SubnetIds: array string
          *     The IDs of the Subnets in which the NAT services are.
-         *   -TagKeys: array string
+         *   --Filters.TagKeys: array string
          *     The keys of the tags associated with the NAT services.
-         *   -TagValues: array string
+         *   --Filters.TagValues: array string
          *     The values of the tags associated with the NAT services.
-         *   -Tags: array string
+         *   --Filters.Tags: array string
          *     The key/value combination of the tags associated with the NAT 
-         *     services, in the following format: 
-         *     &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quo
-         *     t;]}.
+         * services, 
+         *     in the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_nat_service filters; /* ref FiltersNatService */
+	struct filters_nat_service filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_managed_policies_linked_to_user_group_arg  {
@@ -9960,33 +10153,34 @@ struct osc_read_managed_policies_linked_to_user_group_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -PathPrefix: string
-         *     The path prefix of the groups. If not specified, it is set to 
-         *     a slash (`/`).
-         *   -UserGroupIds: array string
+         *   --Filters.PathPrefix: string
+         *     The path prefix of the groups. If not specified, it is set to a 
+         * slash 
+         *     (`/`).
+         *   --Filters.UserGroupIds: array string
          *     The IDs of the user groups.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_user_group filters; /* ref FiltersUserGroup */
+	struct filters_user_group filters;
         /*
          * The item starting the list of policies requested.
          */
         int is_set_first_item;
-	int first_item; /* int */
+	int first_item;
         /*
          * The maximum number of items that can be returned in a single response 
          * (by default, `100`).
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
         /*
          * The name of the group.
          */
-	char *user_group_name; /* string */
+	char *user_group_name;
 };
 
 struct osc_read_locations_arg  {
@@ -9996,18 +10190,18 @@ struct osc_read_locations_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_load_balancers_arg  {
@@ -10017,15 +10211,15 @@ struct osc_read_load_balancers_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -LoadBalancerNames: array string
+         *   --Filters.LoadBalancerNames: array string
          *     The names of the load balancers.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_load_balancer filters; /* ref FiltersLoadBalancer */
+	struct filters_load_balancer filters;
 };
 
 struct osc_read_load_balancer_tags_arg  {
@@ -10035,12 +10229,12 @@ struct osc_read_load_balancer_tags_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * One or more load balancer names.
          */
         char *load_balancer_names_str;
-	char **load_balancer_names; /* array string */
+	char **load_balancer_names;
 };
 
 struct osc_read_listener_rules_arg  {
@@ -10050,15 +10244,15 @@ struct osc_read_listener_rules_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -ListenerRuleNames: array string
+         *   --Filters.ListenerRuleNames: array string
          *     The names of the listener rules.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_listener_rule filters; /* ref FiltersListenerRule */
+	struct filters_listener_rule filters;
 };
 
 struct osc_read_linked_policies_arg  {
@@ -10068,31 +10262,32 @@ struct osc_read_linked_policies_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -PathPrefix: string
-         *     The path prefix of the policies. If not specified, it is set 
-         *     to a slash (`/`).
+         *   --Filters.PathPrefix: string
+         *     The path prefix of the policies. If not specified, it is set to a 
+         * slash 
+         *     (`/`).
          */
         char *filters_str;
         int is_set_filters;
-	struct read_linked_policies_filters filters; /* ref ReadLinkedPoliciesFilters */
+	struct read_linked_policies_filters filters;
         /*
          * The item starting the list of policies requested.
          */
         int is_set_first_item;
-	int first_item; /* int */
+	int first_item;
         /*
          * The maximum number of items that can be returned in a single response 
          * (by default, `100`).
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
         /*
          * The name of the user the policies are linked to.
          */
-	char *user_name; /* string */
+	char *user_name;
 };
 
 struct osc_read_keypairs_arg  {
@@ -10102,32 +10297,32 @@ struct osc_read_keypairs_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -KeypairFingerprints: array string
+         *   --Filters.KeypairFingerprints: array string
          *     The fingerprints of the keypairs.
-         *   -KeypairNames: array string
+         *   --Filters.KeypairNames: array string
          *     The names of the keypairs.
-         *   -KeypairTypes: array string
+         *   --Filters.KeypairTypes: array string
          *     The types of the keypairs (`ssh-rsa`, `ssh-ed25519`, 
          *     `ecdsa-sha2-nistp256`, `ecdsa-sha2-nistp384`, or 
-         *     `ecdsa-sha2-nistp521`).
+         * `ecdsa-sha2-nistp521`).
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_keypair filters; /* ref FiltersKeypair */
+	struct filters_keypair filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_internet_services_arg  {
@@ -10137,41 +10332,44 @@ struct osc_read_internet_services_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -InternetServiceIds: array string
+         *   --Filters.InternetServiceIds: array string
          *     The IDs of the Internet services.
-         *   -LinkNetIds: array string
+         *   --Filters.LinkNetIds: array string
          *     The IDs of the Nets the Internet services are attached to.
-         *   -LinkStates: array string
+         *   --Filters.LinkStates: array string
          *     The current states of the attachments between the Internet 
-         *     services and the Nets (only `available`, if the Internet 
-         *     gateway is attached to a Net).
-         *   -TagKeys: array string
+         * services and 
+         *     the Nets (only `available`, if the Internet gateway is attached 
+         * to a 
+         *     Net).
+         *   --Filters.TagKeys: array string
          *     The keys of the tags associated with the Internet services.
-         *   -TagValues: array string
+         *   --Filters.TagValues: array string
          *     The values of the tags associated with the Internet services.
-         *   -Tags: array string
+         *   --Filters.Tags: array string
          *     The key/value combination of the tags associated with the 
-         *     Internet services, in the following format: 
-         *     &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quo
-         *     t;]}.
+         * Internet 
+         *     services, in the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_internet_service filters; /* ref FiltersInternetService */
+	struct filters_internet_service filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_images_arg  {
@@ -10181,79 +10379,78 @@ struct osc_read_images_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -AccountAliases: array string
+         *   --Filters.AccountAliases: array string
          *     The account aliases of the owners of the OMIs.
-         *   -AccountIds: array string
+         *   --Filters.AccountIds: array string
          *     The account IDs of the owners of the OMIs. By default, all the 
-         *     OMIs for which you have launch permissions are described.
-         *   -Architectures: array string
+         * OMIs for 
+         *     which you have launch permissions are described.
+         *   --Filters.Architectures: array string
          *     The architectures of the OMIs (`i386` \\| `x86_64`).
-         *   -BlockDeviceMappingDeleteOnVmDeletion: bool
-         *     Whether the volumes are deleted or not when terminating the 
-         *     VM.
-         *   -BlockDeviceMappingDeviceNames: array string
+         *   --Filters.BlockDeviceMappingDeleteOnVmDeletion: bool
+         *     Whether the volumes are deleted or not when terminating the VM.
+         *   --Filters.BlockDeviceMappingDeviceNames: array string
          *     The device names for the volumes.
-         *   -BlockDeviceMappingSnapshotIds: array string
+         *   --Filters.BlockDeviceMappingSnapshotIds: array string
          *     The IDs of the snapshots used to create the volumes.
-         *   -BlockDeviceMappingVolumeSizes: array integer
+         *   --Filters.BlockDeviceMappingVolumeSizes: array integer
          *     The sizes of the volumes, in gibibytes (GiB).
-         *   -BlockDeviceMappingVolumeTypes: array string
+         *   --Filters.BlockDeviceMappingVolumeTypes: array string
          *     The types of volumes (`standard` \\| `gp2` \\| `io1`).
-         *   -Descriptions: array string
+         *   --Filters.Descriptions: array string
          *     The descriptions of the OMIs, provided when they were created.
-         *   -FileLocations: array string
+         *   --Filters.FileLocations: array string
          *     The locations of the buckets where the OMI files are stored.
-         *   -Hypervisors: array string
+         *   --Filters.Hypervisors: array string
          *     The hypervisor type of the OMI (always `xen`).
-         *   -ImageIds: array string
+         *   --Filters.ImageIds: array string
          *     The IDs of the OMIs.
-         *   -ImageNames: array string
+         *   --Filters.ImageNames: array string
          *     The names of the OMIs, provided when they were created.
-         *   -PermissionsToLaunchAccountIds: array string
+         *   --Filters.PermissionsToLaunchAccountIds: array string
          *     The account IDs which have launch permissions for the OMIs.
-         *   -PermissionsToLaunchGlobalPermission: bool
-         *     If true, lists all public OMIs. If false, lists all private 
-         *     OMIs.
-         *   -ProductCodeNames: array string
+         *   --Filters.PermissionsToLaunchGlobalPermission: bool
+         *     If true, lists all public OMIs. If false, lists all private OMIs.
+         *   --Filters.ProductCodeNames: array string
          *     The names of the product codes associated with the OMI.
-         *   -ProductCodes: array string
+         *   --Filters.ProductCodes: array string
          *     The product codes associated with the OMI.
-         *   -RootDeviceNames: array string
+         *   --Filters.RootDeviceNames: array string
          *     The name of the root device. This value must be /dev/sda1.
-         *   -RootDeviceTypes: array string
+         *   --Filters.RootDeviceTypes: array string
          *     The types of root device used by the OMIs (`bsu` or `ebs`).
-         *   -States: array string
-         *     The states of the OMIs (`pending` \\| `available` \\| 
-         *     `failed`).
-         *   -TagKeys: array string
+         *   --Filters.States: array string
+         *     The states of the OMIs (`pending` \\| `available` \\| `failed`).
+         *   --Filters.TagKeys: array string
          *     The keys of the tags associated with the OMIs.
-         *   -TagValues: array string
+         *   --Filters.TagValues: array string
          *     The values of the tags associated with the OMIs.
-         *   -Tags: array string
-         *     The key/value combination of the tags associated with the 
-         *     OMIs, in the following format: 
-         *     &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quo
-         *     t;]}.
-         *   -VirtualizationTypes: array string
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the OMIs, 
+         * in the 
+         *     following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         *   --Filters.VirtualizationTypes: array string
          *     The virtualization types (always `hvm`).
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_image filters; /* ref FiltersImage */
+	struct filters_image filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_image_export_tasks_arg  {
@@ -10263,26 +10460,26 @@ struct osc_read_image_export_tasks_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -TaskIds: array string
+         *   --Filters.TaskIds: array string
          *     The IDs of the export tasks.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_export_task filters; /* ref FiltersExportTask */
+	struct filters_export_task filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_flexible_gpus_arg  {
@@ -10292,31 +10489,33 @@ struct osc_read_flexible_gpus_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -DeleteOnVmDeletion: bool
+         *   --Filters.DeleteOnVmDeletion: bool
          *     Indicates whether the fGPU is deleted when terminating the VM.
-         *   -FlexibleGpuIds: array string
+         *   --Filters.FlexibleGpuIds: array string
          *     One or more IDs of fGPUs.
-         *   -Generations: array string
+         *   --Filters.Generations: array string
          *     The processor generations that the fGPUs are compatible with.
-         *   -ModelNames: array string
+         *   --Filters.ModelNames: array string
          *     One or more models of fGPUs. For more information, see [About 
-         *     Flexible 
-         *     GPUs](https://docs.outscale.com/en/userguide/About-Flexible-GPUs
-         *     .html).
-         *   -States: array string
+         * Flexible 
+         *     
+         * GPUs](https://docs.outscale.com/en/userguide/About-Flexible-GPUs.html)
+         * .
+         *   --Filters.States: array string
          *     The states of the fGPUs (`allocated` \\| `attaching` \\| 
-         *     `attached` \\| `detaching`).
-         *   -SubregionNames: array string
+         * `attached` \\| 
+         *     `detaching`).
+         *   --Filters.SubregionNames: array string
          *     The Subregions where the fGPUs are located.
-         *   -VmIds: array string
+         *   --Filters.VmIds: array string
          *     One or more IDs of VMs.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_flexible_gpu filters; /* ref FiltersFlexibleGpu */
+	struct filters_flexible_gpu filters;
 };
 
 struct osc_read_flexible_gpu_catalog_arg  {
@@ -10326,7 +10525,7 @@ struct osc_read_flexible_gpu_catalog_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
 };
 
 struct osc_read_direct_links_arg  {
@@ -10336,26 +10535,26 @@ struct osc_read_direct_links_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -DirectLinkIds: array string
+         *   --Filters.DirectLinkIds: array string
          *     The IDs of the DirectLinks.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_direct_link filters; /* ref FiltersDirectLink */
+	struct filters_direct_link filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_direct_link_interfaces_arg  {
@@ -10365,28 +10564,28 @@ struct osc_read_direct_link_interfaces_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -DirectLinkIds: array string
+         *   --Filters.DirectLinkIds: array string
          *     The IDs of the DirectLinks.
-         *   -DirectLinkInterfaceIds: array string
+         *   --Filters.DirectLinkInterfaceIds: array string
          *     The IDs of the DirectLink interfaces.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_direct_link_interface filters; /* ref FiltersDirectLinkInterface */
+	struct filters_direct_link_interface filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_dhcp_options_arg  {
@@ -10396,48 +10595,49 @@ struct osc_read_dhcp_options_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -Default: bool
-         *     If true, lists all default DHCP options set. If false, lists 
-         *     all non-default DHCP options set.
-         *   -DhcpOptionsSetIds: array string
+         *   --Filters.Default: bool
+         *     If true, lists all default DHCP options set. If false, lists all 
+         *     non-default DHCP options set.
+         *   --Filters.DhcpOptionsSetIds: array string
          *     The IDs of the DHCP options sets.
-         *   -DomainNameServers: array string
-         *     The IPs of the domain name servers used for the DHCP options 
-         *     sets.
-         *   -DomainNames: array string
+         *   --Filters.DomainNameServers: array string
+         *     The IPs of the domain name servers used for the DHCP options sets.
+         *   --Filters.DomainNames: array string
          *     The domain names used for the DHCP options sets.
-         *   -LogServers: array string
+         *   --Filters.LogServers: array string
          *     The IPs of the log servers used for the DHCP options sets.
-         *   -NtpServers: array string
-         *     The IPs of the Network Time Protocol (NTP) servers used for 
-         *     the DHCP options sets.
-         *   -TagKeys: array string
+         *   --Filters.NtpServers: array string
+         *     The IPs of the Network Time Protocol (NTP) servers used for the 
+         * DHCP 
+         *     options sets.
+         *   --Filters.TagKeys: array string
          *     The keys of the tags associated with the DHCP options sets.
-         *   -TagValues: array string
+         *   --Filters.TagValues: array string
          *     The values of the tags associated with the DHCP options sets.
-         *   -Tags: array string
+         *   --Filters.Tags: array string
          *     The key/value combination of the tags associated with the DHCP 
-         *     options sets, in the following format: 
-         *     &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quo
-         *     t;]}.
+         * options 
+         *     sets, in the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_dhcp_options filters; /* ref FiltersDhcpOptions */
+	struct filters_dhcp_options filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_dedicated_groups_arg  {
@@ -10447,34 +10647,34 @@ struct osc_read_dedicated_groups_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -CpuGenerations: array integer
-         *     The processor generation for the VMs in the dedicated group 
-         *     (for example, `4`).
-         *   -DedicatedGroupIds: array string
+         *   --Filters.CpuGenerations: array integer
+         *     The processor generation for the VMs in the dedicated group (for 
+         *     example, `4`).
+         *   --Filters.DedicatedGroupIds: array string
          *     The IDs of the dedicated groups.
-         *   -Names: array string
+         *   --Filters.Names: array string
          *     The names of the dedicated groups.
-         *   -SubregionNames: array string
+         *   --Filters.SubregionNames: array string
          *     The names of the Subregions in which the dedicated groups are 
-         *     located.
+         * located.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_dedicated_group filters; /* ref FiltersDedicatedGroup */
+	struct filters_dedicated_group filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_consumption_account_arg  {
@@ -10484,7 +10684,7 @@ struct osc_read_consumption_account_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The beginning of the time period, in ISO 8601 date format (for 
          * example, `2020-06-14`). The date-time format is also accepted, but 
@@ -10492,7 +10692,7 @@ struct osc_read_consumption_account_arg  {
          * `2020-06-14T00:00:00.000Z`). This value is included in the time 
          * period.
          */
-	char *from_date; /* string */
+	char *from_date;
         /*
          * By default or if false, returns only the consumption of the specific 
          * account that sends this request. If true, returns either the overall 
@@ -10501,7 +10701,7 @@ struct osc_read_consumption_account_arg  {
          * nothing (if the account that sends this request is a linked account).
          */
         int is_set_overall;
-	int overall; /* bool */
+	int overall;
         /*
          * If true, the response also includes the unit price of the consumed 
          * resource (`UnitPrice`) and the total price of the consumed resource 
@@ -10509,7 +10709,7 @@ struct osc_read_consumption_account_arg  {
          * account.
          */
         int is_set_show_price;
-	int show_price; /* bool */
+	int show_price;
         /*
          * The end of the time period, in ISO 8601 date format (for example, 
          * `2020-06-30`). The date-time format is also accepted, but only with a 
@@ -10517,7 +10717,7 @@ struct osc_read_consumption_account_arg  {
          * value is excluded from the time period, and must be set to a later 
          * date than `FromDate`.
          */
-	char *to_date; /* string */
+	char *to_date;
 };
 
 struct osc_read_console_output_arg  {
@@ -10527,11 +10727,11 @@ struct osc_read_console_output_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the VM.
          */
-	char *vm_id; /* string */
+	char *vm_id;
 };
 
 struct osc_read_client_gateways_arg  {
@@ -10541,46 +10741,48 @@ struct osc_read_client_gateways_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -BgpAsns: array integer
+         *   --Filters.BgpAsns: array integer
          *     The Border Gateway Protocol (BGP) Autonomous System Numbers 
-         *     (ASNs) of the connections.
-         *   -ClientGatewayIds: array string
+         * (ASNs) of 
+         *     the connections.
+         *   --Filters.ClientGatewayIds: array string
          *     The IDs of the client gateways.
-         *   -ConnectionTypes: array string
+         *   --Filters.ConnectionTypes: array string
          *     The types of communication tunnels used by the client gateways 
-         *     (only `ipsec.1` is supported).
-         *   -PublicIps: array string
+         * (only 
+         *     `ipsec.1` is supported).
+         *   --Filters.PublicIps: array string
          *     The public IPv4 addresses of the client gateways.
-         *   -States: array string
-         *     The states of the client gateways (`pending` \\| `available` 
-         *     \\| `deleting` \\| `deleted`).
-         *   -TagKeys: array string
+         *   --Filters.States: array string
+         *     The states of the client gateways (`pending` \\| `available` \\| 
+         *     `deleting` \\| `deleted`).
+         *   --Filters.TagKeys: array string
          *     The keys of the tags associated with the client gateways.
-         *   -TagValues: array string
+         *   --Filters.TagValues: array string
          *     The values of the tags associated with the client gateways.
-         *   -Tags: array string
-         *     The key/value combination of the tags associated with the 
-         *     client gateways, in the following format: 
-         *     &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quo
-         *     t;]}.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the client 
+         *     gateways, in the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_client_gateway filters; /* ref FiltersClientGateway */
+	struct filters_client_gateway filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
 };
 
 struct osc_read_catalogs_arg  {
@@ -10590,26 +10792,28 @@ struct osc_read_catalogs_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -CurrentCatalogOnly: bool
-         *     By default or if set to true, only returns the current 
-         *     catalog. If false, returns the current catalog and past 
-         *     catalogs.
-         *   -FromDate: string
+         *   --Filters.CurrentCatalogOnly: bool
+         *     By default or if set to true, only returns the current catalog. 
+         * If 
+         *     false, returns the current catalog and past catalogs.
+         *   --Filters.FromDate: string
          *     The beginning of the time period, in ISO 8601 date format (for 
-         *     example, `2020-06-14`). This date cannot be older than 3 years. 
-         *     You must specify the parameters `FromDate` and `ToDate` 
+         * example, 
+         *     `2020-06-14`). This date cannot be older than 3 years. You must 
+         * specify 
+         *     the parameters `FromDate` and `ToDate` together.
+         *   --Filters.ToDate: string
+         *     The end of the time period, in ISO 8601 date format (for example, 
+         *     `2020-06-30`). You must specify the parameters `FromDate` and 
+         * `ToDate` 
          *     together.
-         *   -ToDate: string
-         *     The end of the time period, in ISO 8601 date format (for 
-         *     example, `2020-06-30`). You must specify the parameters 
-         *     `FromDate` and `ToDate` together.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_catalogs filters; /* ref FiltersCatalogs */
+	struct filters_catalogs filters;
 };
 
 struct osc_read_catalog_arg  {
@@ -10619,7 +10823,7 @@ struct osc_read_catalog_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
 };
 
 struct osc_read_cas_arg  {
@@ -10629,19 +10833,19 @@ struct osc_read_cas_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -CaFingerprints: array string
+         *   --Filters.CaFingerprints: array string
          *     The fingerprints of the CAs.
-         *   -CaIds: array string
+         *   --Filters.CaIds: array string
          *     The IDs of the CAs.
-         *   -Descriptions: array string
+         *   --Filters.Descriptions: array string
          *     The descriptions of the CAs.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_ca filters; /* ref FiltersCa */
+	struct filters_ca filters;
 };
 
 struct osc_read_api_logs_arg  {
@@ -10651,101 +10855,107 @@ struct osc_read_api_logs_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -QueryAccessKeys: array string
+         *   --Filters.QueryAccessKeys: array string
          *     The access keys used for the logged calls.
-         *   -QueryApiNames: array string
-         *     The names of the APIs of the logged calls (always `oapi` for 
-         *     the OUTSCALE API).
-         *   -QueryCallNames: array string
+         *   --Filters.QueryApiNames: array string
+         *     The names of the APIs of the logged calls (always `oapi` for the 
+         *     OUTSCALE API).
+         *   --Filters.QueryCallNames: array string
          *     The names of the logged calls.
-         *   -QueryDateAfter: string
-         *     The date and time, or the date, after which you want to 
-         *     retrieve logged calls, in ISO 8601 format (for example, 
-         *     `2020-06-14T00:00:00.000Z` or `2020-06-14`). By default, this 
-         *     date is set to 48 hours before the `QueryDateBefore` parameter 
-         *     value.
-         *   -QueryDateBefore: string
-         *     The date and time, or the date, before which you want to 
-         *     retrieve logged calls, in ISO 8601 format (for example, 
-         *     `2020-06-30T00:00:00.000Z` or `2020-06-14`). By default, this 
-         *     date is set to now, or 48 hours after the `QueryDateAfter` 
-         *     parameter value.
-         *   -QueryIpAddresses: array string
+         *   --Filters.QueryDateAfter: string
+         *     The date and time, or the date, after which you want to retrieve 
+         * logged 
+         *     calls, in ISO 8601 format (for example, 
+         * `2020-06-14T00:00:00.000Z` or 
+         *     `2020-06-14`). By default, this date is set to 48 hours before 
+         * the 
+         *     `QueryDateBefore` parameter value.
+         *   --Filters.QueryDateBefore: string
+         *     The date and time, or the date, before which you want to retrieve 
+         * logged 
+         *     calls, in ISO 8601 format (for example, 
+         * `2020-06-30T00:00:00.000Z` or 
+         *     `2020-06-14`). By default, this date is set to now, or 48 hours 
+         * after the 
+         *     `QueryDateAfter` parameter value.
+         *   --Filters.QueryIpAddresses: array string
          *     The IPs used for the logged calls.
-         *   -QueryUserAgents: array string
+         *   --Filters.QueryUserAgents: array string
          *     The user agents of the HTTP requests of the logged calls.
-         *   -RequestIds: array string
+         *   --Filters.RequestIds: array string
          *     The request IDs provided in the responses of the logged calls.
-         *   -ResponseStatusCodes: array integer
+         *   --Filters.ResponseStatusCodes: array integer
          *     The HTTP status codes of the logged calls.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_api_log filters; /* ref FiltersApiLog */
+	struct filters_api_log filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
          */
-	char *next_page_token; /* string */
+	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between 
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page; /* int */
+	int results_per_page;
         /*
          *   The information to display in each returned log.
-         *   -AccountId: bool
+         *   --With.AccountId: bool
          *     By default or if set to true, the account ID is displayed.
-         *   -CallDuration: bool
+         *   --With.CallDuration: bool
          *     By default or if set to true, the duration of the call is 
-         *     displayed.
-         *   -QueryAccessKey: bool
+         * displayed.
+         *   --With.QueryAccessKey: bool
          *     By default or if set to true, the access key is displayed.
-         *   -QueryApiName: bool
-         *     By default or if set to true, the name of the API is 
+         *   --With.QueryApiName: bool
+         *     By default or if set to true, the name of the API is displayed.
+         *   --With.QueryApiVersion: bool
+         *     By default or if set to true, the version of the API is displayed.
+         *   --With.QueryCallName: bool
+         *     By default or if set to true, the name of the call is displayed.
+         *   --With.QueryDate: bool
+         *     By default or if set to true, the date of the call is displayed.
+         *   --With.QueryHeaderRaw: bool
+         *     By default or if set to true, the raw header of the HTTP request 
+         * is 
          *     displayed.
-         *   -QueryApiVersion: bool
-         *     By default or if set to true, the version of the API is 
-         *     displayed.
-         *   -QueryCallName: bool
-         *     By default or if set to true, the name of the call is 
-         *     displayed.
-         *   -QueryDate: bool
-         *     By default or if set to true, the date of the call is 
-         *     displayed.
-         *   -QueryHeaderRaw: bool
-         *     By default or if set to true, the raw header of the HTTP 
+         *   --With.QueryHeaderSize: bool
+         *     By default or if set to true, the size of the raw header of the 
+         * HTTP 
          *     request is displayed.
-         *   -QueryHeaderSize: bool
-         *     By default or if set to true, the size of the raw header of 
-         *     the HTTP request is displayed.
-         *   -QueryIpAddress: bool
+         *   --With.QueryIpAddress: bool
          *     By default or if set to true, the IP is displayed.
-         *   -QueryPayloadRaw: bool
-         *     By default or if set to true, the raw payload of the HTTP 
-         *     request is displayed.
-         *   -QueryPayloadSize: bool
-         *     By default or if set to true, the size of the raw payload of 
-         *     the HTTP request is displayed.
-         *   -QueryUserAgent: bool
-         *     By default or if set to true, the user agent of the HTTP 
-         *     request is displayed.
-         *   -RequestId: bool
-         *     By default or if set to true, the request ID is displayed.
-         *   -ResponseSize: bool
-         *     By default or if set to true, the size of the response is 
+         *   --With.QueryPayloadRaw: bool
+         *     By default or if set to true, the raw payload of the HTTP request 
+         * is 
          *     displayed.
-         *   -ResponseStatusCode: bool
+         *   --With.QueryPayloadSize: bool
+         *     By default or if set to true, the size of the raw payload of the 
+         * HTTP 
+         *     request is displayed.
+         *   --With.QueryUserAgent: bool
+         *     By default or if set to true, the user agent of the HTTP request 
+         * is 
+         *     displayed.
+         *   --With.RequestId: bool
+         *     By default or if set to true, the request ID is displayed.
+         *   --With.ResponseSize: bool
+         *     By default or if set to true, the size of the response is 
+         * displayed.
+         *   --With.ResponseStatusCode: bool
          *     By default or if set to true, the HTTP status code of the 
-         *     response is displayed.
+         * response is 
+         *     displayed.
          */
         char *with_str;
         int is_set_with;
-	struct with with; /* ref With */
+	struct with with;
 };
 
 struct osc_read_api_access_rules_arg  {
@@ -10755,23 +10965,23 @@ struct osc_read_api_access_rules_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -ApiAccessRuleIds: array string
+         *   --Filters.ApiAccessRuleIds: array string
          *     One or more IDs of API access rules.
-         *   -CaIds: array string
+         *   --Filters.CaIds: array string
          *     One or more IDs of Client Certificate Authorities (CAs).
-         *   -Cns: array string
+         *   --Filters.Cns: array string
          *     One or more Client Certificate Common Names (CNs).
-         *   -Descriptions: array string
+         *   --Filters.Descriptions: array string
          *     One or more descriptions of API access rules.
-         *   -IpRanges: array string
+         *   --Filters.IpRanges: array string
          *     One or more IPs or CIDR blocks (for example, `192.0.2.0/16`).
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_api_access_rule filters; /* ref FiltersApiAccessRule */
+	struct filters_api_access_rule filters;
 };
 
 struct osc_read_api_access_policy_arg  {
@@ -10781,7 +10991,7 @@ struct osc_read_api_access_policy_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
 };
 
 struct osc_read_admin_password_arg  {
@@ -10791,11 +11001,11 @@ struct osc_read_admin_password_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the VM.
          */
-	char *vm_id; /* string */
+	char *vm_id;
 };
 
 struct osc_read_accounts_arg  {
@@ -10805,7 +11015,7 @@ struct osc_read_accounts_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
 };
 
 struct osc_read_access_keys_arg  {
@@ -10815,22 +11025,22 @@ struct osc_read_access_keys_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   One or more filters.
-         *   -AccessKeyIds: array string
+         *   --Filters.AccessKeyIds: array string
          *     The IDs of the access keys.
-         *   -States: array string
+         *   --Filters.States: array string
          *     The states of the access keys (`ACTIVE` \\| `INACTIVE`).
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_access_keys filters; /* ref FiltersAccessKeys */
+	struct filters_access_keys filters;
         /*
          * The name of the EIM user. By default, the user who sends the request 
          * (which can be the root account).
          */
-	char *user_name; /* string */
+	char *user_name;
 };
 
 struct osc_put_user_group_policy_arg  {
@@ -10840,26 +11050,26 @@ struct osc_put_user_group_policy_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The policy document, corresponding to a JSON string that contains the 
          * policy. For more information, see [EIM Reference 
          * Information](https://docs.outscale.com/en/userguide/EIM-Reference-Info
          * rmation.html).
          */
-	char *policy_document; /* string */
+	char *policy_document;
         /*
          * The name of the policy.
          */
-	char *policy_name; /* string */
+	char *policy_name;
         /*
          * The name of the group.
          */
-	char *user_group_name; /* string */
+	char *user_group_name;
         /*
          * The path to the group. If not specified, it is set to a slash (`/`).
          */
-	char *user_group_path; /* string */
+	char *user_group_path;
 };
 
 struct osc_link_volume_arg  {
@@ -10870,21 +11080,21 @@ struct osc_link_volume_arg  {
          * or `/dev/xvdXX` (where the first `X` is a letter between `b` and `z`, 
          * and the second `X` is a letter between `a` and `z`).
          */
-	char *device_name; /* string */
+	char *device_name;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the VM you want to attach the volume to.
          */
-	char *vm_id; /* string */
+	char *vm_id;
         /*
          * The ID of the volume you want to attach.
          */
-	char *volume_id; /* string */
+	char *volume_id;
 };
 
 struct osc_link_virtual_gateway_arg  {
@@ -10894,15 +11104,15 @@ struct osc_link_virtual_gateway_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the Net to which you want to attach the virtual gateway.
          */
-	char *net_id; /* string */
+	char *net_id;
         /*
          * The ID of the virtual gateway.
          */
-	char *virtual_gateway_id; /* string */
+	char *virtual_gateway_id;
 };
 
 struct osc_link_route_table_arg  {
@@ -10912,15 +11122,15 @@ struct osc_link_route_table_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the route table.
          */
-	char *route_table_id; /* string */
+	char *route_table_id;
         /*
          * The ID of the Subnet.
          */
-	char *subnet_id; /* string */
+	char *subnet_id;
 };
 
 struct osc_link_public_ip_arg  {
@@ -10933,42 +11143,42 @@ struct osc_link_public_ip_arg  {
          * VM or NIC. (By default, true in the public Cloud, false in a Net.)
          */
         int is_set_allow_relink;
-	int allow_relink; /* bool */
+	int allow_relink;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * (Net only) The ID of the NIC. This parameter is required if the VM 
          * has more than one NIC attached. Otherwise, you need to specify the 
          * `VmId` parameter instead. You cannot specify both parameters at the 
          * same time.
          */
-	char *nic_id; /* string */
+	char *nic_id;
         /*
          * (Net only) The primary or secondary private IP of the specified NIC. 
          * By default, the primary private IP.
          */
-	char *private_ip; /* string */
+	char *private_ip;
         /*
          * The public IP. This parameter is required unless you use the 
          * `PublicIpId` parameter.
          */
-	char *public_ip; /* string */
+	char *public_ip;
         /*
          * The allocation ID of the public IP. This parameter is required unless 
          * you use the `PublicIp` parameter.
          */
-	char *public_ip_id; /* string */
+	char *public_ip_id;
         /*
          * The ID of the VM.<br />\n- In the public Cloud, this parameter is 
          * required.<br />\n- In a Net, this parameter is required if the VM has 
          * only one NIC. Otherwise, you need to specify the `NicId` parameter 
          * instead. You cannot specify both parameters at the same time.
          */
-	char *vm_id; /* string */
+	char *vm_id;
 };
 
 struct osc_link_private_ips_arg  {
@@ -10978,28 +11188,28 @@ struct osc_link_private_ips_arg  {
          * same Subnet to be assigned to the NIC you specified.
          */
         int is_set_allow_relink;
-	int allow_relink; /* bool */
+	int allow_relink;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the NIC.
          */
-	char *nic_id; /* string */
+	char *nic_id;
         /*
          * The secondary private IP or IPs you want to assign to the NIC within 
          * the IP range of the Subnet.
          */
         char *private_ips_str;
-	char **private_ips; /* array string */
+	char **private_ips;
         /*
          * The number of secondary private IPs to assign to the NIC.
          */
         int is_set_secondary_private_ip_count;
-	int secondary_private_ip_count; /* int */
+	int secondary_private_ip_count;
 };
 
 struct osc_link_policy_arg  {
@@ -11009,19 +11219,19 @@ struct osc_link_policy_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
          * see [Resource 
          * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
          * rs.html).
          */
-	char *policy_orn; /* string */
+	char *policy_orn;
         /*
          * The name of the user you want to link the policy to (between 1 and 64 
          * characters).
          */
-	char *user_name; /* string */
+	char *user_name;
 };
 
 struct osc_link_nic_arg  {
@@ -11031,21 +11241,21 @@ struct osc_link_nic_arg  {
          * `7`, both included).
          */
         int is_set_device_number;
-	int device_number; /* int */
+	int device_number;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the NIC you want to attach.
          */
-	char *nic_id; /* string */
+	char *nic_id;
         /*
          * The ID of the VM to which you want to attach the NIC.
          */
-	char *vm_id; /* string */
+	char *vm_id;
 };
 
 struct osc_link_managed_policy_to_user_group_arg  {
@@ -11055,18 +11265,18 @@ struct osc_link_managed_policy_to_user_group_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
          * see [Resource 
          * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
          * rs.html).
          */
-	char *policy_orn; /* string */
+	char *policy_orn;
         /*
          * The name of the group you want to link the policy to.
          */
-	char *user_group_name; /* string */
+	char *user_group_name;
 };
 
 struct osc_link_load_balancer_backend_machines_arg  {
@@ -11075,22 +11285,22 @@ struct osc_link_load_balancer_backend_machines_arg  {
          * One or more public IPs of backend VMs.
          */
         char *backend_ips_str;
-	char **backend_ips; /* array string */
+	char **backend_ips;
         /*
          * One or more IDs of backend VMs.
          */
         char *backend_vm_ids_str;
-	char **backend_vm_ids; /* array string */
+	char **backend_vm_ids;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The name of the load balancer.
          */
-	char *load_balancer_name; /* string */
+	char *load_balancer_name;
 };
 
 struct osc_link_internet_service_arg  {
@@ -11100,15 +11310,15 @@ struct osc_link_internet_service_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the Internet service you want to attach.
          */
-	char *internet_service_id; /* string */
+	char *internet_service_id;
         /*
          * The ID of the Net to which you want to attach the Internet service.
          */
-	char *net_id; /* string */
+	char *net_id;
 };
 
 struct osc_link_flexible_gpu_arg  {
@@ -11118,15 +11328,15 @@ struct osc_link_flexible_gpu_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the fGPU you want to attach.
          */
-	char *flexible_gpu_id; /* string */
+	char *flexible_gpu_id;
         /*
          * The ID of the VM you want to attach the fGPU to.
          */
-	char *vm_id; /* string */
+	char *vm_id;
 };
 
 struct osc_deregister_vms_in_load_balancer_arg  {
@@ -11135,17 +11345,17 @@ struct osc_deregister_vms_in_load_balancer_arg  {
          * One or more IDs of backend VMs.
          */
         char *backend_vm_ids_str;
-	char **backend_vm_ids; /* array string */
+	char **backend_vm_ids;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The name of the load balancer.
          */
-	char *load_balancer_name; /* string */
+	char *load_balancer_name;
 };
 
 struct osc_delete_vpn_connection_route_arg  {
@@ -11154,17 +11364,17 @@ struct osc_delete_vpn_connection_route_arg  {
          * The network prefix of the route to delete, in CIDR notation (for 
          * example, `10.12.0.0/16`).
          */
-	char *destination_ip_range; /* string */
+	char *destination_ip_range;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the target VPN connection of the static route to delete.
          */
-	char *vpn_connection_id; /* string */
+	char *vpn_connection_id;
 };
 
 struct osc_delete_vpn_connection_arg  {
@@ -11174,11 +11384,11 @@ struct osc_delete_vpn_connection_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the VPN connection you want to delete.
          */
-	char *vpn_connection_id; /* string */
+	char *vpn_connection_id;
 };
 
 struct osc_delete_volume_arg  {
@@ -11188,11 +11398,11 @@ struct osc_delete_volume_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the volume you want to delete.
          */
-	char *volume_id; /* string */
+	char *volume_id;
 };
 
 struct osc_delete_vms_arg  {
@@ -11202,12 +11412,12 @@ struct osc_delete_vms_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * One or more IDs of VMs.
          */
         char *vm_ids_str;
-	char **vm_ids; /* array string */
+	char **vm_ids;
 };
 
 struct osc_delete_vm_template_arg  {
@@ -11217,11 +11427,11 @@ struct osc_delete_vm_template_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the VM template you want to delete.
          */
-	char *vm_template_id; /* string */
+	char *vm_template_id;
 };
 
 struct osc_delete_vm_group_arg  {
@@ -11231,11 +11441,11 @@ struct osc_delete_vm_group_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the VM group you want to delete.
          */
-	char *vm_group_id; /* string */
+	char *vm_group_id;
 };
 
 struct osc_delete_virtual_gateway_arg  {
@@ -11245,11 +11455,11 @@ struct osc_delete_virtual_gateway_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the virtual gateway you want to delete.
          */
-	char *virtual_gateway_id; /* string */
+	char *virtual_gateway_id;
 };
 
 struct osc_delete_user_group_policy_arg  {
@@ -11259,19 +11469,19 @@ struct osc_delete_user_group_policy_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The name of the policy document you want to delete.
          */
-	char *policy_name; /* string */
+	char *policy_name;
         /*
          * The name of the group.
          */
-	char *user_group_name; /* string */
+	char *user_group_name;
         /*
          * The path to the group. If not specified, it is set to a slash (`/`).
          */
-	char *user_group_path; /* string */
+	char *user_group_path;
 };
 
 struct osc_delete_user_group_arg  {
@@ -11281,21 +11491,21 @@ struct osc_delete_user_group_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * If true, forces the deletion of the user group even if it is not 
          * empty.
          */
         int is_set_force;
-	int force; /* bool */
+	int force;
         /*
          * The path to the group. If not specified, it is set to a slash (`/`).
          */
-	char *path; /* string */
+	char *path;
         /*
          * The name of the group you want to delete.
          */
-	char *user_group_name; /* string */
+	char *user_group_name;
 };
 
 struct osc_delete_user_arg  {
@@ -11305,11 +11515,11 @@ struct osc_delete_user_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The name of the EIM user you want to delete.
          */
-	char *user_name; /* string */
+	char *user_name;
 };
 
 struct osc_delete_tags_arg  {
@@ -11319,24 +11529,24 @@ struct osc_delete_tags_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * One or more resource IDs.
          */
         char *resource_ids_str;
-	char **resource_ids; /* array string */
+	char **resource_ids;
         /*
          * One or more tags to delete (if you set a tag value, only the tags 
          * matching exactly this value are deleted).
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
 };
 
 struct osc_delete_subnet_arg  {
@@ -11346,11 +11556,11 @@ struct osc_delete_subnet_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the Subnet you want to delete.
          */
-	char *subnet_id; /* string */
+	char *subnet_id;
 };
 
 struct osc_delete_snapshot_arg  {
@@ -11360,11 +11570,11 @@ struct osc_delete_snapshot_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the snapshot you want to delete.
          */
-	char *snapshot_id; /* string */
+	char *snapshot_id;
 };
 
 struct osc_delete_server_certificate_arg  {
@@ -11374,11 +11584,11 @@ struct osc_delete_server_certificate_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The name of the server certificate you want to delete.
          */
-	char *name; /* string */
+	char *name;
 };
 
 struct osc_delete_security_group_rule_arg  {
@@ -11388,18 +11598,18 @@ struct osc_delete_security_group_rule_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The direction of the flow: `Inbound` or `Outbound`. You can specify 
          * `Outbound` for Nets only.
          */
-	char *flow; /* string */
+	char *flow;
         /*
          * The beginning of the port range for the TCP and UDP protocols, or an 
          * ICMP type number.
          */
         int is_set_from_port_range;
-	int from_port_range; /* int */
+	int from_port_range;
         /*
          * The IP protocol name (`tcp`, `udp`, `icmp`, or `-1` for all 
          * protocols). By default, `-1`. In a Net, this can also be an IP 
@@ -11407,73 +11617,82 @@ struct osc_delete_security_group_rule_arg  {
          * website](https://www.iana.org/assignments/protocol-numbers/protocol-nu
          * mbers.xhtml).
          */
-	char *ip_protocol; /* string */
+	char *ip_protocol;
         /*
          * The IP range for the security group rule, in CIDR notation (for 
          * example, `10.0.0.0/16`).
          */
-	char *ip_range; /* string */
+	char *ip_range;
         /*
          * One or more rules you want to delete from the security group.
          *   Information about the security group rule.
-         *   -FromPortRange: int
-         *     The beginning of the port range for the TCP and UDP protocols, 
-         *     or an ICMP type number.
-         *   -IpProtocol: string
+         *   --Rules.INDEX.FromPortRange: int
+         *     The beginning of the port range for the TCP and UDP protocols, or 
+         * an 
+         *     ICMP type number.
+         *   --Rules.INDEX.IpProtocol: string
          *     The IP protocol name (`tcp`, `udp`, `icmp`, or `-1` for all 
-         *     protocols). By default, `-1`. In a Net, this can also be an IP 
-         *     protocol number. For more information, see the [IANA.org 
-         *     website](https://www.iana.org/assignments/protocol-numbers/proto
-         *     col-numbers.xhtml).
-         *   -IpRanges: array string
+         * protocols). 
+         *     By default, `-1`. In a Net, this can also be an IP protocol 
+         * number. For 
+         *     more information, see the [IANA.org 
+         *     
+         * website](https://www.iana.org/assignments/protocol-numbers/protocol-nu
+         * mber
+         *     s.xhtml).
+         *   --Rules.INDEX.IpRanges: array string
          *     One or more IP ranges for the security group rules, in CIDR 
-         *     notation (for example, `10.0.0.0/16`).
-         *   -SecurityGroupsMembers: array ref SecurityGroupsMember
+         * notation 
+         *     (for example, `10.0.0.0/16`).
+         *   --Rules.INDEX.SecurityGroupsMembers: array ref SecurityGroupsMember
          *     Information about one or more source or destination security 
-         *     groups.
+         * groups.
          *       Information about a source or destination security group.
-         *       -AccountId: string
+         *       --Rules.INDEX.SecurityGroupsMembers.INDEX.AccountId: string
          *         The account ID that owns the source or destination security 
-         *         group.
-         *       -SecurityGroupId: string
+         * group.
+         *       --Rules.INDEX.SecurityGroupsMembers.INDEX.SecurityGroupId: 
+         * string
          *         The ID of a source or destination security group that you 
-         * want 
-         *         to link to the security group of the rule.
-         *       -SecurityGroupName: string
+         * want to link 
+         *         to the security group of the rule.
+         *       --Rules.INDEX.SecurityGroupsMembers.INDEX.SecurityGroupName: 
+         * string
          *         (Public Cloud only) The name of a source or destination 
-         *         security group that you want to link to the security group of 
-         *         the rule.
-         *   -ServiceIds: array string
-         *     One or more service IDs to allow traffic from a Net to access 
-         *     the corresponding OUTSCALE services. For more information, see 
+         * security group 
+         *         that you want to link to the security group of the rule.
+         *   --Rules.INDEX.ServiceIds: array string
+         *     One or more service IDs to allow traffic from a Net to access the 
+         *     corresponding OUTSCALE services. For more information, see 
          *     [ReadNetAccessPointServices](#readnetaccesspointservices).
-         *   -ToPortRange: int
+         *   --Rules.INDEX.ToPortRange: int
          *     The end of the port range for the TCP and UDP protocols, or an 
-         *     ICMP code number.
+         * ICMP code 
+         *     number.
          */
         char *rules_str;
         int nb_rules;
-	struct security_group_rule *rules; /* array ref SecurityGroupRule */
+	struct security_group_rule *rules;
         /*
          * The account ID of the owner of the security group you want to delete 
          * a rule from.
          */
-	char *security_group_account_id_to_unlink; /* string */
+	char *security_group_account_id_to_unlink;
         /*
          * The ID of the security group you want to delete a rule from.
          */
-	char *security_group_id; /* string */
+	char *security_group_id;
         /*
          * The ID of the source security group. If you are in the Public Cloud, 
          * you can also specify the name of the source security group.
          */
-	char *security_group_name_to_unlink; /* string */
+	char *security_group_name_to_unlink;
         /*
          * The end of the port range for the TCP and UDP protocols, or an ICMP 
          * code number.
          */
         int is_set_to_port_range;
-	int to_port_range; /* int */
+	int to_port_range;
 };
 
 struct osc_delete_security_group_arg  {
@@ -11483,15 +11702,15 @@ struct osc_delete_security_group_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the security group you want to delete.
          */
-	char *security_group_id; /* string */
+	char *security_group_id;
         /*
          * The name of the security group.
          */
-	char *security_group_name; /* string */
+	char *security_group_name;
 };
 
 struct osc_delete_route_table_arg  {
@@ -11501,11 +11720,11 @@ struct osc_delete_route_table_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the route table you want to delete.
          */
-	char *route_table_id; /* string */
+	char *route_table_id;
 };
 
 struct osc_delete_route_arg  {
@@ -11513,17 +11732,17 @@ struct osc_delete_route_arg  {
         /*
          * The exact IP range for the route.
          */
-	char *destination_ip_range; /* string */
+	char *destination_ip_range;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the route table from which you want to delete a route.
          */
-	char *route_table_id; /* string */
+	char *route_table_id;
 };
 
 struct osc_delete_public_ip_arg  {
@@ -11533,16 +11752,16 @@ struct osc_delete_public_ip_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The public IP. In the public Cloud, this parameter is required.
          */
-	char *public_ip; /* string */
+	char *public_ip;
         /*
          * The ID representing the association of the public IP with the VM or 
          * the NIC. In a Net, this parameter is required.
          */
-	char *public_ip_id; /* string */
+	char *public_ip_id;
 };
 
 struct osc_delete_policy_version_arg  {
@@ -11553,11 +11772,11 @@ struct osc_delete_policy_version_arg  {
          * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
          * rs.html).
          */
-	char *policy_orn; /* string */
+	char *policy_orn;
         /*
          * The ID of the version of the policy you want to delete.
          */
-	char *version_id; /* string */
+	char *version_id;
 };
 
 struct osc_delete_policy_arg  {
@@ -11567,14 +11786,14 @@ struct osc_delete_policy_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The OUTSCALE Resource Name (ORN) of the policy you want to delete. 
          * For more information, see [Resource 
          * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
          * rs.html).
          */
-	char *policy_orn; /* string */
+	char *policy_orn;
 };
 
 struct osc_delete_nic_arg  {
@@ -11584,11 +11803,11 @@ struct osc_delete_nic_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the NIC you want to delete.
          */
-	char *nic_id; /* string */
+	char *nic_id;
 };
 
 struct osc_delete_net_peering_arg  {
@@ -11598,11 +11817,11 @@ struct osc_delete_net_peering_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the Net peering you want to delete.
          */
-	char *net_peering_id; /* string */
+	char *net_peering_id;
 };
 
 struct osc_delete_net_access_point_arg  {
@@ -11612,11 +11831,11 @@ struct osc_delete_net_access_point_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the Net access point.
          */
-	char *net_access_point_id; /* string */
+	char *net_access_point_id;
 };
 
 struct osc_delete_net_arg  {
@@ -11626,11 +11845,11 @@ struct osc_delete_net_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the Net you want to delete.
          */
-	char *net_id; /* string */
+	char *net_id;
 };
 
 struct osc_delete_nat_service_arg  {
@@ -11640,11 +11859,11 @@ struct osc_delete_nat_service_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the NAT service you want to delete.
          */
-	char *nat_service_id; /* string */
+	char *nat_service_id;
 };
 
 struct osc_delete_load_balancer_tags_arg  {
@@ -11654,21 +11873,21 @@ struct osc_delete_load_balancer_tags_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * One or more load balancer names.
          */
         char *load_balancer_names_str;
-	char **load_balancer_names; /* array string */
+	char **load_balancer_names;
         /*
          * One or more tags to delete from the load balancers.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_load_balancer_tag *tags; /* array ref ResourceLoadBalancerTag */
+	struct resource_load_balancer_tag *tags;
 };
 
 struct osc_delete_load_balancer_policy_arg  {
@@ -11678,15 +11897,15 @@ struct osc_delete_load_balancer_policy_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The name of the load balancer for which you want to delete a policy.
          */
-	char *load_balancer_name; /* string */
+	char *load_balancer_name;
         /*
          * The name of the policy you want to delete.
          */
-	char *policy_name; /* string */
+	char *policy_name;
 };
 
 struct osc_delete_load_balancer_listeners_arg  {
@@ -11696,16 +11915,16 @@ struct osc_delete_load_balancer_listeners_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The name of the load balancer for which you want to delete listeners.
          */
-	char *load_balancer_name; /* string */
+	char *load_balancer_name;
         /*
          * One or more port numbers of the listeners you want to delete.
          */
         char *load_balancer_ports_str;
-	int *load_balancer_ports; /* array integer */
+	int *load_balancer_ports;
 };
 
 struct osc_delete_load_balancer_arg  {
@@ -11715,11 +11934,11 @@ struct osc_delete_load_balancer_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The name of the load balancer you want to delete.
          */
-	char *load_balancer_name; /* string */
+	char *load_balancer_name;
 };
 
 struct osc_delete_listener_rule_arg  {
@@ -11729,11 +11948,11 @@ struct osc_delete_listener_rule_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The name of the rule you want to delete.
          */
-	char *listener_rule_name; /* string */
+	char *listener_rule_name;
 };
 
 struct osc_delete_keypair_arg  {
@@ -11743,11 +11962,11 @@ struct osc_delete_keypair_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The name of the keypair you want to delete.
          */
-	char *keypair_name; /* string */
+	char *keypair_name;
 };
 
 struct osc_delete_internet_service_arg  {
@@ -11757,11 +11976,11 @@ struct osc_delete_internet_service_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the Internet service you want to delete.
          */
-	char *internet_service_id; /* string */
+	char *internet_service_id;
 };
 
 struct osc_delete_image_arg  {
@@ -11771,11 +11990,11 @@ struct osc_delete_image_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the OMI you want to delete.
          */
-	char *image_id; /* string */
+	char *image_id;
 };
 
 struct osc_delete_flexible_gpu_arg  {
@@ -11785,11 +12004,11 @@ struct osc_delete_flexible_gpu_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the fGPU you want to delete.
          */
-	char *flexible_gpu_id; /* string */
+	char *flexible_gpu_id;
 };
 
 struct osc_delete_export_task_arg  {
@@ -11799,11 +12018,11 @@ struct osc_delete_export_task_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the export task to delete.
          */
-	char *export_task_id; /* string */
+	char *export_task_id;
 };
 
 struct osc_delete_direct_link_interface_arg  {
@@ -11811,13 +12030,13 @@ struct osc_delete_direct_link_interface_arg  {
         /*
          * The ID of the DirectLink interface you want to delete.
          */
-	char *direct_link_interface_id; /* string */
+	char *direct_link_interface_id;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
 };
 
 struct osc_delete_direct_link_arg  {
@@ -11825,13 +12044,13 @@ struct osc_delete_direct_link_arg  {
         /*
          * The ID of the DirectLink you want to delete.
          */
-	char *direct_link_id; /* string */
+	char *direct_link_id;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
 };
 
 struct osc_delete_dhcp_options_arg  {
@@ -11839,13 +12058,13 @@ struct osc_delete_dhcp_options_arg  {
         /*
          * The ID of the DHCP options set you want to delete.
          */
-	char *dhcp_options_set_id; /* string */
+	char *dhcp_options_set_id;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
 };
 
 struct osc_delete_dedicated_group_arg  {
@@ -11853,19 +12072,19 @@ struct osc_delete_dedicated_group_arg  {
         /*
          * The ID of the dedicated group you want to delete.
          */
-	char *dedicated_group_id; /* string */
+	char *dedicated_group_id;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * If true, forces the deletion of the dedicated group and all its 
          * dependencies.
          */
         int is_set_force;
-	int force; /* bool */
+	int force;
 };
 
 struct osc_delete_client_gateway_arg  {
@@ -11873,13 +12092,13 @@ struct osc_delete_client_gateway_arg  {
         /*
          * The ID of the client gateway you want to delete.
          */
-	char *client_gateway_id; /* string */
+	char *client_gateway_id;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
 };
 
 struct osc_delete_ca_arg  {
@@ -11887,13 +12106,13 @@ struct osc_delete_ca_arg  {
         /*
          * The ID of the CA you want to delete.
          */
-	char *ca_id; /* string */
+	char *ca_id;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
 };
 
 struct osc_delete_api_access_rule_arg  {
@@ -11901,13 +12120,13 @@ struct osc_delete_api_access_rule_arg  {
         /*
          * The ID of the API access rule you want to delete.
          */
-	char *api_access_rule_id; /* string */
+	char *api_access_rule_id;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
 };
 
 struct osc_delete_access_key_arg  {
@@ -11915,19 +12134,19 @@ struct osc_delete_access_key_arg  {
         /*
          * The ID of the access key you want to delete.
          */
-	char *access_key_id; /* string */
+	char *access_key_id;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The name of the EIM user the access key you want to delete is 
          * associated with. By default, the user who sends the request (which 
          * can be the root account).
          */
-	char *user_name; /* string */
+	char *user_name;
 };
 
 struct osc_create_vpn_connection_route_arg  {
@@ -11936,17 +12155,17 @@ struct osc_create_vpn_connection_route_arg  {
          * The network prefix of the route, in CIDR notation (for example, 
          * `10.12.0.0/16`).
          */
-	char *destination_ip_range; /* string */
+	char *destination_ip_range;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the target VPN connection of the static route.
          */
-	char *vpn_connection_id; /* string */
+	char *vpn_connection_id;
 };
 
 struct osc_create_vpn_connection_arg  {
@@ -11954,17 +12173,17 @@ struct osc_create_vpn_connection_arg  {
         /*
          * The ID of the client gateway.
          */
-	char *client_gateway_id; /* string */
+	char *client_gateway_id;
         /*
          * The type of VPN connection (only `ipsec.1` is supported).
          */
-	char *connection_type; /* string */
+	char *connection_type;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * By default or if false, the VPN connection uses dynamic routing with 
          * Border Gateway Protocol (BGP). If true, routing is controlled using 
@@ -11974,11 +12193,11 @@ struct osc_create_vpn_connection_arg  {
          * [DeleteVpnConnectionRoute](#deletevpnconnectionroute).
          */
         int is_set_static_routes_only;
-	int static_routes_only; /* bool */
+	int static_routes_only;
         /*
          * The ID of the virtual gateway.
          */
-	char *virtual_gateway_id; /* string */
+	char *virtual_gateway_id;
 };
 
 struct osc_create_volume_arg  {
@@ -11988,7 +12207,7 @@ struct osc_create_volume_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The number of I/O operations per second (IOPS). This parameter must 
          * be specified only if you create an `io1` volume. The maximum number 
@@ -11996,22 +12215,22 @@ struct osc_create_volume_arg  {
          * performance ratio of 300 IOPS per gibibyte.
          */
         int is_set_iops;
-	int iops; /* int */
+	int iops;
         /*
          * The size of the volume, in gibibytes (GiB). The maximum allowed size 
          * for a volume is 14901 GiB. This parameter is required if the volume 
          * is not created from a snapshot (`SnapshotId` unspecified).
          */
         int is_set_size;
-	int size; /* int */
+	int size;
         /*
          * The ID of the snapshot from which you want to create the volume.
          */
-	char *snapshot_id; /* string */
+	char *snapshot_id;
         /*
          * The Subregion in which you want to create the volume.
          */
-	char *subregion_name; /* string */
+	char *subregion_name;
         /*
          * The type of volume you want to create (`io1` \\| `gp2` \\| 
          * `standard`). If not specified, a `standard` volume is created.<br 
@@ -12020,7 +12239,7 @@ struct osc_create_volume_arg  {
          * IOPS](https://docs.outscale.com/en/userguide/About-Volumes.html#_volum
          * e_types_and_iops).
          */
-	char *volume_type; /* string */
+	char *volume_type;
 };
 
 struct osc_create_vms_arg  {
@@ -12028,200 +12247,220 @@ struct osc_create_vms_arg  {
         /*
          * One or more block device mappings.
          *   Information about the block device mapping.
-         *   -Bsu: ref BsuToCreate
+         *   --BlockDeviceMappings.INDEX.Bsu: ref BsuToCreate
          *       Information about the BSU volume to create.
-         *       -DeleteOnVmDeletion: bool
+         *       --BlockDeviceMappings.INDEX.Bsu.DeleteOnVmDeletion: bool
          *         By default or if set to true, the volume is deleted when 
-         *         terminating the VM. If false, the volume is not deleted when 
-         *         terminating the VM.
-         *       -Iops: int
+         * terminating the 
+         *         VM. If false, the volume is not deleted when terminating the 
+         * VM.
+         *       --BlockDeviceMappings.INDEX.Bsu.Iops: int
          *         The number of I/O operations per second (IOPS). This 
-         * parameter 
-         *         must be specified only if you create an `io1` volume. The 
-         *         maximum number of IOPS allowed for `io1` volumes is `13000` 
-         *         with a maximum performance ratio of 300 IOPS per gibibyte.
-         *       -SnapshotId: string
+         * parameter must be 
+         *         specified only if you create an `io1` volume. The maximum 
+         * number of IOPS 
+         *         allowed for `io1` volumes is `13000` with a maximum 
+         * performance ratio of 
+         *         300 IOPS per gibibyte.
+         *       --BlockDeviceMappings.INDEX.Bsu.SnapshotId: string
          *         The ID of the snapshot used to create the volume.
-         *       -VolumeSize: int
+         *       --BlockDeviceMappings.INDEX.Bsu.VolumeSize: int
          *         The size of the volume, in gibibytes (GiB).<br />\nIf you 
-         *         specify a snapshot ID, the volume size must be at least equal 
-         *         to the snapshot size.<br />\nIf you specify a snapshot ID but 
-         *         no volume size, the volume is created with a size similar to 
-         *         the snapshot one.
-         *       -VolumeType: string
+         * specify a 
+         *         snapshot ID, the volume size must be at least equal to the 
+         * snapshot 
+         *         size.<br />\nIf you specify a snapshot ID but no volume size, 
+         * the volume 
+         *         is created with a size similar to the snapshot one.
+         *       --BlockDeviceMappings.INDEX.Bsu.VolumeType: string
          *         The type of the volume (`standard` \\| `io1` \\| `gp2`). If 
-         *         not specified in the request, a `standard` volume is 
-         *         created.<br />\nFor more information about volume types, see 
-         *         [About Volumes > Volume Types and 
+         * not 
+         *         specified in the request, a `standard` volume is created.<br 
+         * />\nFor more 
+         *         information about volume types, see [About Volumes > Volume 
+         * Types and 
          *         
-         * IOPS](https://docs.outscale.com/en/userguide/About-Volumes.html#
-         *         _volume_types_and_iops).
-         *   -DeviceName: string
-         *     The device name for the volume. For a root device, you must 
-         *     use `/dev/sda1`. For other volumes, you must use `/dev/sdX`, 
-         *     `/dev/sdXX`, `/dev/xvdX`, or `/dev/xvdXX` (where the first `X` 
-         *     is a letter between `b` and `z`, and the second `X` is a letter 
-         *     between `a` and `z`).
-         *   -NoDevice: string
-         *     Removes the device which is included in the block device 
-         *     mapping of the OMI.
-         *   -VirtualDeviceName: string
+         * IOPS](https://docs.outscale.com/en/userguide/About-Volumes.html#_volum
+         * e_ty
+         *         pes_and_iops).
+         *   --BlockDeviceMappings.INDEX.DeviceName: string
+         *     The device name for the volume. For a root device, you must use 
+         *     `/dev/sda1`. For other volumes, you must use `/dev/sdX`, 
+         * `/dev/sdXX`, 
+         *     `/dev/xvdX`, or `/dev/xvdXX` (where the first `X` is a letter 
+         * between `b` 
+         *     and `z`, and the second `X` is a letter between `a` and `z`).
+         *   --BlockDeviceMappings.INDEX.NoDevice: string
+         *     Removes the device which is included in the block device mapping 
+         * of the 
+         *     OMI.
+         *   --BlockDeviceMappings.INDEX.VirtualDeviceName: string
          *     The name of the virtual device (`ephemeralN`).
          */
         char *block_device_mappings_str;
         int nb_block_device_mappings;
-	struct block_device_mapping_vm_creation *block_device_mappings; /* array ref BlockDeviceMappingVmCreation */
+	struct block_device_mapping_vm_creation *block_device_mappings;
         /*
          * By default or if true, the VM is started on creation. If false, the 
          * VM is stopped on creation.
          */
         int is_set_boot_on_creation;
-	int boot_on_creation; /* bool */
+	int boot_on_creation;
         /*
          * This parameter is not available. It is present in our API for the 
          * sake of historical compatibility with AWS.
          */
         int is_set_bsu_optimized;
-	int bsu_optimized; /* bool */
+	int bsu_optimized;
         /*
          * A unique identifier which enables you to manage the idempotency.
          */
-	char *client_token; /* string */
+	char *client_token;
         /*
          * If true, you cannot delete the VM unless you change this parameter 
          * back to false.
          */
         int is_set_deletion_protection;
-	int deletion_protection; /* bool */
+	int deletion_protection;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the OMI used to create the VM. You can find the list of 
          * OMIs by calling the [ReadImages](#readimages) method.
          */
-	char *image_id; /* string */
+	char *image_id;
         /*
          * The name of the keypair.
          */
-	char *keypair_name; /* string */
+	char *keypair_name;
         /*
          * The maximum number of VMs you want to create. If all the VMs cannot 
          * be created, the largest possible number of VMs above MinVmsCount is 
          * created.
          */
         int is_set_max_vms_count;
-	int max_vms_count; /* int */
+	int max_vms_count;
         /*
          * The minimum number of VMs you want to create. If this number of VMs 
          * cannot be created, no VMs are created.
          */
         int is_set_min_vms_count;
-	int min_vms_count; /* int */
+	int min_vms_count;
         /*
          * (dedicated tenancy only) If true, nested virtualization is enabled. 
          * If false, it is disabled.
          */
         int is_set_nested_virtualization;
-	int nested_virtualization; /* bool */
+	int nested_virtualization;
         /*
          * One or more NICs. If you specify this parameter, you must not specify 
          * the `SubnetId` and `SubregionName` parameters. You also must define 
          * one NIC as the primary network interface of the VM with `0` as its 
          * device number.
-         *   Information about the network interface card (NIC) when 
-         *   creating a virtual machine (VM).
-         *   -DeleteOnVmDeletion: bool
+         *   Information about the network interface card (NIC) when creating a 
+         *   virtual machine (VM).
+         *   --Nics.INDEX.DeleteOnVmDeletion: bool
          *     If true, the NIC is deleted when the VM is terminated. You can 
-         *     specify this parameter only for a new NIC. To modify this value 
-         *     for an existing NIC, see [UpdateNic](#updatenic).
-         *   -Description: string
+         * specify 
+         *     this parameter only for a new NIC. To modify this value for an 
+         * existing 
+         *     NIC, see [UpdateNic](#updatenic).
+         *   --Nics.INDEX.Description: string
          *     The description of the NIC, if you are creating a NIC when 
-         *     creating the VM.
-         *   -DeviceNumber: int
+         * creating the 
+         *     VM.
+         *   --Nics.INDEX.DeviceNumber: int
          *     The index of the VM device for the NIC attachment (between `0` 
-         *     and `7`, both included). This parameter is required if you 
-         *     create a NIC when creating the VM.
-         *   -NicId: string
+         * and `7`, 
+         *     both included). This parameter is required if you create a NIC 
+         * when 
+         *     creating the VM.
+         *   --Nics.INDEX.NicId: string
          *     The ID of the NIC, if you are attaching an existing NIC when 
-         *     creating a VM.
-         *   -PrivateIps: array ref PrivateIpLight
-         *     One or more private IPs to assign to the NIC, if you create a 
-         *     NIC when creating a VM. Only one private IP can be the primary 
-         *     private IP.
+         * creating a 
+         *     VM.
+         *   --Nics.INDEX.PrivateIps: array ref PrivateIpLight
+         *     One or more private IPs to assign to the NIC, if you create a NIC 
+         * when 
+         *     creating a VM. Only one private IP can be the primary private IP.
          *       Information about the private IP.
-         *       -IsPrimary: bool
+         *       --Nics.INDEX.PrivateIps.INDEX.IsPrimary: bool
          *         If true, the IP is the primary private IP of the NIC.
-         *       -PrivateIp: string
+         *       --Nics.INDEX.PrivateIps.INDEX.PrivateIp: string
          *         The private IP of the NIC.
-         *   -SecondaryPrivateIpCount: int
+         *   --Nics.INDEX.SecondaryPrivateIpCount: int
          *     The number of secondary private IPs, if you create a NIC when 
-         *     creating a VM. This parameter cannot be specified if you 
-         *     specified more than one private IP in the `PrivateIps` 
-         *     parameter.
-         *   -SecurityGroupIds: array string
-         *     One or more IDs of security groups for the NIC, if you create 
-         *     a NIC when creating a VM.
-         *   -SubnetId: string
+         * creating a 
+         *     VM. This parameter cannot be specified if you specified more than 
+         * one 
+         *     private IP in the `PrivateIps` parameter.
+         *   --Nics.INDEX.SecurityGroupIds: array string
+         *     One or more IDs of security groups for the NIC, if you create a 
+         * NIC when 
+         *     creating a VM.
+         *   --Nics.INDEX.SubnetId: string
          *     The ID of the Subnet for the NIC, if you create a NIC when 
-         *     creating a VM. This parameter is required if you create a NIC 
-         *     when creating the VM.
+         * creating a 
+         *     VM. This parameter is required if you create a NIC when creating 
+         * the VM.
          */
         char *nics_str;
         int nb_nics;
-	struct nic_for_vm_creation *nics; /* array ref NicForVmCreation */
+	struct nic_for_vm_creation *nics;
         /*
          * The performance of the VM (`medium` \\| `high` \\| `highest`). By 
          * default, `high`. This parameter is ignored if you specify a 
          * performance flag directly in the `VmType` parameter.
          */
-	char *performance; /* string */
+	char *performance;
         /*
          *   Information about the placement of the VM.
-         *   -SubregionName: string
+         *   --Placement.SubregionName: string
          *     The name of the Subregion. If you specify this parameter, you 
-         *     must not specify the `Nics` parameter.
-         *   -Tenancy: string
+         * must not 
+         *     specify the `Nics` parameter.
+         *   --Placement.Tenancy: string
          *     The tenancy of the VM (`default`, `dedicated`, or a dedicated 
-         *     group ID).
+         * group ID).
          */
         char *placement_str;
         int is_set_placement;
-	struct placement placement; /* ref Placement */
+	struct placement placement;
         /*
          * One or more private IPs of the VM.
          */
         char *private_ips_str;
-	char **private_ips; /* array string */
+	char **private_ips;
         /*
          * One or more IDs of security group for the VMs.
          */
         char *security_group_ids_str;
-	char **security_group_ids; /* array string */
+	char **security_group_ids;
         /*
          * One or more names of security groups for the VMs.
          */
         char *security_groups_str;
-	char **security_groups; /* array string */
+	char **security_groups;
         /*
          * The ID of the Subnet in which you want to create the VM. If you 
          * specify this parameter, you must not specify the `Nics` parameter.
          */
-	char *subnet_id; /* string */
+	char *subnet_id;
         /*
          * Data or script used to add a specific configuration to the VM. It 
          * must be Base64-encoded and is limited to 500 kibibytes (KiB).
          */
-	char *user_data; /* string */
+	char *user_data;
         /*
          * The VM behavior when you stop it. By default or if set to `stop`, the 
          * VM stops. If set to `restart`, the VM stops then automatically 
          * restarts. If set to `terminate`, the VM stops and is terminated.
          */
-	char *vm_initiated_shutdown_behavior; /* string */
+	char *vm_initiated_shutdown_behavior;
         /*
          * The type of VM. You can specify a TINA type (in the `tinavW.cXrYpZ` 
          * or `tinavW.cXrY` format), or an AWS type (for example, `t2.small`, 
@@ -12233,7 +12472,7 @@ struct osc_create_vms_arg  {
          * parameter. For more information, see [VM 
          * Types](https://docs.outscale.com/en/userguide/VM-Types.html).
          */
-	char *vm_type; /* string */
+	char *vm_type;
 };
 
 struct osc_create_vm_template_arg  {
@@ -12242,54 +12481,54 @@ struct osc_create_vm_template_arg  {
          * The number of vCores to use for each VM.
          */
         int is_set_cpu_cores;
-	int cpu_cores; /* int */
+	int cpu_cores;
         /*
          * The processor generation to use for each VM (for example, `v4`).
          */
-	char *cpu_generation; /* string */
+	char *cpu_generation;
         /*
          * The performance of the VMs (`medium` \\| `high` \\| `highest`).
          */
-	char *cpu_performance; /* string */
+	char *cpu_performance;
         /*
          * A description for the VM template.
          */
-	char *description; /* string */
+	char *description;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the OMI to use for each VM. You can find a list of OMIs by 
          * calling the [ReadImages](#readimages) method.
          */
-	char *image_id; /* string */
+	char *image_id;
         /*
          * The name of the keypair to use for each VM.
          */
-	char *keypair_name; /* string */
+	char *keypair_name;
         /*
          * The amount of RAM to use for each VM.
          */
         int is_set_ram;
-	int ram; /* int */
+	int ram;
         /*
          * One or more tags to add to the VM template.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
         /*
          * The name of the VM template.
          */
-	char *vm_template_name; /* string */
+	char *vm_template_name;
 };
 
 struct osc_create_vm_group_arg  {
@@ -12297,13 +12536,13 @@ struct osc_create_vm_group_arg  {
         /*
          * A description for the VM group.
          */
-	char *description; /* string */
+	char *description;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The positioning strategy of VMs on hypervisors. By default, or if set 
          * to `no-strategy` our orchestrator determines the most adequate 
@@ -12312,40 +12551,40 @@ struct osc_create_vm_group_arg  {
          * `repulse`, your VMs are deployed on a different hypervisor, which 
          * improves fault tolerance.
          */
-	char *positioning_strategy; /* string */
+	char *positioning_strategy;
         /*
          * One or more IDs of security groups for the VM group.
          */
         char *security_group_ids_str;
-	char **security_group_ids; /* array string */
+	char **security_group_ids;
         /*
          * The ID of the Subnet in which you want to create the VM group.
          */
-	char *subnet_id; /* string */
+	char *subnet_id;
         /*
          * One or more tags to add to the VM group.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
         /*
          * The number of VMs deployed in the VM group.
          */
         int is_set_vm_count;
-	int vm_count; /* int */
+	int vm_count;
         /*
          * The name of the VM group.
          */
-	char *vm_group_name; /* string */
+	char *vm_group_name;
         /*
          * The ID of the VM template used to launch VMs in the VM group.
          */
-	char *vm_template_id; /* string */
+	char *vm_template_id;
 };
 
 struct osc_create_virtual_gateway_arg  {
@@ -12354,13 +12593,13 @@ struct osc_create_virtual_gateway_arg  {
          * The type of VPN connection supported by the virtual gateway (only 
          * `ipsec.1` is supported).
          */
-	char *connection_type; /* string */
+	char *connection_type;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
 };
 
 struct osc_create_user_group_arg  {
@@ -12370,15 +12609,15 @@ struct osc_create_user_group_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The path to the group. If not specified, it is set to a slash (`/`).
          */
-	char *path; /* string */
+	char *path;
         /*
          * The name of the group.
          */
-	char *user_group_name; /* string */
+	char *user_group_name;
 };
 
 struct osc_create_user_arg  {
@@ -12388,20 +12627,20 @@ struct osc_create_user_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The path to the EIM user you want to create (by default, `/`). This 
          * path name must begin and end with a slash (`/`), and contain between 
          * 1 and 512 alphanumeric characters and/or slashes (`/`), or 
          * underscores (_).
          */
-	char *path; /* string */
+	char *path;
         /*
          * The name of the EIM user. This user name must contain between 1 and 
          * 64 alphanumeric characters and/or pluses (+), equals (=), commas (,), 
          * periods (.), at signs (@), dashes (-), or underscores (_).
          */
-	char *user_name; /* string */
+	char *user_name;
 };
 
 struct osc_create_tags_arg  {
@@ -12411,23 +12650,23 @@ struct osc_create_tags_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * One or more resource IDs.
          */
         char *resource_ids_str;
-	char **resource_ids; /* array string */
+	char **resource_ids;
         /*
          * One or more tags to add to the specified resources.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
 };
 
 struct osc_create_subnet_arg  {
@@ -12437,7 +12676,7 @@ struct osc_create_subnet_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The IP range in the Subnet, in CIDR notation (for example, 
          * `10.0.0.0/16`).<br />\nThe IP range of the Subnet can be either the 
@@ -12447,15 +12686,15 @@ struct osc_create_subnet_arg  {
          * uses a /29 netmask (eight IPs). For more information, see [About 
          * Nets](https://docs.outscale.com/en/userguide/About-Nets.html).
          */
-	char *ip_range; /* string */
+	char *ip_range;
         /*
          * The ID of the Net for which you want to create a Subnet.
          */
-	char *net_id; /* string */
+	char *net_id;
         /*
          * The name of the Subregion in which you want to create the Subnet.
          */
-	char *subregion_name; /* string */
+	char *subregion_name;
 };
 
 struct osc_create_snapshot_export_task_arg  {
@@ -12465,34 +12704,33 @@ struct osc_create_snapshot_export_task_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   Information about the OOS export task to create.
-         *   -DiskImageFormat: string
+         *   --OsuExport.DiskImageFormat: string
          *     The format of the export disk (`qcow2` \\| `raw`).
-         *   -OsuApiKey: ref OsuApiKey
+         *   --OsuExport.OsuApiKey: ref OsuApiKey
          *       Information about the OOS API key.
-         *       -ApiKeyId: string
+         *       --OsuExport.OsuApiKey.ApiKeyId: string
          *         The API key of the OOS account that enables you to access the 
-         *         bucket.
-         *       -SecretKey: string
+         * bucket.
+         *       --OsuExport.OsuApiKey.SecretKey: string
          *         The secret key of the OOS account that enables you to access 
-         *         the bucket.
-         *   -OsuBucket: string
-         *     The name of the OOS bucket where you want to export the 
-         *     object.
-         *   -OsuManifestUrl: string
+         * the bucket.
+         *   --OsuExport.OsuBucket: string
+         *     The name of the OOS bucket where you want to export the object.
+         *   --OsuExport.OsuManifestUrl: string
          *     The URL of the manifest file.
-         *   -OsuPrefix: string
+         *   --OsuExport.OsuPrefix: string
          *     The prefix for the key of the OOS object.
          */
         char *osu_export_str;
         int is_set_osu_export;
-	struct osu_export_to_create osu_export; /* ref OsuExportToCreate */
+	struct osu_export_to_create osu_export;
         /*
          * The ID of the snapshot to export.
          */
-	char *snapshot_id; /* string */
+	char *snapshot_id;
 };
 
 struct osc_create_snapshot_arg  {
@@ -12500,13 +12738,13 @@ struct osc_create_snapshot_arg  {
         /*
          * A description for the snapshot.
          */
-	char *description; /* string */
+	char *description;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * **(when importing from a bucket)** The pre-signed URL of the snapshot 
          * you want to import, or the normal URL of the snapshot if you have 
@@ -12517,28 +12755,28 @@ struct osc_create_snapshot_arg  {
          * Objects](https://docs.outscale.com/en/userguide/Managing-Access-to-You
          * r-Buckets-and-Objects.html).
          */
-	char *file_location; /* string */
+	char *file_location;
         /*
          * **(when importing from a bucket)** The size of the snapshot you want 
          * to create in your account, in bytes. This size must be greater than 
          * or equal to the size of the original, uncompressed snapshot.
          */
         int is_set_snapshot_size;
-	int snapshot_size; /* int */
+	int snapshot_size;
         /*
          * **(when copying a snapshot)** The name of the source Region, which 
          * must be the same as the Region of your account.
          */
-	char *source_region_name; /* string */
+	char *source_region_name;
         /*
          * **(when copying a snapshot)** The ID of the snapshot you want to copy.
          */
-	char *source_snapshot_id; /* string */
+	char *source_snapshot_id;
         /*
          * **(when creating from a volume)** The ID of the volume you want to 
          * create a snapshot of.
          */
-	char *volume_id; /* string */
+	char *volume_id;
 };
 
 struct osc_create_server_certificate_arg  {
@@ -12548,36 +12786,36 @@ struct osc_create_server_certificate_arg  {
          * following syntax to make sure your certificate file is correctly 
          * parsed: `--Body=&quot;$(cat FILENAME)&quot;`.
          */
-	char *body; /* string */
+	char *body;
         /*
          * The PEM-encoded intermediate certification authorities.<br />With OSC 
          * CLI, use the following syntax to make sure your certificate chain 
          * file is correctly parsed: `--Chain=&quot;$(cat FILENAME)&quot;`.
          */
-	char *chain; /* string */
+	char *chain;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * A unique name for the certificate. Constraints: 1-128 alphanumeric 
          * characters, pluses (+), equals (=), commas (,), periods (.), at signs 
          * (@), minuses (-), or underscores (_).
          */
-	char *name; /* string */
+	char *name;
         /*
          * The path to the server certificate, set to a slash (/) if not 
          * specified.
          */
-	char *path; /* string */
+	char *path;
         /*
          * The PEM-encoded private key matching the certificate.<br />With OSC 
          * CLI, use the following syntax to make sure your key file is correctly 
          * parsed: `--PrivateKey=&quot;$(cat FILENAME)&quot;`.
          */
-	char *private_key; /* string */
+	char *private_key;
 };
 
 struct osc_create_security_group_rule_arg  {
@@ -12587,19 +12825,19 @@ struct osc_create_security_group_rule_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The direction of the flow: `Inbound` or `Outbound`. You can specify 
          * `Outbound` for Nets only.
          */
-	char *flow; /* string */
+	char *flow;
         /*
          * The beginning of the port range for the TCP and UDP protocols, or an 
          * ICMP type number. If you specify this parameter, you cannot specify 
          * the `Rules` parameter and its subparameters.
          */
         int is_set_from_port_range;
-	int from_port_range; /* int */
+	int from_port_range;
         /*
          * The IP protocol name (`tcp`, `udp`, `icmp`, or `-1` for all 
          * protocols). By default, `-1`. In a Net, this can also be an IP 
@@ -12608,78 +12846,87 @@ struct osc_create_security_group_rule_arg  {
          * mbers.xhtml). If you specify this parameter, you cannot specify the 
          * `Rules` parameter and its subparameters.
          */
-	char *ip_protocol; /* string */
+	char *ip_protocol;
         /*
          * The IP range for the security group rule, in CIDR notation (for 
          * example, 10.0.0.0/16). If you specify this parameter, you cannot 
          * specify the `Rules` parameter and its subparameters.
          */
-	char *ip_range; /* string */
+	char *ip_range;
         /*
          * Information about the security group rule to create. If you specify 
          * this parent parameter and its subparameters, you cannot specify the 
          * following parent parameters: `FromPortRange`, `IpProtocol`, 
          * `IpRange`, and `ToPortRange`.
          *   Information about the security group rule.
-         *   -FromPortRange: int
-         *     The beginning of the port range for the TCP and UDP protocols, 
-         *     or an ICMP type number.
-         *   -IpProtocol: string
+         *   --Rules.INDEX.FromPortRange: int
+         *     The beginning of the port range for the TCP and UDP protocols, or 
+         * an 
+         *     ICMP type number.
+         *   --Rules.INDEX.IpProtocol: string
          *     The IP protocol name (`tcp`, `udp`, `icmp`, or `-1` for all 
-         *     protocols). By default, `-1`. In a Net, this can also be an IP 
-         *     protocol number. For more information, see the [IANA.org 
-         *     website](https://www.iana.org/assignments/protocol-numbers/proto
-         *     col-numbers.xhtml).
-         *   -IpRanges: array string
+         * protocols). 
+         *     By default, `-1`. In a Net, this can also be an IP protocol 
+         * number. For 
+         *     more information, see the [IANA.org 
+         *     
+         * website](https://www.iana.org/assignments/protocol-numbers/protocol-nu
+         * mber
+         *     s.xhtml).
+         *   --Rules.INDEX.IpRanges: array string
          *     One or more IP ranges for the security group rules, in CIDR 
-         *     notation (for example, `10.0.0.0/16`).
-         *   -SecurityGroupsMembers: array ref SecurityGroupsMember
+         * notation 
+         *     (for example, `10.0.0.0/16`).
+         *   --Rules.INDEX.SecurityGroupsMembers: array ref SecurityGroupsMember
          *     Information about one or more source or destination security 
-         *     groups.
+         * groups.
          *       Information about a source or destination security group.
-         *       -AccountId: string
+         *       --Rules.INDEX.SecurityGroupsMembers.INDEX.AccountId: string
          *         The account ID that owns the source or destination security 
-         *         group.
-         *       -SecurityGroupId: string
+         * group.
+         *       --Rules.INDEX.SecurityGroupsMembers.INDEX.SecurityGroupId: 
+         * string
          *         The ID of a source or destination security group that you 
-         * want 
-         *         to link to the security group of the rule.
-         *       -SecurityGroupName: string
+         * want to link 
+         *         to the security group of the rule.
+         *       --Rules.INDEX.SecurityGroupsMembers.INDEX.SecurityGroupName: 
+         * string
          *         (Public Cloud only) The name of a source or destination 
-         *         security group that you want to link to the security group of 
-         *         the rule.
-         *   -ServiceIds: array string
-         *     One or more service IDs to allow traffic from a Net to access 
-         *     the corresponding OUTSCALE services. For more information, see 
+         * security group 
+         *         that you want to link to the security group of the rule.
+         *   --Rules.INDEX.ServiceIds: array string
+         *     One or more service IDs to allow traffic from a Net to access the 
+         *     corresponding OUTSCALE services. For more information, see 
          *     [ReadNetAccessPointServices](#readnetaccesspointservices).
-         *   -ToPortRange: int
+         *   --Rules.INDEX.ToPortRange: int
          *     The end of the port range for the TCP and UDP protocols, or an 
-         *     ICMP code number.
+         * ICMP code 
+         *     number.
          */
         char *rules_str;
         int nb_rules;
-	struct security_group_rule *rules; /* array ref SecurityGroupRule */
+	struct security_group_rule *rules;
         /*
          * The account ID that owns the source or destination security group 
          * specified in the `SecurityGroupNameToLink` parameter.
          */
-	char *security_group_account_id_to_link; /* string */
+	char *security_group_account_id_to_link;
         /*
          * The ID of the security group for which you want to create a rule.
          */
-	char *security_group_id; /* string */
+	char *security_group_id;
         /*
          * The ID of a source or destination security group that you want to 
          * link to the security group of the rule.
          */
-	char *security_group_name_to_link; /* string */
+	char *security_group_name_to_link;
         /*
          * The end of the port range for the TCP and UDP protocols, or an ICMP 
          * code number. If you specify this parameter, you cannot specify the 
          * `Rules` parameter and its subparameters.
          */
         int is_set_to_port_range;
-	int to_port_range; /* int */
+	int to_port_range;
 };
 
 struct osc_create_security_group_arg  {
@@ -12689,24 +12936,24 @@ struct osc_create_security_group_arg  {
          * contain between 1 and 255 characters. Allowed characters are `a-z`, 
          * `A-Z`, `0-9`, accented letters, spaces, and `_.-:/()#,@[]+=&;{}!$*`.
          */
-	char *description; /* string */
+	char *description;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the Net for the security group.
          */
-	char *net_id; /* string */
+	char *net_id;
         /*
          * The name of the security group.<br />\nThis name must not start with 
          * `sg-`.<br />\nThis name must be unique and contain between 1 and 255 
          * characters. Allowed characters are `a-z`, `A-Z`, `0-9`, spaces, and 
          * `_.-:/()#,@[]+=&;{}!$*`.
          */
-	char *security_group_name; /* string */
+	char *security_group_name;
 };
 
 struct osc_create_route_table_arg  {
@@ -12716,11 +12963,11 @@ struct osc_create_route_table_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the Net for which you want to create a route table.
          */
-	char *net_id; /* string */
+	char *net_id;
 };
 
 struct osc_create_route_arg  {
@@ -12729,37 +12976,37 @@ struct osc_create_route_arg  {
          * The IP range used for the destination match, in CIDR notation (for 
          * example, `10.0.0.0/24`).
          */
-	char *destination_ip_range; /* string */
+	char *destination_ip_range;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of an Internet service or virtual gateway attached to your Net.
          */
-	char *gateway_id; /* string */
+	char *gateway_id;
         /*
          * The ID of a NAT service.
          */
-	char *nat_service_id; /* string */
+	char *nat_service_id;
         /*
          * The ID of a Net peering.
          */
-	char *net_peering_id; /* string */
+	char *net_peering_id;
         /*
          * The ID of a NIC.
          */
-	char *nic_id; /* string */
+	char *nic_id;
         /*
          * The ID of the route table for which you want to create a route.
          */
-	char *route_table_id; /* string */
+	char *route_table_id;
         /*
          * The ID of a NAT VM in your Net (attached to exactly one NIC).
          */
-	char *vm_id; /* string */
+	char *vm_id;
 };
 
 struct osc_create_public_ip_arg  {
@@ -12769,7 +13016,7 @@ struct osc_create_public_ip_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
 };
 
 struct osc_create_product_type_arg  {
@@ -12777,17 +13024,17 @@ struct osc_create_product_type_arg  {
         /*
          * The description of the product type.
          */
-	char *description; /* string */
+	char *description;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The vendor of the product type.
          */
-	char *vendor; /* string */
+	char *vendor;
 };
 
 struct osc_create_policy_version_arg  {
@@ -12798,20 +13045,20 @@ struct osc_create_policy_version_arg  {
          * Information](https://docs.outscale.com/en/userguide/EIM-Reference-Info
          * rmation.html).
          */
-	char *document; /* string */
+	char *document;
         /*
          * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
          * see [Resource 
          * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
          * rs.html).
          */
-	char *policy_orn; /* string */
+	char *policy_orn;
         /*
          * If set to true, the new policy version is set as the default version 
          * and becomes the operative one.
          */
         int is_set_set_as_default;
-	int set_as_default; /* bool */
+	int set_as_default;
 };
 
 struct osc_create_policy_arg  {
@@ -12819,28 +13066,28 @@ struct osc_create_policy_arg  {
         /*
          * A description for the policy.
          */
-	char *description; /* string */
+	char *description;
         /*
          * The policy document, corresponding to a JSON string that contains the 
          * policy. For more information, see [EIM Reference 
          * Information](https://docs.outscale.com/en/userguide/EIM-Reference-Info
          * rmation.html).
          */
-	char *document; /* string */
+	char *document;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The path of the policy.
          */
-	char *path; /* string */
+	char *path;
         /*
          * The name of the policy.
          */
-	char *policy_name; /* string */
+	char *policy_name;
 };
 
 struct osc_create_nic_arg  {
@@ -12848,36 +13095,36 @@ struct osc_create_nic_arg  {
         /*
          * A description for the NIC.
          */
-	char *description; /* string */
+	char *description;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The primary private IP for the NIC.<br />\nThis IP must be within the 
          * IP range of the Subnet that you specify with the `SubnetId` 
          * attribute.<br />\nIf you do not specify this attribute, a random 
          * private IP is selected within the IP range of the Subnet.
          *   Information about the private IP.
-         *   -IsPrimary: bool
+         *   --PrivateIps.INDEX.IsPrimary: bool
          *     If true, the IP is the primary private IP of the NIC.
-         *   -PrivateIp: string
+         *   --PrivateIps.INDEX.PrivateIp: string
          *     The private IP of the NIC.
          */
         char *private_ips_str;
         int nb_private_ips;
-	struct private_ip_light *private_ips; /* array ref PrivateIpLight */
+	struct private_ip_light *private_ips;
         /*
          * One or more IDs of security groups for the NIC.
          */
         char *security_group_ids_str;
-	char **security_group_ids; /* array string */
+	char **security_group_ids;
         /*
          * The ID of the Subnet in which you want to create the NIC.
          */
-	char *subnet_id; /* string */
+	char *subnet_id;
 };
 
 struct osc_create_net_peering_arg  {
@@ -12885,17 +13132,17 @@ struct osc_create_net_peering_arg  {
         /*
          * The ID of the Net you want to connect with.
          */
-	char *accepter_net_id; /* string */
+	char *accepter_net_id;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the Net you send the peering request from.
          */
-	char *source_net_id; /* string */
+	char *source_net_id;
 };
 
 struct osc_create_net_access_point_arg  {
@@ -12905,20 +13152,20 @@ struct osc_create_net_access_point_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the Net.
          */
-	char *net_id; /* string */
+	char *net_id;
         /*
          * One or more IDs of route tables to use for the connection.
          */
         char *route_table_ids_str;
-	char **route_table_ids; /* array string */
+	char **route_table_ids;
         /*
          * The name of the service (in the format `com.outscale.region.service`).
          */
-	char *service_name; /* string */
+	char *service_name;
 };
 
 struct osc_create_net_arg  {
@@ -12928,12 +13175,12 @@ struct osc_create_net_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The IP range for the Net, in CIDR notation (for example, 
          * `10.0.0.0/16`).
          */
-	char *ip_range; /* string */
+	char *ip_range;
         /*
          * The tenancy options for the VMs:<br />\n- `default` if a VM created 
          * in a Net can be launched with any tenancy.<br />\n- `dedicated` if it 
@@ -12941,7 +13188,7 @@ struct osc_create_net_arg  {
          * hardware.<br />\n- `dedicated group ID`: if it can be launched in a 
          * dedicated group on single-tenant hardware.
          */
-	char *tenancy; /* string */
+	char *tenancy;
 };
 
 struct osc_create_nat_service_arg  {
@@ -12949,23 +13196,23 @@ struct osc_create_nat_service_arg  {
         /*
          * A unique identifier which enables you to manage the idempotency.
          */
-	char *client_token; /* string */
+	char *client_token;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The allocation ID of the public IP to associate with the NAT 
          * service.<br />\nIf the public IP is already associated with another 
          * resource, you must first disassociate it.
          */
-	char *public_ip_id; /* string */
+	char *public_ip_id;
         /*
          * The ID of the Subnet in which you want to create the NAT service.
          */
-	char *subnet_id; /* string */
+	char *subnet_id;
 };
 
 struct osc_create_load_balancer_tags_arg  {
@@ -12975,23 +13222,23 @@ struct osc_create_load_balancer_tags_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * One or more load balancer names.
          */
         char *load_balancer_names_str;
-	char **load_balancer_names; /* array string */
+	char **load_balancer_names;
         /*
          * One or more tags to add to the specified load balancers.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
 };
 
 struct osc_create_load_balancer_policy_arg  {
@@ -13002,33 +13249,33 @@ struct osc_create_load_balancer_policy_arg  {
          * lasts for the duration of the browser session.
          */
         int is_set_cookie_expiration_period;
-	int cookie_expiration_period; /* int */
+	int cookie_expiration_period;
         /*
          * The name of the application cookie used for stickiness. This 
          * parameter is required if you create a stickiness policy based on an 
          * application-generated cookie.
          */
-	char *cookie_name; /* string */
+	char *cookie_name;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The name of the load balancer for which you want to create a policy.
          */
-	char *load_balancer_name; /* string */
+	char *load_balancer_name;
         /*
          * The name of the policy. This name must be unique and consist of 
          * alphanumeric characters and dashes (-).
          */
-	char *policy_name; /* string */
+	char *policy_name;
         /*
          * The type of stickiness policy you want to create: `app` or 
          * `load_balancer`.
          */
-	char *policy_type; /* string */
+	char *policy_type;
 };
 
 struct osc_create_load_balancer_listeners_arg  {
@@ -13038,35 +13285,39 @@ struct osc_create_load_balancer_listeners_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * One or more listeners for the load balancer.
          *   Information about the listener to create.
-         *   -BackendPort: int
+         *   --Listeners.INDEX.BackendPort: int
          *     The port on which the backend VM is listening (between `1` and 
-         *     `65535`, both included).
-         *   -BackendProtocol: string
+         * `65535`, 
+         *     both included).
+         *   --Listeners.INDEX.BackendProtocol: string
          *     The protocol for routing traffic to backend VMs (`HTTP` \\| 
-         *     `HTTPS` \\| `TCP` \\| `SSL`).
-         *   -LoadBalancerPort: int
-         *     The port on which the load balancer is listening (between `1` 
-         *     and `65535`, both included).
-         *   -LoadBalancerProtocol: string
+         * `HTTPS` \\| 
+         *     `TCP` \\| `SSL`).
+         *   --Listeners.INDEX.LoadBalancerPort: int
+         *     The port on which the load balancer is listening (between `1` and 
+         *     `65535`, both included).
+         *   --Listeners.INDEX.LoadBalancerProtocol: string
          *     The routing protocol (`HTTP` \\| `HTTPS` \\| `TCP` \\| `SSL`).
-         *   -ServerCertificateId: string
-         *     The OUTSCALE Resource Name (ORN) of the server certificate. 
-         *     For more information, see [Resource Identifiers > OUTSCALE 
-         *     Resource Names 
-         *     (ORNs)](https://docs.outscale.com/en/userguide/Resource-Identifi
-         *     ers.html#_outscale_resource_names_orns).
+         *   --Listeners.INDEX.ServerCertificateId: string
+         *     The OUTSCALE Resource Name (ORN) of the server certificate. For 
+         * more 
+         *     information, see [Resource Identifiers > OUTSCALE Resource Names 
+         *     
+         * (ORNs)](https://docs.outscale.com/en/userguide/Resource-Identifiers.ht
+         * ml#_
+         *     outscale_resource_names_orns).
          */
         char *listeners_str;
         int nb_listeners;
-	struct listener_for_creation *listeners; /* array ref ListenerForCreation */
+	struct listener_for_creation *listeners;
         /*
          * The name of the load balancer for which you want to create listeners.
          */
-	char *load_balancer_name; /* string */
+	char *load_balancer_name;
 };
 
 struct osc_create_load_balancer_arg  {
@@ -13076,61 +13327,65 @@ struct osc_create_load_balancer_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * One or more listeners to create.
          *   Information about the listener to create.
-         *   -BackendPort: int
+         *   --Listeners.INDEX.BackendPort: int
          *     The port on which the backend VM is listening (between `1` and 
-         *     `65535`, both included).
-         *   -BackendProtocol: string
+         * `65535`, 
+         *     both included).
+         *   --Listeners.INDEX.BackendProtocol: string
          *     The protocol for routing traffic to backend VMs (`HTTP` \\| 
-         *     `HTTPS` \\| `TCP` \\| `SSL`).
-         *   -LoadBalancerPort: int
-         *     The port on which the load balancer is listening (between `1` 
-         *     and `65535`, both included).
-         *   -LoadBalancerProtocol: string
+         * `HTTPS` \\| 
+         *     `TCP` \\| `SSL`).
+         *   --Listeners.INDEX.LoadBalancerPort: int
+         *     The port on which the load balancer is listening (between `1` and 
+         *     `65535`, both included).
+         *   --Listeners.INDEX.LoadBalancerProtocol: string
          *     The routing protocol (`HTTP` \\| `HTTPS` \\| `TCP` \\| `SSL`).
-         *   -ServerCertificateId: string
-         *     The OUTSCALE Resource Name (ORN) of the server certificate. 
-         *     For more information, see [Resource Identifiers > OUTSCALE 
-         *     Resource Names 
-         *     (ORNs)](https://docs.outscale.com/en/userguide/Resource-Identifi
-         *     ers.html#_outscale_resource_names_orns).
+         *   --Listeners.INDEX.ServerCertificateId: string
+         *     The OUTSCALE Resource Name (ORN) of the server certificate. For 
+         * more 
+         *     information, see [Resource Identifiers > OUTSCALE Resource Names 
+         *     
+         * (ORNs)](https://docs.outscale.com/en/userguide/Resource-Identifiers.ht
+         * ml#_
+         *     outscale_resource_names_orns).
          */
         char *listeners_str;
         int nb_listeners;
-	struct listener_for_creation *listeners; /* array ref ListenerForCreation */
+	struct listener_for_creation *listeners;
         /*
          * The unique name of the load balancer (32 alphanumeric or hyphen 
          * characters maximum, but cannot start or end with a hyphen).
          */
-	char *load_balancer_name; /* string */
+	char *load_balancer_name;
         /*
          * The type of load balancer: `internet-facing` or `internal`. Use this 
          * parameter only for load balancers in a Net.
          */
-	char *load_balancer_type; /* string */
+	char *load_balancer_type;
         /*
          * (internet-facing only) The public IP you want to associate with the 
          * load balancer. If not specified, a public IP owned by 3DS OUTSCALE is 
          * associated.
          */
-	char *public_ip; /* string */
+	char *public_ip;
         /*
          * (Net only) One or more IDs of security groups you want to assign to 
          * the load balancer. If not specified, the default security group of 
          * the Net is assigned to the load balancer.
          */
         char *security_groups_str;
-	char **security_groups; /* array string */
+	char **security_groups;
         /*
          * (Net only) The ID of the Subnet in which you want to create the load 
          * balancer. Regardless of this Subnet, the load balancer can distribute 
          * traffic to all Subnets. This parameter is required in a Net.
          */
         char *subnets_str;
-	char **subnets; /* array string */
+	char **subnets;
         /*
          * (public Cloud only) The Subregion in which you want to create the 
          * load balancer. Regardless of this Subregion, the load balancer can 
@@ -13138,18 +13393,18 @@ struct osc_create_load_balancer_arg  {
          * the public Cloud.
          */
         char *subregion_names_str;
-	char **subregion_names; /* array string */
+	char **subregion_names;
         /*
          * One or more tags assigned to the load balancer.
          *   Information about the tag.
-         *   -Key: string
+         *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   -Value: string
+         *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags; /* array ref ResourceTag */
+	struct resource_tag *tags;
 };
 
 struct osc_create_listener_rule_arg  {
@@ -13159,48 +13414,50 @@ struct osc_create_listener_rule_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          *   Information about the load balancer.
-         *   -LoadBalancerName: string
-         *     The name of the load balancer to which the listener is 
-         *     attached.
-         *   -LoadBalancerPort: int
-         *     The port of load balancer on which the load balancer is 
-         *     listening (between `1` and `65535` both included).
+         *   --Listener.LoadBalancerName: string
+         *     The name of the load balancer to which the listener is attached.
+         *   --Listener.LoadBalancerPort: int
+         *     The port of load balancer on which the load balancer is listening 
+         *     (between `1` and `65535` both included).
          */
         char *listener_str;
         int is_set_listener;
-	struct load_balancer_light listener; /* ref LoadBalancerLight */
+	struct load_balancer_light listener;
         /*
          *   Information about the listener rule.
-         *   -Action: string
+         *   --ListenerRule.Action: string
          *     The type of action for the rule (always `forward`).
-         *   -HostNamePattern: string
+         *   --ListenerRule.HostNamePattern: string
          *     A host-name pattern for the rule, with a maximum length of 128 
          *     characters. This host-name pattern supports maximum three 
-         *     wildcards, and must not contain any special characters except 
-         *     [-.?].
-         *   -ListenerRuleName: string
+         * wildcards, and 
+         *     must not contain any special characters except [-.?].
+         *   --ListenerRule.ListenerRuleName: string
          *     A human-readable name for the listener rule.
-         *   -PathPattern: string
+         *   --ListenerRule.PathPattern: string
          *     A path pattern for the rule, with a maximum length of 128 
-         *     characters. This path pattern supports maximum three wildcards, 
-         *     and must not contain any special characters except 
-         *     [_-.$/~&quot;'@:+?].
-         *   -Priority: int
-         *     The priority level of the listener rule, between `1` and 
-         *     `19999` both included. Each rule must have a unique priority 
-         *     level. Otherwise, an error is returned.
+         * characters. 
+         *     This path pattern supports maximum three wildcards, and must not 
+         * contain 
+         *     any special characters except [_-.$/~&quot;'@:+?].
+         *   --ListenerRule.Priority: int
+         *     The priority level of the listener rule, between `1` and `19999` 
+         * both 
+         *     included. Each rule must have a unique priority level. Otherwise, 
+         * an 
+         *     error is returned.
          */
         char *listener_rule_str;
         int is_set_listener_rule;
-	struct listener_rule_for_creation listener_rule; /* ref ListenerRuleForCreation */
+	struct listener_rule_for_creation listener_rule;
         /*
          * The IDs of the backend VMs.
          */
         char *vm_ids_str;
-	char **vm_ids; /* array string */
+	char **vm_ids;
 };
 
 struct osc_create_keypair_arg  {
@@ -13210,18 +13467,18 @@ struct osc_create_keypair_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * A unique name for the keypair, with a maximum length of 255 [ASCII 
          * printable 
          * characters](https://en.wikipedia.org/wiki/ASCII#Printable_characters).
          */
-	char *keypair_name; /* string */
+	char *keypair_name;
         /*
          * The public key to import in your account, if you are importing an 
          * existing keypair. This value must be Base64-encoded.
          */
-	char *public_key; /* string */
+	char *public_key;
 };
 
 struct osc_create_internet_service_arg  {
@@ -13231,7 +13488,7 @@ struct osc_create_internet_service_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
 };
 
 struct osc_create_image_export_task_arg  {
@@ -13241,34 +13498,33 @@ struct osc_create_image_export_task_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the OMI to export.
          */
-	char *image_id; /* string */
+	char *image_id;
         /*
          *   Information about the OOS export task to create.
-         *   -DiskImageFormat: string
+         *   --OsuExport.DiskImageFormat: string
          *     The format of the export disk (`qcow2` \\| `raw`).
-         *   -OsuApiKey: ref OsuApiKey
+         *   --OsuExport.OsuApiKey: ref OsuApiKey
          *       Information about the OOS API key.
-         *       -ApiKeyId: string
+         *       --OsuExport.OsuApiKey.ApiKeyId: string
          *         The API key of the OOS account that enables you to access the 
-         *         bucket.
-         *       -SecretKey: string
+         * bucket.
+         *       --OsuExport.OsuApiKey.SecretKey: string
          *         The secret key of the OOS account that enables you to access 
-         *         the bucket.
-         *   -OsuBucket: string
-         *     The name of the OOS bucket where you want to export the 
-         *     object.
-         *   -OsuManifestUrl: string
+         * the bucket.
+         *   --OsuExport.OsuBucket: string
+         *     The name of the OOS bucket where you want to export the object.
+         *   --OsuExport.OsuManifestUrl: string
          *     The URL of the manifest file.
-         *   -OsuPrefix: string
+         *   --OsuExport.OsuPrefix: string
          *     The prefix for the key of the OOS object.
          */
         char *osu_export_str;
         int is_set_osu_export;
-	struct osu_export_to_create osu_export; /* ref OsuExportToCreate */
+	struct osu_export_to_create osu_export;
 };
 
 struct osc_create_image_arg  {
@@ -13277,62 +13533,72 @@ struct osc_create_image_arg  {
          * **(when registering from a snapshot, or from a bucket without using a 
          * manifest file)** The architecture of the OMI (`i386` or `x86_64`).
          */
-	char *architecture; /* string */
+	char *architecture;
         /*
          * **(when registering from a snapshot, or from a bucket without using a 
          * manifest file)** One or more block device mappings.
-         *   One or more parameters used to automatically set up volumes 
-         *   when the VM is created.
-         *   -Bsu: ref BsuToCreate
+         *   One or more parameters used to automatically set up volumes when 
+         * the VM 
+         *   is created.
+         *   --BlockDeviceMappings.INDEX.Bsu: ref BsuToCreate
          *       Information about the BSU volume to create.
-         *       -DeleteOnVmDeletion: bool
+         *       --BlockDeviceMappings.INDEX.Bsu.DeleteOnVmDeletion: bool
          *         By default or if set to true, the volume is deleted when 
-         *         terminating the VM. If false, the volume is not deleted when 
-         *         terminating the VM.
-         *       -Iops: int
+         * terminating the 
+         *         VM. If false, the volume is not deleted when terminating the 
+         * VM.
+         *       --BlockDeviceMappings.INDEX.Bsu.Iops: int
          *         The number of I/O operations per second (IOPS). This 
-         * parameter 
-         *         must be specified only if you create an `io1` volume. The 
-         *         maximum number of IOPS allowed for `io1` volumes is `13000` 
-         *         with a maximum performance ratio of 300 IOPS per gibibyte.
-         *       -SnapshotId: string
+         * parameter must be 
+         *         specified only if you create an `io1` volume. The maximum 
+         * number of IOPS 
+         *         allowed for `io1` volumes is `13000` with a maximum 
+         * performance ratio of 
+         *         300 IOPS per gibibyte.
+         *       --BlockDeviceMappings.INDEX.Bsu.SnapshotId: string
          *         The ID of the snapshot used to create the volume.
-         *       -VolumeSize: int
+         *       --BlockDeviceMappings.INDEX.Bsu.VolumeSize: int
          *         The size of the volume, in gibibytes (GiB).<br />\nIf you 
-         *         specify a snapshot ID, the volume size must be at least equal 
-         *         to the snapshot size.<br />\nIf you specify a snapshot ID but 
-         *         no volume size, the volume is created with a size similar to 
-         *         the snapshot one.
-         *       -VolumeType: string
+         * specify a 
+         *         snapshot ID, the volume size must be at least equal to the 
+         * snapshot 
+         *         size.<br />\nIf you specify a snapshot ID but no volume size, 
+         * the volume 
+         *         is created with a size similar to the snapshot one.
+         *       --BlockDeviceMappings.INDEX.Bsu.VolumeType: string
          *         The type of the volume (`standard` \\| `io1` \\| `gp2`). If 
-         *         not specified in the request, a `standard` volume is 
-         *         created.<br />\nFor more information about volume types, see 
-         *         [About Volumes > Volume Types and 
+         * not 
+         *         specified in the request, a `standard` volume is created.<br 
+         * />\nFor more 
+         *         information about volume types, see [About Volumes > Volume 
+         * Types and 
          *         
-         * IOPS](https://docs.outscale.com/en/userguide/About-Volumes.html#
-         *         _volume_types_and_iops).
-         *   -DeviceName: string
-         *     The device name for the volume. For a root device, you must 
-         *     use `/dev/sda1`. For other volumes, you must use `/dev/sdX`, 
-         *     `/dev/sdXX`, `/dev/xvdX`, or `/dev/xvdXX` (where the first `X` 
-         *     is a letter between `b` and `z`, and the second `X` is a letter 
-         *     between `a` and `z`).
-         *   -VirtualDeviceName: string
+         * IOPS](https://docs.outscale.com/en/userguide/About-Volumes.html#_volum
+         * e_ty
+         *         pes_and_iops).
+         *   --BlockDeviceMappings.INDEX.DeviceName: string
+         *     The device name for the volume. For a root device, you must use 
+         *     `/dev/sda1`. For other volumes, you must use `/dev/sdX`, 
+         * `/dev/sdXX`, 
+         *     `/dev/xvdX`, or `/dev/xvdXX` (where the first `X` is a letter 
+         * between `b` 
+         *     and `z`, and the second `X` is a letter between `a` and `z`).
+         *   --BlockDeviceMappings.INDEX.VirtualDeviceName: string
          *     The name of the virtual device (`ephemeralN`).
          */
         char *block_device_mappings_str;
         int nb_block_device_mappings;
-	struct block_device_mapping_image *block_device_mappings; /* array ref BlockDeviceMappingImage */
+	struct block_device_mapping_image *block_device_mappings;
         /*
          * A description for the new OMI.
          */
-	char *description; /* string */
+	char *description;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * **(when registering from a bucket by using a manifest file)** The 
          * pre-signed URL of the manifest file for the OMI you want to register. 
@@ -13346,43 +13612,43 @@ struct osc_create_image_arg  {
          * specify through the other parameters all the information that would 
          * otherwise be read from the manifest file.
          */
-	char *file_location; /* string */
+	char *file_location;
         /*
          * A unique name for the new OMI.<br />\nConstraints: 3-128 alphanumeric 
          * characters, underscores (`_`), spaces (` `), parentheses (`()`), 
          * slashes (`/`), periods (`.`), or dashes (`-`).
          */
-	char *image_name; /* string */
+	char *image_name;
         /*
          * **(when creating from a VM)** If false, the VM shuts down before 
          * creating the OMI and then reboots. If true, the VM does not.
          */
         int is_set_no_reboot;
-	int no_reboot; /* bool */
+	int no_reboot;
         /*
          * The product codes associated with the OMI.
          */
         char *product_codes_str;
-	char **product_codes; /* array string */
+	char **product_codes;
         /*
          * **(when registering from a snapshot, or from a bucket without using a 
          * manifest file)** The name of the root device for the new OMI.
          */
-	char *root_device_name; /* string */
+	char *root_device_name;
         /*
          * **(when copying an OMI)** The ID of the OMI you want to copy.
          */
-	char *source_image_id; /* string */
+	char *source_image_id;
         /*
          * **(when copying an OMI)** The name of the source Region (always the 
          * same as the Region of your account).
          */
-	char *source_region_name; /* string */
+	char *source_region_name;
         /*
          * **(when creating from a VM)** The ID of the VM from which you want to 
          * create the OMI.
          */
-	char *vm_id; /* string */
+	char *vm_id;
 };
 
 struct osc_create_flexible_gpu_arg  {
@@ -13391,31 +13657,31 @@ struct osc_create_flexible_gpu_arg  {
          * If true, the fGPU is deleted when the VM is terminated.
          */
         int is_set_delete_on_vm_deletion;
-	int delete_on_vm_deletion; /* bool */
+	int delete_on_vm_deletion;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The processor generation that the fGPU must be compatible with. If 
          * not specified, the oldest possible processor generation is selected 
          * (as provided by [ReadFlexibleGpuCatalog](#readflexiblegpucatalog) for 
          * the specified model of fGPU).
          */
-	char *generation; /* string */
+	char *generation;
         /*
          * The model of fGPU you want to allocate. For more information, see 
          * [About Flexible 
          * GPUs](https://docs.outscale.com/en/userguide/About-Flexible-GPUs.html)
          * .
          */
-	char *model_name; /* string */
+	char *model_name;
         /*
          * The Subregion in which you want to create the fGPU.
          */
-	char *subregion_name; /* string */
+	char *subregion_name;
 };
 
 struct osc_create_direct_link_interface_arg  {
@@ -13424,36 +13690,39 @@ struct osc_create_direct_link_interface_arg  {
          * The ID of the existing DirectLink for which you want to create the 
          * DirectLink interface.
          */
-	char *direct_link_id; /* string */
+	char *direct_link_id;
         /*
          *   Information about the DirectLink interface.
-         *   -BgpAsn: int
-         *     The BGP (Border Gateway Protocol) ASN (Autonomous System 
-         *     Number) on the customer's side of the DirectLink interface. 
-         *     This number must be between `64512` and `65534`.
-         *   -BgpKey: string
+         *   --DirectLinkInterface.BgpAsn: int
+         *     The BGP (Border Gateway Protocol) ASN (Autonomous System Number) 
+         * on the 
+         *     customer's side of the DirectLink interface. This number must be 
+         * between 
+         *     `64512` and `65534`.
+         *   --DirectLinkInterface.BgpKey: string
          *     The BGP authentication key.
-         *   -ClientPrivateIp: string
+         *   --DirectLinkInterface.ClientPrivateIp: string
          *     The IP on the customer's side of the DirectLink interface.
-         *   -DirectLinkInterfaceName: string
+         *   --DirectLinkInterface.DirectLinkInterfaceName: string
          *     The name of the DirectLink interface.
-         *   -OutscalePrivateIp: string
+         *   --DirectLinkInterface.OutscalePrivateIp: string
          *     The IP on the OUTSCALE side of the DirectLink interface.
-         *   -VirtualGatewayId: string
+         *   --DirectLinkInterface.VirtualGatewayId: string
          *     The ID of the target virtual gateway.
-         *   -Vlan: int
+         *   --DirectLinkInterface.Vlan: int
          *     The VLAN number associated with the DirectLink interface. This 
-         *     number must be unique and be between `2` and `4094`.
+         * number 
+         *     must be unique and be between `2` and `4094`.
          */
         char *direct_link_interface_str;
         int is_set_direct_link_interface;
-	struct direct_link_interface direct_link_interface; /* ref DirectLinkInterface */
+	struct direct_link_interface direct_link_interface;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
 };
 
 struct osc_create_direct_link_arg  {
@@ -13461,22 +13730,22 @@ struct osc_create_direct_link_arg  {
         /*
          * The bandwidth of the DirectLink (`1Gbps` \\| `10Gbps`).
          */
-	char *bandwidth; /* string */
+	char *bandwidth;
         /*
          * The name of the DirectLink.
          */
-	char *direct_link_name; /* string */
+	char *direct_link_name;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The code of the requested location for the DirectLink, returned by 
          * the [ReadLocations](#readlocations) method.
          */
-	char *location; /* string */
+	char *location;
 };
 
 struct osc_create_dhcp_options_arg  {
@@ -13487,7 +13756,7 @@ struct osc_create_dhcp_options_arg  {
          * parameters: `DomainName`, `DomainNameServers`, `LogServers`, or 
          * `NtpServers`.
          */
-	char *domain_name; /* string */
+	char *domain_name;
         /*
          * The IPs of domain name servers. If no IPs are specified, the 
          * `OutscaleProvidedDNS` value is set by default. You must specify at 
@@ -13495,27 +13764,27 @@ struct osc_create_dhcp_options_arg  {
          * `DomainNameServers`, `LogServers`, or `NtpServers`.
          */
         char *domain_name_servers_str;
-	char **domain_name_servers; /* array string */
+	char **domain_name_servers;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The IPs of the log servers. You must specify at least one of the 
          * following parameters: `DomainName`, `DomainNameServers`, 
          * `LogServers`, or `NtpServers`.
          */
         char *log_servers_str;
-	char **log_servers; /* array string */
+	char **log_servers;
         /*
          * The IPs of the Network Time Protocol (NTP) servers. You must specify 
          * at least one of the following parameters: `DomainName`, 
          * `DomainNameServers`, `LogServers`, or `NtpServers`.
          */
         char *ntp_servers_str;
-	char **ntp_servers; /* array string */
+	char **ntp_servers;
 };
 
 struct osc_create_dedicated_group_arg  {
@@ -13525,21 +13794,21 @@ struct osc_create_dedicated_group_arg  {
          * example, `4`).
          */
         int is_set_cpu_generation;
-	int cpu_generation; /* int */
+	int cpu_generation;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * A name for the dedicated group.
          */
-	char *name; /* string */
+	char *name;
         /*
          * The Subregion in which you want to create the dedicated group.
          */
-	char *subregion_name; /* string */
+	char *subregion_name;
 };
 
 struct osc_create_client_gateway_arg  {
@@ -13552,22 +13821,22 @@ struct osc_create_client_gateway_arg  {
          * or between 4200000000 and 4294967294.
          */
         int is_set_bgp_asn;
-	int bgp_asn; /* int */
+	int bgp_asn;
         /*
          * The communication protocol used to establish tunnel with your client 
          * gateway (only `ipsec.1` is supported).
          */
-	char *connection_type; /* string */
+	char *connection_type;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The public fixed IPv4 address of your client gateway.
          */
-	char *public_ip; /* string */
+	char *public_ip;
 };
 
 struct osc_create_ca_arg  {
@@ -13577,17 +13846,17 @@ struct osc_create_ca_arg  {
          * make sure your CA file is correctly parsed: `--CaPem=&quot;$(cat 
          * FILENAME)&quot;`.
          */
-	char *ca_pem; /* string */
+	char *ca_pem;
         /*
          * The description of the CA.
          */
-	char *description; /* string */
+	char *description;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
 };
 
 struct osc_create_api_access_rule_arg  {
@@ -13596,28 +13865,28 @@ struct osc_create_api_access_rule_arg  {
          * One or more IDs of Client Certificate Authorities (CAs).
          */
         char *ca_ids_str;
-	char **ca_ids; /* array string */
+	char **ca_ids;
         /*
          * One or more Client Certificate Common Names (CNs). If this parameter 
          * is specified, you must also specify the `CaIds` parameter.
          */
         char *cns_str;
-	char **cns; /* array string */
+	char **cns;
         /*
          * A description for the API access rule.
          */
-	char *description; /* string */
+	char *description;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * One or more IPs or CIDR blocks (for example, `192.0.2.0/16`).
          */
         char *ip_ranges_str;
-	char **ip_ranges; /* array string */
+	char **ip_ranges;
 };
 
 struct osc_create_account_arg  {
@@ -13629,66 +13898,66 @@ struct osc_create_account_arg  {
          * it. To remove all registered additional emails, specify an empty list.
          */
         char *additional_emails_str;
-	char **additional_emails; /* array string */
+	char **additional_emails;
         /*
          * The city of the account owner.
          */
-	char *city; /* string */
+	char *city;
         /*
          * The name of the company for the account.
          */
-	char *company_name; /* string */
+	char *company_name;
         /*
          * The country of the account owner.
          */
-	char *country; /* string */
+	char *country;
         /*
          * The ID of the customer. It must be 8 digits.
          */
-	char *customer_id; /* string */
+	char *customer_id;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The main email address for the account. This address is used for your 
          * credentials and notifications.
          */
-	char *email; /* string */
+	char *email;
         /*
          * The first name of the account owner.
          */
-	char *first_name; /* string */
+	char *first_name;
         /*
          * The job title of the account owner.
          */
-	char *job_title; /* string */
+	char *job_title;
         /*
          * The last name of the account owner.
          */
-	char *last_name; /* string */
+	char *last_name;
         /*
          * The mobile phone number of the account owner.
          */
-	char *mobile_number; /* string */
+	char *mobile_number;
         /*
          * The landline phone number of the account owner.
          */
-	char *phone_number; /* string */
+	char *phone_number;
         /*
          * The state/province of the account.
          */
-	char *state_province; /* string */
+	char *state_province;
         /*
          * The value added tax (VAT) number for the account.
          */
-	char *vat_number; /* string */
+	char *vat_number;
         /*
          * The ZIP code of the city.
          */
-	char *zip_code; /* string */
+	char *zip_code;
 };
 
 struct osc_create_access_key_arg  {
@@ -13698,20 +13967,20 @@ struct osc_create_access_key_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The date and time, or the date, at which you want the access key to 
          * expire, in ISO 8601 format (for example, `2020-06-14T00:00:00.000Z`, 
          * or `2020-06-14`). To remove an existing expiration date, use the 
          * method without specifying this parameter.
          */
-	char *expiration_date; /* string */
+	char *expiration_date;
         /*
          * The name of the EIM user that owns the key to be created. If you do 
          * not specify a user name, this action creates an access key for the 
          * user who sends the request (which can be the root account).
          */
-	char *user_name; /* string */
+	char *user_name;
 };
 
 struct osc_check_authentication_arg  {
@@ -13721,15 +13990,15 @@ struct osc_check_authentication_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The email address of the account.
          */
-	char *login; /* string */
+	char *login;
         /*
          * The password of the account.
          */
-	char *password; /* string */
+	char *password;
 };
 
 struct osc_add_user_to_user_group_arg  {
@@ -13739,23 +14008,23 @@ struct osc_add_user_to_user_group_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The name of the group you want to add a user to.
          */
-	char *user_group_name; /* string */
+	char *user_group_name;
         /*
          * The path to the group. If not specified, it is set to a slash (`/`).
          */
-	char *user_group_path; /* string */
+	char *user_group_path;
         /*
          * The name of the user you want to add to the group.
          */
-	char *user_name; /* string */
+	char *user_name;
         /*
          * The path to the user. If not specified, it is set to a slash (`/`).
          */
-	char *user_path; /* string */
+	char *user_path;
 };
 
 struct osc_accept_net_peering_arg  {
@@ -13765,11 +14034,11 @@ struct osc_accept_net_peering_arg  {
          * the action.
          */
         int is_set_dry_run;
-	int dry_run; /* bool */
+	int dry_run;
         /*
          * The ID of the Net peering you want to accept.
          */
-	char *net_peering_id; /* string */
+	char *net_peering_id;
 };
 
 

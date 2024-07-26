@@ -34,10 +34,18 @@ struct ptr_array {
 		}							\
 	} while (0)
 
+/*
+ * use to be sizeof v, but if I pass "" to SET_NEXT, sizeof v is 1, and I expect
+ * char *,
+ * because the array can contain int and double too, I'll gowith allocated the
+ * biggerst size for all
+ */
+#define OBJ_SIZE 8
+
 #define SET_NEXT(a,v,pa) do {						\
 		int cnt;						\
 		if (!a) {						\
-			a = calloc(64, sizeof(v));			\
+			a = calloc(64, OBJ_SIZE);				\
 			if (!a) break;					\
 			if (ptr_array_append(pa, a) < 0)		\
 				break;					\
@@ -45,10 +53,10 @@ struct ptr_array {
 		for (cnt = 0; a[cnt]; ++cnt);				\
 		if (cnt && (cnt % 63) == 0) {				\
 			int idx = ptr_array_get_idx(pa, a);		\
-			pa->ptrs[idx] = realloc(a, (cnt + 1 + 64) * sizeof(v));	\
+			pa->ptrs[idx] = realloc(a, (cnt + 1 + 64) * OBJ_SIZE); \
 			if (!pa->ptrs[idx]) { free(a); break; }		\
 			a = pa->ptrs[idx];				\
-			memset(a + cnt + 1, 0, 64 * sizeof(v));		\
+			memset(a + cnt + 1, 0, 64 * OBJ_SIZE);		\
 		}							\
 		a[cnt] = v;						\
 	} while (0)
