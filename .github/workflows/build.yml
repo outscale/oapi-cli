@@ -15,7 +15,7 @@ jobs:
     - uses: snickerbockers/submodules-init@v4
     - name: apt is for w__p
       run: |
-        wget https://github.com/cosmo-ray/json-search/releases/download/0.2/json-search-x86_64.AppImage
+        wget https://github.com/cosmo-ray/json-search/releases/download/0.3.1/json-search-x86_64.AppImage
         chmod +x json-search-x86_64.AppImage
         sudo cp json-search-x86_64.AppImage /bin/json-search
         sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
