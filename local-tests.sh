@@ -43,7 +43,7 @@ oapi-cli   --password=useless --login=non-existant CreateVms ReadVms  ReadVms --
 echo "[Test unknown user is unknown OK]"
 
 trap "echo [Test Create vms and read with user 0 FAIL]" ERR
-oapi-cli  --password='ashita wa dochida' --login='joe' CreateVms ReadVms  ReadVms --Filters.VmIds[] i-00000003 | jq .Vms  > /dev/null
+oapi-cli  --password='ashita wa dochida' --login='joe' CreateVms --ImageId ami-ffffff00 ReadVms  ReadVms --Filters.VmIds[] i-00000003 | jq .Vms  > /dev/null
 echo '[Test Create vms and read with user 0 OK]'
 
 trap "echo [Test read vm with user and --raw-print 0 FAIL]" ERR
