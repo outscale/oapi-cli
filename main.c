@@ -31116,23 +31116,23 @@ int main(int ac, char **av)
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				 	META_ARGS({ aa = 0; incr = 1; });
 			     }
-			      if ((aret = strcmp(next_a, "DryRun")) == 0 || aret == '='  || aret == '.') {
+			     printf("strcmp: %s - %d\n", next_a, strcmp(next_a, "Filters"));
+			     if ((aret = strcmp(next_a, "DryRun")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
 			      	 if (eq_ptr) {
-				    TRY((!*eq_ptr), "DryRun argument missing\n");
-				    aa = eq_ptr + 1;
-				    incr = 1;
+					 TRY((!*eq_ptr), "DryRun argument missing\n");
+					 aa = eq_ptr + 1;
+					 incr = 1;
 				 }
-				          s->is_set_dry_run = 1;
-				          if (!aa || !strcasecmp(aa, "true")) {
-				          		s->dry_run = 1;
-				           } else if (!strcasecmp(aa, "false")) {
-				          		s->dry_run = 0;
-				           } else {
-				          		BAD_RET("DryRun require true/false\n");
-				           }
-				      } else
-			      if ((aret = strcmp(next_a, "Filters")) == 0 || aret == '='  || aret == '.') {
+				 s->is_set_dry_run = 1;
+				 if (!aa || !strcasecmp(aa, "true")) {
+					 s->dry_run = 1;
+				 } else if (!strcasecmp(aa, "false")) {
+					 s->dry_run = 0;
+				 } else {
+					 BAD_RET("DryRun require true/false\n");
+				 }
+			      } else if ((aret = strcmp(next_a, "Filters")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
 			      	 if (eq_ptr) {
 				    TRY((!*eq_ptr), "Filters argument missing\n");
