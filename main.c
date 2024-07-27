@@ -3298,30 +3298,9 @@ int filters_flexible_gpu_parser(void *v_s, char *str, char *aa, struct ptr_array
 int filters_image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_image *s = v_s;
 	    int aret = 0;
-	if ((aret = strcmp(str, "AccountAliases")) == 0 || aret == '=' || aret == '.') {
-                 if (aret == '.') {
-                      int pos;
-                      char *endptr;
-                      int last = 0;
-                      char *dot_pos = strchr(str, '.');
-
-                      TRY(!(dot_pos++), "AccountAliases argument missing\n");
-                      pos = strtoul(dot_pos, &endptr, 0);
-                      TRY(endptr == dot_pos, "AccountAliases require an index\n");
-                      if (s->account_aliases) {
-                              for (; s->account_aliases[last]; ++last);
-                      }
-                      if (pos < last) {
-                              s->account_aliases[pos] = (aa);
-                      } else {
-                              for (int i = last; i < pos; ++i)
-                                      SET_NEXT(s->account_aliases, "", pa);
-                              SET_NEXT(s->account_aliases, (aa), pa);
-                      }
-                 } else {
-            	       TRY(!aa, "AccountAliases argument missing\n");
-                     s->account_aliases_str = aa;
-                 }
+	if ((aret = argcmp(str, "AccountAliases")) == 0 || aret == '=') {
+		TRY(!aa, "AccountAliases argument missing\n");
+		s->account_aliases_str = aa;
          } else if (!(aret = strcmp(str, "AccountAliases[]")) || aret == '=') {
                TRY(!aa, "AccountAliases[] argument missing\n");
                SET_NEXT(s->account_aliases, (aa), pa);
