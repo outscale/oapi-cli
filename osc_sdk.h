@@ -77,8 +77,8 @@ struct osc_str {
 
 #define OSC_ENV_FREE_AK_SK (OSC_ENV_FREE_AK | OSC_ENV_FREE_SK)
 
-#define OSC_API_VERSION "1.29.3"
-#define OSC_SDK_VERSION 0X001000
+#define OSC_API_VERSION "1.30.0"
+#define OSC_SDK_VERSION 0X001100
 
 enum osc_auth_method {
 	OSC_AKSK_METHOD,
@@ -149,15 +149,15 @@ struct access_key {
          */
 	char *access_key_id;
         /*
-         * The date and time (UTC) of creation of the access key.
+         * The date and time (UTC) at which the access key was created.
          */
 	char *creation_date;
         /*
-         * The date (UTC) at which the access key expires.
+         * The date and time (UTC) at which the access key expires.
          */
 	char *expiration_date;
         /*
-         * The date and time (UTC) of the last modification of the access key.
+         * The date and time (UTC) at which the access key was last modified.
          */
 	char *last_modification_date;
         /*
@@ -173,7 +173,7 @@ struct access_key_secret_key {
          */
 	char *access_key_id;
         /*
-         * The date and time (UTC) of creation of the access key.
+         * The date and time (UTC) at which the access key was created.
          */
 	char *creation_date;
         /*
@@ -181,11 +181,11 @@ struct access_key_secret_key {
          */
 	char *expiration_date;
         /*
-         * The date and time (UTC) of the last modification of the access key.
+         * The date and time (UTC) at which the access key was last modified.
          */
 	char *last_modification_date;
         /*
-         * The access key that enables you to send requests.
+         * The secret key that enables you to send requests.
          */
 	char *secret_key;
         /*
@@ -380,8 +380,8 @@ struct bsu_created {
         int is_set_delete_on_vm_deletion;
 	int delete_on_vm_deletion;
         /*
-         * The date and time (UTC) of attachment of the volume to the VM, in ISO 
-         * 8601 date-time format.
+         * The date and time (UTC) at which the volume was attached to the VM, 
+         * in ISO 8601 date-time format.
          */
 	char *link_date;
         /*
@@ -402,9 +402,9 @@ struct block_device_mapping_created {
          * the 
          *     volume is not deleted when terminating the VM.
          *   --Bsu.LinkDate: string
-         *     The date and time (UTC) of attachment of the volume to the VM, in 
-         * ISO 
-         *     8601 date-time format.
+         *     The date and time (UTC) at which the volume was attached to the 
+         * VM, in 
+         *     ISO 8601 date-time format.
          *   --Bsu.State: string
          *     The state of the volume.
          *   --Bsu.VolumeId: string
@@ -756,8 +756,8 @@ struct client_gateway {
          */
 	char *client_gateway_id;
         /*
-         * The type of communication tunnel used by the client gateway (only 
-         * `ipsec.1` is supported).
+         * The type of communication tunnel used by the client gateway (always 
+         * `ipsec.1`).
          */
 	char *connection_type;
         /*
@@ -1225,8 +1225,8 @@ struct filters_client_gateway {
         char *client_gateway_ids_str;
 	char **client_gateway_ids;
         /*
-         * The types of communication tunnels used by the client gateways (only 
-         * `ipsec.1` is supported).
+         * The types of communication tunnels used by the client gateways 
+         * (always `ipsec.1`).
          */
         char *connection_types_str;
 	char **connection_types;
@@ -2490,7 +2490,7 @@ struct filters_user_group {
 
 struct filters_virtual_gateway {
         /*
-         * The types of the virtual gateways (only `ipsec.1` is supported).
+         * The types of the virtual gateways (always `ipsec.1`).
          */
         char *connection_types_str;
 	char **connection_types;
@@ -3093,8 +3093,8 @@ struct filters_vms_state {
 
 struct filters_volume {
         /*
-         * The dates and times of creation of the volumes, in ISO 8601 date-time 
-         * format (for example, `2020-06-30T00:00:00.000Z`).
+         * The dates and times at which the volumes were created, in ISO 8601 
+         * date-time format (for example, `2020-06-30T00:00:00.000Z`).
          */
         char *creation_dates_str;
 	char **creation_dates;
@@ -3109,8 +3109,8 @@ struct filters_volume {
         char *link_volume_device_names_str;
 	char **link_volume_device_names;
         /*
-         * The dates and times of creation of the volumes, in ISO 8601 date-time 
-         * format (for example, `2020-06-30T00:00:00.000Z`).
+         * The dates and times at which the volumes were attached, in ISO 8601 
+         * date-time format (for example, `2020-06-30T00:00:00.000Z`).
          */
         char *link_volume_link_dates_str;
 	char **link_volume_link_dates;
@@ -3188,7 +3188,7 @@ struct filters_vpn_connection {
         char *client_gateway_ids_str;
 	char **client_gateway_ids;
         /*
-         * The types of the VPN connections (only `ipsec.1` is supported).
+         * The types of the VPN connections (always `ipsec.1`).
          */
         char *connection_types_str;
 	char **connection_types;
@@ -3278,7 +3278,7 @@ struct flexible_gpu {
 
 struct flexible_gpu_catalog {
         /*
-         * The generations of VMs that the fGPU is compatible with.
+         * The processor generations that the fGPUs are compatible with.
          */
         char *generations_str;
 	char **generations;
@@ -3440,7 +3440,7 @@ struct image {
         int nb_block_device_mappings;
 	struct block_device_mapping_image *block_device_mappings;
         /*
-         * The date and time (UTC) of creation of the OMI.
+         * The date and time (UTC) at which the OMI was created.
          */
 	char *creation_date;
         /*
@@ -3595,7 +3595,9 @@ struct inline_policy {
          * The policy document, corresponding to a JSON string that contains the 
          * policy. For more information, see [EIM Reference 
          * Information](https://docs.outscale.com/en/userguide/EIM-Reference-Info
-         * rmation.html).
+         * rmation.html) and [EIM Policy 
+         * Generator](https://docs.outscale.com/en/userguide/EIM-Policy-Generator
+         * .html).
          */
 	char *body;
         /*
@@ -3807,7 +3809,7 @@ struct link_route_table {
 
 struct linked_policy {
         /*
-         * The date and time (UTC) of creation of the linked policy.
+         * The date and time (UTC) at which the linked policy was created.
          */
 	char *creation_date;
         /*
@@ -4589,8 +4591,7 @@ struct nic {
 	char *description;
         /*
          * (Net only) If true, the source/destination check is enabled. If 
-         * false, it is disabled. This value must be false for a NAT VM to 
-         * perform network address translation (NAT) in a Net.
+         * false, it is disabled.
          */
         int is_set_is_source_dest_checked;
 	int is_source_dest_checked;
@@ -4783,8 +4784,7 @@ struct nic_light {
 	char *description;
         /*
          * (Net only) If true, the source/destination check is enabled. If 
-         * false, it is disabled. This value must be false for a NAT VM to 
-         * perform network address translation (NAT) in a Net.
+         * false, it is disabled.
          */
         int is_set_is_source_dest_checked;
 	int is_source_dest_checked;
@@ -5069,7 +5069,7 @@ struct placement {
 
 struct policy {
         /*
-         * The date and time (UTC) of creation of the policy.
+         * The date and time (UTC) at which the policy was created.
          */
 	char *creation_date;
         /*
@@ -5120,11 +5120,13 @@ struct policy_version {
          * The policy document, corresponding to a JSON string that contains the 
          * policy. For more information, see [EIM Reference 
          * Information](https://docs.outscale.com/en/userguide/EIM-Reference-Info
-         * rmation.html).
+         * rmation.html) and [EIM Policy 
+         * Generator](https://docs.outscale.com/en/userguide/EIM-Policy-Generator
+         * .html).
          */
 	char *body;
         /*
-         * The date and time (UTC) of creation of the version.
+         * The date and time (UTC) at which the version was created.
          */
 	char *creation_date;
         /*
@@ -5782,7 +5784,7 @@ struct security_groups_member {
 
 struct server_certificate {
         /*
-         * The date at which the server certificate expires.
+         * The date on which the server certificate expires.
          */
 	char *expiration_date;
         /*
@@ -5805,7 +5807,7 @@ struct server_certificate {
          */
 	char *path;
         /*
-         * The date at which the server certificate has been uploaded.
+         * The date on which the server certificate has been uploaded.
          */
 	char *upload_date;
 };
@@ -5836,7 +5838,7 @@ struct snapshot {
          */
 	char *account_id;
         /*
-         * The date and time (UTC) of creation of the snapshot.
+         * The date and time (UTC) at which the snapshot was created.
          */
 	char *creation_date;
         /*
@@ -6110,8 +6112,8 @@ struct vgw_telemetry {
 
 struct virtual_gateway {
         /*
-         * The type of VPN connection supported by the virtual gateway (only 
-         * `ipsec.1` is supported).
+         * The type of VPN connection supported by the virtual gateway (always 
+         * `ipsec.1`).
          */
 	char *connection_type;
         /*
@@ -6164,9 +6166,9 @@ struct vm {
          * false, the 
          *         volume is not deleted when terminating the VM.
          *       --BlockDeviceMappings.INDEX.Bsu.LinkDate: string
-         *         The date and time (UTC) of attachment of the volume to the 
-         * VM, in ISO 
-         *         8601 date-time format.
+         *         The date and time (UTC) at which the volume was attached to 
+         * the VM, in 
+         *         ISO 8601 date-time format.
          *       --BlockDeviceMappings.INDEX.Bsu.State: string
          *         The state of the volume.
          *       --BlockDeviceMappings.INDEX.Bsu.VolumeId: string
@@ -6188,7 +6190,7 @@ struct vm {
          */
 	char *client_token;
         /*
-         * The date and time (UTC) of creation of the VM.
+         * The date and time (UTC) at which the VM was created.
          */
 	char *creation_date;
         /*
@@ -6207,8 +6209,7 @@ struct vm {
 	char *image_id;
         /*
          * (Net only) If true, the source/destination check is enabled. If 
-         * false, it is disabled. This value must be false for a NAT VM to 
-         * perform network address translation (NAT) in a Net.
+         * false, it is disabled.
          */
         int is_set_is_source_dest_checked;
 	int is_source_dest_checked;
@@ -6241,9 +6242,7 @@ struct vm {
          *   --Nics.INDEX.IsSourceDestChecked: bool
          *     (Net only) If true, the source/destination check is enabled. If 
          * false, 
-         *     it is disabled. This value must be false for a NAT VM to perform 
-         * network 
-         *     address translation (NAT) in a Net.
+         *     it is disabled.
          *   --Nics.INDEX.LinkNic: ref LinkNicLight
          *       Information about the network interface card (NIC).
          *       --Nics.INDEX.LinkNic.DeleteOnVmDeletion: bool
@@ -6423,7 +6422,7 @@ struct vm {
 
 struct vm_group {
         /*
-         * The date and time (UTC) of creation of the VM group.
+         * The date and time (UTC) at which the VM group was created.
          */
 	char *creation_date;
         /*
@@ -6445,6 +6444,8 @@ struct vm_group {
         char *security_group_ids_str;
 	char **security_group_ids;
         /*
+         * The state of the VM group (`pending` \\| `available` \\| `scaling up` 
+         * \\| `scaling down` \\| `deleting` \\| `deleted`).
          */
 	char *state;
         /*
@@ -6549,7 +6550,7 @@ struct vm_template {
          */
 	char *cpu_performance;
         /*
-         * The date and time (UTC) of creation of the VM template.
+         * The date and time (UTC) at which the VM was created.
          */
 	char *creation_date;
         /*
@@ -6644,7 +6645,7 @@ struct vm_type {
 
 struct volume {
         /*
-         * The date and time (UTC) of creation of the volume.
+         * The date and time (UTC) at which the volume was created.
          */
 	char *creation_date;
         /*
@@ -7281,8 +7282,7 @@ struct osc_update_vm_arg  {
 	int dry_run;
         /*
          * (Net only) If true, the source/destination check is enabled. If 
-         * false, it is disabled. This value must be false for a NAT VM to 
-         * perform network address translation (NAT) in a Net.
+         * false, it is disabled.
          */
         int is_set_is_source_dest_checked;
 	int is_source_dest_checked;
@@ -8455,7 +8455,7 @@ struct osc_read_vpn_connections_arg  {
          *   --Filters.ClientGatewayIds: array string
          *     The IDs of the client gateways.
          *   --Filters.ConnectionTypes: array string
-         *     The types of the VPN connections (only `ipsec.1` is supported).
+         *     The types of the VPN connections (always `ipsec.1`).
          *   --Filters.RouteDestinationIpRanges: array string
          *     The destination IP ranges.
          *   --Filters.States: array string
@@ -8511,17 +8511,17 @@ struct osc_read_volumes_arg  {
         /*
          *   One or more filters.
          *   --Filters.CreationDates: array string
-         *     The dates and times of creation of the volumes, in ISO 8601 
-         * date-time 
-         *     format (for example, `2020-06-30T00:00:00.000Z`).
+         *     The dates and times at which the volumes were created, in ISO 
+         * 8601 
+         *     date-time format (for example, `2020-06-30T00:00:00.000Z`).
          *   --Filters.LinkVolumeDeleteOnVmDeletion: bool
          *     Whether the volumes are deleted or not when terminating the VMs.
          *   --Filters.LinkVolumeDeviceNames: array string
          *     The VM device names.
          *   --Filters.LinkVolumeLinkDates: array string
-         *     The dates and times of creation of the volumes, in ISO 8601 
-         * date-time 
-         *     format (for example, `2020-06-30T00:00:00.000Z`).
+         *     The dates and times at which the volumes were attached, in ISO 
+         * 8601 
+         *     date-time format (for example, `2020-06-30T00:00:00.000Z`).
          *   --Filters.LinkVolumeLinkStates: array string
          *     The attachment states of the volumes (`attaching` \\| `detaching` 
          * \\| 
@@ -8893,7 +8893,7 @@ struct osc_read_vm_templates_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         *   See 'filters' type documentation
+         *   One or more filters.
          *   --Filters.CpuCores: array integer
          *     The number of vCores.
          *   --Filters.CpuGenerations: array string
@@ -8979,7 +8979,7 @@ struct osc_read_virtual_gateways_arg  {
         /*
          *   One or more filters.
          *   --Filters.ConnectionTypes: array string
-         *     The types of the virtual gateways (only `ipsec.1` is supported).
+         *     The types of the virtual gateways (always `ipsec.1`).
          *   --Filters.LinkNetIds: array string
          *     The IDs of the Nets the virtual gateways are attached to.
          *   --Filters.LinkStates: array string
@@ -10752,8 +10752,8 @@ struct osc_read_client_gateways_arg  {
          *     The IDs of the client gateways.
          *   --Filters.ConnectionTypes: array string
          *     The types of communication tunnels used by the client gateways 
-         * (only 
-         *     `ipsec.1` is supported).
+         * (always 
+         *     `ipsec.1`).
          *   --Filters.PublicIps: array string
          *     The public IPv4 addresses of the client gateways.
          *   --Filters.States: array string
@@ -11055,7 +11055,9 @@ struct osc_put_user_group_policy_arg  {
          * The policy document, corresponding to a JSON string that contains the 
          * policy. For more information, see [EIM Reference 
          * Information](https://docs.outscale.com/en/userguide/EIM-Reference-Info
-         * rmation.html).
+         * rmation.html) and [EIM Policy 
+         * Generator](https://docs.outscale.com/en/userguide/EIM-Policy-Generator
+         * .html).
          */
 	char *policy_document;
         /*
@@ -12175,7 +12177,7 @@ struct osc_create_vpn_connection_arg  {
          */
 	char *client_gateway_id;
         /*
-         * The type of VPN connection (only `ipsec.1` is supported).
+         * The type of VPN connection (always `ipsec.1`).
          */
 	char *connection_type;
         /*
@@ -12590,8 +12592,8 @@ struct osc_create_vm_group_arg  {
 struct osc_create_virtual_gateway_arg  {
         /* Required: connection_type */
         /*
-         * The type of VPN connection supported by the virtual gateway (only 
-         * `ipsec.1` is supported).
+         * The type of VPN connection supported by the virtual gateway (always 
+         * `ipsec.1`).
          */
 	char *connection_type;
         /*
@@ -13043,7 +13045,9 @@ struct osc_create_policy_version_arg  {
          * The policy document, corresponding to a JSON string that contains the 
          * policy. For more information, see [EIM Reference 
          * Information](https://docs.outscale.com/en/userguide/EIM-Reference-Info
-         * rmation.html).
+         * rmation.html) and [EIM Policy 
+         * Generator](https://docs.outscale.com/en/userguide/EIM-Policy-Generator
+         * .html).
          */
 	char *document;
         /*
@@ -13071,7 +13075,9 @@ struct osc_create_policy_arg  {
          * The policy document, corresponding to a JSON string that contains the 
          * policy. For more information, see [EIM Reference 
          * Information](https://docs.outscale.com/en/userguide/EIM-Reference-Info
-         * rmation.html).
+         * rmation.html) and [EIM Policy 
+         * Generator](https://docs.outscale.com/en/userguide/EIM-Policy-Generator
+         * .html).
          */
 	char *document;
         /*
@@ -13267,7 +13273,7 @@ struct osc_create_load_balancer_policy_arg  {
          */
 	char *load_balancer_name;
         /*
-         * The name of the policy. This name must be unique and consist of 
+         * The unique name of the policy, with a maximum length of 32 
          * alphanumeric characters and dashes (-).
          */
 	char *policy_name;
@@ -13357,8 +13363,9 @@ struct osc_create_load_balancer_arg  {
         int nb_listeners;
 	struct listener_for_creation *listeners;
         /*
-         * The unique name of the load balancer (32 alphanumeric or hyphen 
-         * characters maximum, but cannot start or end with a hyphen).
+         * The unique name of the load balancer, with a maximum length of 32 
+         * alphanumeric characters and dashes (-). This name must not start or 
+         * end with a dash.
          */
 	char *load_balancer_name;
         /*
@@ -13824,7 +13831,7 @@ struct osc_create_client_gateway_arg  {
 	int bgp_asn;
         /*
          * The communication protocol used to establish tunnel with your client 
-         * gateway (only `ipsec.1` is supported).
+         * gateway (always `ipsec.1`).
          */
 	char *connection_type;
         /*

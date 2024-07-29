@@ -47,7 +47,7 @@
 
 #define OAPI_RAW_OUTPUT 1
 
-#define OAPI_CLI_VERSION "0.4.0"
+#define OAPI_CLI_VERSION "0.5.0"
 
 #define OAPI_CLI_UAGENT "oapi-cli/"OAPI_CLI_VERSION"; osc-sdk-c/"
 
