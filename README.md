@@ -27,6 +27,10 @@ and is the same as this below, using osc-cli-like notation
 ```bash
 oapi-cli DeleteTags --ResourceIds '["ID0", "ID1"]'  --Tags '[{"Key": "k0", "Value": "v0"}, {"Key": "k1", "Value": "v1"}]'
 ```
+On some shells (like zsh) using [] for arrays might not work. A workaround is to put singlequotes around the parameter
+```bash
+oapi-cli --color DeleteTags '--ResourceIds[]' "ID0" '--ResourceIds[]' "ID1"  --Tags.0.Key k0 --Tags.0.Value v0 --Tags.1.Key k1 --Tags.1.Value v1
+```
 
 show debug information (HTTP info, and json send to the api)
 ```bash
