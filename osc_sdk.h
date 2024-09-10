@@ -218,7 +218,7 @@ struct access_log {
          * `60`).
          */
         int is_set_publication_interval;
-	int publication_interval;
+	long long int publication_interval;
 };
 
 struct account {
@@ -293,7 +293,7 @@ struct api_access_policy {
          * `0`, your access keys can have unlimited lifetimes.
          */
         int is_set_max_access_key_expiration_seconds;
-	int max_access_key_expiration_seconds;
+	long long int max_access_key_expiration_seconds;
         /*
          * If true, a trusted session is activated, allowing you to bypass 
          * Certificate Authorities (CAs) enforcement. For more information, see 
@@ -433,7 +433,7 @@ struct bsu_to_create {
          * performance ratio of 300 IOPS per gibibyte.
          */
         int is_set_iops;
-	int iops;
+	long long int iops;
         /*
          * The ID of the snapshot used to create the volume.
          */
@@ -445,7 +445,7 @@ struct bsu_to_create {
          * volume is created with a size similar to the snapshot one.
          */
         int is_set_volume_size;
-	int volume_size;
+	long long int volume_size;
         /*
          * The type of the volume (`standard` \\| `io1` \\| `gp2`). If not 
          * specified in the request, a `standard` volume is created.<br />\nFor 
@@ -464,7 +464,7 @@ struct block_device_mapping_image {
          *     By default or if set to true, the volume is deleted when 
          * terminating the 
          *     VM. If false, the volume is not deleted when terminating the VM.
-         *   --Bsu.Iops: int
+         *   --Bsu.Iops: long long int
          *     The number of I/O operations per second (IOPS). This parameter 
          * must be 
          *     specified only if you create an `io1` volume. The maximum number 
@@ -474,7 +474,7 @@ struct block_device_mapping_image {
          *     300 IOPS per gibibyte.
          *   --Bsu.SnapshotId: string
          *     The ID of the snapshot used to create the volume.
-         *   --Bsu.VolumeSize: int
+         *   --Bsu.VolumeSize: long long int
          *     The size of the volume, in gibibytes (GiB).<br />\nIf you specify 
          * a 
          *     snapshot ID, the volume size must be at least equal to the 
@@ -516,7 +516,7 @@ struct block_device_mapping_vm_creation {
          *     By default or if set to true, the volume is deleted when 
          * terminating the 
          *     VM. If false, the volume is not deleted when terminating the VM.
-         *   --Bsu.Iops: int
+         *   --Bsu.Iops: long long int
          *     The number of I/O operations per second (IOPS). This parameter 
          * must be 
          *     specified only if you create an `io1` volume. The maximum number 
@@ -526,7 +526,7 @@ struct block_device_mapping_vm_creation {
          *     300 IOPS per gibibyte.
          *   --Bsu.SnapshotId: string
          *     The ID of the snapshot used to create the volume.
-         *   --Bsu.VolumeSize: int
+         *   --Bsu.VolumeSize: long long int
          *     The size of the volume, in gibibytes (GiB).<br />\nIf you specify 
          * a 
          *     snapshot ID, the volume size must be at least equal to the 
@@ -750,7 +750,7 @@ struct client_gateway {
          * Internet.
          */
         int is_set_bgp_asn;
-	int bgp_asn;
+	long long int bgp_asn;
         /*
          * The ID of the client gateway.
          */
@@ -856,7 +856,7 @@ struct dedicated_group {
          * The processor generation.
          */
         int is_set_cpu_generation;
-	int cpu_generation;
+	long long int cpu_generation;
         /*
          * The ID of the dedicated group.
          */
@@ -967,7 +967,7 @@ struct direct_link_interface {
          * between `64512` and `65534`.
          */
         int is_set_bgp_asn;
-	int bgp_asn;
+	long long int bgp_asn;
         /*
          * The BGP authentication key.
          */
@@ -993,7 +993,7 @@ struct direct_link_interface {
          * must be unique and be between `2` and `4094`.
          */
         int is_set_vlan;
-	int vlan;
+	long long int vlan;
 };
 
 struct direct_link_interfaces {
@@ -1006,7 +1006,7 @@ struct direct_link_interfaces {
          * the customer's side of the DirectLink interface.
          */
         int is_set_bgp_asn;
-	int bgp_asn;
+	long long int bgp_asn;
         /*
          * The BGP authentication key.
          */
@@ -1040,7 +1040,7 @@ struct direct_link_interfaces {
          * bytes (always `1500`).
          */
         int is_set_mtu;
-	int mtu;
+	long long int mtu;
         /*
          * The IP on the OUTSCALE side of the DirectLink interface.
          */
@@ -1059,7 +1059,7 @@ struct direct_link_interfaces {
          * The VLAN number associated with the DirectLink interface.
          */
         int is_set_vlan;
-	int vlan;
+	long long int vlan;
 };
 
 struct errors {
@@ -3286,12 +3286,12 @@ struct flexible_gpu_catalog {
          * The maximum number of VM vCores that the fGPU is compatible with.
          */
         int is_set_max_cpu;
-	int max_cpu;
+	long long int max_cpu;
         /*
          * The maximum amount of VM memory that the fGPU is compatible with.
          */
         int is_set_max_ram;
-	int max_ram;
+	long long int max_ram;
         /*
          * The model of fGPU.
          */
@@ -3300,7 +3300,7 @@ struct flexible_gpu_catalog {
          * The amount of video RAM (VRAM) of the fGPU.
          */
         int is_set_vram;
-	int vram;
+	long long int vram;
 };
 
 struct health_check {
@@ -3309,13 +3309,13 @@ struct health_check {
          * both included).
          */
         int is_set_check_interval;
-	int check_interval;
+	long long int check_interval;
         /*
          * The number of consecutive successful requests before considering the 
          * VM as healthy (between `2` and `10` both included).
          */
         int is_set_healthy_threshold;
-	int healthy_threshold;
+	long long int healthy_threshold;
         /*
          * If you use the HTTP or HTTPS protocols, the request URL path.
          */
@@ -3324,7 +3324,7 @@ struct health_check {
          * The port number (between `1` and `65535`, both included).
          */
         int is_set_port;
-	int port;
+	long long int port;
         /*
          * The protocol for the URL of the VM (`HTTP` \\| `HTTPS` \\| `TCP` \\| 
          * `SSL`).
@@ -3335,13 +3335,13 @@ struct health_check {
          * unhealthy, in seconds (between `2` and `60` both included).
          */
         int is_set_timeout;
-	int timeout;
+	long long int timeout;
         /*
          * The number of consecutive failed requests before considering the VM 
          * as unhealthy (between `2` and `10` both included).
          */
         int is_set_unhealthy_threshold;
-	int unhealthy_threshold;
+	long long int unhealthy_threshold;
 };
 
 struct permissions_on_resource {
@@ -3397,7 +3397,7 @@ struct image {
          * terminating the 
          *         VM. If false, the volume is not deleted when terminating the 
          * VM.
-         *       --BlockDeviceMappings.INDEX.Bsu.Iops: int
+         *       --BlockDeviceMappings.INDEX.Bsu.Iops: long long int
          *         The number of I/O operations per second (IOPS). This 
          * parameter must be 
          *         specified only if you create an `io1` volume. The maximum 
@@ -3407,7 +3407,7 @@ struct image {
          *         300 IOPS per gibibyte.
          *       --BlockDeviceMappings.INDEX.Bsu.SnapshotId: string
          *         The ID of the snapshot used to create the volume.
-         *       --BlockDeviceMappings.INDEX.Bsu.VolumeSize: int
+         *       --BlockDeviceMappings.INDEX.Bsu.VolumeSize: long long int
          *         The size of the volume, in gibibytes (GiB).<br />\nIf you 
          * specify a 
          *         snapshot ID, the volume size must be at least equal to the 
@@ -3567,7 +3567,7 @@ struct image_export_task {
          * The progress of the OMI export task, as a percentage.
          */
         int is_set_progress;
-	int progress;
+	long long int progress;
         /*
          * The state of the OMI export task (`pending/queued` \\| `pending` \\| 
          * `completed` \\| `failed` \\| `cancelled`).
@@ -3685,7 +3685,7 @@ struct link_nic {
          * included).
          */
         int is_set_device_number;
-	int device_number;
+	long long int device_number;
         /*
          * The ID of the NIC to attach.
          */
@@ -3716,7 +3716,7 @@ struct link_nic_light {
          * included).
          */
         int is_set_device_number;
-	int device_number;
+	long long int device_number;
         /*
          * The ID of the NIC to attach.
          */
@@ -3865,7 +3865,7 @@ struct listener {
          * `65535`, both included).
          */
         int is_set_backend_port;
-	int backend_port;
+	long long int backend_port;
         /*
          * The protocol for routing traffic to backend VMs (`HTTP` \\| `HTTPS` 
          * \\| `TCP` \\| `SSL`).
@@ -3876,7 +3876,7 @@ struct listener {
          * `65535`, both included).
          */
         int is_set_load_balancer_port;
-	int load_balancer_port;
+	long long int load_balancer_port;
         /*
          * The routing protocol (`HTTP` \\| `HTTPS` \\| `TCP` \\| `SSL`).
          */
@@ -3902,7 +3902,7 @@ struct listener_for_creation {
          * `65535`, both included).
          */
         int is_set_backend_port;
-	int backend_port;
+	long long int backend_port;
         /*
          * The protocol for routing traffic to backend VMs (`HTTP` \\| `HTTPS` 
          * \\| `TCP` \\| `SSL`).
@@ -3913,7 +3913,7 @@ struct listener_for_creation {
          * `65535`, both included).
          */
         int is_set_load_balancer_port;
-	int load_balancer_port;
+	long long int load_balancer_port;
         /*
          * The routing protocol (`HTTP` \\| `HTTPS` \\| `TCP` \\| `SSL`).
          */
@@ -3942,12 +3942,12 @@ struct listener_rule {
          * The ID of the listener.
          */
         int is_set_listener_id;
-	int listener_id;
+	long long int listener_id;
         /*
          * The ID of the listener rule.
          */
         int is_set_listener_rule_id;
-	int listener_rule_id;
+	long long int listener_rule_id;
         /*
          * A human-readable name for the listener rule.
          */
@@ -3964,7 +3964,7 @@ struct listener_rule {
          * error is returned.
          */
         int is_set_priority;
-	int priority;
+	long long int priority;
         /*
          * The IDs of the backend VMs.
          */
@@ -3999,7 +3999,7 @@ struct listener_rule_for_creation {
          * error is returned.
          */
         int is_set_priority;
-	int priority;
+	long long int priority;
 };
 
 struct source_security_group {
@@ -4027,7 +4027,7 @@ struct load_balancer {
          *   --AccessLog.OsuBucketPrefix: string
          *     The path to the folder of the access logs in your OOS bucket (by 
          *     default, the `root` level of your bucket).
-         *   --AccessLog.PublicationInterval: int
+         *   --AccessLog.PublicationInterval: long long int
          *     The time interval for the publication of access logs in the OOS 
          * bucket, 
          *     in minutes. This value can be either `5` or `60` (by default, 
@@ -4065,27 +4065,27 @@ struct load_balancer {
 	char *dns_name;
         /*
          *   Information about the health check configuration.
-         *   --HealthCheck.CheckInterval: int
+         *   --HealthCheck.CheckInterval: long long int
          *     The number of seconds between two requests (between `5` and `600` 
          * both 
          *     included).
-         *   --HealthCheck.HealthyThreshold: int
+         *   --HealthCheck.HealthyThreshold: long long int
          *     The number of consecutive successful requests before considering 
          * the VM 
          *     as healthy (between `2` and `10` both included).
          *   --HealthCheck.Path: string
          *     If you use the HTTP or HTTPS protocols, the request URL path.
-         *   --HealthCheck.Port: int
+         *   --HealthCheck.Port: long long int
          *     The port number (between `1` and `65535`, both included).
          *   --HealthCheck.Protocol: string
          *     The protocol for the URL of the VM (`HTTP` \\| `HTTPS` \\| `TCP` 
          * \\| 
          *     `SSL`).
-         *   --HealthCheck.Timeout: int
+         *   --HealthCheck.Timeout: long long int
          *     The maximum waiting time for a response before considering the VM 
          * as 
          *     unhealthy, in seconds (between `2` and `60` both included).
-         *   --HealthCheck.UnhealthyThreshold: int
+         *   --HealthCheck.UnhealthyThreshold: long long int
          *     The number of consecutive failed requests before considering the 
          * VM as 
          *     unhealthy (between `2` and `10` both included).
@@ -4096,7 +4096,7 @@ struct load_balancer {
         /*
          * The listeners for the load balancer.
          *   Information about the listener.
-         *   --Listeners.INDEX.BackendPort: int
+         *   --Listeners.INDEX.BackendPort: long long int
          *     The port on which the backend VM is listening (between `1` and 
          * `65535`, 
          *     both included).
@@ -4104,7 +4104,7 @@ struct load_balancer {
          *     The protocol for routing traffic to backend VMs (`HTTP` \\| 
          * `HTTPS` \\| 
          *     `TCP` \\| `SSL`).
-         *   --Listeners.INDEX.LoadBalancerPort: int
+         *   --Listeners.INDEX.LoadBalancerPort: long long int
          *     The port on which the load balancer is listening (between `1` and 
          *     `65535`, both included).
          *   --Listeners.INDEX.LoadBalancerProtocol: string
@@ -4132,7 +4132,8 @@ struct load_balancer {
         /*
          * The policies defined for the load balancer.
          *   Information about the stickiness policy.
-         *   --LoadBalancerStickyCookiePolicies.INDEX.CookieExpirationPeriod: int
+         *   --LoadBalancerStickyCookiePolicies.INDEX.CookieExpirationPeriod: 
+         * long long int
          *     The time period, in seconds, after which the cookie should be 
          * considered 
          *     stale.<br />\nIf `1`, the stickiness session lasts for the 
@@ -4221,7 +4222,7 @@ struct load_balancer_light {
          * (between `1` and `65535` both included).
          */
         int is_set_load_balancer_port;
-	int load_balancer_port;
+	long long int load_balancer_port;
 };
 
 struct load_balancer_sticky_cookie_policy {
@@ -4231,7 +4232,7 @@ struct load_balancer_sticky_cookie_policy {
          * duration of the browser session.
          */
         int is_set_cookie_expiration_period;
-	int cookie_expiration_period;
+	long long int cookie_expiration_period;
         /*
          * The name of the stickiness policy.
          */
@@ -4275,7 +4276,7 @@ struct log {
          * The duration of the logged call, in microseconds.
          */
         int is_set_call_duration;
-	int call_duration;
+	long long int call_duration;
         /*
          * The access key used for the logged call.
          */
@@ -4306,7 +4307,7 @@ struct log {
          * bytes.
          */
         int is_set_query_header_size;
-	int query_header_size;
+	long long int query_header_size;
         /*
          * The IP used for the logged call.
          */
@@ -4320,7 +4321,7 @@ struct log {
          * in bytes.
          */
         int is_set_query_payload_size;
-	int query_payload_size;
+	long long int query_payload_size;
         /*
          * The user agent of the HTTP request of the logged call.
          */
@@ -4333,12 +4334,12 @@ struct log {
          * The size of the response of the logged call, in bytes.
          */
         int is_set_response_size;
-	int response_size;
+	long long int response_size;
         /*
          * The HTTP status code of the response of the logged call.
          */
         int is_set_response_status_code;
-	int response_status_code;
+	long long int response_status_code;
 };
 
 struct maintenance_event {
@@ -4599,7 +4600,7 @@ struct nic {
          *   Information about the NIC attachment.
          *   --LinkNic.DeleteOnVmDeletion: bool
          *     If true, the NIC is deleted when the VM is terminated.
-         *   --LinkNic.DeviceNumber: int
+         *   --LinkNic.DeviceNumber: long long int
          *     The device index for the NIC attachment (between `1` and `7`, 
          * both 
          *     included).
@@ -4734,7 +4735,7 @@ struct nic_for_vm_creation {
          * when creating the VM.
          */
         int is_set_device_number;
-	int device_number;
+	long long int device_number;
         /*
          * The ID of the NIC, if you are attaching an existing NIC when creating 
          * a VM.
@@ -4758,7 +4759,7 @@ struct nic_for_vm_creation {
          * more than one private IP in the `PrivateIps` parameter.
          */
         int is_set_secondary_private_ip_count;
-	int secondary_private_ip_count;
+	long long int secondary_private_ip_count;
         /*
          * One or more IDs of security groups for the NIC, if you create a NIC 
          * when creating a VM.
@@ -4792,7 +4793,7 @@ struct nic_light {
          *   Information about the network interface card (NIC).
          *   --LinkNic.DeleteOnVmDeletion: bool
          *     If true, the NIC is deleted when the VM is terminated.
-         *   --LinkNic.DeviceNumber: int
+         *   --LinkNic.DeviceNumber: long long int
          *     The device index for the NIC attachment (between `1` and `7`, 
          * both 
          *     included).
@@ -4984,7 +4985,7 @@ struct phase1_options {
          * before considering the peer as dead, in seconds.
          */
         int is_set_dpd_timeout_seconds;
-	int dpd_timeout_seconds;
+	long long int dpd_timeout_seconds;
         /*
          * The Internet Key Exchange (IKE) versions allowed for the VPN tunnel.
          */
@@ -5010,12 +5011,12 @@ struct phase1_options {
          * The lifetime for phase 1 of the IKE negotiation process, in seconds.
          */
         int is_set_phase1_lifetime_seconds;
-	int phase1_lifetime_seconds;
+	long long int phase1_lifetime_seconds;
         /*
          * The number of packets in an IKE replay window.
          */
         int is_set_replay_window_size;
-	int replay_window_size;
+	long long int replay_window_size;
         /*
          * The action to carry out when establishing tunnels for a VPN 
          * connection.
@@ -5045,7 +5046,7 @@ struct phase2_options {
          * negociation process, in seconds.
          */
         int is_set_phase2_lifetime_seconds;
-	int phase2_lifetime_seconds;
+	long long int phase2_lifetime_seconds;
         /*
          * The pre-shared key to establish the initial authentication between 
          * the client gateway and the virtual gateway. This key can contain any 
@@ -5112,7 +5113,7 @@ struct policy {
          * The number of resources attached to the policy.
          */
         int is_set_resources_count;
-	int resources_count;
+	long long int resources_count;
 };
 
 struct policy_version {
@@ -5297,7 +5298,7 @@ struct quota {
          * `0`).
          */
         int is_set_max_value;
-	int max_value;
+	long long int max_value;
         /*
          * The unique name of the quota.
          */
@@ -5314,7 +5315,7 @@ struct quota {
          * The limit value currently used by the account.
          */
         int is_set_used_value;
-	int used_value;
+	long long int used_value;
 };
 
 struct quota_types {
@@ -5330,7 +5331,7 @@ struct quota_types {
          *     The account ID of the owner of the quotas.
          *   --Quotas.INDEX.Description: string
          *     The description of the quota.
-         *   --Quotas.INDEX.MaxValue: int
+         *   --Quotas.INDEX.MaxValue: long long int
          *     The maximum value of the quota for the account (if there is no 
          * limit, 
          *     `0`).
@@ -5340,7 +5341,7 @@ struct quota_types {
          *     The group name of the quota.
          *   --Quotas.INDEX.ShortDescription: string
          *     The description of the quota.
-         *   --Quotas.INDEX.UsedValue: int
+         *   --Quotas.INDEX.UsedValue: long long int
          *     The limit value currently used by the account.
          */
         char *quotas_str;
@@ -5571,7 +5572,7 @@ struct security_group {
         /*
          * The inbound rules associated with the security group.
          *   Information about the security group rule.
-         *   --InboundRules.INDEX.FromPortRange: int
+         *   --InboundRules.INDEX.FromPortRange: long long int
          *     The beginning of the port range for the TCP and UDP protocols, or 
          * an 
          *     ICMP type number.
@@ -5614,7 +5615,7 @@ struct security_group {
          *     One or more service IDs to allow traffic from a Net to access the 
          *     corresponding OUTSCALE services. For more information, see 
          *     [ReadNetAccessPointServices](#readnetaccesspointservices).
-         *   --InboundRules.INDEX.ToPortRange: int
+         *   --InboundRules.INDEX.ToPortRange: long long int
          *     The end of the port range for the TCP and UDP protocols, or an 
          * ICMP code 
          *     number.
@@ -5629,7 +5630,7 @@ struct security_group {
         /*
          * The outbound rules associated with the security group.
          *   Information about the security group rule.
-         *   --OutboundRules.INDEX.FromPortRange: int
+         *   --OutboundRules.INDEX.FromPortRange: long long int
          *     The beginning of the port range for the TCP and UDP protocols, or 
          * an 
          *     ICMP type number.
@@ -5672,7 +5673,7 @@ struct security_group {
          *     One or more service IDs to allow traffic from a Net to access the 
          *     corresponding OUTSCALE services. For more information, see 
          *     [ReadNetAccessPointServices](#readnetaccesspointservices).
-         *   --OutboundRules.INDEX.ToPortRange: int
+         *   --OutboundRules.INDEX.ToPortRange: long long int
          *     The end of the port range for the TCP and UDP protocols, or an 
          * ICMP code 
          *     number.
@@ -5718,7 +5719,7 @@ struct security_group_rule {
          * ICMP type number.
          */
         int is_set_from_port_range;
-	int from_port_range;
+	long long int from_port_range;
         /*
          * The IP protocol name (`tcp`, `udp`, `icmp`, or `-1` for all 
          * protocols). By default, `-1`. In a Net, this can also be an IP 
@@ -5762,7 +5763,7 @@ struct security_group_rule {
          * code number.
          */
         int is_set_to_port_range;
-	int to_port_range;
+	long long int to_port_range;
 };
 
 struct security_groups_member {
@@ -5866,7 +5867,7 @@ struct snapshot {
          * The progress of the snapshot, as a percentage.
          */
         int is_set_progress;
-	int progress;
+	long long int progress;
         /*
          * The ID of the snapshot.
          */
@@ -5896,7 +5897,7 @@ struct snapshot {
          * (GiB).
          */
         int is_set_volume_size;
-	int volume_size;
+	long long int volume_size;
 };
 
 struct snapshot_export_task {
@@ -5921,7 +5922,7 @@ struct snapshot_export_task {
          * The progress of the snapshot export task, as a percentage.
          */
         int is_set_progress;
-	int progress;
+	long long int progress;
         /*
          * The ID of the snapshot to be exported.
          */
@@ -5953,7 +5954,7 @@ struct subnet {
          * The number of available IPs in the Subnets.
          */
         int is_set_available_ips_count;
-	int available_ips_count;
+	long long int available_ips_count;
         /*
          * The IP range in the Subnet, in CIDR notation (for example, 
          * `10.0.0.0/16`).
@@ -6091,7 +6092,7 @@ struct vgw_telemetry {
          * route exchanges.
          */
         int is_set_accepted_route_count;
-	int accepted_route_count;
+	long long int accepted_route_count;
         /*
          * The date and time (UTC) of the latest state update.
          */
@@ -6222,7 +6223,7 @@ struct vm {
          * example, `0`, `1`, `2`, and so on).
          */
         int is_set_launch_number;
-	int launch_number;
+	long long int launch_number;
         /*
          * If true, nested virtualization is enabled. If false, it is disabled.
          */
@@ -6247,7 +6248,7 @@ struct vm {
          *       Information about the network interface card (NIC).
          *       --Nics.INDEX.LinkNic.DeleteOnVmDeletion: bool
          *         If true, the NIC is deleted when the VM is terminated.
-         *       --Nics.INDEX.LinkNic.DeviceNumber: int
+         *       --Nics.INDEX.LinkNic.DeviceNumber: long long int
          *         The device index for the NIC attachment (between `1` and `7`, 
          * both 
          *         included).
@@ -6467,7 +6468,7 @@ struct vm_group {
          * The number of VMs in the VM group.
          */
         int is_set_vm_count;
-	int vm_count;
+	long long int vm_count;
         /*
          * The ID of the VM group.
          */
@@ -6540,7 +6541,7 @@ struct vm_template {
          * The number of vCores.
          */
         int is_set_cpu_cores;
-	int cpu_cores;
+	long long int cpu_cores;
         /*
          * The processor generation.
          */
@@ -6569,7 +6570,7 @@ struct vm_template {
          * The amount of RAM.
          */
         int is_set_ram;
-	int ram;
+	long long int ram;
         /*
          * One or more tags associated with the VM template.
          *   Information about the tag.
@@ -6606,17 +6607,17 @@ struct vm_type {
          * The number of Ethernet interface available.
          */
         int is_set_eth;
-	int eth;
+	long long int eth;
         /*
          * The number of GPU available.
          */
         int is_set_gpu;
-	int gpu;
+	long long int gpu;
         /*
          * The maximum number of private IPs per network interface card (NIC).
          */
         int is_set_max_private_ips;
-	int max_private_ips;
+	long long int max_private_ips;
         /*
          * The amount of memory, in gibibytes.
          */
@@ -6626,7 +6627,7 @@ struct vm_type {
          * The number of vCores.
          */
         int is_set_vcore_count;
-	int vcore_count;
+	long long int vcore_count;
         /*
          * The name of the VM type.
          */
@@ -6635,12 +6636,12 @@ struct vm_type {
          * The maximum number of ephemeral storage disks.
          */
         int is_set_volume_count;
-	int volume_count;
+	long long int volume_count;
         /*
          * The size of one ephemeral storage disk, in gibibytes (GiB).
          */
         int is_set_volume_size;
-	int volume_size;
+	long long int volume_size;
 };
 
 struct volume {
@@ -6654,7 +6655,7 @@ struct volume {
          * the baseline performance of the volume
          */
         int is_set_iops;
-	int iops;
+	long long int iops;
         /*
          * Information about your volume attachment.
          *   Information about volume attachment.
@@ -6680,7 +6681,7 @@ struct volume {
          * The size of the volume, in gibibytes (GiB).
          */
         int is_set_size;
-	int size;
+	long long int size;
         /*
          * The snapshot from which the volume was created.
          */
@@ -6724,7 +6725,7 @@ struct vpn_options {
          *   --Phase1Options.DpdTimeoutAction: string
          *     The action to carry out after a Dead Peer Detection (DPD) timeout 
          *     occurs.
-         *   --Phase1Options.DpdTimeoutSeconds: int
+         *   --Phase1Options.DpdTimeoutSeconds: long long int
          *     The maximum waiting time for a Dead Peer Detection (DPD) response 
          * before 
          *     considering the peer as dead, in seconds.
@@ -6739,10 +6740,10 @@ struct vpn_options {
          *     The encryption algorithms allowed for the VPN tunnel for phase 1.
          *   --Phase1Options.Phase1IntegrityAlgorithms: array string
          *     The integrity algorithms allowed for the VPN tunnel for phase 1.
-         *   --Phase1Options.Phase1LifetimeSeconds: int
+         *   --Phase1Options.Phase1LifetimeSeconds: long long int
          *     The lifetime for phase 1 of the IKE negotiation process, in 
          * seconds.
-         *   --Phase1Options.ReplayWindowSize: int
+         *   --Phase1Options.ReplayWindowSize: long long int
          *     The number of packets in an IKE replay window.
          *   --Phase1Options.StartupAction: string
          *     The action to carry out when establishing tunnels for a VPN 
@@ -6762,7 +6763,7 @@ struct vpn_options {
          *     The encryption algorithms allowed for the VPN tunnel for phase 2.
          *   --Phase2Options.Phase2IntegrityAlgorithms: array string
          *     The integrity algorithms allowed for the VPN tunnel for phase 2.
-         *   --Phase2Options.Phase2LifetimeSeconds: int
+         *   --Phase2Options.Phase2LifetimeSeconds: long long int
          *     The lifetime for phase 2 of the Internet Key Exchange (IKE) 
          * negociation 
          *     process, in seconds.
@@ -6841,7 +6842,7 @@ struct vpn_connection {
         /*
          * Information about the current state of one or more of the VPN tunnels.
          *   Information about the current state of a VPN tunnel.
-         *   --VgwTelemetries.INDEX.AcceptedRouteCount: int
+         *   --VgwTelemetries.INDEX.AcceptedRouteCount: long long int
          *     The number of routes accepted through BGP (Border Gateway 
          * Protocol) 
          *     route exchanges.
@@ -6877,7 +6878,7 @@ struct vpn_connection {
          *         The action to carry out after a Dead Peer Detection (DPD) 
          * timeout 
          *         occurs.
-         *       --VpnOptions.Phase1Options.DpdTimeoutSeconds: int
+         *       --VpnOptions.Phase1Options.DpdTimeoutSeconds: long long int
          *         The maximum waiting time for a Dead Peer Detection (DPD) 
          * response before 
          *         considering the peer as dead, in seconds.
@@ -6896,10 +6897,10 @@ struct vpn_connection {
          * string
          *         The integrity algorithms allowed for the VPN tunnel for phase 
          * 1.
-         *       --VpnOptions.Phase1Options.Phase1LifetimeSeconds: int
+         *       --VpnOptions.Phase1Options.Phase1LifetimeSeconds: long long int
          *         The lifetime for phase 1 of the IKE negotiation process, in 
          * seconds.
-         *       --VpnOptions.Phase1Options.ReplayWindowSize: int
+         *       --VpnOptions.Phase1Options.ReplayWindowSize: long long int
          *         The number of packets in an IKE replay window.
          *       --VpnOptions.Phase1Options.StartupAction: string
          *         The action to carry out when establishing tunnels for a VPN 
@@ -6919,7 +6920,7 @@ struct vpn_connection {
          * string
          *         The integrity algorithms allowed for the VPN tunnel for phase 
          * 2.
-         *       --VpnOptions.Phase2Options.Phase2LifetimeSeconds: int
+         *       --VpnOptions.Phase2Options.Phase2LifetimeSeconds: long long int
          *         The lifetime for phase 2 of the Internet Key Exchange (IKE) 
          * negociation 
          *         process, in seconds.
@@ -7059,7 +7060,7 @@ struct osc_update_vpn_connection_arg  {
          *         The action to carry out after a Dead Peer Detection (DPD) 
          * timeout 
          *         occurs.
-         *       --VpnOptions.Phase1Options.DpdTimeoutSeconds: int
+         *       --VpnOptions.Phase1Options.DpdTimeoutSeconds: long long int
          *         The maximum waiting time for a Dead Peer Detection (DPD) 
          * response before 
          *         considering the peer as dead, in seconds.
@@ -7078,10 +7079,10 @@ struct osc_update_vpn_connection_arg  {
          * string
          *         The integrity algorithms allowed for the VPN tunnel for phase 
          * 1.
-         *       --VpnOptions.Phase1Options.Phase1LifetimeSeconds: int
+         *       --VpnOptions.Phase1Options.Phase1LifetimeSeconds: long long int
          *         The lifetime for phase 1 of the IKE negotiation process, in 
          * seconds.
-         *       --VpnOptions.Phase1Options.ReplayWindowSize: int
+         *       --VpnOptions.Phase1Options.ReplayWindowSize: long long int
          *         The number of packets in an IKE replay window.
          *       --VpnOptions.Phase1Options.StartupAction: string
          *         The action to carry out when establishing tunnels for a VPN 
@@ -7101,7 +7102,7 @@ struct osc_update_vpn_connection_arg  {
          * string
          *         The integrity algorithms allowed for the VPN tunnel for phase 
          * 2.
-         *       --VpnOptions.Phase2Options.Phase2LifetimeSeconds: int
+         *       --VpnOptions.Phase2Options.Phase2LifetimeSeconds: long long int
          *         The lifetime for phase 2 of the Internet Key Exchange (IKE) 
          * negociation 
          *         process, in seconds.
@@ -7140,7 +7141,7 @@ struct osc_update_volume_arg  {
          * `13000` with a maximum performance ratio of 300 IOPS per gibibyte.
          */
         int is_set_iops;
-	int iops;
+	long long int iops;
         /*
          * **Cold volume**: the new size of the volume, in gibibytes (GiB). This 
          * value must be equal to or greater than the current size of the 
@@ -7148,7 +7149,7 @@ struct osc_update_volume_arg  {
          * volume**: you cannot change the size of a hot volume.
          */
         int is_set_size;
-	int size;
+	long long int size;
         /*
          * The ID of the volume you want to update.
          */
@@ -7656,7 +7657,7 @@ struct osc_update_load_balancer_arg  {
          *   --AccessLog.OsuBucketPrefix: string
          *     The path to the folder of the access logs in your OOS bucket (by 
          *     default, the `root` level of your bucket).
-         *   --AccessLog.PublicationInterval: int
+         *   --AccessLog.PublicationInterval: long long int
          *     The time interval for the publication of access logs in the OOS 
          * bucket, 
          *     in minutes. This value can be either `5` or `60` (by default, 
@@ -7673,27 +7674,27 @@ struct osc_update_load_balancer_arg  {
 	int dry_run;
         /*
          *   Information about the health check configuration.
-         *   --HealthCheck.CheckInterval: int
+         *   --HealthCheck.CheckInterval: long long int
          *     The number of seconds between two requests (between `5` and `600` 
          * both 
          *     included).
-         *   --HealthCheck.HealthyThreshold: int
+         *   --HealthCheck.HealthyThreshold: long long int
          *     The number of consecutive successful requests before considering 
          * the VM 
          *     as healthy (between `2` and `10` both included).
          *   --HealthCheck.Path: string
          *     If you use the HTTP or HTTPS protocols, the request URL path.
-         *   --HealthCheck.Port: int
+         *   --HealthCheck.Port: long long int
          *     The port number (between `1` and `65535`, both included).
          *   --HealthCheck.Protocol: string
          *     The protocol for the URL of the VM (`HTTP` \\| `HTTPS` \\| `TCP` 
          * \\| 
          *     `SSL`).
-         *   --HealthCheck.Timeout: int
+         *   --HealthCheck.Timeout: long long int
          *     The maximum waiting time for a response before considering the VM 
          * as 
          *     unhealthy, in seconds (between `2` and `60` both included).
-         *   --HealthCheck.UnhealthyThreshold: int
+         *   --HealthCheck.UnhealthyThreshold: long long int
          *     The number of consecutive failed requests before considering the 
          * VM as 
          *     unhealthy (between `2` and `10` both included).
@@ -7711,7 +7712,7 @@ struct osc_update_load_balancer_arg  {
          * update the server certificate.
          */
         int is_set_load_balancer_port;
-	int load_balancer_port;
+	long long int load_balancer_port;
         /*
          * The name of the policy you want to enable for the listener.
          */
@@ -7866,7 +7867,7 @@ struct osc_update_direct_link_interface_arg  {
          * bytes (always `1500`).
          */
         int is_set_mtu;
-	int mtu;
+	long long int mtu;
 };
 
 struct osc_update_dedicated_group_arg  {
@@ -7955,7 +7956,7 @@ struct osc_update_api_access_policy_arg  {
          * lifetime of each access key of your account.
          */
         int is_set_max_access_key_expiration_seconds;
-	int max_access_key_expiration_seconds;
+	long long int max_access_key_expiration_seconds;
         /*
          * If true, a trusted session is activated, provided that you specify 
          * the `MaxAccessKeyExpirationSeconds` parameter with a value greater 
@@ -8337,7 +8338,7 @@ struct osc_scale_up_vm_group_arg  {
          * The number of VMs you want to add to the VM group.
          */
         int is_set_vm_addition;
-	int vm_addition;
+	long long int vm_addition;
         /*
          * The ID of the VM group you want to scale up.
          */
@@ -8360,7 +8361,7 @@ struct osc_scale_down_vm_group_arg  {
          * The number of VMs you want to delete from the VM group.
          */
         int is_set_vm_subtraction;
-	int vm_subtraction;
+	long long int vm_subtraction;
 };
 
 struct osc_remove_user_from_user_group_arg  {
@@ -8497,7 +8498,7 @@ struct osc_read_vpn_connections_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_volumes_arg  {
@@ -8566,7 +8567,7 @@ struct osc_read_volumes_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_vms_state_arg  {
@@ -8615,7 +8616,7 @@ struct osc_read_vms_state_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_vms_health_arg  {
@@ -8833,7 +8834,7 @@ struct osc_read_vms_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_vm_types_arg  {
@@ -8881,7 +8882,7 @@ struct osc_read_vm_types_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_vm_templates_arg  {
@@ -9015,7 +9016,7 @@ struct osc_read_virtual_gateways_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_users_arg  {
@@ -9070,13 +9071,13 @@ struct osc_read_user_groups_arg  {
          * The item starting the list of groups requested.
          */
         int is_set_first_item;
-	int first_item;
+	long long int first_item;
         /*
          * The maximum number of items that can be returned in a single response 
          * (by default, `100`).
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_user_group_policy_arg  {
@@ -9113,13 +9114,13 @@ struct osc_read_user_group_policies_arg  {
          * The item starting the list of policies requested.
          */
         int is_set_first_item;
-	int first_item;
+	long long int first_item;
         /*
          * The maximum number of items that can be returned in a single response 
          * (by default, `100`).
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
         /*
          * The name of the group.
          */
@@ -9198,7 +9199,7 @@ struct osc_read_tags_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_subregions_arg  {
@@ -9231,7 +9232,7 @@ struct osc_read_subregions_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_subnets_arg  {
@@ -9282,7 +9283,7 @@ struct osc_read_subnets_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_snapshots_arg  {
@@ -9352,7 +9353,7 @@ struct osc_read_snapshots_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_snapshot_export_tasks_arg  {
@@ -9381,7 +9382,7 @@ struct osc_read_snapshot_export_tasks_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_server_certificates_arg  {
@@ -9491,7 +9492,7 @@ struct osc_read_security_groups_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_secret_access_key_arg  {
@@ -9571,7 +9572,7 @@ struct osc_read_route_tables_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_regions_arg  {
@@ -9618,7 +9619,7 @@ struct osc_read_quotas_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_public_ips_arg  {
@@ -9673,7 +9674,7 @@ struct osc_read_public_ips_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_public_ip_ranges_arg  {
@@ -9694,7 +9695,7 @@ struct osc_read_public_ip_ranges_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_public_catalog_arg  {
@@ -9733,7 +9734,7 @@ struct osc_read_product_types_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_policy_versions_arg  {
@@ -9742,7 +9743,7 @@ struct osc_read_policy_versions_arg  {
          * The item starting the list of policies requested.
          */
         int is_set_first_item;
-	int first_item;
+	long long int first_item;
         /*
          * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
          * see [Resource 
@@ -9755,7 +9756,7 @@ struct osc_read_policy_versions_arg  {
          * (by default, `100`).
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_policy_version_arg  {
@@ -9810,13 +9811,13 @@ struct osc_read_policies_arg  {
          * The item starting the list of policies requested.
          */
         int is_set_first_item;
-	int first_item;
+	long long int first_item;
         /*
          * The maximum number of items that can be returned in a single response 
          * (by default, `100`).
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_nics_arg  {
@@ -9954,7 +9955,7 @@ struct osc_read_nets_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_net_peerings_arg  {
@@ -10015,7 +10016,7 @@ struct osc_read_net_peerings_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_net_access_points_arg  {
@@ -10063,7 +10064,7 @@ struct osc_read_net_access_points_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_net_access_point_services_arg  {
@@ -10094,7 +10095,7 @@ struct osc_read_net_access_point_services_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_nat_services_arg  {
@@ -10143,7 +10144,7 @@ struct osc_read_nat_services_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_managed_policies_linked_to_user_group_arg  {
@@ -10170,13 +10171,13 @@ struct osc_read_managed_policies_linked_to_user_group_arg  {
          * The item starting the list of policies requested.
          */
         int is_set_first_item;
-	int first_item;
+	long long int first_item;
         /*
          * The maximum number of items that can be returned in a single response 
          * (by default, `100`).
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
         /*
          * The name of the group.
          */
@@ -10201,7 +10202,7 @@ struct osc_read_locations_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_load_balancers_arg  {
@@ -10277,13 +10278,13 @@ struct osc_read_linked_policies_arg  {
          * The item starting the list of policies requested.
          */
         int is_set_first_item;
-	int first_item;
+	long long int first_item;
         /*
          * The maximum number of items that can be returned in a single response 
          * (by default, `100`).
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
         /*
          * The name of the user the policies are linked to.
          */
@@ -10322,7 +10323,7 @@ struct osc_read_keypairs_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_internet_services_arg  {
@@ -10369,7 +10370,7 @@ struct osc_read_internet_services_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_images_arg  {
@@ -10450,7 +10451,7 @@ struct osc_read_images_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_image_export_tasks_arg  {
@@ -10479,7 +10480,7 @@ struct osc_read_image_export_tasks_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_flexible_gpus_arg  {
@@ -10554,7 +10555,7 @@ struct osc_read_direct_links_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_direct_link_interfaces_arg  {
@@ -10585,7 +10586,7 @@ struct osc_read_direct_link_interfaces_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_dhcp_options_arg  {
@@ -10637,7 +10638,7 @@ struct osc_read_dhcp_options_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_dedicated_groups_arg  {
@@ -10674,7 +10675,7 @@ struct osc_read_dedicated_groups_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_consumption_account_arg  {
@@ -10782,7 +10783,7 @@ struct osc_read_client_gateways_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_catalogs_arg  {
@@ -10903,7 +10904,7 @@ struct osc_read_api_logs_arg  {
          * `1`and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
-	int results_per_page;
+	long long int results_per_page;
         /*
          *   The information to display in each returned log.
          *   --With.AccountId: bool
@@ -11211,7 +11212,7 @@ struct osc_link_private_ips_arg  {
          * The number of secondary private IPs to assign to the NIC.
          */
         int is_set_secondary_private_ip_count;
-	int secondary_private_ip_count;
+	long long int secondary_private_ip_count;
 };
 
 struct osc_link_policy_arg  {
@@ -11243,7 +11244,7 @@ struct osc_link_nic_arg  {
          * `7`, both included).
          */
         int is_set_device_number;
-	int device_number;
+	long long int device_number;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -11611,7 +11612,7 @@ struct osc_delete_security_group_rule_arg  {
          * ICMP type number.
          */
         int is_set_from_port_range;
-	int from_port_range;
+	long long int from_port_range;
         /*
          * The IP protocol name (`tcp`, `udp`, `icmp`, or `-1` for all 
          * protocols). By default, `-1`. In a Net, this can also be an IP 
@@ -11628,7 +11629,7 @@ struct osc_delete_security_group_rule_arg  {
         /*
          * One or more rules you want to delete from the security group.
          *   Information about the security group rule.
-         *   --Rules.INDEX.FromPortRange: int
+         *   --Rules.INDEX.FromPortRange: long long int
          *     The beginning of the port range for the TCP and UDP protocols, or 
          * an 
          *     ICMP type number.
@@ -11667,7 +11668,7 @@ struct osc_delete_security_group_rule_arg  {
          *     One or more service IDs to allow traffic from a Net to access the 
          *     corresponding OUTSCALE services. For more information, see 
          *     [ReadNetAccessPointServices](#readnetaccesspointservices).
-         *   --Rules.INDEX.ToPortRange: int
+         *   --Rules.INDEX.ToPortRange: long long int
          *     The end of the port range for the TCP and UDP protocols, or an 
          * ICMP code 
          *     number.
@@ -11694,7 +11695,7 @@ struct osc_delete_security_group_rule_arg  {
          * code number.
          */
         int is_set_to_port_range;
-	int to_port_range;
+	long long int to_port_range;
 };
 
 struct osc_delete_security_group_arg  {
@@ -12217,14 +12218,14 @@ struct osc_create_volume_arg  {
          * performance ratio of 300 IOPS per gibibyte.
          */
         int is_set_iops;
-	int iops;
+	long long int iops;
         /*
          * The size of the volume, in gibibytes (GiB). The maximum allowed size 
          * for a volume is 14901 GiB. This parameter is required if the volume 
          * is not created from a snapshot (`SnapshotId` unspecified).
          */
         int is_set_size;
-	int size;
+	long long int size;
         /*
          * The ID of the snapshot from which you want to create the volume.
          */
@@ -12256,7 +12257,7 @@ struct osc_create_vms_arg  {
          * terminating the 
          *         VM. If false, the volume is not deleted when terminating the 
          * VM.
-         *       --BlockDeviceMappings.INDEX.Bsu.Iops: int
+         *       --BlockDeviceMappings.INDEX.Bsu.Iops: long long int
          *         The number of I/O operations per second (IOPS). This 
          * parameter must be 
          *         specified only if you create an `io1` volume. The maximum 
@@ -12266,7 +12267,7 @@ struct osc_create_vms_arg  {
          *         300 IOPS per gibibyte.
          *       --BlockDeviceMappings.INDEX.Bsu.SnapshotId: string
          *         The ID of the snapshot used to create the volume.
-         *       --BlockDeviceMappings.INDEX.Bsu.VolumeSize: int
+         *       --BlockDeviceMappings.INDEX.Bsu.VolumeSize: long long int
          *         The size of the volume, in gibibytes (GiB).<br />\nIf you 
          * specify a 
          *         snapshot ID, the volume size must be at least equal to the 
@@ -12345,13 +12346,13 @@ struct osc_create_vms_arg  {
          * created.
          */
         int is_set_max_vms_count;
-	int max_vms_count;
+	long long int max_vms_count;
         /*
          * The minimum number of VMs you want to create. If this number of VMs 
          * cannot be created, no VMs are created.
          */
         int is_set_min_vms_count;
-	int min_vms_count;
+	long long int min_vms_count;
         /*
          * (dedicated tenancy only) If true, nested virtualization is enabled. 
          * If false, it is disabled.
@@ -12375,7 +12376,7 @@ struct osc_create_vms_arg  {
          *     The description of the NIC, if you are creating a NIC when 
          * creating the 
          *     VM.
-         *   --Nics.INDEX.DeviceNumber: int
+         *   --Nics.INDEX.DeviceNumber: long long int
          *     The index of the VM device for the NIC attachment (between `0` 
          * and `7`, 
          *     both included). This parameter is required if you create a NIC 
@@ -12394,7 +12395,7 @@ struct osc_create_vms_arg  {
          *         If true, the IP is the primary private IP of the NIC.
          *       --Nics.INDEX.PrivateIps.INDEX.PrivateIp: string
          *         The private IP of the NIC.
-         *   --Nics.INDEX.SecondaryPrivateIpCount: int
+         *   --Nics.INDEX.SecondaryPrivateIpCount: long long int
          *     The number of secondary private IPs, if you create a NIC when 
          * creating a 
          *     VM. This parameter cannot be specified if you specified more than 
@@ -12483,7 +12484,7 @@ struct osc_create_vm_template_arg  {
          * The number of vCores to use for each VM.
          */
         int is_set_cpu_cores;
-	int cpu_cores;
+	long long int cpu_cores;
         /*
          * The processor generation to use for each VM (for example, `v4`).
          */
@@ -12515,7 +12516,7 @@ struct osc_create_vm_template_arg  {
          * The amount of RAM to use for each VM.
          */
         int is_set_ram;
-	int ram;
+	long long int ram;
         /*
          * One or more tags to add to the VM template.
          *   Information about the tag.
@@ -12578,7 +12579,7 @@ struct osc_create_vm_group_arg  {
          * The number of VMs deployed in the VM group.
          */
         int is_set_vm_count;
-	int vm_count;
+	long long int vm_count;
         /*
          * The name of the VM group.
          */
@@ -12764,7 +12765,7 @@ struct osc_create_snapshot_arg  {
          * or equal to the size of the original, uncompressed snapshot.
          */
         int is_set_snapshot_size;
-	int snapshot_size;
+	long long int snapshot_size;
         /*
          * **(when copying a snapshot)** The name of the source Region, which 
          * must be the same as the Region of your account.
@@ -12839,7 +12840,7 @@ struct osc_create_security_group_rule_arg  {
          * the `Rules` parameter and its subparameters.
          */
         int is_set_from_port_range;
-	int from_port_range;
+	long long int from_port_range;
         /*
          * The IP protocol name (`tcp`, `udp`, `icmp`, or `-1` for all 
          * protocols). By default, `-1`. In a Net, this can also be an IP 
@@ -12861,7 +12862,7 @@ struct osc_create_security_group_rule_arg  {
          * following parent parameters: `FromPortRange`, `IpProtocol`, 
          * `IpRange`, and `ToPortRange`.
          *   Information about the security group rule.
-         *   --Rules.INDEX.FromPortRange: int
+         *   --Rules.INDEX.FromPortRange: long long int
          *     The beginning of the port range for the TCP and UDP protocols, or 
          * an 
          *     ICMP type number.
@@ -12900,7 +12901,7 @@ struct osc_create_security_group_rule_arg  {
          *     One or more service IDs to allow traffic from a Net to access the 
          *     corresponding OUTSCALE services. For more information, see 
          *     [ReadNetAccessPointServices](#readnetaccesspointservices).
-         *   --Rules.INDEX.ToPortRange: int
+         *   --Rules.INDEX.ToPortRange: long long int
          *     The end of the port range for the TCP and UDP protocols, or an 
          * ICMP code 
          *     number.
@@ -12928,7 +12929,7 @@ struct osc_create_security_group_rule_arg  {
          * `Rules` parameter and its subparameters.
          */
         int is_set_to_port_range;
-	int to_port_range;
+	long long int to_port_range;
 };
 
 struct osc_create_security_group_arg  {
@@ -13255,7 +13256,7 @@ struct osc_create_load_balancer_policy_arg  {
          * lasts for the duration of the browser session.
          */
         int is_set_cookie_expiration_period;
-	int cookie_expiration_period;
+	long long int cookie_expiration_period;
         /*
          * The name of the application cookie used for stickiness. This 
          * parameter is required if you create a stickiness policy based on an 
@@ -13295,7 +13296,7 @@ struct osc_create_load_balancer_listeners_arg  {
         /*
          * One or more listeners for the load balancer.
          *   Information about the listener to create.
-         *   --Listeners.INDEX.BackendPort: int
+         *   --Listeners.INDEX.BackendPort: long long int
          *     The port on which the backend VM is listening (between `1` and 
          * `65535`, 
          *     both included).
@@ -13303,7 +13304,7 @@ struct osc_create_load_balancer_listeners_arg  {
          *     The protocol for routing traffic to backend VMs (`HTTP` \\| 
          * `HTTPS` \\| 
          *     `TCP` \\| `SSL`).
-         *   --Listeners.INDEX.LoadBalancerPort: int
+         *   --Listeners.INDEX.LoadBalancerPort: long long int
          *     The port on which the load balancer is listening (between `1` and 
          *     `65535`, both included).
          *   --Listeners.INDEX.LoadBalancerProtocol: string
@@ -13337,7 +13338,7 @@ struct osc_create_load_balancer_arg  {
         /*
          * One or more listeners to create.
          *   Information about the listener to create.
-         *   --Listeners.INDEX.BackendPort: int
+         *   --Listeners.INDEX.BackendPort: long long int
          *     The port on which the backend VM is listening (between `1` and 
          * `65535`, 
          *     both included).
@@ -13345,7 +13346,7 @@ struct osc_create_load_balancer_arg  {
          *     The protocol for routing traffic to backend VMs (`HTTP` \\| 
          * `HTTPS` \\| 
          *     `TCP` \\| `SSL`).
-         *   --Listeners.INDEX.LoadBalancerPort: int
+         *   --Listeners.INDEX.LoadBalancerPort: long long int
          *     The port on which the load balancer is listening (between `1` and 
          *     `65535`, both included).
          *   --Listeners.INDEX.LoadBalancerProtocol: string
@@ -13426,7 +13427,7 @@ struct osc_create_listener_rule_arg  {
          *   Information about the load balancer.
          *   --Listener.LoadBalancerName: string
          *     The name of the load balancer to which the listener is attached.
-         *   --Listener.LoadBalancerPort: int
+         *   --Listener.LoadBalancerPort: long long int
          *     The port of load balancer on which the load balancer is listening 
          *     (between `1` and `65535` both included).
          */
@@ -13450,7 +13451,7 @@ struct osc_create_listener_rule_arg  {
          *     This path pattern supports maximum three wildcards, and must not 
          * contain 
          *     any special characters except [_-.$/~&quot;'@:+?].
-         *   --ListenerRule.Priority: int
+         *   --ListenerRule.Priority: long long int
          *     The priority level of the listener rule, between `1` and `19999` 
          * both 
          *     included. Each rule must have a unique priority level. Otherwise, 
@@ -13554,7 +13555,7 @@ struct osc_create_image_arg  {
          * terminating the 
          *         VM. If false, the volume is not deleted when terminating the 
          * VM.
-         *       --BlockDeviceMappings.INDEX.Bsu.Iops: int
+         *       --BlockDeviceMappings.INDEX.Bsu.Iops: long long int
          *         The number of I/O operations per second (IOPS). This 
          * parameter must be 
          *         specified only if you create an `io1` volume. The maximum 
@@ -13564,7 +13565,7 @@ struct osc_create_image_arg  {
          *         300 IOPS per gibibyte.
          *       --BlockDeviceMappings.INDEX.Bsu.SnapshotId: string
          *         The ID of the snapshot used to create the volume.
-         *       --BlockDeviceMappings.INDEX.Bsu.VolumeSize: int
+         *       --BlockDeviceMappings.INDEX.Bsu.VolumeSize: long long int
          *         The size of the volume, in gibibytes (GiB).<br />\nIf you 
          * specify a 
          *         snapshot ID, the volume size must be at least equal to the 
@@ -13700,7 +13701,7 @@ struct osc_create_direct_link_interface_arg  {
 	char *direct_link_id;
         /*
          *   Information about the DirectLink interface.
-         *   --DirectLinkInterface.BgpAsn: int
+         *   --DirectLinkInterface.BgpAsn: long long int
          *     The BGP (Border Gateway Protocol) ASN (Autonomous System Number) 
          * on the 
          *     customer's side of the DirectLink interface. This number must be 
@@ -13716,7 +13717,7 @@ struct osc_create_direct_link_interface_arg  {
          *     The IP on the OUTSCALE side of the DirectLink interface.
          *   --DirectLinkInterface.VirtualGatewayId: string
          *     The ID of the target virtual gateway.
-         *   --DirectLinkInterface.Vlan: int
+         *   --DirectLinkInterface.Vlan: long long int
          *     The VLAN number associated with the DirectLink interface. This 
          * number 
          *     must be unique and be between `2` and `4094`.
@@ -13801,7 +13802,7 @@ struct osc_create_dedicated_group_arg  {
          * example, `4`).
          */
         int is_set_cpu_generation;
-	int cpu_generation;
+	long long int cpu_generation;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -13828,7 +13829,7 @@ struct osc_create_client_gateway_arg  {
          * or between 4200000000 and 4294967294.
          */
         int is_set_bgp_asn;
-	int bgp_asn;
+	long long int bgp_asn;
         /*
          * The communication protocol used to establish tunnel with your client 
          * gateway (always `ipsec.1`).
