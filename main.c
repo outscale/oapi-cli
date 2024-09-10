@@ -544,7 +544,7 @@ int access_log_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "PublicationInterval")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "PublicationInterval argument missing\n");
             s->is_set_publication_interval = 1;
-            s->publication_interval = atoi(aa);
+            s->publication_interval = atoll(aa);
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'AccessLog'\n", str);
@@ -667,7 +667,7 @@ int api_access_policy_parser(void *v_s, char *str, char *aa, struct ptr_array *p
 	if ((aret = argcmp(str, "MaxAccessKeyExpirationSeconds")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "MaxAccessKeyExpirationSeconds argument missing\n");
             s->is_set_max_access_key_expiration_seconds = 1;
-            s->max_access_key_expiration_seconds = atoi(aa);
+            s->max_access_key_expiration_seconds = atoll(aa);
          } else
 	if ((aret = argcmp(str, "RequireTrustedEnv")) == 0 || aret == '=' || aret == '.') {
             s->is_set_require_trusted_env = 1;
@@ -1044,7 +1044,7 @@ int bsu_to_create_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "Iops")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "Iops argument missing\n");
             s->is_set_iops = 1;
-            s->iops = atoi(aa);
+            s->iops = atoll(aa);
          } else
 	if ((aret = argcmp(str, "SnapshotId")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "SnapshotId argument missing\n");
@@ -1054,7 +1054,7 @@ int bsu_to_create_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "VolumeSize")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "VolumeSize argument missing\n");
             s->is_set_volume_size = 1;
-            s->volume_size = atoi(aa);
+            s->volume_size = atoll(aa);
          } else
 	if ((aret = argcmp(str, "VolumeType")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "VolumeType argument missing\n");
@@ -1259,7 +1259,7 @@ int client_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 	if ((aret = argcmp(str, "BgpAsn")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "BgpAsn argument missing\n");
             s->is_set_bgp_asn = 1;
-            s->bgp_asn = atoi(aa);
+            s->bgp_asn = atoll(aa);
          } else
 	if ((aret = argcmp(str, "ClientGatewayId")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "ClientGatewayId argument missing\n");
@@ -1399,7 +1399,7 @@ int dedicated_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
 	if ((aret = argcmp(str, "CpuGeneration")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "CpuGeneration argument missing\n");
             s->is_set_cpu_generation = 1;
-            s->cpu_generation = atoi(aa);
+            s->cpu_generation = atoll(aa);
          } else
 	if ((aret = argcmp(str, "DedicatedGroupId")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "DedicatedGroupId argument missing\n");
@@ -1669,7 +1669,7 @@ int direct_link_interface_parser(void *v_s, char *str, char *aa, struct ptr_arra
 	if ((aret = argcmp(str, "BgpAsn")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "BgpAsn argument missing\n");
             s->is_set_bgp_asn = 1;
-            s->bgp_asn = atoi(aa);
+            s->bgp_asn = atoll(aa);
          } else
 	if ((aret = argcmp(str, "BgpKey")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "BgpKey argument missing\n");
@@ -1699,7 +1699,7 @@ int direct_link_interface_parser(void *v_s, char *str, char *aa, struct ptr_arra
 	if ((aret = argcmp(str, "Vlan")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "Vlan argument missing\n");
             s->is_set_vlan = 1;
-            s->vlan = atoi(aa);
+            s->vlan = atoll(aa);
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'DirectLinkInterface'\n", str);
@@ -1719,7 +1719,7 @@ int direct_link_interfaces_parser(void *v_s, char *str, char *aa, struct ptr_arr
 	if ((aret = argcmp(str, "BgpAsn")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "BgpAsn argument missing\n");
             s->is_set_bgp_asn = 1;
-            s->bgp_asn = atoi(aa);
+            s->bgp_asn = atoll(aa);
          } else
 	if ((aret = argcmp(str, "BgpKey")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "BgpKey argument missing\n");
@@ -1759,7 +1759,7 @@ int direct_link_interfaces_parser(void *v_s, char *str, char *aa, struct ptr_arr
 	if ((aret = argcmp(str, "Mtu")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "Mtu argument missing\n");
             s->is_set_mtu = 1;
-            s->mtu = atoi(aa);
+            s->mtu = atoll(aa);
          } else
 	if ((aret = argcmp(str, "OutscalePrivateIp")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "OutscalePrivateIp argument missing\n");
@@ -1779,7 +1779,7 @@ int direct_link_interfaces_parser(void *v_s, char *str, char *aa, struct ptr_arr
 	if ((aret = argcmp(str, "Vlan")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "Vlan argument missing\n");
             s->is_set_vlan = 1;
-            s->vlan = atoi(aa);
+            s->vlan = atoll(aa);
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'DirectLinkInterfaces'\n", str);
@@ -12454,12 +12454,12 @@ int flexible_gpu_catalog_parser(void *v_s, char *str, char *aa, struct ptr_array
 	if ((aret = argcmp(str, "MaxCpu")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "MaxCpu argument missing\n");
             s->is_set_max_cpu = 1;
-            s->max_cpu = atoi(aa);
+            s->max_cpu = atoll(aa);
          } else
 	if ((aret = argcmp(str, "MaxRam")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "MaxRam argument missing\n");
             s->is_set_max_ram = 1;
-            s->max_ram = atoi(aa);
+            s->max_ram = atoll(aa);
          } else
 	if ((aret = argcmp(str, "ModelName")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "ModelName argument missing\n");
@@ -12469,7 +12469,7 @@ int flexible_gpu_catalog_parser(void *v_s, char *str, char *aa, struct ptr_array
 	if ((aret = argcmp(str, "VRam")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "VRam argument missing\n");
             s->is_set_vram = 1;
-            s->vram = atoi(aa);
+            s->vram = atoll(aa);
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FlexibleGpuCatalog'\n", str);
@@ -12484,12 +12484,12 @@ int health_check_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "CheckInterval")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "CheckInterval argument missing\n");
             s->is_set_check_interval = 1;
-            s->check_interval = atoi(aa);
+            s->check_interval = atoll(aa);
          } else
 	if ((aret = argcmp(str, "HealthyThreshold")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "HealthyThreshold argument missing\n");
             s->is_set_healthy_threshold = 1;
-            s->healthy_threshold = atoi(aa);
+            s->healthy_threshold = atoll(aa);
          } else
 	if ((aret = argcmp(str, "Path")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "Path argument missing\n");
@@ -12499,7 +12499,7 @@ int health_check_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "Port")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "Port argument missing\n");
             s->is_set_port = 1;
-            s->port = atoi(aa);
+            s->port = atoll(aa);
          } else
 	if ((aret = argcmp(str, "Protocol")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "Protocol argument missing\n");
@@ -12509,12 +12509,12 @@ int health_check_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "Timeout")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "Timeout argument missing\n");
             s->is_set_timeout = 1;
-            s->timeout = atoi(aa);
+            s->timeout = atoll(aa);
          } else
 	if ((aret = argcmp(str, "UnhealthyThreshold")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "UnhealthyThreshold argument missing\n");
             s->is_set_unhealthy_threshold = 1;
-            s->unhealthy_threshold = atoi(aa);
+            s->unhealthy_threshold = atoll(aa);
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'HealthCheck'\n", str);
@@ -12738,7 +12738,7 @@ int image_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array *p
 	if ((aret = argcmp(str, "Progress")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "Progress argument missing\n");
             s->is_set_progress = 1;
-            s->progress = atoi(aa);
+            s->progress = atoll(aa);
          } else
 	if ((aret = argcmp(str, "State")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "State argument missing\n");
@@ -12923,7 +12923,7 @@ int link_nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "DeviceNumber")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "DeviceNumber argument missing\n");
             s->is_set_device_number = 1;
-            s->device_number = atoi(aa);
+            s->device_number = atoll(aa);
          } else
 	if ((aret = argcmp(str, "LinkNicId")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "LinkNicId argument missing\n");
@@ -12968,7 +12968,7 @@ int link_nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 	if ((aret = argcmp(str, "DeviceNumber")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "DeviceNumber argument missing\n");
             s->is_set_device_number = 1;
-            s->device_number = atoi(aa);
+            s->device_number = atoll(aa);
          } else
 	if ((aret = argcmp(str, "LinkNicId")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "LinkNicId argument missing\n");
@@ -13193,7 +13193,7 @@ int listener_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "BackendPort")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "BackendPort argument missing\n");
             s->is_set_backend_port = 1;
-            s->backend_port = atoi(aa);
+            s->backend_port = atoll(aa);
          } else
 	if ((aret = argcmp(str, "BackendProtocol")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "BackendProtocol argument missing\n");
@@ -13203,7 +13203,7 @@ int listener_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "LoadBalancerPort")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "LoadBalancerPort argument missing\n");
             s->is_set_load_balancer_port = 1;
-            s->load_balancer_port = atoi(aa);
+            s->load_balancer_port = atoll(aa);
          } else
 	if ((aret = argcmp(str, "LoadBalancerProtocol")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "LoadBalancerProtocol argument missing\n");
@@ -13256,7 +13256,7 @@ int listener_for_creation_parser(void *v_s, char *str, char *aa, struct ptr_arra
 	if ((aret = argcmp(str, "BackendPort")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "BackendPort argument missing\n");
             s->is_set_backend_port = 1;
-            s->backend_port = atoi(aa);
+            s->backend_port = atoll(aa);
          } else
 	if ((aret = argcmp(str, "BackendProtocol")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "BackendProtocol argument missing\n");
@@ -13266,7 +13266,7 @@ int listener_for_creation_parser(void *v_s, char *str, char *aa, struct ptr_arra
 	if ((aret = argcmp(str, "LoadBalancerPort")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "LoadBalancerPort argument missing\n");
             s->is_set_load_balancer_port = 1;
-            s->load_balancer_port = atoi(aa);
+            s->load_balancer_port = atoll(aa);
          } else
 	if ((aret = argcmp(str, "LoadBalancerProtocol")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "LoadBalancerProtocol argument missing\n");
@@ -13301,12 +13301,12 @@ int listener_rule_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "ListenerId")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "ListenerId argument missing\n");
             s->is_set_listener_id = 1;
-            s->listener_id = atoi(aa);
+            s->listener_id = atoll(aa);
          } else
 	if ((aret = argcmp(str, "ListenerRuleId")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "ListenerRuleId argument missing\n");
             s->is_set_listener_rule_id = 1;
-            s->listener_rule_id = atoi(aa);
+            s->listener_rule_id = atoll(aa);
          } else
 	if ((aret = argcmp(str, "ListenerRuleName")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "ListenerRuleName argument missing\n");
@@ -13321,7 +13321,7 @@ int listener_rule_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "Priority")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "Priority argument missing\n");
             s->is_set_priority = 1;
-            s->priority = atoi(aa);
+            s->priority = atoll(aa);
          } else
 	if ((aret = argcmp(str, "VmIds")) == 0 || aret == '=' || aret == '.') {
                  if (aret == '.') {
@@ -13384,7 +13384,7 @@ int listener_rule_for_creation_parser(void *v_s, char *str, char *aa, struct ptr
 	if ((aret = argcmp(str, "Priority")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "Priority argument missing\n");
             s->is_set_priority = 1;
-            s->priority = atoi(aa);
+            s->priority = atoll(aa);
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'ListenerRuleForCreation'\n", str);
@@ -13740,7 +13740,7 @@ int load_balancer_light_parser(void *v_s, char *str, char *aa, struct ptr_array 
 	if ((aret = argcmp(str, "LoadBalancerPort")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "LoadBalancerPort argument missing\n");
             s->is_set_load_balancer_port = 1;
-            s->load_balancer_port = atoi(aa);
+            s->load_balancer_port = atoll(aa);
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'LoadBalancerLight'\n", str);
@@ -13755,7 +13755,7 @@ int load_balancer_sticky_cookie_policy_parser(void *v_s, char *str, char *aa, st
 	if ((aret = argcmp(str, "CookieExpirationPeriod")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "CookieExpirationPeriod argument missing\n");
             s->is_set_cookie_expiration_period = 1;
-            s->cookie_expiration_period = atoi(aa);
+            s->cookie_expiration_period = atoll(aa);
          } else
 	if ((aret = argcmp(str, "PolicyName")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "PolicyName argument missing\n");
@@ -13825,7 +13825,7 @@ int log_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "CallDuration")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "CallDuration argument missing\n");
             s->is_set_call_duration = 1;
-            s->call_duration = atoi(aa);
+            s->call_duration = atoll(aa);
          } else
 	if ((aret = argcmp(str, "QueryAccessKey")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "QueryAccessKey argument missing\n");
@@ -13860,7 +13860,7 @@ int log_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "QueryHeaderSize")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "QueryHeaderSize argument missing\n");
             s->is_set_query_header_size = 1;
-            s->query_header_size = atoi(aa);
+            s->query_header_size = atoll(aa);
          } else
 	if ((aret = argcmp(str, "QueryIpAddress")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "QueryIpAddress argument missing\n");
@@ -13875,7 +13875,7 @@ int log_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "QueryPayloadSize")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "QueryPayloadSize argument missing\n");
             s->is_set_query_payload_size = 1;
-            s->query_payload_size = atoi(aa);
+            s->query_payload_size = atoll(aa);
          } else
 	if ((aret = argcmp(str, "QueryUserAgent")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "QueryUserAgent argument missing\n");
@@ -13890,12 +13890,12 @@ int log_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "ResponseSize")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "ResponseSize argument missing\n");
             s->is_set_response_size = 1;
-            s->response_size = atoi(aa);
+            s->response_size = atoll(aa);
          } else
 	if ((aret = argcmp(str, "ResponseStatusCode")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "ResponseStatusCode argument missing\n");
             s->is_set_response_status_code = 1;
-            s->response_status_code = atoi(aa);
+            s->response_status_code = atoll(aa);
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Log'\n", str);
@@ -14493,7 +14493,7 @@ int nic_for_vm_creation_parser(void *v_s, char *str, char *aa, struct ptr_array 
 	if ((aret = argcmp(str, "DeviceNumber")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "DeviceNumber argument missing\n");
             s->is_set_device_number = 1;
-            s->device_number = atoi(aa);
+            s->device_number = atoll(aa);
          } else
 	if ((aret = argcmp(str, "NicId")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "NicId argument missing\n");
@@ -14528,7 +14528,7 @@ int nic_for_vm_creation_parser(void *v_s, char *str, char *aa, struct ptr_array 
 	if ((aret = argcmp(str, "SecondaryPrivateIpCount")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "SecondaryPrivateIpCount argument missing\n");
             s->is_set_secondary_private_ip_count = 1;
-            s->secondary_private_ip_count = atoi(aa);
+            s->secondary_private_ip_count = atoll(aa);
          } else
 	if ((aret = argcmp(str, "SecurityGroupIds")) == 0 || aret == '=' || aret == '.') {
                  if (aret == '.') {
@@ -14939,7 +14939,7 @@ int phase1_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 	if ((aret = argcmp(str, "DpdTimeoutSeconds")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "DpdTimeoutSeconds argument missing\n");
             s->is_set_dpd_timeout_seconds = 1;
-            s->dpd_timeout_seconds = atoi(aa);
+            s->dpd_timeout_seconds = atoll(aa);
          } else
 	if ((aret = argcmp(str, "IkeVersions")) == 0 || aret == '=' || aret == '.') {
                  if (aret == '.') {
@@ -15056,12 +15056,12 @@ int phase1_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 	if ((aret = argcmp(str, "Phase1LifetimeSeconds")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "Phase1LifetimeSeconds argument missing\n");
             s->is_set_phase1_lifetime_seconds = 1;
-            s->phase1_lifetime_seconds = atoi(aa);
+            s->phase1_lifetime_seconds = atoll(aa);
          } else
 	if ((aret = argcmp(str, "ReplayWindowSize")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "ReplayWindowSize argument missing\n");
             s->is_set_replay_window_size = 1;
-            s->replay_window_size = atoi(aa);
+            s->replay_window_size = atoll(aa);
          } else
 	if ((aret = argcmp(str, "StartupAction")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "StartupAction argument missing\n");
@@ -15165,7 +15165,7 @@ int phase2_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 	if ((aret = argcmp(str, "Phase2LifetimeSeconds")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "Phase2LifetimeSeconds argument missing\n");
             s->is_set_phase2_lifetime_seconds = 1;
-            s->phase2_lifetime_seconds = atoi(aa);
+            s->phase2_lifetime_seconds = atoll(aa);
          } else
 	if ((aret = argcmp(str, "PreSharedKey")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "PreSharedKey argument missing\n");
@@ -15255,7 +15255,7 @@ int policy_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "ResourcesCount")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "ResourcesCount argument missing\n");
             s->is_set_resources_count = 1;
-            s->resources_count = atoi(aa);
+            s->resources_count = atoll(aa);
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Policy'\n", str);
@@ -15549,7 +15549,7 @@ int quota_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "MaxValue")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "MaxValue argument missing\n");
             s->is_set_max_value = 1;
-            s->max_value = atoi(aa);
+            s->max_value = atoll(aa);
          } else
 	if ((aret = argcmp(str, "Name")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "Name argument missing\n");
@@ -15569,7 +15569,7 @@ int quota_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "UsedValue")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "UsedValue argument missing\n");
             s->is_set_used_value = 1;
-            s->used_value = atoi(aa);
+            s->used_value = atoll(aa);
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Quota'\n", str);
@@ -16079,7 +16079,7 @@ int security_group_rule_parser(void *v_s, char *str, char *aa, struct ptr_array 
 	if ((aret = argcmp(str, "FromPortRange")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "FromPortRange argument missing\n");
             s->is_set_from_port_range = 1;
-            s->from_port_range = atoi(aa);
+            s->from_port_range = atoll(aa);
          } else
 	if ((aret = argcmp(str, "IpProtocol")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "IpProtocol argument missing\n");
@@ -16170,7 +16170,7 @@ int security_group_rule_parser(void *v_s, char *str, char *aa, struct ptr_array 
 	if ((aret = argcmp(str, "ToPortRange")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "ToPortRange argument missing\n");
             s->is_set_to_port_range = 1;
-            s->to_port_range = atoi(aa);
+            s->to_port_range = atoll(aa);
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'SecurityGroupRule'\n", str);
@@ -16335,7 +16335,7 @@ int snapshot_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "Progress")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "Progress argument missing\n");
             s->is_set_progress = 1;
-            s->progress = atoi(aa);
+            s->progress = atoll(aa);
          } else
 	if ((aret = argcmp(str, "SnapshotId")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "SnapshotId argument missing\n");
@@ -16380,7 +16380,7 @@ int snapshot_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "VolumeSize")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "VolumeSize argument missing\n");
             s->is_set_volume_size = 1;
-            s->volume_size = atoi(aa);
+            s->volume_size = atoll(aa);
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Snapshot'\n", str);
@@ -16417,7 +16417,7 @@ int snapshot_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array
 	if ((aret = argcmp(str, "Progress")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "Progress argument missing\n");
             s->is_set_progress = 1;
-            s->progress = atoi(aa);
+            s->progress = atoll(aa);
          } else
 	if ((aret = argcmp(str, "SnapshotId")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "SnapshotId argument missing\n");
@@ -16537,7 +16537,7 @@ int subnet_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "AvailableIpsCount")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "AvailableIpsCount argument missing\n");
             s->is_set_available_ips_count = 1;
-            s->available_ips_count = atoi(aa);
+            s->available_ips_count = atoll(aa);
          } else
 	if ((aret = argcmp(str, "IpRange")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "IpRange argument missing\n");
@@ -16747,7 +16747,7 @@ int vgw_telemetry_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "AcceptedRouteCount")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "AcceptedRouteCount argument missing\n");
             s->is_set_accepted_route_count = 1;
-            s->accepted_route_count = atoi(aa);
+            s->accepted_route_count = atoll(aa);
          } else
 	if ((aret = argcmp(str, "LastStateChangeDate")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "LastStateChangeDate argument missing\n");
@@ -16942,7 +16942,7 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "LaunchNumber")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "LaunchNumber argument missing\n");
             s->is_set_launch_number = 1;
-            s->launch_number = atoi(aa);
+            s->launch_number = atoll(aa);
          } else
 	if ((aret = argcmp(str, "NestedVirtualization")) == 0 || aret == '=' || aret == '.') {
             s->is_set_nested_virtualization = 1;
@@ -17250,7 +17250,7 @@ int vm_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "VmCount")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "VmCount argument missing\n");
             s->is_set_vm_count = 1;
-            s->vm_count = atoi(aa);
+            s->vm_count = atoll(aa);
          } else
 	if ((aret = argcmp(str, "VmGroupId")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "VmGroupId argument missing\n");
@@ -17383,7 +17383,7 @@ int vm_template_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "CpuCores")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "CpuCores argument missing\n");
             s->is_set_cpu_cores = 1;
-            s->cpu_cores = atoi(aa);
+            s->cpu_cores = atoll(aa);
          } else
 	if ((aret = argcmp(str, "CpuGeneration")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "CpuGeneration argument missing\n");
@@ -17418,7 +17418,7 @@ int vm_template_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "Ram")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "Ram argument missing\n");
             s->is_set_ram = 1;
-            s->ram = atoi(aa);
+            s->ram = atoll(aa);
          } else
 	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=' || aret == '.') {
             char *dot_pos = strchr(str, '.');
@@ -17483,17 +17483,17 @@ int vm_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "Eth")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "Eth argument missing\n");
             s->is_set_eth = 1;
-            s->eth = atoi(aa);
+            s->eth = atoll(aa);
          } else
 	if ((aret = argcmp(str, "Gpu")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "Gpu argument missing\n");
             s->is_set_gpu = 1;
-            s->gpu = atoi(aa);
+            s->gpu = atoll(aa);
          } else
 	if ((aret = argcmp(str, "MaxPrivateIps")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "MaxPrivateIps argument missing\n");
             s->is_set_max_private_ips = 1;
-            s->max_private_ips = atoi(aa);
+            s->max_private_ips = atoll(aa);
          } else
 	if ((aret = argcmp(str, "MemorySize")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "MemorySize argument missing\n");
@@ -17503,7 +17503,7 @@ int vm_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "VcoreCount")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "VcoreCount argument missing\n");
             s->is_set_vcore_count = 1;
-            s->vcore_count = atoi(aa);
+            s->vcore_count = atoll(aa);
          } else
 	if ((aret = argcmp(str, "VmTypeName")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "VmTypeName argument missing\n");
@@ -17513,12 +17513,12 @@ int vm_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "VolumeCount")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "VolumeCount argument missing\n");
             s->is_set_volume_count = 1;
-            s->volume_count = atoi(aa);
+            s->volume_count = atoll(aa);
          } else
 	if ((aret = argcmp(str, "VolumeSize")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "VolumeSize argument missing\n");
             s->is_set_volume_size = 1;
-            s->volume_size = atoi(aa);
+            s->volume_size = atoll(aa);
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'VmType'\n", str);
@@ -17538,7 +17538,7 @@ int volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "Iops")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "Iops argument missing\n");
             s->is_set_iops = 1;
-            s->iops = atoi(aa);
+            s->iops = atoll(aa);
          } else
 	if ((aret = argcmp(str, "LinkedVolumes")) == 0 || aret == '=' || aret == '.') {
             char *dot_pos = strchr(str, '.');
@@ -17568,7 +17568,7 @@ int volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	if ((aret = argcmp(str, "Size")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "Size argument missing\n");
             s->is_set_size = 1;
-            s->size = atoi(aa);
+            s->size = atoll(aa);
          } else
 	if ((aret = argcmp(str, "SnapshotId")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "SnapshotId argument missing\n");
@@ -18438,7 +18438,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "Iops argument missing\n");
 				          s->is_set_iops = 1;
-				          s->iops = atoi(aa);
+				          s->iops = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "Size")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -18449,7 +18449,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "Size argument missing\n");
 				          s->is_set_size = 1;
-				          s->size = atoi(aa);
+				          s->size = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "VolumeId")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -20786,7 +20786,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "LoadBalancerPort argument missing\n");
 				          s->is_set_load_balancer_port = 1;
-				          s->load_balancer_port = atoi(aa);
+				          s->load_balancer_port = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "PolicyNames")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -21399,7 +21399,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "Mtu argument missing\n");
 				          s->is_set_mtu = 1;
-				          s->mtu = atoi(aa);
+				          s->mtu = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'UpdateDirectLinkInterface'\n", next_a);
@@ -21958,7 +21958,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "MaxAccessKeyExpirationSeconds argument missing\n");
 				          s->is_set_max_access_key_expiration_seconds = 1;
-				          s->max_access_key_expiration_seconds = atoi(aa);
+				          s->max_access_key_expiration_seconds = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "RequireTrustedEnv")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -24194,7 +24194,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "VmAddition argument missing\n");
 				          s->is_set_vm_addition = 1;
-				          s->vm_addition = atoi(aa);
+				          s->vm_addition = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "VmGroupId")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -24322,7 +24322,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "VmSubtraction argument missing\n");
 				          s->is_set_vm_subtraction = 1;
-				          s->vm_subtraction = atoi(aa);
+				          s->vm_subtraction = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ScaleDownVmGroup'\n", next_a);
@@ -24976,7 +24976,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadVpnConnections'\n", next_a);
@@ -25116,7 +25116,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadVolumes'\n", next_a);
@@ -25272,7 +25272,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadVmsState'\n", next_a);
@@ -25552,7 +25552,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadVms'\n", next_a);
@@ -25692,7 +25692,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadVmTypes'\n", next_a);
@@ -26068,7 +26068,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadVirtualGateways'\n", next_a);
@@ -26409,7 +26409,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "FirstItem argument missing\n");
 				          s->is_set_first_item = 1;
-				          s->first_item = atoi(aa);
+				          s->first_item = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -26420,7 +26420,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadUserGroups'\n", next_a);
@@ -26654,7 +26654,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "FirstItem argument missing\n");
 				          s->is_set_first_item = 1;
-				          s->first_item = atoi(aa);
+				          s->first_item = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -26665,7 +26665,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "UserGroupName")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -26944,7 +26944,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadTags'\n", next_a);
@@ -27084,7 +27084,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadSubregions'\n", next_a);
@@ -27224,7 +27224,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadSubnets'\n", next_a);
@@ -27364,7 +27364,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadSnapshots'\n", next_a);
@@ -27504,7 +27504,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadSnapshotExportTasks'\n", next_a);
@@ -27762,7 +27762,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadSecurityGroups'\n", next_a);
@@ -28008,7 +28008,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadRouteTables'\n", next_a);
@@ -28243,7 +28243,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadQuotas'\n", next_a);
@@ -28383,7 +28383,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadPublicIps'\n", next_a);
@@ -28500,7 +28500,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadPublicIpRanges'\n", next_a);
@@ -28735,7 +28735,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadProductTypes'\n", next_a);
@@ -28825,7 +28825,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "FirstItem argument missing\n");
 				          s->is_set_first_item = 1;
-				          s->first_item = atoi(aa);
+				          s->first_item = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "PolicyOrn")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -28847,7 +28847,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadPolicyVersions'\n", next_a);
@@ -29167,7 +29167,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "FirstItem argument missing\n");
 				          s->is_set_first_item = 1;
-				          s->first_item = atoi(aa);
+				          s->first_item = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -29178,7 +29178,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadPolicies'\n", next_a);
@@ -29436,7 +29436,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadNets'\n", next_a);
@@ -29576,7 +29576,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadNetPeerings'\n", next_a);
@@ -29716,7 +29716,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadNetAccessPoints'\n", next_a);
@@ -29856,7 +29856,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadNetAccessPointServices'\n", next_a);
@@ -29996,7 +29996,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadNatServices'\n", next_a);
@@ -30125,7 +30125,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "FirstItem argument missing\n");
 				          s->is_set_first_item = 1;
-				          s->first_item = atoi(aa);
+				          s->first_item = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -30136,7 +30136,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "UserGroupName")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -30264,7 +30264,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadLocations'\n", next_a);
@@ -30758,7 +30758,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "FirstItem argument missing\n");
 				          s->is_set_first_item = 1;
-				          s->first_item = atoi(aa);
+				          s->first_item = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -30769,7 +30769,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "UserName")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -30920,7 +30920,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadKeypairs'\n", next_a);
@@ -31060,7 +31060,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadInternetServices'\n", next_a);
@@ -31200,7 +31200,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadImages'\n", next_a);
@@ -31340,7 +31340,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadImageExportTasks'\n", next_a);
@@ -31693,7 +31693,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadDirectLinks'\n", next_a);
@@ -31833,7 +31833,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadDirectLinkInterfaces'\n", next_a);
@@ -31973,7 +31973,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadDhcpOptions'\n", next_a);
@@ -32113,7 +32113,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadDedicatedGroups'\n", next_a);
@@ -32508,7 +32508,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadClientGateways'\n", next_a);
@@ -32979,7 +32979,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ResultsPerPage argument missing\n");
 				          s->is_set_results_per_page = 1;
-				          s->results_per_page = atoi(aa);
+				          s->results_per_page = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "With")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -34379,7 +34379,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "SecondaryPrivateIpCount argument missing\n");
 				          s->is_set_secondary_private_ip_count = 1;
-				          s->secondary_private_ip_count = atoi(aa);
+				          s->secondary_private_ip_count = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'LinkPrivateIps'\n", next_a);
@@ -34586,7 +34586,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "DeviceNumber argument missing\n");
 				          s->is_set_device_number = 1;
-				          s->device_number = atoi(aa);
+				          s->device_number = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -37027,7 +37027,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "FromPortRange argument missing\n");
 				          s->is_set_from_port_range = 1;
-				          s->from_port_range = atoi(aa);
+				          s->from_port_range = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "IpProtocol")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -37124,7 +37124,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ToPortRange argument missing\n");
 				          s->is_set_to_port_range = 1;
-				          s->to_port_range = atoi(aa);
+				          s->to_port_range = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'DeleteSecurityGroupRule'\n", next_a);
@@ -40719,7 +40719,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "Iops argument missing\n");
 				          s->is_set_iops = 1;
-				          s->iops = atoi(aa);
+				          s->iops = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "Size")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -40730,7 +40730,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "Size argument missing\n");
 				          s->is_set_size = 1;
-				          s->size = atoi(aa);
+				          s->size = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "SnapshotId")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -40981,7 +40981,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "MaxVmsCount argument missing\n");
 				          s->is_set_max_vms_count = 1;
-				          s->max_vms_count = atoi(aa);
+				          s->max_vms_count = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "MinVmsCount")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -40992,7 +40992,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "MinVmsCount argument missing\n");
 				          s->is_set_min_vms_count = 1;
-				          s->min_vms_count = atoi(aa);
+				          s->min_vms_count = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "NestedVirtualization")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -41309,7 +41309,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "CpuCores argument missing\n");
 				          s->is_set_cpu_cores = 1;
-				          s->cpu_cores = atoi(aa);
+				          s->cpu_cores = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "CpuGeneration")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -41391,7 +41391,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "Ram argument missing\n");
 				          s->is_set_ram = 1;
-				          s->ram = atoi(aa);
+				          s->ram = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "Tags")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -41637,7 +41637,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "VmCount argument missing\n");
 				          s->is_set_vm_count = 1;
-				          s->vm_count = atoi(aa);
+				          s->vm_count = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "VmGroupName")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -42544,7 +42544,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "SnapshotSize argument missing\n");
 				          s->is_set_snapshot_size = 1;
-				          s->snapshot_size = atoi(aa);
+				          s->snapshot_size = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "SourceRegionName")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -42844,7 +42844,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "FromPortRange argument missing\n");
 				          s->is_set_from_port_range = 1;
-				          s->from_port_range = atoi(aa);
+				          s->from_port_range = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "IpProtocol")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -42941,7 +42941,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "ToPortRange argument missing\n");
 				          s->is_set_to_port_range = 1;
-				          s->to_port_range = atoi(aa);
+				          s->to_port_range = atoll(aa);
 				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'CreateSecurityGroupRule'\n", next_a);
@@ -44760,7 +44760,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "CookieExpirationPeriod argument missing\n");
 				          s->is_set_cookie_expiration_period = 1;
-				          s->cookie_expiration_period = atoi(aa);
+				          s->cookie_expiration_period = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "CookieName")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -46728,7 +46728,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "CpuGeneration argument missing\n");
 				          s->is_set_cpu_generation = 1;
-				          s->cpu_generation = atoi(aa);
+				          s->cpu_generation = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -46856,7 +46856,7 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "BgpAsn argument missing\n");
 				          s->is_set_bgp_asn = 1;
-				          s->bgp_asn = atoi(aa);
+				          s->bgp_asn = atoll(aa);
 				       } else
 			      if ((aret = argcmp(next_a, "ConnectionType")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
