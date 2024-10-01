@@ -77,8 +77,8 @@ struct osc_str {
 
 #define OSC_ENV_FREE_AK_SK (OSC_ENV_FREE_AK | OSC_ENV_FREE_SK)
 
-#define OSC_API_VERSION "1.30.0"
-#define OSC_SDK_VERSION 0X001100
+#define OSC_API_VERSION "1.33.1"
+#define OSC_SDK_VERSION 0X001200
 
 enum osc_auth_method {
 	OSC_AKSK_METHOD,
@@ -649,9 +649,9 @@ struct catalog {
          *   --Entries.INDEX.Type: string
          *     The type of resource associated with the catalog entry.
          *   --Entries.INDEX.UnitPrice: double
-         *     The unit price of the catalog entry, in the currency of the 
-         * Region's 
-         *     catalog.
+         *     The unit price of the catalog entry in the currency of your 
+         * account, in 
+         *     the ISO-4217 format (for example, `EUR`).
          */
         char *entries_str;
         int nb_entries;
@@ -691,8 +691,8 @@ struct catalog_entry {
          */
 	char *type;
         /*
-         * The unit price of the catalog entry, in the currency of the Region's 
-         * catalog.
+         * The unit price of the catalog entry in the currency of your account, 
+         * in the ISO-4217 format (for example, `EUR`).
          */
         int is_set_unit_price;
 	double unit_price;
@@ -722,9 +722,9 @@ struct catalogs {
          *   --Entries.INDEX.Type: string
          *     The type of resource associated with the catalog entry.
          *   --Entries.INDEX.UnitPrice: double
-         *     The unit price of the catalog entry, in the currency of the 
-         * Region's 
-         *     catalog.
+         *     The unit price of the catalog entry in the currency of your 
+         * account, in 
+         *     the ISO-4217 format (for example, `EUR`).
          */
         char *entries_str;
         int nb_entries;
@@ -834,8 +834,8 @@ struct consumption_entry {
          */
 	char *type;
         /*
-         * The unit price of the consumed resource, in the currency of the 
-         * Region's catalog.
+         * The unit price of the consumed resource in the currency of your 
+         * account, in the ISO-4217 format (for example, `EUR`).
          */
         int is_set_unit_price;
 	double unit_price;
@@ -2488,6 +2488,14 @@ struct filters_user_group {
 	char **user_group_ids;
 };
 
+struct filters_users {
+        /*
+         * The IDs of the users.
+         */
+        char *user_ids_str;
+	char **user_ids;
+};
+
 struct filters_virtual_gateway {
         /*
          * The types of the virtual gateways (always `ipsec.1`).
@@ -3935,7 +3943,7 @@ struct listener_rule {
         /*
          * A host-name pattern for the rule, with a maximum length of 128 
          * characters. This host-name pattern supports maximum three wildcards, 
-         * and must not contain any special characters except [-.?].
+         * and must not contain any special characters except `-.?`.
          */
 	char *host_name_pattern;
         /*
@@ -3955,7 +3963,7 @@ struct listener_rule {
         /*
          * A path pattern for the rule, with a maximum length of 128 characters. 
          * This path pattern supports maximum three wildcards, and must not 
-         * contain any special characters except [_-.$/~&quot;'@:+?].
+         * contain any special characters except `_-.$/~&quot;'@:+?`.
          */
 	char *path_pattern;
         /*
@@ -3980,7 +3988,7 @@ struct listener_rule_for_creation {
         /*
          * A host-name pattern for the rule, with a maximum length of 128 
          * characters. This host-name pattern supports maximum three wildcards, 
-         * and must not contain any special characters except [-.?].
+         * and must not contain any special characters except `-.?`.
          */
 	char *host_name_pattern;
         /*
@@ -3990,7 +3998,7 @@ struct listener_rule_for_creation {
         /*
          * A path pattern for the rule, with a maximum length of 128 characters. 
          * This path pattern supports maximum three wildcards, and must not 
-         * contain any special characters except [_-.$/~&quot;'@:+?].
+         * contain any special characters except `_-.$/~&quot;'@:+?`.
          */
 	char *path_pattern;
         /*
@@ -4359,6 +4367,24 @@ struct maintenance_event {
          * The earliest scheduled start date and time (UTC) for the event.
          */
 	char *not_before;
+};
+
+struct minimal_policy {
+        /*
+         * The ID of the entity.
+         */
+	char *id;
+        /*
+         * The name of the entity.
+         */
+	char *name;
+        /*
+         * The OUTSCALE Resource Name (ORN) of the entity. For more information, 
+         * see [Resource 
+         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
+         * rs.html).
+         */
+	char *orn;
 };
 
 struct nat_service {
@@ -5114,6 +5140,84 @@ struct policy {
          */
         int is_set_resources_count;
 	long long int resources_count;
+};
+
+struct policy_entities {
+        /*
+         *   Information about the entity.
+         *   --Accounts.INDEX.Id: string
+         *     The ID of the entity.
+         *   --Accounts.INDEX.Name: string
+         *     The name of the entity.
+         *   --Accounts.INDEX.Orn: string
+         *     The OUTSCALE Resource Name (ORN) of the entity. For more 
+         * information, 
+         *     see [Resource 
+         *     
+         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
+         * rs.h
+         *     tml).
+         */
+        char *accounts_str;
+        int nb_accounts;
+	struct minimal_policy *accounts;
+        /*
+         *   Information about the entity.
+         *   --Groups.INDEX.Id: string
+         *     The ID of the entity.
+         *   --Groups.INDEX.Name: string
+         *     The name of the entity.
+         *   --Groups.INDEX.Orn: string
+         *     The OUTSCALE Resource Name (ORN) of the entity. For more 
+         * information, 
+         *     see [Resource 
+         *     
+         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
+         * rs.h
+         *     tml).
+         */
+        char *groups_str;
+        int nb_groups;
+	struct minimal_policy *groups;
+        /*
+         * If true, there are more items to return using the `FirstItem` 
+         * parameter in a new request.
+         */
+        int is_set_has_more_items;
+	int has_more_items;
+        /*
+         * The number of entities the specified policy is linked to.
+         */
+        int is_set_items_count;
+	long long int items_count;
+        /*
+         * Indicates maximum results defined for the operation.
+         */
+        int is_set_max_results_limit;
+	long long int max_results_limit;
+        /*
+         * If true, indicates whether requested page size is more than allowed.
+         */
+        int is_set_max_results_truncated;
+	int max_results_truncated;
+        /*
+         *   Information about the entity.
+         *   --Users.INDEX.Id: string
+         *     The ID of the entity.
+         *   --Users.INDEX.Name: string
+         *     The name of the entity.
+         *   --Users.INDEX.Orn: string
+         *     The OUTSCALE Resource Name (ORN) of the entity. For more 
+         * information, 
+         *     see [Resource 
+         *     
+         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
+         * rs.h
+         *     tml).
+         */
+        char *users_str;
+        int nb_users;
+	struct minimal_policy *users;
 };
 
 struct policy_version {
@@ -5997,7 +6101,11 @@ struct subnet {
 
 struct subregion {
         /*
-         * The location code of the Subregion.
+         * The location code (physical zone) of the Subregion. For more 
+         * information, see [About Regions > Mapping Between Subregions and 
+         * Physical 
+         * Zones](https://docs.outscale.com/en/userguide/About-Regions-and-Subreg
+         * ions.html#_mapping_between_subregions_and_physical_zones).
          */
 	char *location_code;
         /*
@@ -6033,6 +6141,40 @@ struct tag {
 	char *value;
 };
 
+struct unit_price_entry {
+        /*
+         * The currency of your account for the `UnitPrice` parameter, in the 
+         * ISO-4217 format (for example, `EUR`).
+         */
+	char *currency;
+        /*
+         * The operation associated with the catalog entry (for example, 
+         * `RunInstances-OD` or `CreateVolume`).
+         */
+	char *operation;
+        /*
+         * The service associated with the catalog entry (for example, 
+         * `TinaOS-FCU` or `TinaOS-OOS`).
+         */
+	char *service;
+        /*
+         * The type associated with the catalog entry (for example, 
+         * `BSU:VolumeIOPS:io1` or `BoxUsage:tinav6.c6r16p3`).
+         */
+	char *type;
+        /*
+         * The unit associated with the catalog entry (for example, `PER_MONTH` 
+         * or `PER_COUNT`).
+         */
+	char *unit;
+        /*
+         * The unit price of the catalog entry in the currency of your account, 
+         * in the ISO-4217 format (for example, `EUR`).
+         */
+        int is_set_unit_price;
+	double unit_price;
+};
+
 struct user {
         /*
          * The date and time (UTC) of creation of the EIM user.
@@ -6046,6 +6188,10 @@ struct user {
          * The path to the EIM user.
          */
 	char *path;
+        /*
+         * The email address of the EIM user.
+         */
+	char *user_email;
         /*
          * The ID of the EIM user.
          */
@@ -7375,6 +7521,10 @@ struct osc_update_user_arg  {
          */
 	char *new_path;
         /*
+         * A new email address for the EIM user.
+         */
+	char *new_user_email;
+        /*
          * A new name for the EIM user.
          */
 	char *new_user_name;
@@ -7761,7 +7911,7 @@ struct osc_update_listener_rule_arg  {
         /*
          * A host-name pattern for the rule, with a maximum length of 128 
          * characters. This host-name pattern supports maximum three wildcards, 
-         * and must not contain any special characters except [-.?].
+         * and must not contain any special characters except `-.?`.
          */
 	char *host_pattern;
         /*
@@ -7771,7 +7921,7 @@ struct osc_update_listener_rule_arg  {
         /*
          * A path pattern for the rule, with a maximum length of 128 characters. 
          * This path pattern supports maximum three wildcards, and must not 
-         * contain any special characters except [_-.$/~&quot;'@:+?].
+         * contain any special characters except `_-.$/~&quot;'@:+?`.
          */
 	char *path_pattern;
 };
@@ -8494,8 +8644,8 @@ struct osc_read_vpn_connections_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -8563,8 +8713,8 @@ struct osc_read_volumes_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -8612,8 +8762,8 @@ struct osc_read_vms_state_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -8830,8 +8980,8 @@ struct osc_read_vms_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -8878,8 +9028,8 @@ struct osc_read_vm_types_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -9012,8 +9162,8 @@ struct osc_read_virtual_gateways_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -9027,6 +9177,25 @@ struct osc_read_users_arg  {
          */
         int is_set_dry_run;
 	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.UserIds: array string
+         *     The IDs of the users.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_users filters;
+        /*
+         * The item starting the list of users requested.
+         */
+        int is_set_first_item;
+	long long int first_item;
+        /*
+         * The maximum number of items that can be returned in a single response 
+         * (by default, `100`).
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_user_groups_per_user_arg  {
@@ -9149,6 +9318,25 @@ struct osc_read_user_group_arg  {
 	char *user_group_name;
 };
 
+struct osc_read_unit_price_arg  {
+        /* Required: operation, service, type */
+        /*
+         * The operation associated with the catalog entry (for example, 
+         * `RunInstances-OD` or `CreateVolume`).
+         */
+	char *operation;
+        /*
+         * The service associated with the catalog entry (for example, 
+         * `TinaOS-FCU` or `TinaOS-OOS`).
+         */
+	char *service;
+        /*
+         * The type associated with the catalog entry (for example, 
+         * `BSU:VolumeIOPS:io1` or `BoxUsage:tinav6.c6r16p3`).
+         */
+	char *type;
+};
+
 struct osc_read_tags_arg  {
         /* Required:none */
         /*
@@ -9195,8 +9383,8 @@ struct osc_read_tags_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -9228,8 +9416,8 @@ struct osc_read_subregions_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -9279,8 +9467,8 @@ struct osc_read_subnets_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -9349,8 +9537,8 @@ struct osc_read_snapshots_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -9378,8 +9566,8 @@ struct osc_read_snapshot_export_tasks_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -9488,8 +9676,8 @@ struct osc_read_security_groups_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -9568,8 +9756,8 @@ struct osc_read_route_tables_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -9615,8 +9803,8 @@ struct osc_read_quotas_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -9670,8 +9858,8 @@ struct osc_read_public_ips_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -9691,8 +9879,8 @@ struct osc_read_public_ip_ranges_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -9730,8 +9918,8 @@ struct osc_read_product_types_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -9951,8 +10139,8 @@ struct osc_read_nets_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -10012,8 +10200,8 @@ struct osc_read_net_peerings_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -10060,8 +10248,8 @@ struct osc_read_net_access_points_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -10091,8 +10279,8 @@ struct osc_read_net_access_point_services_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -10140,8 +10328,8 @@ struct osc_read_nat_services_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -10198,8 +10386,8 @@ struct osc_read_locations_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -10319,8 +10507,8 @@ struct osc_read_keypairs_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -10366,8 +10554,8 @@ struct osc_read_internet_services_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -10447,8 +10635,8 @@ struct osc_read_images_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -10476,8 +10664,8 @@ struct osc_read_image_export_tasks_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -10529,6 +10717,34 @@ struct osc_read_flexible_gpu_catalog_arg  {
 	int dry_run;
 };
 
+struct osc_read_entities_linked_to_policy_arg  {
+        /* Required:none */
+        /*
+         * The type of entity linked to the policy (`ACCOUNT` \\| `USER` \\| 
+         * `GROUP`) you want to get information about.
+         */
+        char *entities_type_str;
+	char **entities_type;
+        /*
+         * The item starting the list of entities requested.
+         */
+        int is_set_first_item;
+	long long int first_item;
+        /*
+         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
+         * see [Resource 
+         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
+         * rs.html).
+         */
+	char *policy_orn;
+        /*
+         * The maximum number of items that can be returned in a single response 
+         * (by default, 100).
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
 struct osc_read_direct_links_arg  {
         /* Required:none */
         /*
@@ -10551,8 +10767,8 @@ struct osc_read_direct_links_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -10582,8 +10798,8 @@ struct osc_read_direct_link_interfaces_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -10634,8 +10850,8 @@ struct osc_read_dhcp_options_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -10671,8 +10887,8 @@ struct osc_read_dedicated_groups_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -10779,8 +10995,8 @@ struct osc_read_client_gateways_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -10900,8 +11116,8 @@ struct osc_read_api_logs_arg  {
          */
 	char *next_page_token;
         /*
-         * The maximum number of logs returned in a single response (between 
-         * `1`and `1000`, both included). By default, `100`.
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -12455,7 +12671,11 @@ struct osc_create_vms_arg  {
 	char *subnet_id;
         /*
          * Data or script used to add a specific configuration to the VM. It 
-         * must be Base64-encoded and is limited to 500 kibibytes (KiB).
+         * must be Base64-encoded and is limited to 500 kibibytes (KiB). For 
+         * more information about user data, see [Configuring a VM with User 
+         * Data and OUTSCALE 
+         * Tags](https://docs.outscale.com/en/userguide/Configuring-a-VM-with-Use
+         * r-Data-and-OUTSCALE-Tags.html).
          */
 	char *user_data;
         /*
@@ -12635,13 +12855,18 @@ struct osc_create_user_arg  {
          * The path to the EIM user you want to create (by default, `/`). This 
          * path name must begin and end with a slash (`/`), and contain between 
          * 1 and 512 alphanumeric characters and/or slashes (`/`), or 
-         * underscores (_).
+         * underscores (`_`).
          */
 	char *path;
         /*
+         * The email address of the EIM user.
+         */
+	char *user_email;
+        /*
          * The name of the EIM user. This user name must contain between 1 and 
-         * 64 alphanumeric characters and/or pluses (+), equals (=), commas (,), 
-         * periods (.), at signs (@), dashes (-), or underscores (_).
+         * 64 alphanumeric characters and/or pluses (`+`), equals (`=`), commas 
+         * (`,`), periods (`.`), at signs (`@`), dashes (`-`), or underscores 
+         * (`_`).
          */
 	char *user_name;
 };
@@ -12750,13 +12975,9 @@ struct osc_create_snapshot_arg  {
 	int dry_run;
         /*
          * **(when importing from a bucket)** The pre-signed URL of the snapshot 
-         * you want to import, or the normal URL of the snapshot if you have 
-         * permission on the OOS bucket. For more information, see [Configuring 
-         * a Pre-signed 
-         * URL](https://docs.outscale.com/en/userguide/Configuring-a-Pre-signed-U
-         * RL.html) or [Managing Access to Your Buckets and 
-         * Objects](https://docs.outscale.com/en/userguide/Managing-Access-to-You
-         * r-Buckets-and-Objects.html).
+         * you want to import. For more information, see [Creating a Pre-signed 
+         * URL](https://docs.outscale.com/en/userguide/Creating-a-Pre-Signed-URL.
+         * html).
          */
 	char *file_location;
         /*
@@ -12804,12 +13025,12 @@ struct osc_create_server_certificate_arg  {
 	int dry_run;
         /*
          * A unique name for the certificate. Constraints: 1-128 alphanumeric 
-         * characters, pluses (+), equals (=), commas (,), periods (.), at signs 
-         * (@), minuses (-), or underscores (_).
+         * characters, pluses (`+`), equals (`=`), commas (`,`), periods (`.`), 
+         * at signs (`@`), minuses (`-`), or underscores (`_`).
          */
 	char *name;
         /*
-         * The path to the server certificate, set to a slash (/) if not 
+         * The path to the server certificate, set to a slash (`/`) if not 
          * specified.
          */
 	char *path;
@@ -13141,6 +13362,12 @@ struct osc_create_net_peering_arg  {
          */
 	char *accepter_net_id;
         /*
+         * The account ID of the owner of the Net you want to connect with. By 
+         * default, the account ID of the owner of the Net from which the 
+         * peering request is sent.
+         */
+	char *accepter_owner_id;
+        /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
          */
@@ -13275,7 +13502,7 @@ struct osc_create_load_balancer_policy_arg  {
 	char *load_balancer_name;
         /*
          * The unique name of the policy, with a maximum length of 32 
-         * alphanumeric characters and dashes (-).
+         * alphanumeric characters and dashes (`-`).
          */
 	char *policy_name;
         /*
@@ -13365,7 +13592,7 @@ struct osc_create_load_balancer_arg  {
 	struct listener_for_creation *listeners;
         /*
          * The unique name of the load balancer, with a maximum length of 32 
-         * alphanumeric characters and dashes (-). This name must not start or 
+         * alphanumeric characters and dashes (`-`). This name must not start or 
          * end with a dash.
          */
 	char *load_balancer_name;
@@ -13442,7 +13669,7 @@ struct osc_create_listener_rule_arg  {
          *     A host-name pattern for the rule, with a maximum length of 128 
          *     characters. This host-name pattern supports maximum three 
          * wildcards, and 
-         *     must not contain any special characters except [-.?].
+         *     must not contain any special characters except `-.?`.
          *   --ListenerRule.ListenerRuleName: string
          *     A human-readable name for the listener rule.
          *   --ListenerRule.PathPattern: string
@@ -13450,7 +13677,7 @@ struct osc_create_listener_rule_arg  {
          * characters. 
          *     This path pattern supports maximum three wildcards, and must not 
          * contain 
-         *     any special characters except [_-.$/~&quot;'@:+?].
+         *     any special characters except `_-.$/~&quot;'@:+?`.
          *   --ListenerRule.Priority: long long int
          *     The priority level of the listener rule, between `1` and `19999` 
          * both 
@@ -13538,13 +13765,13 @@ struct osc_create_image_export_task_arg  {
 struct osc_create_image_arg  {
         /* Required:none */
         /*
-         * **(when registering from a snapshot, or from a bucket without using a 
-         * manifest file)** The architecture of the OMI (`i386` or `x86_64`).
+         * **(when registering from a snapshot)** The architecture of the OMI 
+         * (`i386` or `x86_64`).
          */
 	char *architecture;
         /*
-         * **(when registering from a snapshot, or from a bucket without using a 
-         * manifest file)** One or more block device mappings.
+         * **(when registering from a snapshot)** One or more block device 
+         * mappings.
          *   One or more parameters used to automatically set up volumes when 
          * the VM 
          *   is created.
@@ -13610,15 +13837,9 @@ struct osc_create_image_arg  {
         /*
          * **(when registering from a bucket by using a manifest file)** The 
          * pre-signed URL of the manifest file for the OMI you want to register. 
-         * For more information, see [Configuring a Pre-signed 
-         * URL](https://docs.outscale.com/en/userguide/Configuring-a-Pre-signed-U
-         * RL.html) or [Managing Access to Your Buckets and 
-         * Objects](https://docs.outscale.com/en/userguide/Managing-Access-to-You
-         * r-Buckets-and-Objects.html).<br />\nYou can also specify the normal 
-         * URL of the OMI if you have permission on the OOS bucket, without 
-         * using the manifest file, but in that case, you need to manually 
-         * specify through the other parameters all the information that would 
-         * otherwise be read from the manifest file.
+         * For more information, see [Creating a Pre-signed 
+         * URL](https://docs.outscale.com/en/userguide/Creating-a-Pre-Signed-URL.
+         * html).
          */
 	char *file_location;
         /*
@@ -13639,8 +13860,8 @@ struct osc_create_image_arg  {
         char *product_codes_str;
 	char **product_codes;
         /*
-         * **(when registering from a snapshot, or from a bucket without using a 
-         * manifest file)** The name of the root device for the new OMI.
+         * **(when registering from a snapshot)** The name of the root device 
+         * for the new OMI.
          */
 	char *root_device_name;
         /*
@@ -14198,6 +14419,7 @@ int osc_read_user_groups(struct osc_env *e, struct osc_str *out, struct osc_read
 int osc_read_user_group_policy(struct osc_env *e, struct osc_str *out, struct osc_read_user_group_policy_arg *args);
 int osc_read_user_group_policies(struct osc_env *e, struct osc_str *out, struct osc_read_user_group_policies_arg *args);
 int osc_read_user_group(struct osc_env *e, struct osc_str *out, struct osc_read_user_group_arg *args);
+int osc_read_unit_price(struct osc_env *e, struct osc_str *out, struct osc_read_unit_price_arg *args);
 int osc_read_tags(struct osc_env *e, struct osc_str *out, struct osc_read_tags_arg *args);
 int osc_read_subregions(struct osc_env *e, struct osc_str *out, struct osc_read_subregions_arg *args);
 int osc_read_subnets(struct osc_env *e, struct osc_str *out, struct osc_read_subnets_arg *args);
@@ -14235,6 +14457,7 @@ int osc_read_images(struct osc_env *e, struct osc_str *out, struct osc_read_imag
 int osc_read_image_export_tasks(struct osc_env *e, struct osc_str *out, struct osc_read_image_export_tasks_arg *args);
 int osc_read_flexible_gpus(struct osc_env *e, struct osc_str *out, struct osc_read_flexible_gpus_arg *args);
 int osc_read_flexible_gpu_catalog(struct osc_env *e, struct osc_str *out, struct osc_read_flexible_gpu_catalog_arg *args);
+int osc_read_entities_linked_to_policy(struct osc_env *e, struct osc_str *out, struct osc_read_entities_linked_to_policy_arg *args);
 int osc_read_direct_links(struct osc_env *e, struct osc_str *out, struct osc_read_direct_links_arg *args);
 int osc_read_direct_link_interfaces(struct osc_env *e, struct osc_str *out, struct osc_read_direct_link_interfaces_arg *args);
 int osc_read_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_read_dhcp_options_arg *args);

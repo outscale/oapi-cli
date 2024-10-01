@@ -141,6 +141,7 @@ static const char *calls_name[] = {
 	"ReadUserGroupPolicy",
 	"ReadUserGroupPolicies",
 	"ReadUserGroup",
+	"ReadUnitPrice",
 	"ReadTags",
 	"ReadSubregions",
 	"ReadSubnets",
@@ -178,6 +179,7 @@ static const char *calls_name[] = {
 	"ReadImageExportTasks",
 	"ReadFlexibleGpus",
 	"ReadFlexibleGpuCatalog",
+	"ReadEntitiesLinkedToPolicy",
 	"ReadDirectLinks",
 	"ReadDirectLinkInterfaces",
 	"ReadDhcpOptions",
@@ -428,9 +430,11 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli ReadUserGroup --UserGroupName=usergroupname [OPTIONS]\n" "Lists information about a specified user group, including its users.\n" "\nRequired Argument: UserGroupName \n"
 ,
+	"Usage: oapi-cli ReadUnitPrice --Operation=operation --Service=service --Type=type [OPTIONS]\n" "Gets unit price information for the specified parameters.\n" "\nRequired Argument: Operation, Service, Type \n"
+,
 	"Usage: oapi-cli ReadTags [OPTIONS]\n" "Lists one or more tags for your resources.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadSubregions [OPTIONS]\n" "Lists one or more of the enabled Subregions that you can access in the current \n" "Region.\n\nFor more information, see [About Regions, Endpoints, and \n" "Subregions](https://docs.outscale.com/en/userguide/About-Regions-Endpoints-and-S\n" "ubregions.html).\n" "\nRequired Argument: \n"
+	"Usage: oapi-cli ReadSubregions [OPTIONS]\n" "Lists one or more of the enabled Subregions that you can access in the current \n" "Region.\n\nFor more information, see [About Regions and \n" "Subregions](https://docs.outscale.com/en/userguide/About-Regions-and-Subregions.\n" "html).\n" "\nRequired Argument: \n"
 ,
 	"Usage: oapi-cli ReadSubnets [OPTIONS]\n" "Lists one or more of your Subnets.\nIf you do not specify any Subnet ID, this \n" "action describes all of your Subnets.\n" "\nRequired Argument: \n"
 ,
@@ -442,19 +446,19 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli ReadSecurityGroups [OPTIONS]\n" "Lists one or more security groups.\nYou can specify either the name of the \n" "security groups or their IDs.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadSecretAccessKey --AccessKeyId=accesskeyid [OPTIONS]\n" "Lists information about the specified access key of your root account, \n" "including its secret key.\n" "\nRequired Argument: AccessKeyId \n"
+	"Usage: oapi-cli ReadSecretAccessKey --AccessKeyId=accesskeyid [OPTIONS]\n" "> [WARNING]\n> Deprecated: This call will be removed after October 1, \n" "2024.\n\nLists information about the specified access key of your root account, \n" "including its secret key.\n" "\nRequired Argument: AccessKeyId \n"
 ,
 	"Usage: oapi-cli ReadRouteTables [OPTIONS]\n" "Lists one or more of your route tables.\nIn your Net, each Subnet must be \n" "associated with a route table. If a Subnet is not explicitly associated with a \n" "route table, it is implicitly associated with the main route table of the Net.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadRegions [OPTIONS]\n" "Lists one or more Regions of the OUTSCALE Cloud.\nFor more information, see \n" "[About Regions, Endpoints, and \n" "Subregions](https://docs.outscale.com/en/userguide/About-Regions-Endpoints-and-S\n" "ubregions.html).\n" "\nRequired Argument: \n"
+	"Usage: oapi-cli ReadRegions [OPTIONS]\n" "Lists one or more Regions of the OUTSCALE Cloud.\nFor more information, see \n" "[About Regions and \n" "Subregions](https://docs.outscale.com/en/userguide/About-Regions-and-Subregions.\n" "html).\n" "\nRequired Argument: \n"
 ,
 	"Usage: oapi-cli ReadQuotas [OPTIONS]\n" "Lists one or more of your quotas.\nFor more information, see [About Your \n" "Account](https://docs.outscale.com/en/userguide/About-Your-Account.html).\n" "\nRequired Argument: \n"
 ,
 	"Usage: oapi-cli ReadPublicIps [OPTIONS]\n" "Lists one or more public IPs allocated to your account.\nBy default, this \n" "action returns information about all your public IPs: available or associated \n" "with a virtual machine (VM), a network interface card (NIC) or a NAT service.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadPublicIpRanges [OPTIONS]\n" "Gets the public IPv4 addresses in CIDR notation for the Region specified in the \n" "endpoint of the request. For more information, see [Regions, Endpoints, and \n" "Subregions \n" "Reference](https://docs.outscale.com/en/userguide/Regions-Endpoints-and-Subregio\n" "ns-Reference.html).\n" "\nRequired Argument: \n"
+	"Usage: oapi-cli ReadPublicIpRanges [OPTIONS]\n" "Gets the public IPv4 addresses in CIDR notation for the Region specified in the \n" "endpoint of the request. For more information, see [About Regions and \n" "Subregions](https://docs.outscale.com/en/userguide/About-Regions-and-Subregions.\n" "html).\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadPublicCatalog [OPTIONS]\n" "Returns the price list of OUTSCALE products and services for the Region \n" "specified in the endpoint of the request. For more information, see [Regions, \n" "Endpoints, and Subregions \n" "Reference](https://docs.outscale.com/en/userguide/Regions-Endpoints-and-Subregio\n" "ns-Reference.html).\n" "\nRequired Argument: \n"
+	"Usage: oapi-cli ReadPublicCatalog [OPTIONS]\n" "Returns the price list of OUTSCALE products and services for the Region \n" "specified in the endpoint of the request. For more information, see [About \n" "Regions and \n" "Subregions](https://docs.outscale.com/en/userguide/About-Regions-and-Subregions.\n" "html).\n" "\nRequired Argument: \n"
 ,
 	"Usage: oapi-cli ReadProductTypes [OPTIONS]\n" "Lists one or more product types.\n" "\nRequired Argument: \n"
 ,
@@ -492,7 +496,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli ReadKeypairs [OPTIONS]\n" "Lists one or more of your keypairs.\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli ReadInternetServices [OPTIONS]\n" "Lists one or more of your Internet services.\nAn Internet service enables your \n" "virtual machines (VMs) launched in a Net to connect to the Internet. By \n" "default, a Net includes an Internet service, and each Subnet is public. Every \n" "VM launched within a default Subnet has a private IP and a public IP.\n" "\nRequired Argument: \n"
+	"Usage: oapi-cli ReadInternetServices [OPTIONS]\n" "Lists one or more of your Internet services.\nAn Internet service enables \n" "virtual machines (VMs) launched in a Net to connect to the Internet. It allows \n" "routing of incoming and outgoing Internet traffic and management of public IP \n" "addresses.\n" "\nRequired Argument: \n"
 ,
 	"Usage: oapi-cli ReadImages [OPTIONS]\n" "Lists one or more OUTSCALE machine images (OMIs) you can use.\n" "\nRequired Argument: \n"
 ,
@@ -501,6 +505,8 @@ static const char *calls_descriptions[] = {
 	"Usage: oapi-cli ReadFlexibleGpus [OPTIONS]\n" "Lists one or more flexible GPUs (fGPUs) allocated to your account.\n" "\nRequired Argument: \n"
 ,
 	"Usage: oapi-cli ReadFlexibleGpuCatalog [OPTIONS]\n" "Lists all flexible GPUs available in the public catalog.\n" "\nRequired Argument: \n"
+,
+	"Usage: oapi-cli ReadEntitiesLinkedToPolicy [OPTIONS]\n" "Lists all entities (account, users, or user groups) linked to a specific \n" "managed policy.\n" "\nRequired Argument: \n"
 ,
 	"Usage: oapi-cli ReadDirectLinks [OPTIONS]\n" "Lists all DirectLinks in the Region.\n" "\nRequired Argument: \n"
 ,
@@ -556,7 +562,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli LinkInternetService --InternetServiceId=internetserviceid --NetId=netid [OPTIONS]\n" "Attaches an Internet service to a Net.\nTo enable the connection between the \n" "Internet and a Net, you must attach an Internet service to this Net.\n" "\nRequired Argument: InternetServiceId, NetId \n"
 ,
-	"Usage: oapi-cli LinkFlexibleGpu --FlexibleGpuId=flexiblegpuid --VmId=vmid [OPTIONS]\n" "Attaches one of your allocated flexible GPUs (fGPUs) to one of your virtual \n" "machines (VMs).\nThe fGPU is in the `attaching` state until the VM is stopped, \n" "after which it becomes `attached`. \n\n**[NOTE]**\nYou can attach fGPUs only to \n" "VMs with the `highest` (1) performance flag. For more information see [About \n" "Flexible GPUs](https://docs.outscale.com/en/userguide/About-Flexible-GPUs.html) \n" "and [VM Types](https://docs.outscale.com/en/userguide/VM-Types.html).\n" "\nRequired Argument: FlexibleGpuId, VmId \n"
+	"Usage: oapi-cli LinkFlexibleGpu --FlexibleGpuId=flexiblegpuid --VmId=vmid [OPTIONS]\n" "Attaches one of your allocated flexible GPUs (fGPUs) to one of your virtual \n" "machines (VMs).\nTo complete the linking of the fGPU, you need to do a \n" "stop/start of the VM. A simple restart is not sufficient, as the linking of the \n" "fGPU is done when the VM goes through the `stopped` state. For the difference \n" "between stop/start and restart, see [About VM \n" "Lifecycle](https://docs.outscale.com/en/userguide/About-VM-Lifecycle.html).\n\n*\n" "*[NOTE]**\nYou can attach fGPUs only to VMs with the `highest` (1) performance \n" "flag. For more information see [About Flexible \n" "GPUs](https://docs.outscale.com/en/userguide/About-Flexible-GPUs.html) and [VM \n" "Types](https://docs.outscale.com/en/userguide/VM-Types.html).\n" "\nRequired Argument: FlexibleGpuId, VmId \n"
 ,
 	"Usage: oapi-cli DeregisterVmsInLoadBalancer --BackendVmIds=backendvmids --LoadBalancerName=loadbalancername [OPTIONS]\n" "Deregisters a specified virtual machine (VM) from a load balancer.\n" "\nRequired Argument: BackendVmIds, LoadBalancerName \n"
 ,
@@ -670,9 +676,9 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli CreateSubnet --IpRange=iprange --NetId=netid [OPTIONS]\n" "Creates a Subnet in an existing Net.\nTo create a Subnet in a Net, you have to \n" "provide the ID of the Net and the IP range for the Subnet (its network range). \n" "Once the Subnet is created, you cannot modify its IP range.\nFor more \n" "information, see [About \n" "Nets](https://docs.outscale.com/en/userguide/About-Nets.html).\n" "\nRequired Argument: IpRange, NetId \n"
 ,
-	"Usage: oapi-cli CreateSnapshotExportTask --OsuExport=osuexport --SnapshotId=snapshotid [OPTIONS]\n" "Exports a snapshot to an OUTSCALE Object Storage (OOS) bucket that belongs to \n" "you. This action enables you to create a backup of your snapshot.\nYou can \n" "share this snapshot with others accounts by granting permission to read it via \n" "pre-signed URLs or Access Control Lists (ACLs). For more information, see \n" "[Managing Access to Your Buckets and \n" "Objects](https://docs.outscale.com/en/userguide/Managing-Access-to-Your-Buckets-\n" "and-Objects.html).\nFor more information, see [About \n" "Snapshots](https://docs.outscale.com/en/userguide/About-Snapshots.html).\n" "\nRequired Argument: OsuExport, SnapshotId \n"
+	"Usage: oapi-cli CreateSnapshotExportTask --OsuExport=osuexport --SnapshotId=snapshotid [OPTIONS]\n" "Exports a snapshot to an OUTSCALE Object Storage (OOS) bucket that belongs to \n" "you. This action enables you to create a backup of your snapshot.\nYou can \n" "share this snapshot with others accounts by granting permission to read it via \n" "pre-signed URLs. For more information, see [Creating a Pre-Signed \n" "URL](https://docs.outscale.com/en/userguide/Creating-a-Pre-Signed-URL.html).\nFo\n" "r more information, see [About \n" "Snapshots](https://docs.outscale.com/en/userguide/About-Snapshots.html).\n" "\nRequired Argument: OsuExport, SnapshotId \n"
 ,
-	"Usage: oapi-cli CreateSnapshot [OPTIONS]\n" "Creates a snapshot. Snapshots are point-in-time images of a volume that you can \n" "use to back up your data or to create replicas of this volume.\nYou can use \n" "this method in three different ways:\n* **Creating from a volume**: You create \n" "a snapshot from one of your volumes.\n* **Copying a snapshot**: You copy an \n" "existing snapshot. The source snapshot can be one of your own snapshots, or a \n" "snapshot owned by another account that has granted you permission via the \n" "[UpdateSnapshot](#updatesnapshot) method.\n* **Importing from a bucket**: You \n" "import a snapshot located in an OUTSCALE Object Storage (OOS) bucket. First, \n" "the owner of the source snapshot must export it to a bucket by using the \n" "[CreateSnapshotExportTask](#createsnapshotexporttask) method. Then, they must \n" "grant you permission to read the snapshot via a pre-signed URL or Access \n" "Control Lists. For more information, see [Managing Access to Your Buckets and \n" "Objects](https://docs.outscale.com/en/userguide/Managing-Access-to-Your-Buckets-\n" "and-Objects.html).\n\n**[NOTE]**\nIn case of excessive use of the snapshot \n" "creation feature on the same volume over a short period of time, 3DS OUTSCALE \n" "reserves the right to temporarily block the feature.\n\nFor more information, \n" "see [About \n" "Snapshots](https://docs.outscale.com/en/userguide/About-Snapshots.html).\n" "\nRequired Argument: \n"
+	"Usage: oapi-cli CreateSnapshot [OPTIONS]\n" "Creates a snapshot. Snapshots are point-in-time images of a volume that you can \n" "use to back up your data or to create replicas of this volume.\nYou can use \n" "this method in three different ways:\n* **Creating from a volume**: You create \n" "a snapshot from one of your volumes.\n* **Copying a snapshot**: You copy an \n" "existing snapshot. The source snapshot can be one of your own snapshots, or a \n" "snapshot owned by another account that has granted you permission via the \n" "[UpdateSnapshot](#updatesnapshot) method.\n* **Importing from a bucket**: You \n" "import a snapshot located in an OUTSCALE Object Storage (OOS) bucket. First, \n" "the owner of the source snapshot must export it to a bucket by using the \n" "[CreateSnapshotExportTask](#createsnapshotexporttask) method. Then, they must \n" "grant you permission to read the snapshot via a pre-signed URL. For more \n" "information, see [Creating a Pre-Signed \n" "URL](https://docs.outscale.com/en/userguide/Creating-a-Pre-Signed-URL.html).\n\n\n" "**[NOTE]**\nIn case of excessive use of the snapshot creation feature on the \n" "same volume over a short period of time, 3DS OUTSCALE reserves the right to \n" "temporarily block the feature.\n\nFor more information, see [About \n" "Snapshots](https://docs.outscale.com/en/userguide/About-Snapshots.html).\n" "\nRequired Argument: \n"
 ,
 	"Usage: oapi-cli CreateServerCertificate --Body=body --PrivateKey=privatekey --Name=name [OPTIONS]\n" "Creates a server certificate and its matching private key.\nThese elements can \n" "be used with other services (for example, to configure SSL termination on load \n" "balancers).\nYou can also specify the chain of intermediate certification \n" "authorities if your certificate is not directly signed by a root one. You can \n" "specify multiple intermediate certification authorities in the \n" "`CertificateChain` parameter. To do so, concatenate all certificates in the \n" "correct order (the first certificate must be the authority of your certificate, \n" "the second must be the authority of the first one, and so on).\nThe private key \n" "must be a RSA key in PKCS1 form. To check this, open the PEM file and ensure \n" "its header reads as follows: BEGIN RSA PRIVATE KEY.\n[IMPORTANT]\nThis private \n" "key must not be protected by a password or a passphrase.\nFor more information, \n" "see [About Server Certificates in \n" "EIM](https://docs.outscale.com/en/userguide/About-Server-Certificates-in-EIM.htm\n" "l).\n" "\nRequired Argument: Body, PrivateKey, Name \n"
 ,
@@ -694,7 +700,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli CreateNic --SubnetId=subnetid [OPTIONS]\n" "Creates a network interface card (NIC) in the specified Subnet.\nFor more \n" "information, see [About \n" "NICs](https://docs.outscale.com/en/userguide/About-NICs.html).\n" "\nRequired Argument: SubnetId \n"
 ,
-	"Usage: oapi-cli CreateNetPeering --AccepterNetId=accepternetid --SourceNetId=sourcenetid [OPTIONS]\n" "Requests a Net peering between a Net you own and a peer Net that belongs to you \n" "or another account.\nThis action creates a Net peering that remains in the \n" "`pending-acceptance` state until it is accepted by the owner of the peer Net. \n" "If the owner of the peer Net does not accept the request within 7 days, the \n" "state of the Net peering becomes `expired`. For more information, see \n" "[AcceptNetPeering](#acceptnetpeering).\n\n**[IMPORTANT]**\n* Peered Nets must \n" "contain at least one virtual machine (VM) each before the creation of the Net \n" "peering.\n* The two Nets must not have overlapping IP ranges. Otherwise, the \n" "Net peering is in the `failed` state.\n* A peering connection between two Nets \n" "works both ways. Therefore, you do not need to create a B-to-A connection if an \n" "A-to-B connection is created and accepted.\n\nFor more information, see [About \n" "Net Peerings](https://docs.outscale.com/en/userguide/About-Net-Peerings.html).\n" "\nRequired Argument: AccepterNetId, SourceNetId \n"
+	"Usage: oapi-cli CreateNetPeering --AccepterNetId=accepternetid --SourceNetId=sourcenetid [OPTIONS]\n" "Requests a Net peering between a Net you own and a peer Net that belongs to you \n" "or another account.\nThis action creates a Net peering that remains in the \n" "`pending-acceptance` state until it is accepted by the owner of the peer Net. \n" "If the owner of the peer Net does not accept the request within 7 days, the \n" "state of the Net peering becomes `expired`. For more information, see \n" "[AcceptNetPeering](#acceptnetpeering).\n\n**[IMPORTANT]**\n* Peered Nets must \n" "contain at least one virtual machine (VM) each before the creation of the Net \n" "peering.\n* The two Nets must not have overlapping IP ranges. Otherwise, the \n" "Net peering is in the `failed` state.\n* A peering connection between two Nets \n" "works both ways. If an A-to-B connection is already created and accepted, \n" "creating a B-to-A connection is not necessary and would be automatically \n" "rejected.\n\nFor more information, see [About Net \n" "Peerings](https://docs.outscale.com/en/userguide/About-Net-Peerings.html).\n" "\nRequired Argument: AccepterNetId, SourceNetId \n"
 ,
 	"Usage: oapi-cli CreateNetAccessPoint --ServiceName=servicename --NetId=netid [OPTIONS]\n" "Creates a Net access point to access an OUTSCALE service from this Net without \n" "using the Internet and public IPs.\nYou specify the service using its name. For \n" "more information about the available services, see \n" "[ReadNetAccessPointServices](#readnetaccesspointservices). \nTo control the \n" "routing of traffic between the Net and the specified service, you can specify \n" "one or more route tables. Virtual machines placed in Subnets associated with \n" "the specified route table thus use the Net access point to access the service. \n" "When you specify a route table, a route is automatically added to it with the \n" "destination set to the prefix list ID of the service, and the target set to the \n" "ID of the access point.\nWhen a Net access point is created, a public IP is \n" "automatically allocated to your account and used for the Net access point. This \n" "public IP is not connected to the Internet. It is counted in your quota, but it \n" "is not billed. \nFor more information, see [About Net Access \n" "Points](https://docs.outscale.com/en/userguide/About-Net-Access-Points.html).\n" "\nRequired Argument: ServiceName, NetId \n"
 ,
@@ -714,11 +720,11 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli CreateKeypair --KeypairName=keypairname [OPTIONS]\n" "Creates a keypair to use with your virtual machines (VMs).\nYou can use this \n" "method in two different ways:\n* **Creating a keypair**: In that case, 3DS \n" "OUTSCALE creates a 2048-bit RSA keypair, stores its public key in your account, \n" "and returns its private key in the response of the call so that you can save it \n" "in a file.\nWhen you save the returned private key, make sure you replace the \n" "`\\n` escape sequences with real line breaks.\n* **Importing a keypair created \n" "locally**: If you already have a keypair that you have created locally with a \n" "third-party tool, you can import its public key in your account. The following \n" "types of key can be imported: RSA (2048 bits or preferably 4096 bits), Ed25519, \n" "and ECDSA (256 bits, 384 bits, or 521 bits). The following formats can be used: \n" "PEM, PKCS8, RFC4716, and OpenSSH.\n\nFor more information, see [About \n" "Keypairs](https://docs.outscale.com/en/userguide/About-Keypairs.html).\n" "\nRequired Argument: KeypairName \n"
 ,
-	"Usage: oapi-cli CreateInternetService [OPTIONS]\n" "Creates an Internet service you can use with a Net.\nAn Internet service \n" "enables your virtual machines (VMs) launched in a Net to connect to the \n" "Internet. By default, a Net includes an Internet service, and each Subnet is \n" "public. Every VM launched within a default Subnet has a private IP and a public \n" "IP.\nFor more information, see [About Internet \n" "Services](https://docs.outscale.com/en/userguide/About-Internet-Services.html).\n" "\nRequired Argument: \n"
+	"Usage: oapi-cli CreateInternetService [OPTIONS]\n" "Creates an Internet service you can use with a Net.\nAn Internet service \n" "enables virtual machines (VMs) launched in a Net to connect to the Internet. It \n" "allows routing of incoming and outgoing Internet traffic and management of \n" "public IP addresses.\nFor more information, see [About Internet \n" "Services](https://docs.outscale.com/en/userguide/About-Internet-Services.html).\n" "\nRequired Argument: \n"
 ,
-	"Usage: oapi-cli CreateImageExportTask --OsuExport=osuexport --ImageId=imageid [OPTIONS]\n" "Exports an OUTSCALE machine image (OMI) to an OUTSCALE Object Storage (OOS) \n" "bucket.\nThis action enables you to copy an OMI between accounts in different \n" "Regions. To copy an OMI in the same Region, you can also use the \n" "[CreateImage](#createimage) method.\nThe copy of the OMI belongs to you and is \n" "independent from the source OMI.\n\n**[IMPORTANT]**\nYou cannot export a shared \n" "or public OMI, as they do not belong to you. To do so, you must first copy it \n" "to your account. The copy then belongs to you and you can export it.\nFor more \n" "information, see [About \n" "OMIs](https://docs.outscale.com/en/userguide/About-OMIs.html).\n" "\nRequired Argument: OsuExport, ImageId \n"
+	"Usage: oapi-cli CreateImageExportTask --OsuExport=osuexport --ImageId=imageid [OPTIONS]\n" "Exports an OUTSCALE machine image (OMI) to an OUTSCALE Object Storage (OOS) \n" "bucket.\nThis enables you to copy an OMI between accounts in different \n" "Regions.\nThis action creates the necessary snapshots and manifest file in the \n" "bucket. The OMI can then be imported to another account using a pre-signed URL \n" "of its manifest file. For more information, see [Creating a Pre-Signed \n" "URL](https://docs.outscale.com/en/userguide/Creating-a-Pre-Signed-URL.html).\nTo\n" " copy an OMI in the same Region, you can also use the \n" "[CreateImage](#createimage) method.\n\n**[IMPORTANT]**\nYou cannot export a \n" "shared or public OMI, as they do not belong to you. To do so, you must first \n" "copy it to your account. The copy then belongs to you and you can export \n" "it.\nFor more information, see [About \n" "OMIs](https://docs.outscale.com/en/userguide/About-OMIs.html).\n" "\nRequired Argument: OsuExport, ImageId \n"
 ,
-	"Usage: oapi-cli CreateImage [OPTIONS]\n" "Creates an OUTSCALE machine image (OMI).\nYou can use this method in different \n" "ways:\n* **Creating from a VM**: You create an OMI from one of your virtual \n" "machines (VMs).<br>\n* **Copying an OMI**: You copy an existing OMI. The source \n" "OMI can be one of your own OMIs, or an OMI owned by another account that has \n" "granted you permission via the [UpdateImage](#updateimage) method.<br>\n* \n" "**Registering from a snapshot**: You register an OMI from an existing snapshot. \n" "The source snapshot can be one of your own snapshots, or a snapshot owned by \n" "another account that has granted you permission via the \n" "[UpdateSnapshot](#updatesnapshot) method.<br>\n* **Registering from a bucket by \n" "using a manifest file**: You register an OMI from the manifest file of an OMI \n" "that was exported to an OUTSCALE Object Storage (OOS) bucket. First, the owner \n" "of the source OMI must export it to the bucket by using the \n" "[CreateImageExportTask](#createimageexporttask) method. Then, they must grant \n" "you permission to read the manifest file via a pre-signed URL or Access Control \n" "Lists. For more information, see [Managing Access to Your Buckets and \n" "Objects](https://docs.outscale.com/en/userguide/Managing-Access-to-Your-Buckets-\n" "and-Objects.html).\n* **Registering from a bucket without using a manifest \n" "file**: This is similar to the previous case but you manually specify all the \n" "information that would be in a manifest file instead of using a manifest \n" "file.\n\n**[TIP]**\nRegistering from a bucket enables you to copy an OMI across \n" "Regions.\n\nFor more information, see [About \n" "OMIs](https://docs.outscale.com/en/userguide/About-OMIs.html).\n" "\nRequired Argument: \n"
+	"Usage: oapi-cli CreateImage [OPTIONS]\n" "Creates an OUTSCALE machine image (OMI).\nYou can use this method in different \n" "ways:\n* **Creating from a VM**: You create an OMI from one of your virtual \n" "machines (VMs).<br>\n* **Copying an OMI**: You copy an existing OMI. The source \n" "OMI can be one of your own OMIs, or an OMI owned by another account that has \n" "granted you permission via the [UpdateImage](#updateimage) method.<br>\n* \n" "**Registering from a snapshot**: You register an OMI from an existing snapshot. \n" "The source snapshot can be one of your own snapshots, or a snapshot owned by \n" "another account that has granted you permission via the \n" "[UpdateSnapshot](#updatesnapshot) method.<br>\n* **Registering from a bucket by \n" "using a manifest file**: You register an OMI from the manifest file of an OMI \n" "that was exported to an OUTSCALE Object Storage (OOS) bucket. First, the owner \n" "of the source OMI must export it to the bucket by using the \n" "[CreateImageExportTask](#createimageexporttask) method. Then, they must grant \n" "you permission to read the manifest file via a pre-signed URL. For more \n" "information, see [Creating a Pre-Signed \n" "URL](https://docs.outscale.com/en/userguide/Creating-a-Pre-Signed-URL.html).\n\n\n" "**[TIP]**\nRegistering from a bucket enables you to copy an OMI across \n" "Regions.\n\nFor more information, see [About \n" "OMIs](https://docs.outscale.com/en/userguide/About-OMIs.html).\n" "\nRequired Argument: \n"
 ,
 	"Usage: oapi-cli CreateFlexibleGpu --ModelName=modelname --SubregionName=subregionname [OPTIONS]\n" "Allocates a flexible GPU (fGPU) to your account.\nYou can then attach this fGPU \n" "to a virtual machine (VM).\nFor more information, see [About Flexible \n" "GPUs](https://docs.outscale.com/en/userguide/About-Flexible-GPUs.html).\n" "\nRequired Argument: ModelName, SubregionName \n"
 ,
@@ -929,6 +935,8 @@ static const char *calls_args_descriptions[] = {
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--NewPath: string\n"
 	"  A new path for the EIM user.\n"
+"--NewUserEmail: string\n"
+	"  A new email address for the EIM user.\n"
 "--NewUserName: string\n"
 	"  A new name for the EIM user.\n"
 "--UserName: string\n"
@@ -1116,13 +1124,13 @@ static const char *calls_args_descriptions[] = {
 "--HostPattern: string\n"
 	"  A host-name pattern for the rule, with a maximum length of 128 characters. This host-name \n"
 	"  pattern supports maximum three wildcards, and must not contain any special characters \n"
-	"  except [-.?].\n"
+	"  except `-.?`.\n"
 "--ListenerRuleName: string\n"
 	"  The name of the listener rule.\n"
 "--PathPattern: string\n"
 	"  A path pattern for the rule, with a maximum length of 128 characters. This path pattern \n"
 	"  supports maximum three wildcards, and must not contain any special characters except \n"
-	"  [_-.$/~\"'@:+?].\n"
+	"  `_-.$/~\"'@:+?`.\n"
 ,
 	"--Description: string\n"
 	"  A new description for the image.\n"
@@ -1436,7 +1444,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -1482,7 +1490,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--AllVms: bool\n"
@@ -1511,7 +1519,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--BackendVmIds: array string\n"
@@ -1677,7 +1685,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -1707,7 +1715,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -1795,11 +1803,19 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
+"--Filters: ref FiltersUsers\n"
+	"    One or more filters.\n"
+	"    --Filters.UserIds: array string\n"
+	"      The IDs of the users.\n"
+"--FirstItem: long long int\n"
+	"  The item starting the list of users requested.\n"
+"--ResultsPerPage: long long int\n"
+	"  The maximum number of items that can be returned in a single response (by default, `100`).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -1849,6 +1865,15 @@ static const char *calls_args_descriptions[] = {
 "--UserGroupName: string\n"
 	"  The name of the group.\n"
 ,
+	"--Operation: string\n"
+	"  The operation associated with the catalog entry (for example, `RunInstances-OD` or \n"
+	"  `CreateVolume`).\n"
+"--Service: string\n"
+	"  The service associated with the catalog entry (for example, `TinaOS-FCU` or `TinaOS-OOS`).\n"
+"--Type: string\n"
+	"  The type associated with the catalog entry (for example, `BSU:VolumeIOPS:io1` or \n"
+	"  `BoxUsage:tinav6.c6r16p3`).\n"
+,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersTag\n"
@@ -1872,7 +1897,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -1888,7 +1913,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -1919,7 +1944,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -1965,7 +1990,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -1977,7 +2002,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -2046,7 +2071,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--AccessKeyId: string\n"
@@ -2097,7 +2122,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -2119,7 +2144,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -2153,7 +2178,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -2161,7 +2186,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -2176,7 +2201,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--FirstItem: long long int\n"
@@ -2310,7 +2335,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -2351,7 +2376,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -2379,7 +2404,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -2393,7 +2418,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -2422,7 +2447,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -2446,7 +2471,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -2496,7 +2521,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -2522,7 +2547,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -2583,7 +2608,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -2595,7 +2620,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -2622,6 +2647,17 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 ,
+	"--EntitiesType: array string\n"
+	"  The type of entity linked to the policy (`ACCOUNT` \\| `USER` \\| `GROUP`) you want to get \n"
+	"  information about.\n"
+"--FirstItem: long long int\n"
+	"  The item starting the list of entities requested.\n"
+"--PolicyOrn: string\n"
+	"  The OUTSCALE Resource Name (ORN) of the policy. For more information, see [Resource \n"
+	"  Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifiers.html).\n"
+"--ResultsPerPage: long long int\n"
+	"  The maximum number of items that can be returned in a single response (by default, 100).\n"
+,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersDirectLink\n"
@@ -2631,7 +2667,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -2645,7 +2681,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -2677,7 +2713,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -2696,7 +2732,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -2753,7 +2789,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
@@ -2818,7 +2854,7 @@ static const char *calls_args_descriptions[] = {
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
-	"  The maximum number of logs returned in a single response (between `1`and `1000`, both \n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
 "--With: ref With\n"
 	"    The information to display in each returned log.\n"
@@ -3506,7 +3542,10 @@ static const char *calls_args_descriptions[] = {
 	"  must not specify the `Nics` parameter.\n"
 "--UserData: string\n"
 	"  Data or script used to add a specific configuration to the VM. It must be Base64-encoded \n"
-	"  and is limited to 500 kibibytes (KiB).\n"
+	"  and is limited to 500 kibibytes (KiB). For more information about user data, see \n"
+	"  [Configuring a VM with User Data and OUTSCALE \n"
+	"  Tags](https://docs.outscale.com/en/userguide/Configuring-a-VM-with-User-Data-and-OUTSCALE-Ta\n"
+	"  gs.html).\n"
 "--VmInitiatedShutdownBehavior: string\n"
 	"  The VM behavior when you stop it. By default or if set to `stop`, the VM stops. If set to \n"
 	"  `restart`, the VM stops then automatically restarts. If set to `terminate`, the VM stops \n"
@@ -3591,11 +3630,13 @@ static const char *calls_args_descriptions[] = {
 "--Path: string\n"
 	"  The path to the EIM user you want to create (by default, `/`). This path name must begin \n"
 	"  and end with a slash (`/`), and contain between 1 and 512 alphanumeric characters and/or \n"
-	"  slashes (`/`), or underscores (_).\n"
+	"  slashes (`/`), or underscores (`_`).\n"
+"--UserEmail: string\n"
+	"  The email address of the EIM user.\n"
 "--UserName: string\n"
 	"  The name of the EIM user. This user name must contain between 1 and 64 alphanumeric \n"
-	"  characters and/or pluses (+), equals (=), commas (,), periods (.), at signs (@), dashes \n"
-	"  (-), or underscores (_).\n"
+	"  characters and/or pluses (`+`), equals (`=`), commas (`,`), periods (`.`), at signs (`@`), \n"
+	"  dashes (`-`), or underscores (`_`).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -3648,13 +3689,9 @@ static const char *calls_args_descriptions[] = {
 "--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--FileLocation: string\n"
-	"  **(when importing from a bucket)** The pre-signed URL of the snapshot you want to import, \n"
-	"  or the normal URL of the snapshot if you have permission on the OOS bucket. For more \n"
-	"  information, see [Configuring a Pre-signed \n"
-	"  URL](https://docs.outscale.com/en/userguide/Configuring-a-Pre-signed-URL.html) or [Managing \n"
-	"  Access to Your Buckets and \n"
-	"  Objects](https://docs.outscale.com/en/userguide/Managing-Access-to-Your-Buckets-and-Objects.\n"
-	"  html).\n"
+	"  **(when importing from a bucket)** The pre-signed URL of the snapshot you want to import. \n"
+	"  For more information, see [Creating a Pre-signed \n"
+	"  URL](https://docs.outscale.com/en/userguide/Creating-a-Pre-Signed-URL.html).\n"
 "--SnapshotSize: long long int\n"
 	"  **(when importing from a bucket)** The size of the snapshot you want to create in your \n"
 	"  account, in bytes. This size must be greater than or equal to the size of the original, \n"
@@ -3677,10 +3714,11 @@ static const char *calls_args_descriptions[] = {
 "--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Name: string\n"
-	"  A unique name for the certificate. Constraints: 1-128 alphanumeric characters, pluses (+), \n"
-	"  equals (=), commas (,), periods (.), at signs (@), minuses (-), or underscores (_).\n"
+	"  A unique name for the certificate. Constraints: 1-128 alphanumeric characters, pluses \n"
+	"  (`+`), equals (`=`), commas (`,`), periods (`.`), at signs (`@`), minuses (`-`), or \n"
+	"  underscores (`_`).\n"
 "--Path: string\n"
-	"  The path to the server certificate, set to a slash (/) if not specified.\n"
+	"  The path to the server certificate, set to a slash (`/`) if not specified.\n"
 "--PrivateKey: string\n"
 	"  The PEM-encoded private key matching the certificate.With OSC CLI, use the following syntax \n"
 	"  to make sure your key file is correctly parsed: `--PrivateKey=\"$(cat FILENAME)\"`.\n"
@@ -3839,6 +3877,9 @@ static const char *calls_args_descriptions[] = {
 ,
 	"--AccepterNetId: string\n"
 	"  The ID of the Net you want to connect with.\n"
+"--AccepterOwnerId: string\n"
+	"  The account ID of the owner of the Net you want to connect with. By default, the account ID \n"
+	"  of the owner of the Net from which the peering request is sent.\n"
 "--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--SourceNetId: string\n"
@@ -3898,7 +3939,7 @@ static const char *calls_args_descriptions[] = {
 	"  The name of the load balancer for which you want to create a policy.\n"
 "--PolicyName: string\n"
 	"  The unique name of the policy, with a maximum length of 32 alphanumeric characters and \n"
-	"  dashes (-).\n"
+	"  dashes (`-`).\n"
 "--PolicyType: string\n"
 	"  The type of stickiness policy you want to create: `app` or `load_balancer`.\n"
 ,
@@ -3949,7 +3990,7 @@ static const char *calls_args_descriptions[] = {
 	"      outscale_resource_names_orns).\n"
 "--LoadBalancerName: string\n"
 	"  The unique name of the load balancer, with a maximum length of 32 alphanumeric characters \n"
-	"  and dashes (-). This name must not start or end with a dash.\n"
+	"  and dashes (`-`). This name must not start or end with a dash.\n"
 "--LoadBalancerType: string\n"
 	"  The type of load balancer: `internet-facing` or `internal`. Use this parameter only for \n"
 	"  load balancers in a Net.\n"
@@ -3991,13 +4032,13 @@ static const char *calls_args_descriptions[] = {
 	"    --ListenerRule.HostNamePattern: string\n"
 	"      A host-name pattern for the rule, with a maximum length of 128 \n"
 	"      characters. This host-name pattern supports maximum three wildcards, and \n"
-	"      must not contain any special characters except [-.?].\n"
+	"      must not contain any special characters except `-.?`.\n"
 	"    --ListenerRule.ListenerRuleName: string\n"
 	"      A human-readable name for the listener rule.\n"
 	"    --ListenerRule.PathPattern: string\n"
 	"      A path pattern for the rule, with a maximum length of 128 characters. \n"
 	"      This path pattern supports maximum three wildcards, and must not contain \n"
-	"      any special characters except [_-.$/~\"'@:+?].\n"
+	"      any special characters except `_-.$/~\"'@:+?`.\n"
 	"    --ListenerRule.Priority: long long int\n"
 	"      The priority level of the listener rule, between `1` and `19999` both \n"
 	"      included. Each rule must have a unique priority level. Otherwise, an \n"
@@ -4039,11 +4080,9 @@ static const char *calls_args_descriptions[] = {
 	"      The prefix for the key of the OOS object.\n"
 ,
 	"--Architecture: string\n"
-	"  **(when registering from a snapshot, or from a bucket without using a manifest file)** The \n"
-	"  architecture of the OMI (`i386` or `x86_64`).\n"
+	"  **(when registering from a snapshot)** The architecture of the OMI (`i386` or `x86_64`).\n"
 "--BlockDeviceMappings: array ref BlockDeviceMappingImage\n"
-	"  **(when registering from a snapshot, or from a bucket without using a manifest file)** One \n"
-	"  or more block device mappings.\n"
+	"  **(when registering from a snapshot)** One or more block device mappings.\n"
 	"    One or more parameters used to automatically set up volumes when the VM \n"
 	"    is created.\n"
 	"    --BlockDeviceMappings.INDEX.Bsu: ref BsuToCreate\n"
@@ -4082,14 +4121,8 @@ static const char *calls_args_descriptions[] = {
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--FileLocation: string\n"
 	"  **(when registering from a bucket by using a manifest file)** The pre-signed URL of the \n"
-	"  manifest file for the OMI you want to register. For more information, see [Configuring a \n"
-	"  Pre-signed URL](https://docs.outscale.com/en/userguide/Configuring-a-Pre-signed-URL.html) \n"
-	"  or [Managing Access to Your Buckets and \n"
-	"  Objects](https://docs.outscale.com/en/userguide/Managing-Access-to-Your-Buckets-and-Objects.\n"
-	"  html).\nYou can also specify the normal URL of the OMI if you have permission on the OOS \n"
-	"  bucket, without using the manifest file, but in that case, you need to manually specify \n"
-	"  through the other parameters all the information that would otherwise be read from the \n"
-	"  manifest file.\n"
+	"  manifest file for the OMI you want to register. For more information, see [Creating a \n"
+	"  Pre-signed URL](https://docs.outscale.com/en/userguide/Creating-a-Pre-Signed-URL.html).\n"
 "--ImageName: string\n"
 	"  A unique name for the new OMI.\nConstraints: 3-128 alphanumeric characters, underscores \n"
 	"  (`_`), spaces (` `), parentheses (`()`), slashes (`/`), periods (`.`), or dashes (`-`).\n"
@@ -4099,8 +4132,7 @@ static const char *calls_args_descriptions[] = {
 "--ProductCodes: array string\n"
 	"  The product codes associated with the OMI.\n"
 "--RootDeviceName: string\n"
-	"  **(when registering from a snapshot, or from a bucket without using a manifest file)** The \n"
-	"  name of the root device for the new OMI.\n"
+	"  **(when registering from a snapshot)** The name of the root device for the new OMI.\n"
 "--SourceImageId: string\n"
 	"  **(when copying an OMI)** The ID of the OMI you want to copy.\n"
 "--SourceRegionName: string\n"
@@ -4736,6 +4768,7 @@ static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *da
 static int filters_subregion_setter(struct filters_subregion *args, struct osc_str *data);
 static int filters_tag_setter(struct filters_tag *args, struct osc_str *data);
 static int filters_user_group_setter(struct filters_user_group *args, struct osc_str *data);
+static int filters_users_setter(struct filters_users *args, struct osc_str *data);
 static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, struct osc_str *data);
 static int filters_vm_setter(struct filters_vm *args, struct osc_str *data);
 static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str *data);
@@ -4772,6 +4805,7 @@ static int load_balancer_tag_setter(struct load_balancer_tag *args, struct osc_s
 static int location_setter(struct location *args, struct osc_str *data);
 static int log_setter(struct log *args, struct osc_str *data);
 static int maintenance_event_setter(struct maintenance_event *args, struct osc_str *data);
+static int minimal_policy_setter(struct minimal_policy *args, struct osc_str *data);
 static int nat_service_setter(struct nat_service *args, struct osc_str *data);
 static int net_setter(struct net *args, struct osc_str *data);
 static int net_access_point_setter(struct net_access_point *args, struct osc_str *data);
@@ -4791,6 +4825,7 @@ static int phase1_options_setter(struct phase1_options *args, struct osc_str *da
 static int phase2_options_setter(struct phase2_options *args, struct osc_str *data);
 static int placement_setter(struct placement *args, struct osc_str *data);
 static int policy_setter(struct policy *args, struct osc_str *data);
+static int policy_entities_setter(struct policy_entities *args, struct osc_str *data);
 static int policy_version_setter(struct policy_version *args, struct osc_str *data);
 static int private_ip_setter(struct private_ip *args, struct osc_str *data);
 static int private_ip_light_setter(struct private_ip_light *args, struct osc_str *data);
@@ -4823,6 +4858,7 @@ static int state_comment_setter(struct state_comment *args, struct osc_str *data
 static int subnet_setter(struct subnet *args, struct osc_str *data);
 static int subregion_setter(struct subregion *args, struct osc_str *data);
 static int tag_setter(struct tag *args, struct osc_str *data);
+static int unit_price_entry_setter(struct unit_price_entry *args, struct osc_str *data);
 static int user_setter(struct user *args, struct osc_str *data);
 static int user_group_setter(struct user_group *args, struct osc_str *data);
 static int vgw_telemetry_setter(struct vgw_telemetry *args, struct osc_str *data);
@@ -9804,6 +9840,28 @@ static int filters_user_group_setter(struct filters_user_group *args, struct osc
 
 	return !!ret;
 }
+static int filters_users_setter(struct filters_users *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->user_ids) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"UserIds\":[" ));
+		for (as = args->user_ids; *as; ++as) {
+			if (as != args->user_ids)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->user_ids_str) {
+		ARG_TO_JSON(UserIds, string, args->user_ids_str);
+		ret += 1;
+	}
+
+	return !!ret;
+}
 static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
@@ -13110,6 +13168,27 @@ static int maintenance_event_setter(struct maintenance_event *args, struct osc_s
 
 	return !!ret;
 }
+static int minimal_policy_setter(struct minimal_policy *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->id) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Id\":", args->id);
+	   	ret += 1;
+	}
+	if (args->name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Name\":", args->name);
+	   	ret += 1;
+	}
+	if (args->orn) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Orn\":", args->orn);
+	   	ret += 1;
+	}
+
+	return !!ret;
+}
 static int nat_service_setter(struct nat_service *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
@@ -14056,6 +14135,82 @@ static int policy_setter(struct policy *args, struct osc_str *data) {
 	if (args->is_set_resources_count || args->resources_count) {
 		ARG_TO_JSON(ResourcesCount, int, args->resources_count);
 	   	ret += 1;
+	}
+
+	return !!ret;
+}
+static int policy_entities_setter(struct policy_entities *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+        if (args->accounts) {
+	        TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"Accounts\":[" ));
+		for (int i = 0; i < args->nb_accounts; ++i) {
+	       	    struct minimal_policy *p = &args->accounts[i];
+		    if (p != args->accounts)
+		        STRY(osc_str_append_string(data, "," ));
+		    STRY(osc_str_append_string(data, "{ " ));
+	       	    STRY(minimal_policy_setter(p, data) < 0);
+	       	    STRY(osc_str_append_string(data, "}" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else
+	if (args->accounts_str) {
+		ARG_TO_JSON(Accounts, string, args->accounts_str);
+		ret += 1;
+	}
+        if (args->groups) {
+	        TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"Groups\":[" ));
+		for (int i = 0; i < args->nb_groups; ++i) {
+	       	    struct minimal_policy *p = &args->groups[i];
+		    if (p != args->groups)
+		        STRY(osc_str_append_string(data, "," ));
+		    STRY(osc_str_append_string(data, "{ " ));
+	       	    STRY(minimal_policy_setter(p, data) < 0);
+	       	    STRY(osc_str_append_string(data, "}" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else
+	if (args->groups_str) {
+		ARG_TO_JSON(Groups, string, args->groups_str);
+		ret += 1;
+	}
+	if (args->is_set_has_more_items) {
+		ARG_TO_JSON(HasMoreItems, bool, args->has_more_items);
+	   	ret += 1;
+	}
+	if (args->is_set_items_count || args->items_count) {
+		ARG_TO_JSON(ItemsCount, int, args->items_count);
+	   	ret += 1;
+	}
+	if (args->is_set_max_results_limit || args->max_results_limit) {
+		ARG_TO_JSON(MaxResultsLimit, int, args->max_results_limit);
+	   	ret += 1;
+	}
+	if (args->is_set_max_results_truncated) {
+		ARG_TO_JSON(MaxResultsTruncated, bool, args->max_results_truncated);
+	   	ret += 1;
+	}
+        if (args->users) {
+	        TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"Users\":[" ));
+		for (int i = 0; i < args->nb_users; ++i) {
+	       	    struct minimal_policy *p = &args->users[i];
+		    if (p != args->users)
+		        STRY(osc_str_append_string(data, "," ));
+		    STRY(osc_str_append_string(data, "{ " ));
+	       	    STRY(minimal_policy_setter(p, data) < 0);
+	       	    STRY(osc_str_append_string(data, "}" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else
+	if (args->users_str) {
+		ARG_TO_JSON(Users, string, args->users_str);
+		ret += 1;
 	}
 
 	return !!ret;
@@ -15135,6 +15290,41 @@ static int tag_setter(struct tag *args, struct osc_str *data) {
 
 	return !!ret;
 }
+static int unit_price_entry_setter(struct unit_price_entry *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->currency) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Currency\":", args->currency);
+	   	ret += 1;
+	}
+	if (args->operation) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Operation\":", args->operation);
+	   	ret += 1;
+	}
+	if (args->service) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Service\":", args->service);
+	   	ret += 1;
+	}
+	if (args->type) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Type\":", args->type);
+	   	ret += 1;
+	}
+	if (args->unit) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Unit\":", args->unit);
+	   	ret += 1;
+	}
+	if (args->is_set_unit_price || args->unit_price) {
+		ARG_TO_JSON(UnitPrice, double, args->unit_price);
+	   	ret += 1;
+	}
+
+	return !!ret;
+}
 static int user_setter(struct user *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
@@ -15151,6 +15341,11 @@ static int user_setter(struct user *args, struct osc_str *data) {
 	if (args->path) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"Path\":", args->path);
+	   	ret += 1;
+	}
+	if (args->user_email) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserEmail\":", args->user_email);
 	   	ret += 1;
 	}
 	if (args->user_id) {
@@ -16581,6 +16776,11 @@ static  int update_user_data(struct osc_update_user_arg *args, struct osc_str *d
 	if (args->new_path) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"NewPath\":", args->new_path);
+	   	ret += 1;
+	}
+	if (args->new_user_email) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NewUserEmail\":", args->new_user_email);
 	   	ret += 1;
 	}
 	if (args->new_user_name) {
@@ -19647,6 +19847,24 @@ static  int read_users_data(struct osc_read_users_arg *args, struct osc_str *dat
 		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
+	if (args->filters_str) {
+		ARG_TO_JSON(Filters, string, args->filters_str);
+		ret += 1;
+	} else if (args->is_set_filters) {
+	       TRY_APPEND_COL(count_args, data);
+	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
+	       STRY(filters_users_setter(&args->filters, data) < 0);
+	       STRY(osc_str_append_string(data, "}" ));
+	       ret += 1;
+	}
+	if (args->is_set_first_item || args->first_item) {
+		ARG_TO_JSON(FirstItem, int, args->first_item);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
+	}
 	osc_str_append_string(data, "}");
 	return !!ret;
 }
@@ -19952,6 +20170,60 @@ int osc_read_user_group(struct osc_env *e, struct osc_str *out, struct osc_read_
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadUserGroup");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
+static  int read_unit_price_data(struct osc_read_unit_price_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->operation) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Operation\":", args->operation);
+	   	ret += 1;
+	}
+	if (args->service) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Service\":", args->service);
+	   	ret += 1;
+	}
+	if (args->type) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Type\":", args->type);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_read_unit_price(struct osc_env *e, struct osc_str *out, struct osc_read_unit_price_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = read_unit_price_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/ReadUnitPrice");
 	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
@@ -22073,6 +22345,74 @@ int osc_read_flexible_gpu_catalog(struct osc_env *e, struct osc_str *out, struct
 
 	osc_str_append_string(&end_call, e->endpoint.buf);
 	osc_str_append_string(&end_call, "/api/v1/ReadFlexibleGpuCatalog");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&end_call);
+	osc_deinit_str(&data);
+	return res;
+}
+static  int read_entities_linked_to_policy_data(struct osc_read_entities_linked_to_policy_arg *args, struct osc_str *data)
+{
+	int ret = 0;
+	int count_args = 0;
+
+	if (!args)
+		return 0;
+	osc_str_append_string(data, "{");
+	if (args->entities_type) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"EntitiesType\":[" ));
+		for (as = args->entities_type; *as; ++as) {
+			if (as != args->entities_type)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->entities_type_str) {
+		ARG_TO_JSON(EntitiesType, string, args->entities_type_str);
+		ret += 1;
+	}
+	if (args->is_set_first_item || args->first_item) {
+		ARG_TO_JSON(FirstItem, int, args->first_item);
+	   	ret += 1;
+	}
+	if (args->policy_orn) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PolicyOrn\":", args->policy_orn);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+	return !!ret;
+}
+
+int osc_read_entities_linked_to_policy(struct osc_env *e, struct osc_str *out, struct osc_read_entities_linked_to_policy_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	struct osc_str end_call;
+	int r;
+
+	osc_init_str(&data);
+	osc_init_str(&end_call);
+	r = read_entities_linked_to_policy_data(args, &data);
+	if (r < 0)
+		goto out;
+
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	osc_str_append_string(&end_call, "/api/v1/ReadEntitiesLinkedToPolicy");
 	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
 	curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
 	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
@@ -26761,6 +27101,11 @@ static  int create_user_data(struct osc_create_user_arg *args, struct osc_str *d
 	        ARG_TO_JSON_STR("\"Path\":", args->path);
 	   	ret += 1;
 	}
+	if (args->user_email) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserEmail\":", args->user_email);
+	   	ret += 1;
+	}
 	if (args->user_name) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"UserName\":", args->user_name);
@@ -27723,6 +28068,11 @@ static  int create_net_peering_data(struct osc_create_net_peering_arg *args, str
 	if (args->accepter_net_id) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"AccepterNetId\":", args->accepter_net_id);
+	   	ret += 1;
+	}
+	if (args->accepter_owner_id) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"AccepterOwnerId\":", args->accepter_owner_id);
 	   	ret += 1;
 	}
 	if (args->is_set_dry_run) {
