@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
-Name=oapi-cli
-Exec=oapi-cli
+Name=____cli_name____
+Exec=____cli_name____
 Comment=CLI-of Outscale Granting Net Accessible Calls
 Categories=Development;Network;
 Terminal=true
