@@ -5,6 +5,7 @@ JSON_C_RULE=./json-c-build/libjson-c.a
 API_RULE_DEPEDENCIES=
 OAPI_APPIMAGE_RULE_DEPEDENCIES=
 APPIMAGETOOL_OPTION=
+CLI_NAME=oapi-cli
 
 include config.mk
 include COGNAC/oapi-cli.mk
@@ -33,7 +34,7 @@ osc_sdk.h: osc-sdk-C/osc_sdk.h
 osc_sdk.c: osc-sdk-C/osc_sdk.c
 	cp osc-sdk-C/osc_sdk.c .
 
-oapi-cli-completion.bash: COGNAC/main.c
+$(CLI_NAME)-completion.bash:
 	cp COGNAC/oapi-cli-completion.bash .
 
 gen: main.c osc_sdk.h osc_sdk.c oapi-cli-completion.bash main-helper.h
