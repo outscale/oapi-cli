@@ -16,6 +16,10 @@ jobs:
         sudo apt-get install -y -f -o Acquire::Retries=3 jq libjson-c-dev libcurl4-openssl-dev pkg-config libfuse2 cargo
     - name: Build and test
       run: |
+        make tell-cli-name
+        make tell-cli-name
+        make tell-cli-name
+        make tell-cli-name
         CFLAGS="-fsanitize=address -O0 -g" make
         make oapi-cli-x86_64.AppImage
         make tests-all

@@ -57,6 +57,11 @@ export CURL_BASH_CFLAGS=-Icurl/include/
 echo "do the make \!\!"
 make -C json-c-build json-c-static || 1 # ignore example compilation error
 
+make tell-cli-name
+make tell-cli-name
+make tell-cli-name
+make tell-cli-name
+
 make
 make oapi-cli-x86_64.AppImage
 

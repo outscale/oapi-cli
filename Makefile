@@ -16,6 +16,9 @@ COGNAC/oapi-cli.mk:
 json-c/.git:
 	git clone https://github.com/cosmo-ray/json-c.git -b color
 
+tell-cli-name:
+	echo "cli-name: ${CLI_NAME}"
+
 json-c-build/libjson-c.a: json-c/.git
 	rm -rvf ./json-c-build
 	mkdir json-c-build
