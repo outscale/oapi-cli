@@ -2,15 +2,11 @@
 
 for opt in "$@"; do
     if [ "${opt}" == "--bash-completion" ]; then
-	cat "${APPDIR}/usr/bin/oapi-cli-completion.bash"
+	cat "${APPDIR}/usr/bin/____cli_name____-completion.bash"
         exit 0
     fi
 done
 
-if [ -z "$CURL_CA_BUNDLE" ]; then
-    source ${APPDIR}/import-ssl.sh
-fi
-
 export COGNAC_HELP_APPEND="$(echo -en '\t--bash-completion\tprint bash completion(appimage only)\n\t--appimage-help\t\tappimage helps')"
 
-LD_LIBRARY_PATH=${APPDIR}/usr/lib/ "${APPDIR}/usr/bin/oapi-cli" "$@"
+LD_LIBRARY_PATH=${APPDIR}/usr/lib/ "${APPDIR}/usr/bin/____cli_name____" "$@"
