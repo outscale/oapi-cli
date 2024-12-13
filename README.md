@@ -49,7 +49,7 @@ For CreatePolicy, you should use `--jsonstr-file`.
 
 As CreatePolicy require Document to be a string contaning a jsons, if you want to pass the policy directly to oapi-cli, `--Document` argument should look like this:
 ```
-"Document": "{\"Statement\": [ {\"Effect\": \"Allow\", \"Action\": [\"*\"], \"Resource\": [\"*\"]} ]}"
+'{ \"Statement\": [ { \"Effect\": \"Allow\", \"Action\": [\"*\"], \"Resource\": [\"*\"] } ] }'
 ```
 
 With `--jsonstr-file`, you can simply create a json containing your policy, and pass it to oapi-cli:
