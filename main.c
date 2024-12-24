@@ -320,9 +320,9 @@ int filters_users_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_virtual_gateway_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_vm_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_vm_group_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int filters_vms_state_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_vm_template_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_vm_type_parser(void *s, char *str, char *aa, struct ptr_array *pa);
-int filters_vms_state_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_volume_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_vpn_connection_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int flexible_gpu_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -334,14 +334,14 @@ int inline_policy_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int internet_service_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int keypair_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int keypair_created_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int linked_policy_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int linked_volume_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int link_nic_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int link_nic_light_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int link_nic_to_update_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int link_public_ip_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int link_public_ip_light_for_vm_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int link_route_table_parser(void *s, char *str, char *aa, struct ptr_array *pa);
-int linked_policy_parser(void *s, char *str, char *aa, struct ptr_array *pa);
-int linked_volume_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int listener_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int listener_for_creation_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int listener_rule_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -10904,6 +10904,212 @@ int filters_vm_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
 	return 0;
 }
 
+int filters_vms_state_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct filters_vms_state *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "MaintenanceEventCodes")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "MaintenanceEventCodes argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "MaintenanceEventCodes require an index\n");
+                      if (s->maintenance_event_codes) {
+                              for (; s->maintenance_event_codes[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->maintenance_event_codes[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->maintenance_event_codes, "", pa);
+                              SET_NEXT(s->maintenance_event_codes, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "MaintenanceEventCodes argument missing\n");
+                     s->maintenance_event_codes_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "MaintenanceEventCodes[]")) || aret == '=') {
+               TRY(!aa, "MaintenanceEventCodes[] argument missing\n");
+               SET_NEXT(s->maintenance_event_codes, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "MaintenanceEventDescriptions")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "MaintenanceEventDescriptions argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "MaintenanceEventDescriptions require an index\n");
+                      if (s->maintenance_event_descriptions) {
+                              for (; s->maintenance_event_descriptions[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->maintenance_event_descriptions[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->maintenance_event_descriptions, "", pa);
+                              SET_NEXT(s->maintenance_event_descriptions, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "MaintenanceEventDescriptions argument missing\n");
+                     s->maintenance_event_descriptions_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "MaintenanceEventDescriptions[]")) || aret == '=') {
+               TRY(!aa, "MaintenanceEventDescriptions[] argument missing\n");
+               SET_NEXT(s->maintenance_event_descriptions, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "MaintenanceEventsNotAfter")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "MaintenanceEventsNotAfter argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "MaintenanceEventsNotAfter require an index\n");
+                      if (s->maintenance_events_not_after) {
+                              for (; s->maintenance_events_not_after[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->maintenance_events_not_after[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->maintenance_events_not_after, "", pa);
+                              SET_NEXT(s->maintenance_events_not_after, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "MaintenanceEventsNotAfter argument missing\n");
+                     s->maintenance_events_not_after_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "MaintenanceEventsNotAfter[]")) || aret == '=') {
+               TRY(!aa, "MaintenanceEventsNotAfter[] argument missing\n");
+               SET_NEXT(s->maintenance_events_not_after, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "MaintenanceEventsNotBefore")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "MaintenanceEventsNotBefore argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "MaintenanceEventsNotBefore require an index\n");
+                      if (s->maintenance_events_not_before) {
+                              for (; s->maintenance_events_not_before[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->maintenance_events_not_before[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->maintenance_events_not_before, "", pa);
+                              SET_NEXT(s->maintenance_events_not_before, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "MaintenanceEventsNotBefore argument missing\n");
+                     s->maintenance_events_not_before_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "MaintenanceEventsNotBefore[]")) || aret == '=') {
+               TRY(!aa, "MaintenanceEventsNotBefore[] argument missing\n");
+               SET_NEXT(s->maintenance_events_not_before, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "SubregionNames")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "SubregionNames argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "SubregionNames require an index\n");
+                      if (s->subregion_names) {
+                              for (; s->subregion_names[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->subregion_names[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->subregion_names, "", pa);
+                              SET_NEXT(s->subregion_names, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "SubregionNames argument missing\n");
+                     s->subregion_names_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "SubregionNames[]")) || aret == '=') {
+               TRY(!aa, "SubregionNames[] argument missing\n");
+               SET_NEXT(s->subregion_names, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "VmIds")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "VmIds argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "VmIds require an index\n");
+                      if (s->vm_ids) {
+                              for (; s->vm_ids[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->vm_ids[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->vm_ids, "", pa);
+                              SET_NEXT(s->vm_ids, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "VmIds argument missing\n");
+                     s->vm_ids_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "VmIds[]")) || aret == '=') {
+               TRY(!aa, "VmIds[] argument missing\n");
+               SET_NEXT(s->vm_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "VmStates")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "VmStates argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "VmStates require an index\n");
+                      if (s->vm_states) {
+                              for (; s->vm_states[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->vm_states[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->vm_states, "", pa);
+                              SET_NEXT(s->vm_states, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "VmStates argument missing\n");
+                     s->vm_states_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "VmStates[]")) || aret == '=') {
+               TRY(!aa, "VmStates[] argument missing\n");
+               SET_NEXT(s->vm_states, (aa), pa);
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'FiltersVmsState'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
 int filters_vm_template_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_vm_template *s = v_s;
 	    int aret = 0;
@@ -11489,212 +11695,6 @@ int filters_vm_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersVmType'\n", str);
-		return -1;
-	}
-	return 0;
-}
-
-int filters_vms_state_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
-	    struct filters_vms_state *s = v_s;
-	    int aret = 0;
-	if ((aret = argcmp(str, "MaintenanceEventCodes")) == 0 || aret == '=' || aret == '.') {
-                 if (aret == '.') {
-                      int pos;
-                      char *endptr;
-                      int last = 0;
-                      char *dot_pos = strchr(str, '.');
-
-                      TRY(!(dot_pos++), "MaintenanceEventCodes argument missing\n");
-                      pos = strtoul(dot_pos, &endptr, 0);
-                      TRY(endptr == dot_pos, "MaintenanceEventCodes require an index\n");
-                      if (s->maintenance_event_codes) {
-                              for (; s->maintenance_event_codes[last]; ++last);
-                      }
-                      if (pos < last) {
-                              s->maintenance_event_codes[pos] = (aa);
-                      } else {
-                              for (int i = last; i < pos; ++i)
-                                      SET_NEXT(s->maintenance_event_codes, "", pa);
-                              SET_NEXT(s->maintenance_event_codes, (aa), pa);
-                      }
-                 } else {
-            	       TRY(!aa, "MaintenanceEventCodes argument missing\n");
-                     s->maintenance_event_codes_str = aa;
-                 }
-         } else if (!(aret = argcmp(str, "MaintenanceEventCodes[]")) || aret == '=') {
-               TRY(!aa, "MaintenanceEventCodes[] argument missing\n");
-               SET_NEXT(s->maintenance_event_codes, (aa), pa);
-         } else
-	if ((aret = argcmp(str, "MaintenanceEventDescriptions")) == 0 || aret == '=' || aret == '.') {
-                 if (aret == '.') {
-                      int pos;
-                      char *endptr;
-                      int last = 0;
-                      char *dot_pos = strchr(str, '.');
-
-                      TRY(!(dot_pos++), "MaintenanceEventDescriptions argument missing\n");
-                      pos = strtoul(dot_pos, &endptr, 0);
-                      TRY(endptr == dot_pos, "MaintenanceEventDescriptions require an index\n");
-                      if (s->maintenance_event_descriptions) {
-                              for (; s->maintenance_event_descriptions[last]; ++last);
-                      }
-                      if (pos < last) {
-                              s->maintenance_event_descriptions[pos] = (aa);
-                      } else {
-                              for (int i = last; i < pos; ++i)
-                                      SET_NEXT(s->maintenance_event_descriptions, "", pa);
-                              SET_NEXT(s->maintenance_event_descriptions, (aa), pa);
-                      }
-                 } else {
-            	       TRY(!aa, "MaintenanceEventDescriptions argument missing\n");
-                     s->maintenance_event_descriptions_str = aa;
-                 }
-         } else if (!(aret = argcmp(str, "MaintenanceEventDescriptions[]")) || aret == '=') {
-               TRY(!aa, "MaintenanceEventDescriptions[] argument missing\n");
-               SET_NEXT(s->maintenance_event_descriptions, (aa), pa);
-         } else
-	if ((aret = argcmp(str, "MaintenanceEventsNotAfter")) == 0 || aret == '=' || aret == '.') {
-                 if (aret == '.') {
-                      int pos;
-                      char *endptr;
-                      int last = 0;
-                      char *dot_pos = strchr(str, '.');
-
-                      TRY(!(dot_pos++), "MaintenanceEventsNotAfter argument missing\n");
-                      pos = strtoul(dot_pos, &endptr, 0);
-                      TRY(endptr == dot_pos, "MaintenanceEventsNotAfter require an index\n");
-                      if (s->maintenance_events_not_after) {
-                              for (; s->maintenance_events_not_after[last]; ++last);
-                      }
-                      if (pos < last) {
-                              s->maintenance_events_not_after[pos] = (aa);
-                      } else {
-                              for (int i = last; i < pos; ++i)
-                                      SET_NEXT(s->maintenance_events_not_after, "", pa);
-                              SET_NEXT(s->maintenance_events_not_after, (aa), pa);
-                      }
-                 } else {
-            	       TRY(!aa, "MaintenanceEventsNotAfter argument missing\n");
-                     s->maintenance_events_not_after_str = aa;
-                 }
-         } else if (!(aret = argcmp(str, "MaintenanceEventsNotAfter[]")) || aret == '=') {
-               TRY(!aa, "MaintenanceEventsNotAfter[] argument missing\n");
-               SET_NEXT(s->maintenance_events_not_after, (aa), pa);
-         } else
-	if ((aret = argcmp(str, "MaintenanceEventsNotBefore")) == 0 || aret == '=' || aret == '.') {
-                 if (aret == '.') {
-                      int pos;
-                      char *endptr;
-                      int last = 0;
-                      char *dot_pos = strchr(str, '.');
-
-                      TRY(!(dot_pos++), "MaintenanceEventsNotBefore argument missing\n");
-                      pos = strtoul(dot_pos, &endptr, 0);
-                      TRY(endptr == dot_pos, "MaintenanceEventsNotBefore require an index\n");
-                      if (s->maintenance_events_not_before) {
-                              for (; s->maintenance_events_not_before[last]; ++last);
-                      }
-                      if (pos < last) {
-                              s->maintenance_events_not_before[pos] = (aa);
-                      } else {
-                              for (int i = last; i < pos; ++i)
-                                      SET_NEXT(s->maintenance_events_not_before, "", pa);
-                              SET_NEXT(s->maintenance_events_not_before, (aa), pa);
-                      }
-                 } else {
-            	       TRY(!aa, "MaintenanceEventsNotBefore argument missing\n");
-                     s->maintenance_events_not_before_str = aa;
-                 }
-         } else if (!(aret = argcmp(str, "MaintenanceEventsNotBefore[]")) || aret == '=') {
-               TRY(!aa, "MaintenanceEventsNotBefore[] argument missing\n");
-               SET_NEXT(s->maintenance_events_not_before, (aa), pa);
-         } else
-	if ((aret = argcmp(str, "SubregionNames")) == 0 || aret == '=' || aret == '.') {
-                 if (aret == '.') {
-                      int pos;
-                      char *endptr;
-                      int last = 0;
-                      char *dot_pos = strchr(str, '.');
-
-                      TRY(!(dot_pos++), "SubregionNames argument missing\n");
-                      pos = strtoul(dot_pos, &endptr, 0);
-                      TRY(endptr == dot_pos, "SubregionNames require an index\n");
-                      if (s->subregion_names) {
-                              for (; s->subregion_names[last]; ++last);
-                      }
-                      if (pos < last) {
-                              s->subregion_names[pos] = (aa);
-                      } else {
-                              for (int i = last; i < pos; ++i)
-                                      SET_NEXT(s->subregion_names, "", pa);
-                              SET_NEXT(s->subregion_names, (aa), pa);
-                      }
-                 } else {
-            	       TRY(!aa, "SubregionNames argument missing\n");
-                     s->subregion_names_str = aa;
-                 }
-         } else if (!(aret = argcmp(str, "SubregionNames[]")) || aret == '=') {
-               TRY(!aa, "SubregionNames[] argument missing\n");
-               SET_NEXT(s->subregion_names, (aa), pa);
-         } else
-	if ((aret = argcmp(str, "VmIds")) == 0 || aret == '=' || aret == '.') {
-                 if (aret == '.') {
-                      int pos;
-                      char *endptr;
-                      int last = 0;
-                      char *dot_pos = strchr(str, '.');
-
-                      TRY(!(dot_pos++), "VmIds argument missing\n");
-                      pos = strtoul(dot_pos, &endptr, 0);
-                      TRY(endptr == dot_pos, "VmIds require an index\n");
-                      if (s->vm_ids) {
-                              for (; s->vm_ids[last]; ++last);
-                      }
-                      if (pos < last) {
-                              s->vm_ids[pos] = (aa);
-                      } else {
-                              for (int i = last; i < pos; ++i)
-                                      SET_NEXT(s->vm_ids, "", pa);
-                              SET_NEXT(s->vm_ids, (aa), pa);
-                      }
-                 } else {
-            	       TRY(!aa, "VmIds argument missing\n");
-                     s->vm_ids_str = aa;
-                 }
-         } else if (!(aret = argcmp(str, "VmIds[]")) || aret == '=') {
-               TRY(!aa, "VmIds[] argument missing\n");
-               SET_NEXT(s->vm_ids, (aa), pa);
-         } else
-	if ((aret = argcmp(str, "VmStates")) == 0 || aret == '=' || aret == '.') {
-                 if (aret == '.') {
-                      int pos;
-                      char *endptr;
-                      int last = 0;
-                      char *dot_pos = strchr(str, '.');
-
-                      TRY(!(dot_pos++), "VmStates argument missing\n");
-                      pos = strtoul(dot_pos, &endptr, 0);
-                      TRY(endptr == dot_pos, "VmStates require an index\n");
-                      if (s->vm_states) {
-                              for (; s->vm_states[last]; ++last);
-                      }
-                      if (pos < last) {
-                              s->vm_states[pos] = (aa);
-                      } else {
-                              for (int i = last; i < pos; ++i)
-                                      SET_NEXT(s->vm_states, "", pa);
-                              SET_NEXT(s->vm_states, (aa), pa);
-                      }
-                 } else {
-            	       TRY(!aa, "VmStates argument missing\n");
-                     s->vm_states_str = aa;
-                 }
-         } else if (!(aret = argcmp(str, "VmStates[]")) || aret == '=') {
-               TRY(!aa, "VmStates[] argument missing\n");
-               SET_NEXT(s->vm_states, (aa), pa);
-         } else
-	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersVmsState'\n", str);
 		return -1;
 	}
 	return 0;
@@ -12949,6 +12949,81 @@ int keypair_created_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
 	return 0;
 }
 
+int linked_policy_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct linked_policy *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "CreationDate")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "CreationDate argument missing\n");
+            s->creation_date = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "LastModificationDate")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "LastModificationDate argument missing\n");
+            s->last_modification_date = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "Orn")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "Orn argument missing\n");
+            s->orn = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "PolicyId")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "PolicyId argument missing\n");
+            s->policy_id = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "PolicyName")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "PolicyName argument missing\n");
+            s->policy_name = aa; // string string
+
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'LinkedPolicy'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
+int linked_volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct linked_volume *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "DeleteOnVmDeletion")) == 0 || aret == '=' || aret == '.') {
+            s->is_set_delete_on_vm_deletion = 1;
+            if (!aa || !strcasecmp(aa, "true")) {
+            		s->delete_on_vm_deletion = 1;
+             } else if (!strcasecmp(aa, "false")) {
+            		s->delete_on_vm_deletion = 0;
+             } else {
+            		BAD_RET("DeleteOnVmDeletion require true/false\n");
+             }
+        } else
+	if ((aret = argcmp(str, "DeviceName")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "DeviceName argument missing\n");
+            s->device_name = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "State argument missing\n");
+            s->state = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "VmId")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "VmId argument missing\n");
+            s->vm_id = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "VolumeId")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "VolumeId argument missing\n");
+            s->volume_id = aa; // string string
+
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'LinkedVolume'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
 int link_nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct link_nic *s = v_s;
 	    int aret = 0;
@@ -13149,81 +13224,6 @@ int link_route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'LinkRouteTable'\n", str);
-		return -1;
-	}
-	return 0;
-}
-
-int linked_policy_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
-	    struct linked_policy *s = v_s;
-	    int aret = 0;
-	if ((aret = argcmp(str, "CreationDate")) == 0 || aret == '=' || aret == '.') {
-            TRY(!aa, "CreationDate argument missing\n");
-            s->creation_date = aa; // string string
-
-         } else
-	if ((aret = argcmp(str, "LastModificationDate")) == 0 || aret == '=' || aret == '.') {
-            TRY(!aa, "LastModificationDate argument missing\n");
-            s->last_modification_date = aa; // string string
-
-         } else
-	if ((aret = argcmp(str, "Orn")) == 0 || aret == '=' || aret == '.') {
-            TRY(!aa, "Orn argument missing\n");
-            s->orn = aa; // string string
-
-         } else
-	if ((aret = argcmp(str, "PolicyId")) == 0 || aret == '=' || aret == '.') {
-            TRY(!aa, "PolicyId argument missing\n");
-            s->policy_id = aa; // string string
-
-         } else
-	if ((aret = argcmp(str, "PolicyName")) == 0 || aret == '=' || aret == '.') {
-            TRY(!aa, "PolicyName argument missing\n");
-            s->policy_name = aa; // string string
-
-         } else
-	{
-		fprintf(stderr, "'%s' not an argumemt of 'LinkedPolicy'\n", str);
-		return -1;
-	}
-	return 0;
-}
-
-int linked_volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
-	    struct linked_volume *s = v_s;
-	    int aret = 0;
-	if ((aret = argcmp(str, "DeleteOnVmDeletion")) == 0 || aret == '=' || aret == '.') {
-            s->is_set_delete_on_vm_deletion = 1;
-            if (!aa || !strcasecmp(aa, "true")) {
-            		s->delete_on_vm_deletion = 1;
-             } else if (!strcasecmp(aa, "false")) {
-            		s->delete_on_vm_deletion = 0;
-             } else {
-            		BAD_RET("DeleteOnVmDeletion require true/false\n");
-             }
-        } else
-	if ((aret = argcmp(str, "DeviceName")) == 0 || aret == '=' || aret == '.') {
-            TRY(!aa, "DeviceName argument missing\n");
-            s->device_name = aa; // string string
-
-         } else
-	if ((aret = argcmp(str, "State")) == 0 || aret == '=' || aret == '.') {
-            TRY(!aa, "State argument missing\n");
-            s->state = aa; // string string
-
-         } else
-	if ((aret = argcmp(str, "VmId")) == 0 || aret == '=' || aret == '.') {
-            TRY(!aa, "VmId argument missing\n");
-            s->vm_id = aa; // string string
-
-         } else
-	if ((aret = argcmp(str, "VolumeId")) == 0 || aret == '=' || aret == '.') {
-            TRY(!aa, "VolumeId argument missing\n");
-            s->volume_id = aa; // string string
-
-         } else
-	{
-		fprintf(stderr, "'%s' not an argumemt of 'LinkedVolume'\n", str);
 		return -1;
 	}
 	return 0;
