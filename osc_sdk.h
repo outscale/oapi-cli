@@ -65,15 +65,15 @@ struct osc_str {
 	char *buf;
 };
 
-#define OSC_ENV_FREE_AK 1 << 0
-#define OSC_ENV_FREE_REGION 1 << 1
-#define OSC_VERBOSE_MODE  1 << 2 /* curl verbose mode + print request content */
-#define OSC_INSECURE_MODE 1 << 3 /* see --insecure option of curl */
-#define OSC_ENV_FREE_CERT 1 << 4
-#define OSC_ENV_FREE_SSLKEY 1 << 5
-#define OSC_ENV_FREE_SK 1 << 6
-#define OSC_ENV_FREE_PROXY 1 << 7
-#define OSC_ENV_FREE_ENDPOINT 1 << 8
+#define OSC_ENV_FREE_AK (1 << 0)
+#define OSC_ENV_FREE_REGION (1 << 1)
+#define OSC_VERBOSE_MODE  (1 << 2) /* curl verbose mode + print request content */
+#define OSC_INSECURE_MODE (1 << 3) /* see --insecure option of curl */
+#define OSC_ENV_FREE_CERT (1 << 4)
+#define OSC_ENV_FREE_SSLKEY (1 << 5)
+#define OSC_ENV_FREE_SK (1 << 6)
+#define OSC_ENV_FREE_PROXY (1 << 7)
+#define OSC_ENV_FREE_ENDPOINT (1 << 8)
 
 #define OSC_ENV_FREE_AK_SK (OSC_ENV_FREE_AK | OSC_ENV_FREE_SK)
 
@@ -126,6 +126,11 @@ static const char *osc_sdk_version_str(void)
 	ret[8] = 0;
 	return ret;
 }
+
+struct osc_additional_strings {
+	char *key;
+	char *val;
+};
 
 struct accepter_net {
         /*
@@ -7175,12 +7180,9 @@ struct with {
 	int response_status_code;
 };
 
-struct osc_update_vpn_connection_arg  {
-        /* Required: vpn_connection_id */
-        /*
-         * The ID of the client gateway.
-         */
-	char *client_gateway_id;
+struct osc_accept_net_peering_arg  {
+        /* Required: NetPeeringId
+ */
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -7188,88 +7190,14 @@ struct osc_update_vpn_connection_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The ID of the virtual gateway.
+         * The ID of the Net peering you want to accept.
          */
-	char *virtual_gateway_id;
-        /*
-         * The ID of the VPN connection you want to modify.
-         */
-	char *vpn_connection_id;
-        /*
-         *   Information about the VPN options.
-         *   --VpnOptions.Phase1Options: ref Phase1Options
-         *       Information about Phase 1 of the Internet Key Exchange (IKE) 
-         *       negotiation. When Phase 1 finishes successfully, peers proceed 
-         * to Phase 2 
-         *       negotiations.
-         *       --VpnOptions.Phase1Options.DpdTimeoutAction: string
-         *         The action to carry out after a Dead Peer Detection (DPD) 
-         * timeout 
-         *         occurs.
-         *       --VpnOptions.Phase1Options.DpdTimeoutSeconds: long long int
-         *         The maximum waiting time for a Dead Peer Detection (DPD) 
-         * response before 
-         *         considering the peer as dead, in seconds.
-         *       --VpnOptions.Phase1Options.IkeVersions: array string
-         *         The Internet Key Exchange (IKE) versions allowed for the VPN 
-         * tunnel.
-         *       --VpnOptions.Phase1Options.Phase1DhGroupNumbers: array integer
-         *         The Diffie-Hellman (DH) group numbers allowed for the VPN 
-         * tunnel for 
-         *         phase 1.
-         *       --VpnOptions.Phase1Options.Phase1EncryptionAlgorithms: array 
-         * string
-         *         The encryption algorithms allowed for the VPN tunnel for 
-         * phase 1.
-         *       --VpnOptions.Phase1Options.Phase1IntegrityAlgorithms: array 
-         * string
-         *         The integrity algorithms allowed for the VPN tunnel for phase 
-         * 1.
-         *       --VpnOptions.Phase1Options.Phase1LifetimeSeconds: long long int
-         *         The lifetime for phase 1 of the IKE negotiation process, in 
-         * seconds.
-         *       --VpnOptions.Phase1Options.ReplayWindowSize: long long int
-         *         The number of packets in an IKE replay window.
-         *       --VpnOptions.Phase1Options.StartupAction: string
-         *         The action to carry out when establishing tunnels for a VPN 
-         * connection.
-         *   --VpnOptions.Phase2Options: ref Phase2Options
-         *       Information about Phase 2 of the Internet Key Exchange (IKE) 
-         *       negotiation.
-         *       --VpnOptions.Phase2Options.Phase2DhGroupNumbers: array integer
-         *         The Diffie-Hellman (DH) group numbers allowed for the VPN 
-         * tunnel for 
-         *         phase 2.
-         *       --VpnOptions.Phase2Options.Phase2EncryptionAlgorithms: array 
-         * string
-         *         The encryption algorithms allowed for the VPN tunnel for 
-         * phase 2.
-         *       --VpnOptions.Phase2Options.Phase2IntegrityAlgorithms: array 
-         * string
-         *         The integrity algorithms allowed for the VPN tunnel for phase 
-         * 2.
-         *       --VpnOptions.Phase2Options.Phase2LifetimeSeconds: long long int
-         *         The lifetime for phase 2 of the Internet Key Exchange (IKE) 
-         * negociation 
-         *         process, in seconds.
-         *       --VpnOptions.Phase2Options.PreSharedKey: string
-         *         The pre-shared key to establish the initial authentication 
-         * between the 
-         *         client gateway and the virtual gateway. This key can contain 
-         * any 
-         *         character except line breaks and double quotes (&quot;).
-         *   --VpnOptions.TunnelInsideIpRange: string
-         *     The range of inside IPs for the tunnel. This must be a /30 CIDR 
-         * block 
-         *     from the 169.254.254.0/24 range.
-         */
-        char *vpn_options_str;
-        int is_set_vpn_options;
-	struct vpn_options vpn_options;
+	char *net_peering_id;
 };
 
-struct osc_update_volume_arg  {
-        /* Required: volume_id */
+struct osc_add_user_to_user_group_arg  {
+        /* Required: UserGroupName UserName
+ */
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -7277,42 +7205,154 @@ struct osc_update_volume_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * **Cold volume**: the new number of I/O operations per second (IOPS). 
-         * This parameter can be specified only if you update an `io1` volume or 
-         * if you change the type of the volume for an `io1`. This modification 
-         * is instantaneous. <br />\n**Hot volume**: the new number of I/O 
-         * operations per second (IOPS). This parameter can be specified only if 
-         * you update an `io1` volume. This modification is not instantaneous. 
-         * <br /><br />\nThe maximum number of IOPS allowed for `io1` volumes is 
-         * `13000` with a maximum performance ratio of 300 IOPS per gibibyte.
+         * The name of the group you want to add a user to.
          */
-        int is_set_iops;
-	long long int iops;
+	char *user_group_name;
         /*
-         * **Cold volume**: the new size of the volume, in gibibytes (GiB). This 
-         * value must be equal to or greater than the current size of the 
-         * volume. This modification is not instantaneous. <br />\n**Hot 
-         * volume**: you cannot change the size of a hot volume.
+         * The path to the group. If not specified, it is set to a slash (`/`).
          */
-        int is_set_size;
-	long long int size;
+	char *user_group_path;
         /*
-         * The ID of the volume you want to update.
+         * The name of the user you want to add to the group.
          */
-	char *volume_id;
+	char *user_name;
         /*
-         * **Cold volume**: the new type of the volume (`standard` \\| `io1` \\| 
-         * `gp2`). This modification is instantaneous. If you update to an `io1` 
-         * volume, you must also specify the `Iops` parameter.<br />\n**Hot 
-         * volume**: you cannot change the type of a hot volume.
+         * The path to the user. If not specified, it is set to a slash (`/`).
          */
-	char *volume_type;
+	char *user_path;
 };
 
-struct osc_update_vm_template_arg  {
-        /* Required: vm_template_id */
+struct osc_check_authentication_arg  {
+        /* Required: Login Password
+ */
         /*
-         * A new description for the VM template.
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The email address of the account.
+         */
+	char *login;
+        /*
+         * The password of the account.
+         */
+	char *password;
+};
+
+struct osc_create_access_key_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The date and time, or the date, at which you want the access key to 
+         * expire, in ISO 8601 format (for example, `2020-06-14T00:00:00.000Z`, 
+         * or `2020-06-14`). To remove an existing expiration date, use the 
+         * method without specifying this parameter.
+         */
+	char *expiration_date;
+        /*
+         * The name of the EIM user that owns the key to be created. If you do 
+         * not specify a user name, this action creates an access key for the 
+         * user who sends the request (which can be the root account).
+         */
+	char *user_name;
+};
+
+struct osc_create_account_arg  {
+        /* Required: City CompanyName Country CustomerId Email FirstName LastName ZipCode
+ */
+        /*
+         * One or more additional email addresses for the account. These 
+         * addresses are used for notifications only. If you already have a list 
+         * of additional emails registered, you cannot add to it, only replace 
+         * it. To remove all registered additional emails, specify an empty list.
+         */
+        char *additional_emails_str;
+	char **additional_emails;
+        /*
+         * The city of the account owner.
+         */
+	char *city;
+        /*
+         * The name of the company for the account.
+         */
+	char *company_name;
+        /*
+         * The country of the account owner.
+         */
+	char *country;
+        /*
+         * The ID of the customer. It must be 8 digits.
+         */
+	char *customer_id;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The main email address for the account. This address is used for your 
+         * credentials and notifications.
+         */
+	char *email;
+        /*
+         * The first name of the account owner.
+         */
+	char *first_name;
+        /*
+         * The job title of the account owner.
+         */
+	char *job_title;
+        /*
+         * The last name of the account owner.
+         */
+	char *last_name;
+        /*
+         * The mobile phone number of the account owner.
+         */
+	char *mobile_number;
+        /*
+         * The landline phone number of the account owner.
+         */
+	char *phone_number;
+        /*
+         * The state/province of the account.
+         */
+	char *state_province;
+        /*
+         * The value added tax (VAT) number for the account.
+         */
+	char *vat_number;
+        /*
+         * The ZIP code of the city.
+         */
+	char *zip_code;
+};
+
+struct osc_create_api_access_rule_arg  {
+        /* Required: null
+ */
+        /*
+         * One or more IDs of Client Certificate Authorities (CAs).
+         */
+        char *ca_ids_str;
+	char **ca_ids;
+        /*
+         * One or more Client Certificate Common Names (CNs). If this parameter 
+         * is specified, you must also specify the `CaIds` parameter.
+         */
+        char *cns_str;
+	char **cns;
+        /*
+         * A description for the API access rule.
          */
 	char *description;
         /*
@@ -7322,30 +7362,23 @@ struct osc_update_vm_template_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * New tags for your VM template.
-         *   Information about the tag.
-         *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
-         *   --Tags.INDEX.Value: string
-         *     The value of the tag, between 0 and 255 characters.
+         * One or more IPs or CIDR blocks (for example, `192.0.2.0/16`).
          */
-        char *tags_str;
-        int nb_tags;
-	struct resource_tag *tags;
-        /*
-         * The ID of the VM template you want to update.
-         */
-	char *vm_template_id;
-        /*
-         * A new name for your VM template.
-         */
-	char *vm_template_name;
+        char *ip_ranges_str;
+	char **ip_ranges;
 };
 
-struct osc_update_vm_group_arg  {
-        /* Required: vm_group_id */
+struct osc_create_ca_arg  {
+        /* Required: CaPem
+ */
         /*
-         * A new description for the VM group.
+         * The CA in PEM format.<br />With OSC CLI, use the following syntax to 
+         * make sure your CA file is correctly parsed: `--CaPem=&quot;$(cat 
+         * FILENAME)&quot;`.
+         */
+	char *ca_pem;
+        /*
+         * The description of the CA.
          */
 	char *description;
         /*
@@ -7354,44 +7387,289 @@ struct osc_update_vm_group_arg  {
          */
         int is_set_dry_run;
 	int dry_run;
-        /*
-         * New tags for your VM group.
-         *   Information about the tag.
-         *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
-         *   --Tags.INDEX.Value: string
-         *     The value of the tag, between 0 and 255 characters.
-         */
-        char *tags_str;
-        int nb_tags;
-	struct resource_tag *tags;
-        /*
-         * The ID of the VM group you want to update.
-         */
-	char *vm_group_id;
-        /*
-         * A new name for your VM group.
-         */
-	char *vm_group_name;
-        /*
-         * A new VM template ID for your VM group.
-         */
-	char *vm_template_id;
 };
 
-struct osc_update_vm_arg  {
-        /* Required: vm_id */
+struct osc_create_client_gateway_arg  {
+        /* Required: BgpAsn PublicIp ConnectionType
+ */
         /*
-         * One or more block device mappings of the VM.
-         *   Information about the block device mapping.
-         *   --BlockDeviceMappings.INDEX.Bsu: ref BsuToUpdateVm
-         *       Information about the BSU volume.
+         * The Autonomous System Number (ASN) used by the Border Gateway 
+         * Protocol (BGP) to find the path to your client gateway through the 
+         * Internet. <br/>\nThis number must be between `1` and `4294967295`. If 
+         * you do not have an ASN, you can choose one between 64512 and 65534, 
+         * or between 4200000000 and 4294967294.
+         */
+        int is_set_bgp_asn;
+	long long int bgp_asn;
+        /*
+         * The communication protocol used to establish tunnel with your client 
+         * gateway (always `ipsec.1`).
+         */
+	char *connection_type;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The public fixed IPv4 address of your client gateway.
+         */
+	char *public_ip;
+};
+
+struct osc_create_dedicated_group_arg  {
+        /* Required: CpuGeneration Name SubregionName
+ */
+        /*
+         * The processor generation for the VMs in the dedicated group (for 
+         * example, `4`).
+         */
+        int is_set_cpu_generation;
+	long long int cpu_generation;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * A name for the dedicated group.
+         */
+	char *name;
+        /*
+         * The Subregion in which you want to create the dedicated group.
+         */
+	char *subregion_name;
+};
+
+struct osc_create_dhcp_options_arg  {
+        /* Required: null
+ */
+        /*
+         * Specify a domain name (for example, `MyCompany.com`). You can specify 
+         * only one domain name. You must specify at least one of the following 
+         * parameters: `DomainName`, `DomainNameServers`, `LogServers`, or 
+         * `NtpServers`.
+         */
+	char *domain_name;
+        /*
+         * The IPs of domain name servers. If no IPs are specified, the 
+         * `OutscaleProvidedDNS` value is set by default. You must specify at 
+         * least one of the following parameters: `DomainName`, 
+         * `DomainNameServers`, `LogServers`, or `NtpServers`.
+         */
+        char *domain_name_servers_str;
+	char **domain_name_servers;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The IPs of the log servers. You must specify at least one of the 
+         * following parameters: `DomainName`, `DomainNameServers`, 
+         * `LogServers`, or `NtpServers`.
+         */
+        char *log_servers_str;
+	char **log_servers;
+        /*
+         * The IPs of the Network Time Protocol (NTP) servers. You must specify 
+         * at least one of the following parameters: `DomainName`, 
+         * `DomainNameServers`, `LogServers`, or `NtpServers`.
+         */
+        char *ntp_servers_str;
+	char **ntp_servers;
+};
+
+struct osc_create_direct_link_interface_arg  {
+        /* Required: DirectLinkId DirectLinkInterface
+ */
+        /*
+         * The ID of the existing DirectLink for which you want to create the 
+         * DirectLink interface.
+         */
+	char *direct_link_id;
+        /*
+         *   Information about the DirectLink interface.
+         *   --DirectLinkInterface.BgpAsn: long long int
+         *     The BGP (Border Gateway Protocol) ASN (Autonomous System Number) 
+         * on the 
+         *     customer's side of the DirectLink interface. This number must be 
+         * between 
+         *     `64512` and `65534`.
+         *   --DirectLinkInterface.BgpKey: string
+         *     The BGP authentication key.
+         *   --DirectLinkInterface.ClientPrivateIp: string
+         *     The IP on the customer's side of the DirectLink interface.
+         *   --DirectLinkInterface.DirectLinkInterfaceName: string
+         *     The name of the DirectLink interface.
+         *   --DirectLinkInterface.OutscalePrivateIp: string
+         *     The IP on the OUTSCALE side of the DirectLink interface.
+         *   --DirectLinkInterface.VirtualGatewayId: string
+         *     The ID of the target virtual gateway.
+         *   --DirectLinkInterface.Vlan: long long int
+         *     The VLAN number associated with the DirectLink interface. This 
+         * number 
+         *     must be unique and be between `2` and `4094`.
+         */
+        char *direct_link_interface_str;
+        int is_set_direct_link_interface;
+	struct direct_link_interface direct_link_interface;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+};
+
+struct osc_create_direct_link_arg  {
+        /* Required: Bandwidth DirectLinkName Location
+ */
+        /*
+         * The bandwidth of the DirectLink (`1Gbps` \\| `10Gbps`).
+         */
+	char *bandwidth;
+        /*
+         * The name of the DirectLink.
+         */
+	char *direct_link_name;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The code of the requested location for the DirectLink, returned by 
+         * the [ReadLocations](#readlocations) method.
+         */
+	char *location;
+};
+
+struct osc_create_flexible_gpu_arg  {
+        /* Required: ModelName SubregionName
+ */
+        /*
+         * If true, the fGPU is deleted when the VM is terminated.
+         */
+        int is_set_delete_on_vm_deletion;
+	int delete_on_vm_deletion;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The processor generation that the fGPU must be compatible with. If 
+         * not specified, the oldest possible processor generation is selected 
+         * (as provided by [ReadFlexibleGpuCatalog](#readflexiblegpucatalog) for 
+         * the specified model of fGPU).
+         */
+	char *generation;
+        /*
+         * The model of fGPU you want to allocate. For more information, see 
+         * [About Flexible 
+         * GPUs](https://docs.outscale.com/en/userguide/About-Flexible-GPUs.html)
+         * .
+         */
+	char *model_name;
+        /*
+         * The Subregion in which you want to create the fGPU.
+         */
+	char *subregion_name;
+};
+
+struct osc_create_image_export_task_arg  {
+        /* Required: OsuExport ImageId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the OMI to export.
+         */
+	char *image_id;
+        /*
+         *   Information about the OOS export task to create.
+         *   --OsuExport.DiskImageFormat: string
+         *     The format of the export disk (`qcow2` \\| `raw`).
+         *   --OsuExport.OsuApiKey: ref OsuApiKey
+         *       Information about the OOS API key.
+         *       --OsuExport.OsuApiKey.ApiKeyId: string
+         *         The API key of the OOS account that enables you to access the 
+         * bucket.
+         *       --OsuExport.OsuApiKey.SecretKey: string
+         *         The secret key of the OOS account that enables you to access 
+         * the bucket.
+         *   --OsuExport.OsuBucket: string
+         *     The name of the OOS bucket where you want to export the object.
+         *   --OsuExport.OsuManifestUrl: string
+         *     The URL of the manifest file.
+         *   --OsuExport.OsuPrefix: string
+         *     The prefix for the key of the OOS object.
+         */
+        char *osu_export_str;
+        int is_set_osu_export;
+	struct osu_export_to_create osu_export;
+};
+
+struct osc_create_image_arg  {
+        /* Required: null
+ */
+        /*
+         * **(when registering from a snapshot)** The architecture of the OMI 
+         * (`i386` or `x86_64`).
+         */
+	char *architecture;
+        /*
+         * **(when registering from a snapshot)** One or more block device 
+         * mappings.
+         *   One or more parameters used to automatically set up volumes when 
+         * the VM 
+         *   is created.
+         *   --BlockDeviceMappings.INDEX.Bsu: ref BsuToCreate
+         *       Information about the BSU volume to create.
          *       --BlockDeviceMappings.INDEX.Bsu.DeleteOnVmDeletion: bool
-         *         If set to true, the volume is deleted when terminating the 
-         * VM. If set to 
-         *         false, the volume is not deleted when terminating the VM.
-         *       --BlockDeviceMappings.INDEX.Bsu.VolumeId: string
-         *         The ID of the volume.
+         *         By default or if set to true, the volume is deleted when 
+         * terminating the 
+         *         VM. If false, the volume is not deleted when terminating the 
+         * VM.
+         *       --BlockDeviceMappings.INDEX.Bsu.Iops: long long int
+         *         The number of I/O operations per second (IOPS). This 
+         * parameter must be 
+         *         specified only if you create an `io1` volume. The maximum 
+         * number of IOPS 
+         *         allowed for `io1` volumes is `13000` with a maximum 
+         * performance ratio of 
+         *         300 IOPS per gibibyte.
+         *       --BlockDeviceMappings.INDEX.Bsu.SnapshotId: string
+         *         The ID of the snapshot used to create the volume.
+         *       --BlockDeviceMappings.INDEX.Bsu.VolumeSize: long long int
+         *         The size of the volume, in gibibytes (GiB).<br />\nIf you 
+         * specify a 
+         *         snapshot ID, the volume size must be at least equal to the 
+         * snapshot 
+         *         size.<br />\nIf you specify a snapshot ID but no volume size, 
+         * the volume 
+         *         is created with a size similar to the snapshot one.
+         *       --BlockDeviceMappings.INDEX.Bsu.VolumeType: string
+         *         The type of the volume (`standard` \\| `io1` \\| `gp2`). If 
+         * not 
+         *         specified in the request, a `standard` volume is created.<br 
+         * />\nFor more 
+         *         information about volume types, see [About Volumes > Volume 
+         * Types and 
+         *         
+         * IOPS](https://docs.outscale.com/en/userguide/About-Volumes.html#_volum
+         * e_ty
+         *         pes_and_iops).
          *   --BlockDeviceMappings.INDEX.DeviceName: string
          *     The device name for the volume. For a root device, you must use 
          *     `/dev/sda1`. For other volumes, you must use `/dev/sdX`, 
@@ -7399,28 +7677,16 @@ struct osc_update_vm_arg  {
          *     `/dev/xvdX`, or `/dev/xvdXX` (where the first `X` is a letter 
          * between `b` 
          *     and `z`, and the second `X` is a letter between `a` and `z`).
-         *   --BlockDeviceMappings.INDEX.NoDevice: string
-         *     Removes the device which is included in the block device mapping 
-         * of the 
-         *     OMI.
          *   --BlockDeviceMappings.INDEX.VirtualDeviceName: string
          *     The name of the virtual device (`ephemeralN`).
          */
         char *block_device_mappings_str;
         int nb_block_device_mappings;
-	struct block_device_mapping_vm_update *block_device_mappings;
+	struct block_device_mapping_image *block_device_mappings;
         /*
-         * This parameter is not available. It is present in our API for the 
-         * sake of historical compatibility with AWS.
+         * A description for the new OMI.
          */
-        int is_set_bsu_optimized;
-	int bsu_optimized;
-        /*
-         * If true, you cannot delete the VM unless you change this parameter 
-         * back to false.
-         */
-        int is_set_deletion_protection;
-	int deletion_protection;
+	char *description;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -7428,61 +7694,87 @@ struct osc_update_vm_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * (Net only) If true, the source/destination check is enabled. If 
-         * false, it is disabled.
+         * **(when registering from a bucket by using a manifest file)** The 
+         * pre-signed URL of the manifest file for the OMI you want to register. 
+         * For more information, see [Creating a Pre-signed 
+         * URL](https://docs.outscale.com/en/userguide/Creating-a-Pre-Signed-URL.
+         * html).
          */
-        int is_set_is_source_dest_checked;
-	int is_source_dest_checked;
+	char *file_location;
         /*
-         * The name of a keypair you want to associate with the VM.<br />\nWhen 
-         * you replace the keypair of a VM with another one, the metadata of the 
-         * VM is modified to reflect the new public key, but the replacement is 
-         * still not effective in the operating system of the VM. To complete 
-         * the replacement and effectively apply the new keypair, you need to 
-         * perform other actions inside the VM. For more information, see 
-         * [Modifying the Keypair of a 
-         * VM](https://docs.outscale.com/en/userguide/Modifying-the-Keypair-of-a-
-         * VM.html).
+         * A unique name for the new OMI.<br />\nConstraints: 3-128 alphanumeric 
+         * characters, underscores (`_`), spaces (` `), parentheses (`()`), 
+         * slashes (`/`), periods (`.`), or dashes (`-`).
+         */
+	char *image_name;
+        /*
+         * **(when creating from a VM)** If false, the VM shuts down before 
+         * creating the OMI and then reboots. If true, the VM does not.
+         */
+        int is_set_no_reboot;
+	int no_reboot;
+        /*
+         * The product codes associated with the OMI.
+         */
+        char *product_codes_str;
+	char **product_codes;
+        /*
+         * **(when registering from a snapshot)** The name of the root device 
+         * for the new OMI.
+         */
+	char *root_device_name;
+        /*
+         * **(when copying an OMI)** The ID of the OMI you want to copy.
+         */
+	char *source_image_id;
+        /*
+         * **(when copying an OMI)** The name of the source Region (always the 
+         * same as the Region of your account).
+         */
+	char *source_region_name;
+        /*
+         * **(when creating from a VM)** The ID of the VM from which you want to 
+         * create the OMI.
+         */
+	char *vm_id;
+};
+
+struct osc_create_internet_service_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+};
+
+struct osc_create_keypair_arg  {
+        /* Required: KeypairName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * A unique name for the keypair, with a maximum length of 255 [ASCII 
+         * printable 
+         * characters](https://en.wikipedia.org/wiki/ASCII#Printable_characters).
          */
 	char *keypair_name;
         /*
-         * (dedicated tenancy only) If true, nested virtualization is enabled. 
-         * If false, it is disabled.
+         * The public key to import in your account, if you are importing an 
+         * existing keypair. This value must be Base64-encoded.
          */
-        int is_set_nested_virtualization;
-	int nested_virtualization;
-        /*
-         * The performance of the VM (`medium` \\| `high` \\| `highest`).
-         */
-	char *performance;
-        /*
-         * One or more IDs of security groups for the VM.
-         */
-        char *security_group_ids_str;
-	char **security_group_ids;
-        /*
-         * The Base64-encoded MIME user data, limited to 500 kibibytes (KiB).
-         */
-	char *user_data;
-        /*
-         * The ID of the VM.
-         */
-	char *vm_id;
-        /*
-         * The VM behavior when you stop it. If set to `stop`, the VM stops. If 
-         * set to `restart`, the VM stops then automatically restarts. If set to 
-         * `terminate`, the VM stops and is terminated.
-         */
-	char *vm_initiated_shutdown_behavior;
-        /*
-         * The type of VM. For more information, see [VM 
-         * Types](https://docs.outscale.com/en/userguide/VM-Types.html).
-         */
-	char *vm_type;
+	char *public_key;
 };
 
-struct osc_update_user_group_arg  {
-        /* Required: user_group_name */
+struct osc_create_listener_rule_arg  {
+        /* Required: VmIds Listener ListenerRule
+ */
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -7490,26 +7782,53 @@ struct osc_update_user_group_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * A new path for the group. If not specified, it is set to a slash 
-         * (`/`).
+         *   Information about the load balancer.
+         *   --Listener.LoadBalancerName: string
+         *     The name of the load balancer to which the listener is attached.
+         *   --Listener.LoadBalancerPort: long long int
+         *     The port of load balancer on which the load balancer is listening 
+         *     (between `1` and `65535` both included).
          */
-	char *new_path;
+        char *listener_str;
+        int is_set_listener;
+	struct load_balancer_light listener;
         /*
-         * A new name for the user group.
+         *   Information about the listener rule.
+         *   --ListenerRule.Action: string
+         *     The type of action for the rule (always `forward`).
+         *   --ListenerRule.HostNamePattern: string
+         *     A host-name pattern for the rule, with a maximum length of 128 
+         *     characters. This host-name pattern supports maximum three 
+         * wildcards, and 
+         *     must not contain any special characters except `-.?`.
+         *   --ListenerRule.ListenerRuleName: string
+         *     A human-readable name for the listener rule.
+         *   --ListenerRule.PathPattern: string
+         *     A path pattern for the rule, with a maximum length of 128 
+         * characters. 
+         *     This path pattern supports maximum three wildcards, and must not 
+         * contain 
+         *     any special characters except `_-.$/~&quot;'@:+?`.
+         *   --ListenerRule.Priority: long long int
+         *     The priority level of the listener rule, between `1` and `19999` 
+         * both 
+         *     included. Each rule must have a unique priority level. Otherwise, 
+         * an 
+         *     error is returned.
          */
-	char *new_user_group_name;
+        char *listener_rule_str;
+        int is_set_listener_rule;
+	struct listener_rule_for_creation listener_rule;
         /*
-         * The path to the group. If not specified, it is set to a slash (`/`).
+         * The IDs of the backend VMs.
          */
-	char *path;
-        /*
-         * The name of the group you want to update.
-         */
-	char *user_group_name;
+        char *vm_ids_str;
+	char **vm_ids;
 };
 
-struct osc_update_user_arg  {
-        /* Required: user_name */
+struct osc_create_load_balancer_listeners_arg  {
+        /* Required: Listeners LoadBalancerName
+ */
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -7517,25 +7836,55 @@ struct osc_update_user_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * A new path for the EIM user.
+         * One or more listeners for the load balancer.
+         *   Information about the listener to create.
+         *   --Listeners.INDEX.BackendPort: long long int
+         *     The port on which the backend VM is listening (between `1` and 
+         * `65535`, 
+         *     both included).
+         *   --Listeners.INDEX.BackendProtocol: string
+         *     The protocol for routing traffic to backend VMs (`HTTP` \\| 
+         * `HTTPS` \\| 
+         *     `TCP` \\| `SSL`).
+         *   --Listeners.INDEX.LoadBalancerPort: long long int
+         *     The port on which the load balancer is listening (between `1` and 
+         *     `65535`, both included).
+         *   --Listeners.INDEX.LoadBalancerProtocol: string
+         *     The routing protocol (`HTTP` \\| `HTTPS` \\| `TCP` \\| `SSL`).
+         *   --Listeners.INDEX.ServerCertificateId: string
+         *     The OUTSCALE Resource Name (ORN) of the server certificate. For 
+         * more 
+         *     information, see [Resource Identifiers > OUTSCALE Resource Names 
+         *     
+         * (ORNs)](https://docs.outscale.com/en/userguide/Resource-Identifiers.ht
+         * ml#_
+         *     outscale_resource_names_orns).
          */
-	char *new_path;
+        char *listeners_str;
+        int nb_listeners;
+	struct listener_for_creation *listeners;
         /*
-         * A new email address for the EIM user.
+         * The name of the load balancer for which you want to create listeners.
          */
-	char *new_user_email;
-        /*
-         * A new name for the EIM user.
-         */
-	char *new_user_name;
-        /*
-         * The name of the EIM user you want to modify.
-         */
-	char *user_name;
+	char *load_balancer_name;
 };
 
-struct osc_update_subnet_arg  {
-        /* Required: subnet_id, map_public_ip_on_launch */
+struct osc_create_load_balancer_policy_arg  {
+        /* Required: PolicyType LoadBalancerName PolicyName
+ */
+        /*
+         * The lifetime of the cookie, in seconds. If not specified, the default 
+         * value of this parameter is `1`, which means that the sticky session 
+         * lasts for the duration of the browser session.
+         */
+        int is_set_cookie_expiration_period;
+	long long int cookie_expiration_period;
+        /*
+         * The name of the application cookie used for stickiness. This 
+         * parameter is required if you create a stickiness policy based on an 
+         * application-generated cookie.
+         */
+	char *cookie_name;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -7543,19 +7892,165 @@ struct osc_update_subnet_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * If true, a public IP is assigned to the network interface cards 
-         * (NICs) created in the specified Subnet.
+         * The name of the load balancer for which you want to create a policy.
          */
-        int is_set_map_public_ip_on_launch;
-	int map_public_ip_on_launch;
+	char *load_balancer_name;
         /*
-         * The ID of the Subnet.
+         * The unique name of the policy, with a maximum length of 32 
+         * alphanumeric characters and dashes (`-`).
+         */
+	char *policy_name;
+        /*
+         * The type of stickiness policy you want to create: `app` or 
+         * `load_balancer`.
+         */
+	char *policy_type;
+};
+
+struct osc_create_load_balancer_arg  {
+        /* Required: Listeners LoadBalancerName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * One or more listeners to create.
+         *   Information about the listener to create.
+         *   --Listeners.INDEX.BackendPort: long long int
+         *     The port on which the backend VM is listening (between `1` and 
+         * `65535`, 
+         *     both included).
+         *   --Listeners.INDEX.BackendProtocol: string
+         *     The protocol for routing traffic to backend VMs (`HTTP` \\| 
+         * `HTTPS` \\| 
+         *     `TCP` \\| `SSL`).
+         *   --Listeners.INDEX.LoadBalancerPort: long long int
+         *     The port on which the load balancer is listening (between `1` and 
+         *     `65535`, both included).
+         *   --Listeners.INDEX.LoadBalancerProtocol: string
+         *     The routing protocol (`HTTP` \\| `HTTPS` \\| `TCP` \\| `SSL`).
+         *   --Listeners.INDEX.ServerCertificateId: string
+         *     The OUTSCALE Resource Name (ORN) of the server certificate. For 
+         * more 
+         *     information, see [Resource Identifiers > OUTSCALE Resource Names 
+         *     
+         * (ORNs)](https://docs.outscale.com/en/userguide/Resource-Identifiers.ht
+         * ml#_
+         *     outscale_resource_names_orns).
+         */
+        char *listeners_str;
+        int nb_listeners;
+	struct listener_for_creation *listeners;
+        /*
+         * The unique name of the load balancer, with a maximum length of 32 
+         * alphanumeric characters and dashes (`-`). This name must not start or 
+         * end with a dash.
+         */
+	char *load_balancer_name;
+        /*
+         * The type of load balancer: `internet-facing` or `internal`. Use this 
+         * parameter only for load balancers in a Net.
+         */
+	char *load_balancer_type;
+        /*
+         * (internet-facing only) The public IP you want to associate with the 
+         * load balancer. If not specified, a public IP owned by 3DS OUTSCALE is 
+         * associated.
+         */
+	char *public_ip;
+        /*
+         * (Net only) One or more IDs of security groups you want to assign to 
+         * the load balancer. If not specified, the default security group of 
+         * the Net is assigned to the load balancer.
+         */
+        char *security_groups_str;
+	char **security_groups;
+        /*
+         * (Net only) The ID of the Subnet in which you want to create the load 
+         * balancer. Regardless of this Subnet, the load balancer can distribute 
+         * traffic to all Subnets. This parameter is required in a Net.
+         */
+        char *subnets_str;
+	char **subnets;
+        /*
+         * (public Cloud only) The Subregion in which you want to create the 
+         * load balancer. Regardless of this Subregion, the load balancer can 
+         * distribute traffic to all Subregions. This parameter is required in 
+         * the public Cloud.
+         */
+        char *subregion_names_str;
+	char **subregion_names;
+        /*
+         * One or more tags assigned to the load balancer.
+         *   Information about the tag.
+         *   --Tags.INDEX.Key: string
+         *     The key of the tag, with a minimum of 1 character.
+         *   --Tags.INDEX.Value: string
+         *     The value of the tag, between 0 and 255 characters.
+         */
+        char *tags_str;
+        int nb_tags;
+	struct resource_tag *tags;
+};
+
+struct osc_create_load_balancer_tags_arg  {
+        /* Required: LoadBalancerNames Tags
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * One or more load balancer names.
+         */
+        char *load_balancer_names_str;
+	char **load_balancer_names;
+        /*
+         * One or more tags to add to the specified load balancers.
+         *   Information about the tag.
+         *   --Tags.INDEX.Key: string
+         *     The key of the tag, with a minimum of 1 character.
+         *   --Tags.INDEX.Value: string
+         *     The value of the tag, between 0 and 255 characters.
+         */
+        char *tags_str;
+        int nb_tags;
+	struct resource_tag *tags;
+};
+
+struct osc_create_nat_service_arg  {
+        /* Required: PublicIpId SubnetId
+ */
+        /*
+         * A unique identifier which enables you to manage the idempotency.
+         */
+	char *client_token;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The allocation ID of the public IP to associate with the NAT 
+         * service.<br />\nIf the public IP is already associated with another 
+         * resource, you must first disassociate it.
+         */
+	char *public_ip_id;
+        /*
+         * The ID of the Subnet in which you want to create the NAT service.
          */
 	char *subnet_id;
 };
 
-struct osc_update_snapshot_arg  {
-        /* Required: snapshot_id, permissions_to_create_volume */
+struct osc_create_net_access_point_arg  {
+        /* Required: ServiceName NetId
+ */
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -7563,50 +8058,33 @@ struct osc_update_snapshot_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         *   Information about the permissions for the resource.<br />\nSpecify 
-         *   either the `Additions` or the `Removals` parameter.
-         *   --PermissionsToCreateVolume.Additions: ref PermissionsOnResource
-         *       Permissions for the resource.
-         *       --PermissionsToCreateVolume.Additions.AccountIds: array string
-         *         One or more account IDs that the permission is associated 
-         * with.
-         *       --PermissionsToCreateVolume.Additions.GlobalPermission: bool
-         *         A global permission for all accounts.<br />\n(Request) Set 
-         * this 
-         *         parameter to true to make the resource public (if the parent 
-         * parameter is 
-         *         `Additions`) or to make the resource private (if the parent 
-         * parameter is 
-         *         `Removals`).<br />\n(Response) If true, the resource is 
-         * public. If false, 
-         *         the resource is private.
-         *   --PermissionsToCreateVolume.Removals: ref PermissionsOnResource
-         *       Permissions for the resource.
-         *       --PermissionsToCreateVolume.Removals.AccountIds: array string
-         *         One or more account IDs that the permission is associated 
-         * with.
-         *       --PermissionsToCreateVolume.Removals.GlobalPermission: bool
-         *         A global permission for all accounts.<br />\n(Request) Set 
-         * this 
-         *         parameter to true to make the resource public (if the parent 
-         * parameter is 
-         *         `Additions`) or to make the resource private (if the parent 
-         * parameter is 
-         *         `Removals`).<br />\n(Response) If true, the resource is 
-         * public. If false, 
-         *         the resource is private.
+         * The ID of the Net.
          */
-        char *permissions_to_create_volume_str;
-        int is_set_permissions_to_create_volume;
-	struct permissions_on_resource_creation permissions_to_create_volume;
+	char *net_id;
         /*
-         * The ID of the snapshot.
+         * One or more IDs of route tables to use for the connection.
          */
-	char *snapshot_id;
+        char *route_table_ids_str;
+	char **route_table_ids;
+        /*
+         * The name of the service (in the format `com.outscale.region.service`).
+         */
+	char *service_name;
 };
 
-struct osc_update_server_certificate_arg  {
-        /* Required: name */
+struct osc_create_net_peering_arg  {
+        /* Required: AccepterNetId SourceNetId
+ */
+        /*
+         * The ID of the Net you want to connect with.
+         */
+	char *accepter_net_id;
+        /*
+         * The account ID of the owner of the Net you want to connect with. By 
+         * default, the account ID of the owner of the Net from which the 
+         * peering request is sent.
+         */
+	char *accepter_owner_id;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -7614,21 +8092,14 @@ struct osc_update_server_certificate_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The name of the server certificate you want to modify.
+         * The ID of the Net you send the peering request from.
          */
-	char *name;
-        /*
-         * A new name for the server certificate.
-         */
-	char *new_name;
-        /*
-         * A new path for the server certificate.
-         */
-	char *new_path;
+	char *source_net_id;
 };
 
-struct osc_update_route_table_link_arg  {
-        /* Required: route_table_id, link_route_table_id */
+struct osc_create_net_arg  {
+        /* Required: IpRange
+ */
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -7636,17 +8107,27 @@ struct osc_update_route_table_link_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The ID of the current route table link.
+         * The IP range for the Net, in CIDR notation (for example, 
+         * `10.0.0.0/16`).
          */
-	char *link_route_table_id;
+	char *ip_range;
         /*
-         * The ID of the new route table to associate with the Subnet.
+         * The tenancy options for the VMs:<br />\n- `default` if a VM created 
+         * in a Net can be launched with any tenancy.<br />\n- `dedicated` if it 
+         * can be launched with dedicated tenancy VMs running on single-tenant 
+         * hardware.<br />\n- `dedicated group ID`: if it can be launched in a 
+         * dedicated group on single-tenant hardware.
          */
-	char *route_table_id;
+	char *tenancy;
 };
 
-struct osc_update_route_propagation_arg  {
-        /* Required: enable, route_table_id, virtual_gateway_id */
+struct osc_create_nic_arg  {
+        /* Required: SubnetId
+ */
+        /*
+         * A description for the NIC.
+         */
+	char *description;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -7654,23 +8135,122 @@ struct osc_update_route_propagation_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * If true, a virtual gateway can propagate routes to a specified route 
-         * table of a Net. If false, the propagation is disabled.
+         * The primary private IP for the NIC.<br />\nThis IP must be within the 
+         * IP range of the Subnet that you specify with the `SubnetId` 
+         * attribute.<br />\nIf you do not specify this attribute, a random 
+         * private IP is selected within the IP range of the Subnet.
+         *   Information about the private IP.
+         *   --PrivateIps.INDEX.IsPrimary: bool
+         *     If true, the IP is the primary private IP of the NIC.
+         *   --PrivateIps.INDEX.PrivateIp: string
+         *     The private IP of the NIC.
          */
-        int is_set_enable;
-	int enable;
+        char *private_ips_str;
+        int nb_private_ips;
+	struct private_ip_light *private_ips;
         /*
-         * The ID of the route table.
+         * One or more IDs of security groups for the NIC.
          */
-	char *route_table_id;
+        char *security_group_ids_str;
+	char **security_group_ids;
         /*
-         * The ID of the virtual gateway.
+         * The ID of the Subnet in which you want to create the NIC.
          */
-	char *virtual_gateway_id;
+	char *subnet_id;
 };
 
-struct osc_update_route_arg  {
-        /* Required: route_table_id, destination_ip_range */
+struct osc_create_policy_arg  {
+        /* Required: Document PolicyName
+ */
+        /*
+         * A description for the policy.
+         */
+	char *description;
+        /*
+         * The policy document, corresponding to a JSON string that contains the 
+         * policy. For more information, see [EIM Reference 
+         * Information](https://docs.outscale.com/en/userguide/EIM-Reference-Info
+         * rmation.html) and [EIM Policy 
+         * Generator](https://docs.outscale.com/en/userguide/EIM-Policy-Generator
+         * .html).
+         */
+	char *document;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The path of the policy.
+         */
+	char *path;
+        /*
+         * The name of the policy.
+         */
+	char *policy_name;
+};
+
+struct osc_create_policy_version_arg  {
+        /* Required: Document PolicyOrn
+ */
+        /*
+         * The policy document, corresponding to a JSON string that contains the 
+         * policy. For more information, see [EIM Reference 
+         * Information](https://docs.outscale.com/en/userguide/EIM-Reference-Info
+         * rmation.html) and [EIM Policy 
+         * Generator](https://docs.outscale.com/en/userguide/EIM-Policy-Generator
+         * .html).
+         */
+	char *document;
+        /*
+         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
+         * see [Resource 
+         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
+         * rs.html).
+         */
+	char *policy_orn;
+        /*
+         * If set to true, the new policy version is set as the default version 
+         * and becomes the operative one.
+         */
+        int is_set_set_as_default;
+	int set_as_default;
+};
+
+struct osc_create_product_type_arg  {
+        /* Required: Description
+ */
+        /*
+         * The description of the product type.
+         */
+	char *description;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The vendor of the product type.
+         */
+	char *vendor;
+};
+
+struct osc_create_public_ip_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+};
+
+struct osc_create_route_arg  {
+        /* Required: DestinationIpRange RouteTableId
+ */
         /*
          * The IP range used for the destination match, in CIDR notation (for 
          * example, `10.0.0.0/24`).
@@ -7695,23 +8275,41 @@ struct osc_update_route_arg  {
          */
 	char *net_peering_id;
         /*
-         * The ID of a network interface card (NIC).
+         * The ID of a NIC.
          */
 	char *nic_id;
         /*
-         * The ID of the route table.
+         * The ID of the route table for which you want to create a route.
          */
 	char *route_table_id;
         /*
-         * The ID of a NAT VM in your Net.
+         * The ID of a NAT VM in your Net (attached to exactly one NIC).
          */
 	char *vm_id;
 };
 
-struct osc_update_nic_arg  {
-        /* Required: nic_id */
+struct osc_create_route_table_arg  {
+        /* Required: NetId
+ */
         /*
-         * A new description for the NIC.
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the Net for which you want to create a route table.
+         */
+	char *net_id;
+};
+
+struct osc_create_security_group_arg  {
+        /* Required: Description SecurityGroupName
+ */
+        /*
+         * A description for the security group.<br />\nThis description can 
+         * contain between 1 and 255 characters. Allowed characters are `a-z`, 
+         * `A-Z`, `0-9`, accented letters, spaces, and `_.-:/()#,@[]+=&;{}!$*`.
          */
 	char *description;
         /*
@@ -7721,4097 +8319,21 @@ struct osc_update_nic_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         *   Information about the NIC attachment. If you are modifying the 
-         *   `DeleteOnVmDeletion` attribute, you must specify the ID of the NIC 
-         *   attachment.
-         *   --LinkNic.DeleteOnVmDeletion: bool
-         *     If true, the NIC is deleted when the VM is terminated. If false, 
-         * the NIC 
-         *     is detached from the VM.
-         *   --LinkNic.LinkNicId: string
-         *     The ID of the NIC attachment.
-         */
-        char *link_nic_str;
-        int is_set_link_nic;
-	struct link_nic_to_update link_nic;
-        /*
-         * The ID of the NIC you want to modify.
-         */
-	char *nic_id;
-        /*
-         * One or more IDs of security groups for the NIC.<br />\nYou must 
-         * specify at least one group, even if you use the default security 
-         * group in the Net.
-         */
-        char *security_group_ids_str;
-	char **security_group_ids;
-};
-
-struct osc_update_net_access_point_arg  {
-        /* Required: net_access_point_id */
-        /*
-         * One or more IDs of route tables to associate with the specified Net 
-         * access point.
-         */
-        char *add_route_table_ids_str;
-	char **add_route_table_ids;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the Net access point.
-         */
-	char *net_access_point_id;
-        /*
-         * One or more IDs of route tables to disassociate from the specified 
-         * Net access point.
-         */
-        char *remove_route_table_ids_str;
-	char **remove_route_table_ids;
-};
-
-struct osc_update_net_arg  {
-        /* Required: dhcp_options_set_id, net_id */
-        /*
-         * The ID of the DHCP options set (or `default` if you want to associate 
-         * the default one).
-         */
-	char *dhcp_options_set_id;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the Net.
+         * The ID of the Net for the security group.
          */
 	char *net_id;
-};
-
-struct osc_update_load_balancer_arg  {
-        /* Required: load_balancer_name */
-        /*
-         *   Information about access logs.
-         *   --AccessLog.IsEnabled: bool
-         *     If true, access logs are enabled for your load balancer. If 
-         * false, they 
-         *     are not. If you set this to true in your request, the 
-         * `OsuBucketName` 
-         *     parameter is required.
-         *   --AccessLog.OsuBucketName: string
-         *     The name of the OOS bucket for the access logs.
-         *   --AccessLog.OsuBucketPrefix: string
-         *     The path to the folder of the access logs in your OOS bucket (by 
-         *     default, the `root` level of your bucket).
-         *   --AccessLog.PublicationInterval: long long int
-         *     The time interval for the publication of access logs in the OOS 
-         * bucket, 
-         *     in minutes. This value can be either `5` or `60` (by default, 
-         * `60`).
-         */
-        char *access_log_str;
-        int is_set_access_log;
-	struct access_log access_log;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   Information about the health check configuration.
-         *   --HealthCheck.CheckInterval: long long int
-         *     The number of seconds between two requests (between `5` and `600` 
-         * both 
-         *     included).
-         *   --HealthCheck.HealthyThreshold: long long int
-         *     The number of consecutive successful requests before considering 
-         * the VM 
-         *     as healthy (between `2` and `10` both included).
-         *   --HealthCheck.Path: string
-         *     If you use the HTTP or HTTPS protocols, the request URL path.
-         *   --HealthCheck.Port: long long int
-         *     The port number (between `1` and `65535`, both included).
-         *   --HealthCheck.Protocol: string
-         *     The protocol for the URL of the VM (`HTTP` \\| `HTTPS` \\| `TCP` 
-         * \\| 
-         *     `SSL`).
-         *   --HealthCheck.Timeout: long long int
-         *     The maximum waiting time for a response before considering the VM 
-         * as 
-         *     unhealthy, in seconds (between `2` and `60` both included).
-         *   --HealthCheck.UnhealthyThreshold: long long int
-         *     The number of consecutive failed requests before considering the 
-         * VM as 
-         *     unhealthy (between `2` and `10` both included).
-         */
-        char *health_check_str;
-        int is_set_health_check;
-	struct health_check health_check;
-        /*
-         * The name of the load balancer.
-         */
-	char *load_balancer_name;
-        /*
-         * The port on which the load balancer is listening (between `1` and 
-         * `65535`, both included). This parameter is required if you want to 
-         * update the server certificate.
-         */
-        int is_set_load_balancer_port;
-	long long int load_balancer_port;
-        /*
-         * The name of the policy you want to enable for the listener.
-         */
-        char *policy_names_str;
-	char **policy_names;
-        /*
-         * (internet-facing only) The public IP you want to associate with the 
-         * load balancer. The former public IP of the load balancer is then 
-         * disassociated. If you specify an empty string and the former public 
-         * IP belonged to you, it is disassociated and replaced by a public IP 
-         * owned by 3DS OUTSCALE.
-         */
-	char *public_ip;
-        /*
-         * If true, secure cookies are enabled for the load balancer.
-         */
-        int is_set_secured_cookies;
-	int secured_cookies;
-        /*
-         * (Net only) One or more IDs of security groups you want to assign to 
-         * the load balancer. You need to specify the already assigned security 
-         * groups that you want to keep along with the new ones you are 
-         * assigning. If the list is empty, the default security group of the 
-         * Net is assigned to the load balancer.
-         */
-        char *security_groups_str;
-	char **security_groups;
-        /*
-         * The OUTSCALE Resource Name (ORN) of the server certificate. For more 
-         * information, see [Resource Identifiers > OUTSCALE Resource Names 
-         * (ORNs)](https://docs.outscale.com/en/userguide/Resource-Identifiers.ht
-         * ml#_outscale_resource_names_orns). If this parameter is specified, 
-         * you must also specify the `LoadBalancerPort` parameter.
-         */
-	char *server_certificate_id;
-};
-
-struct osc_update_listener_rule_arg  {
-        /* Required: listener_rule_name */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * A host-name pattern for the rule, with a maximum length of 128 
-         * characters. This host-name pattern supports maximum three wildcards, 
-         * and must not contain any special characters except `-.?`.
-         */
-	char *host_pattern;
-        /*
-         * The name of the listener rule.
-         */
-	char *listener_rule_name;
-        /*
-         * A path pattern for the rule, with a maximum length of 128 characters. 
-         * This path pattern supports maximum three wildcards, and must not 
-         * contain any special characters except `_-.$/~&quot;'@:+?`.
-         */
-	char *path_pattern;
-};
-
-struct osc_update_image_arg  {
-        /* Required: image_id */
-        /*
-         * A new description for the image.
-         */
-	char *description;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the OMI you want to modify.
-         */
-	char *image_id;
-        /*
-         *   Information about the permissions for the resource.<br />\nSpecify 
-         *   either the `Additions` or the `Removals` parameter.
-         *   --PermissionsToLaunch.Additions: ref PermissionsOnResource
-         *       Permissions for the resource.
-         *       --PermissionsToLaunch.Additions.AccountIds: array string
-         *         One or more account IDs that the permission is associated 
-         * with.
-         *       --PermissionsToLaunch.Additions.GlobalPermission: bool
-         *         A global permission for all accounts.<br />\n(Request) Set 
-         * this 
-         *         parameter to true to make the resource public (if the parent 
-         * parameter is 
-         *         `Additions`) or to make the resource private (if the parent 
-         * parameter is 
-         *         `Removals`).<br />\n(Response) If true, the resource is 
-         * public. If false, 
-         *         the resource is private.
-         *   --PermissionsToLaunch.Removals: ref PermissionsOnResource
-         *       Permissions for the resource.
-         *       --PermissionsToLaunch.Removals.AccountIds: array string
-         *         One or more account IDs that the permission is associated 
-         * with.
-         *       --PermissionsToLaunch.Removals.GlobalPermission: bool
-         *         A global permission for all accounts.<br />\n(Request) Set 
-         * this 
-         *         parameter to true to make the resource public (if the parent 
-         * parameter is 
-         *         `Additions`) or to make the resource private (if the parent 
-         * parameter is 
-         *         `Removals`).<br />\n(Response) If true, the resource is 
-         * public. If false, 
-         *         the resource is private.
-         */
-        char *permissions_to_launch_str;
-        int is_set_permissions_to_launch;
-	struct permissions_on_resource_creation permissions_to_launch;
-};
-
-struct osc_update_flexible_gpu_arg  {
-        /* Required: flexible_gpu_id */
-        /*
-         * If true, the fGPU is deleted when the VM is terminated.
-         */
-        int is_set_delete_on_vm_deletion;
-	int delete_on_vm_deletion;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the fGPU you want to modify.
-         */
-	char *flexible_gpu_id;
-};
-
-struct osc_update_direct_link_interface_arg  {
-        /* Required: direct_link_interface_id, mtu */
-        /*
-         * The ID of the DirectLink interface you want to update.
-         */
-	char *direct_link_interface_id;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The maximum transmission unit (MTU) of the DirectLink interface, in 
-         * bytes (always `1500`).
-         */
-        int is_set_mtu;
-	long long int mtu;
-};
-
-struct osc_update_dedicated_group_arg  {
-        /* Required: dedicated_group_id, name */
-        /*
-         * The ID of the dedicated group you want to update.
-         */
-	char *dedicated_group_id;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The new name of the dedicated group.
-         */
-	char *name;
-};
-
-struct osc_update_ca_arg  {
-        /* Required: ca_id */
-        /*
-         * The ID of the CA.
-         */
-	char *ca_id;
-        /*
-         * The description of the CA.
-         */
-	char *description;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-};
-
-struct osc_update_api_access_rule_arg  {
-        /* Required: api_access_rule_id */
-        /*
-         * The ID of the API access rule you want to update.
-         */
-	char *api_access_rule_id;
-        /*
-         * One or more IDs of Client Certificate Authorities (CAs).
-         */
-        char *ca_ids_str;
-	char **ca_ids;
-        /*
-         * One or more Client Certificate Common Names (CNs).
-         */
-        char *cns_str;
-	char **cns;
-        /*
-         * A new description for the API access rule.
-         */
-	char *description;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * One or more IPs or CIDR blocks (for example, `192.0.2.0/16`).
-         */
-        char *ip_ranges_str;
-	char **ip_ranges;
-};
-
-struct osc_update_api_access_policy_arg  {
-        /* Required: max_access_key_expiration_seconds, require_trusted_env */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The maximum possible lifetime for your access keys, in seconds 
-         * (between `0` and `3153600000`, both included). If set to `O`, your 
-         * access keys can have unlimited lifetimes, but a trusted session 
-         * cannot be activated. Otherwise, all your access keys must have an 
-         * expiration date. This value must be greater than the remaining 
-         * lifetime of each access key of your account.
-         */
-        int is_set_max_access_key_expiration_seconds;
-	long long int max_access_key_expiration_seconds;
-        /*
-         * If true, a trusted session is activated, provided that you specify 
-         * the `MaxAccessKeyExpirationSeconds` parameter with a value greater 
-         * than `0`.<br />\nEnabling this will require you and all your users to 
-         * log in to Cockpit v2 using the WebAuthn method for multi-factor 
-         * authentication. For more information, see [About Authentication > 
-         * Multi-Factor 
-         * Authentication](https://docs.outscale.com/en/userguide/About-Authentic
-         * ation.html#_multi_factor_authentication).
-         */
-        int is_set_require_trusted_env;
-	int require_trusted_env;
-};
-
-struct osc_update_account_arg  {
-        /* Required:none */
-        /*
-         * One or more additional email addresses for the account. These 
-         * addresses are used for notifications only. If you already have a list 
-         * of additional emails registered, you cannot add to it, only replace 
-         * it. To remove all registered additional emails, specify an empty list.
-         */
-        char *additional_emails_str;
-	char **additional_emails;
-        /*
-         * The new city of the account owner.
-         */
-	char *city;
-        /*
-         * The new name of the company for the account.
-         */
-	char *company_name;
-        /*
-         * The new country of the account owner.
-         */
-	char *country;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The main email address for the account. This address is used for your 
-         * credentials and notifications.
-         */
-	char *email;
-        /*
-         * The new first name of the account owner.
-         */
-	char *first_name;
-        /*
-         * The new job title of the account owner.
-         */
-	char *job_title;
-        /*
-         * The new last name of the account owner.
-         */
-	char *last_name;
-        /*
-         * The new mobile phone number of the account owner.
-         */
-	char *mobile_number;
-        /*
-         * The new landline phone number of the account owner.
-         */
-	char *phone_number;
-        /*
-         * The new state/province of the account owner.
-         */
-	char *state_province;
-        /*
-         * The new value added tax (VAT) number for the account.
-         */
-	char *vat_number;
-        /*
-         * The new ZIP code of the city.
-         */
-	char *zip_code;
-};
-
-struct osc_update_access_key_arg  {
-        /* Required: access_key_id, state */
-        /*
-         * The ID of the access key.
-         */
-	char *access_key_id;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The date and time, or the date, at which you want the access key to 
-         * expire, in ISO 8601 format (for example, `2020-06-14T00:00:00.000Z` 
-         * or `2020-06-14`). If not specified, the access key is set to not 
-         * expire.
-         */
-	char *expiration_date;
-        /*
-         * The new state for the access key (`ACTIVE` \\| `INACTIVE`). When set 
-         * to `ACTIVE`, the access key is enabled and can be used to send 
-         * requests. When set to `INACTIVE`, the access key is disabled.
-         */
-	char *state;
-        /*
-         * The name of the EIM user that the access key you want to modify is 
-         * associated with. If you do not specify a user name, this action 
-         * modifies the access key of the user who sends the request (which can 
-         * be the root account).
-         */
-	char *user_name;
-};
-
-struct osc_unlink_volume_arg  {
-        /* Required: volume_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * Forces the detachment of the volume in case of previous failure. 
-         * Important: This action may damage your data or file systems.
-         */
-        int is_set_force_unlink;
-	int force_unlink;
-        /*
-         * The ID of the volume you want to detach.
-         */
-	char *volume_id;
-};
-
-struct osc_unlink_virtual_gateway_arg  {
-        /* Required: net_id, virtual_gateway_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the Net from which you want to detach the virtual gateway.
-         */
-	char *net_id;
-        /*
-         * The ID of the virtual gateway.
-         */
-	char *virtual_gateway_id;
-};
-
-struct osc_unlink_route_table_arg  {
-        /* Required: link_route_table_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the association between the route table and the Subnet.
-         */
-	char *link_route_table_id;
-};
-
-struct osc_unlink_public_ip_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID representing the association of the public IP with the VM or 
-         * the NIC. This parameter is required unless you use the `PublicIp` 
-         * parameter.
-         */
-	char *link_public_ip_id;
-        /*
-         * The public IP. This parameter is required unless you use the 
-         * `LinkPublicIpId` parameter.
-         */
-	char *public_ip;
-};
-
-struct osc_unlink_private_ips_arg  {
-        /* Required: nic_id, private_ips */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the NIC.
-         */
-	char *nic_id;
-        /*
-         * One or more secondary private IPs you want to unassign from the NIC.
-         */
-        char *private_ips_str;
-	char **private_ips;
-};
-
-struct osc_unlink_policy_arg  {
-        /* Required: policy_orn, user_name */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
-         * see [Resource 
-         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
-         * rs.html).
-         */
-	char *policy_orn;
-        /*
-         * The name of the user you want to detach the policy from.
-         */
-	char *user_name;
-};
-
-struct osc_unlink_nic_arg  {
-        /* Required: link_nic_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the attachment operation.
-         */
-	char *link_nic_id;
-};
-
-struct osc_unlink_managed_policy_from_user_group_arg  {
-        /* Required: policy_orn, user_group_name */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
-         * see [Resource 
-         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
-         * rs.html).
-         */
-	char *policy_orn;
-        /*
-         * The name of the group you want to unlink the policy from.
-         */
-	char *user_group_name;
-};
-
-struct osc_unlink_load_balancer_backend_machines_arg  {
-        /* Required: load_balancer_name */
-        /*
-         * One or more public IPs of backend VMs.
-         */
-        char *backend_ips_str;
-	char **backend_ips;
-        /*
-         * One or more IDs of backend VMs.
-         */
-        char *backend_vm_ids_str;
-	char **backend_vm_ids;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The name of the load balancer.
-         */
-	char *load_balancer_name;
-};
-
-struct osc_unlink_internet_service_arg  {
-        /* Required: internet_service_id, net_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the Internet service you want to detach.
-         */
-	char *internet_service_id;
-        /*
-         * The ID of the Net from which you want to detach the Internet service.
-         */
-	char *net_id;
-};
-
-struct osc_unlink_flexible_gpu_arg  {
-        /* Required: flexible_gpu_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the fGPU you want to detach from your VM.
-         */
-	char *flexible_gpu_id;
-};
-
-struct osc_stop_vms_arg  {
-        /* Required: vm_ids */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * Forces the VM to stop.
-         */
-        int is_set_force_stop;
-	int force_stop;
-        /*
-         * One or more IDs of VMs.
-         */
-        char *vm_ids_str;
-	char **vm_ids;
-};
-
-struct osc_start_vms_arg  {
-        /* Required: vm_ids */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * One or more IDs of VMs.
-         */
-        char *vm_ids_str;
-	char **vm_ids;
-};
-
-struct osc_set_default_policy_version_arg  {
-        /* Required: policy_orn, version_id */
-        /*
-         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
-         * see [Resource 
-         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
-         * rs.html).
-         */
-	char *policy_orn;
-        /*
-         * The ID of the version.
-         */
-	char *version_id;
-};
-
-struct osc_scale_up_vm_group_arg  {
-        /* Required: vm_group_id, vm_addition */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The number of VMs you want to add to the VM group.
-         */
-        int is_set_vm_addition;
-	long long int vm_addition;
-        /*
-         * The ID of the VM group you want to scale up.
-         */
-	char *vm_group_id;
-};
-
-struct osc_scale_down_vm_group_arg  {
-        /* Required: vm_group_id, vm_subtraction */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the VM group you want to scale down.
-         */
-	char *vm_group_id;
-        /*
-         * The number of VMs you want to delete from the VM group.
-         */
-        int is_set_vm_subtraction;
-	long long int vm_subtraction;
-};
-
-struct osc_remove_user_from_user_group_arg  {
-        /* Required: user_group_name, user_name */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The name of the group you want to remove the user from.
-         */
-	char *user_group_name;
-        /*
-         * The path to the group. If not specified, it is set to a slash (`/`).
-         */
-	char *user_group_path;
-        /*
-         * The name of the user you want to remove from the group.
-         */
-	char *user_name;
-        /*
-         * The path to the user (by default, `/`).
-         */
-	char *user_path;
-};
-
-struct osc_reject_net_peering_arg  {
-        /* Required: net_peering_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the Net peering you want to reject.
-         */
-	char *net_peering_id;
-};
-
-struct osc_register_vms_in_load_balancer_arg  {
-        /* Required: backend_vm_ids, load_balancer_name */
-        /*
-         * One or more IDs of backend VMs.<br />\nSpecifying the same ID several 
-         * times has no effect as each backend VM has equal weight.
-         */
-        char *backend_vm_ids_str;
-	char **backend_vm_ids;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The name of the load balancer.
-         */
-	char *load_balancer_name;
-};
-
-struct osc_reboot_vms_arg  {
-        /* Required: vm_ids */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * One or more IDs of the VMs you want to reboot.
-         */
-        char *vm_ids_str;
-	char **vm_ids;
-};
-
-struct osc_read_vpn_connections_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.BgpAsns: array integer
-         *     The Border Gateway Protocol (BGP) Autonomous System Numbers 
-         * (ASNs) of 
-         *     the connections.
-         *   --Filters.ClientGatewayIds: array string
-         *     The IDs of the client gateways.
-         *   --Filters.ConnectionTypes: array string
-         *     The types of the VPN connections (always `ipsec.1`).
-         *   --Filters.RouteDestinationIpRanges: array string
-         *     The destination IP ranges.
-         *   --Filters.States: array string
-         *     The states of the VPN connections (`pending` \\| `available` \\| 
-         *     `deleting` \\| `deleted`).
-         *   --Filters.StaticRoutesOnly: bool
-         *     If false, the VPN connection uses dynamic routing with Border 
-         * Gateway 
-         *     Protocol (BGP). If true, routing is controlled using static 
-         * routes. For 
-         *     more information about how to create and delete static routes, 
-         * see 
-         *     [CreateVpnConnectionRoute](#createvpnconnectionroute) and 
-         *     [DeleteVpnConnectionRoute](#deletevpnconnectionroute).
-         *   --Filters.TagKeys: array string
-         *     The keys of the tags associated with the VPN connections.
-         *   --Filters.TagValues: array string
-         *     The values of the tags associated with the VPN connections.
-         *   --Filters.Tags: array string
-         *     The key/value combination of the tags associated with the VPN 
-         *     connections, in the following format: 
-         *     
-         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
-         *   --Filters.VirtualGatewayIds: array string
-         *     The IDs of the virtual gateways.
-         *   --Filters.VpnConnectionIds: array string
-         *     The IDs of the VPN connections.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_vpn_connection filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_volumes_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.CreationDates: array string
-         *     The dates and times at which the volumes were created, in ISO 
-         * 8601 
-         *     date-time format (for example, `2020-06-30T00:00:00.000Z`).
-         *   --Filters.LinkVolumeDeleteOnVmDeletion: bool
-         *     Whether the volumes are deleted or not when terminating the VMs.
-         *   --Filters.LinkVolumeDeviceNames: array string
-         *     The VM device names.
-         *   --Filters.LinkVolumeLinkDates: array string
-         *     The dates and times at which the volumes were attached, in ISO 
-         * 8601 
-         *     date-time format (for example, `2020-06-30T00:00:00.000Z`).
-         *   --Filters.LinkVolumeLinkStates: array string
-         *     The attachment states of the volumes (`attaching` \\| `detaching` 
-         * \\| 
-         *     `attached` \\| `detached`).
-         *   --Filters.LinkVolumeVmIds: array string
-         *     One or more IDs of VMs.
-         *   --Filters.SnapshotIds: array string
-         *     The snapshots from which the volumes were created.
-         *   --Filters.SubregionNames: array string
-         *     The names of the Subregions in which the volumes were created.
-         *   --Filters.TagKeys: array string
-         *     The keys of the tags associated with the volumes.
-         *   --Filters.TagValues: array string
-         *     The values of the tags associated with the volumes.
-         *   --Filters.Tags: array string
-         *     The key/value combination of the tags associated with the 
-         * volumes, in 
-         *     the following format: 
-         *     
-         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
-         *   --Filters.VolumeIds: array string
-         *     The IDs of the volumes.
-         *   --Filters.VolumeSizes: array integer
-         *     The sizes of the volumes, in gibibytes (GiB).
-         *   --Filters.VolumeStates: array string
-         *     The states of the volumes (`creating` \\| `available` \\| 
-         * `in-use` \\| 
-         *     `updating` \\| `deleting` \\| `error`).
-         *   --Filters.VolumeTypes: array string
-         *     The types of the volumes (`standard` \\| `gp2` \\| `io1`).
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_volume filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_vms_state_arg  {
-        /* Required:none */
-        /*
-         * If true, includes the status of all VMs. By default or if set to 
-         * false, only includes the status of running VMs.
-         */
-        int is_set_all_vms;
-	int all_vms;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.MaintenanceEventCodes: array string
-         *     The code for the scheduled event (`system-reboot` \\| 
-         *     `system-maintenance`).
-         *   --Filters.MaintenanceEventDescriptions: array string
-         *     The description of the scheduled event.
-         *   --Filters.MaintenanceEventsNotAfter: array string
-         *     The latest date and time (UTC) the event can end.
-         *   --Filters.MaintenanceEventsNotBefore: array string
-         *     The earliest date and time (UTC) the event can start.
-         *   --Filters.SubregionNames: array string
-         *     The names of the Subregions of the VMs.
-         *   --Filters.VmIds: array string
-         *     One or more IDs of VMs.
-         *   --Filters.VmStates: array string
-         *     The states of the VMs (`pending` \\| `running` \\| `stopping` \\| 
-         *     `stopped` \\| `shutting-down` \\| `terminated` \\| `quarantine`).
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_vms_state filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_vms_health_arg  {
-        /* Required: load_balancer_name */
-        /*
-         * One or more IDs of backend VMs.
-         */
-        char *backend_vm_ids_str;
-	char **backend_vm_ids;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The name of the load balancer.
-         */
-	char *load_balancer_name;
-};
-
-struct osc_read_vms_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.Architectures: array string
-         *     The architectures of the VMs (`i386` \\| `x86_64`).
-         *   --Filters.BlockDeviceMappingDeleteOnVmDeletion: bool
-         *     Whether the BSU volumes are deleted when terminating the VMs.
-         *   --Filters.BlockDeviceMappingDeviceNames: array string
-         *     The device names for the BSU volumes (in the format `/dev/sdX`, 
-         *     `/dev/sdXX`, `/dev/xvdX`, or `/dev/xvdXX`).
-         *   --Filters.BlockDeviceMappingLinkDates: array string
-         *     The link dates for the BSU volumes mapped to the VMs (for 
-         * example, 
-         *     `2016-01-23T18:45:30.000Z`).
-         *   --Filters.BlockDeviceMappingStates: array string
-         *     The states for the BSU volumes (`attaching` \\| `attached` \\| 
-         *     `detaching` \\| `detached`).
-         *   --Filters.BlockDeviceMappingVolumeIds: array string
-         *     The volume IDs of the BSU volumes.
-         *   --Filters.ClientTokens: array string
-         *     The idempotency tokens provided when launching the VMs.
-         *   --Filters.CreationDates: array string
-         *     The dates when the VMs were launched.
-         *   --Filters.ImageIds: array string
-         *     The IDs of the OMIs used to launch the VMs.
-         *   --Filters.IsSourceDestChecked: bool
-         *     Whether the source/destination checking is enabled (true) or 
-         * disabled 
-         *     (false).
-         *   --Filters.KeypairNames: array string
-         *     The names of the keypairs used when launching the VMs.
-         *   --Filters.LaunchNumbers: array integer
-         *     The numbers for the VMs when launching a group of several VMs 
-         * (for 
-         *     example, `0`, `1`, `2`, and so on).
-         *   --Filters.Lifecycles: array string
-         *     Whether the VMs are Spot Instances (spot).
-         *   --Filters.NetIds: array string
-         *     The IDs of the Nets in which the VMs are running.
-         *   --Filters.NicAccountIds: array string
-         *     The IDs of the NICs.
-         *   --Filters.NicDescriptions: array string
-         *     The descriptions of the NICs.
-         *   --Filters.NicIsSourceDestChecked: bool
-         *     Whether the source/destination checking is enabled (true) or 
-         * disabled 
-         *     (false).
-         *   --Filters.NicLinkNicDeleteOnVmDeletion: bool
-         *     Whether the NICs are deleted when the VMs they are attached to 
-         * are 
-         *     deleted.
-         *   --Filters.NicLinkNicDeviceNumbers: array integer
-         *     The device numbers the NICs are attached to.
-         *   --Filters.NicLinkNicLinkNicDates: array string
-         *     The dates and times (UTC) when the NICs were attached to the VMs.
-         *   --Filters.NicLinkNicLinkNicIds: array string
-         *     The IDs of the NIC attachments.
-         *   --Filters.NicLinkNicStates: array string
-         *     The states of the attachments.
-         *   --Filters.NicLinkNicVmAccountIds: array string
-         *     The account IDs of the owners of the VMs the NICs are attached to.
-         *   --Filters.NicLinkNicVmIds: array string
-         *     The IDs of the VMs the NICs are attached to.
-         *   --Filters.NicLinkPublicIpAccountIds: array string
-         *     The account IDs of the owners of the public IPs associated with 
-         * the 
-         *     NICs.
-         *   --Filters.NicLinkPublicIpLinkPublicIpIds: array string
-         *     The association IDs returned when the public IPs were associated 
-         * with 
-         *     the NICs.
-         *   --Filters.NicLinkPublicIpPublicIpIds: array string
-         *     The allocation IDs returned when the public IPs were allocated to 
-         * their 
-         *     accounts.
-         *   --Filters.NicLinkPublicIpPublicIps: array string
-         *     The public IPs associated with the NICs.
-         *   --Filters.NicMacAddresses: array string
-         *     The Media Access Control (MAC) addresses of the NICs.
-         *   --Filters.NicNetIds: array string
-         *     The IDs of the Nets where the NICs are located.
-         *   --Filters.NicNicIds: array string
-         *     The IDs of the NICs.
-         *   --Filters.NicPrivateIpsLinkPublicIpAccountIds: array string
-         *     The account IDs of the owner of the public IPs associated with 
-         * the 
-         *     private IPs.
-         *   --Filters.NicPrivateIpsLinkPublicIpIds: array string
-         *     The public IPs associated with the private IPs.
-         *   --Filters.NicPrivateIpsPrimaryIp: bool
-         *     Whether the private IPs are the primary IPs associated with the 
-         * NICs.
-         *   --Filters.NicPrivateIpsPrivateIps: array string
-         *     The private IPs of the NICs.
-         *   --Filters.NicSecurityGroupIds: array string
-         *     The IDs of the security groups associated with the NICs.
-         *   --Filters.NicSecurityGroupNames: array string
-         *     The names of the security groups associated with the NICs.
-         *   --Filters.NicStates: array string
-         *     The states of the NICs (`available` \\| `in-use`).
-         *   --Filters.NicSubnetIds: array string
-         *     The IDs of the Subnets for the NICs.
-         *   --Filters.NicSubregionNames: array string
-         *     The Subregions where the NICs are located.
-         *   --Filters.Platforms: array string
-         *     The platforms. Use windows if you have Windows VMs. Otherwise, 
-         * leave 
-         *     this filter blank.
-         *   --Filters.PrivateIps: array string
-         *     The private IPs of the VMs.
-         *   --Filters.ProductCodes: array string
-         *     The product codes associated with the OMI used to create the VMs.
-         *   --Filters.PublicIps: array string
-         *     The public IPs of the VMs.
-         *   --Filters.ReservationIds: array string
-         *     The IDs of the reservation of the VMs, created every time you 
-         * launch 
-         *     VMs. These reservation IDs can be associated with several VMs 
-         * when you 
-         *     lauch a group of VMs using the same launch request.
-         *   --Filters.RootDeviceNames: array string
-         *     The names of the root devices for the VMs (for example, 
-         * `/dev/sda1`)
-         *   --Filters.RootDeviceTypes: array string
-         *     The root devices types used by the VMs (always `ebs`)
-         *   --Filters.SecurityGroupIds: array string
-         *     The IDs of the security groups for the VMs (only in the public 
-         * Cloud).
-         *   --Filters.SecurityGroupNames: array string
-         *     The names of the security groups for the VMs (only in the public 
-         * Cloud).
-         *   --Filters.StateReasonCodes: array integer
-         *     The reason codes for the state changes.
-         *   --Filters.StateReasonMessages: array string
-         *     The messages describing the state changes.
-         *   --Filters.StateReasons: array string
-         *     The reasons explaining the current states of the VMs. This filter 
-         * is 
-         *     like the `StateReasonCodes` one.
-         *   --Filters.SubnetIds: array string
-         *     The IDs of the Subnets for the VMs.
-         *   --Filters.SubregionNames: array string
-         *     The names of the Subregions of the VMs.
-         *   --Filters.TagKeys: array string
-         *     The keys of the tags associated with the VMs.
-         *   --Filters.TagValues: array string
-         *     The values of the tags associated with the VMs.
-         *   --Filters.Tags: array string
-         *     The key/value combination of the tags associated with the VMs, in 
-         * the 
-         *     following format: 
-         *     
-         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
-         *   --Filters.Tenancies: array string
-         *     The tenancies of the VMs (`dedicated` \\| `default` \\| `host`).
-         *   --Filters.VmIds: array string
-         *     One or more IDs of VMs.
-         *   --Filters.VmSecurityGroupIds: array string
-         *     The IDs of the security groups for the VMs.
-         *   --Filters.VmSecurityGroupNames: array string
-         *     The names of the security group for the VMs.
-         *   --Filters.VmStateCodes: array integer
-         *     The state codes of the VMs: `-1` (quarantine), `0` (pending), 
-         * `16` 
-         *     (running), `32` (shutting-down), `48` (terminated), `64` 
-         * (stopping), and 
-         *     `80` (stopped).
-         *   --Filters.VmStateNames: array string
-         *     The state names of the VMs (`pending` \\| `running` \\| 
-         * `stopping` \\| 
-         *     `stopped` \\| `shutting-down` \\| `terminated` \\| `quarantine`).
-         *   --Filters.VmTypes: array string
-         *     The VM types (for example, t2.micro). For more information, see 
-         * [VM 
-         *     Types](https://docs.outscale.com/en/userguide/VM-Types.html).
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_vm filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_vm_types_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.BsuOptimized: bool
-         *     This parameter is not available. It is present in our API for the 
-         * sake 
-         *     of historical compatibility with AWS.
-         *   --Filters.EphemeralsTypes: array string
-         *     The types of ephemeral storage disk.
-         *   --Filters.Eths: array integer
-         *     The number of Ethernet interfaces available.
-         *   --Filters.Gpus: array integer
-         *     The number of GPUs available.
-         *   --Filters.MemorySizes: array double
-         *     The amounts of memory, in gibibytes (GiB).
-         *   --Filters.VcoreCounts: array integer
-         *     The numbers of vCores.
-         *   --Filters.VmTypeNames: array string
-         *     The names of the VM types. For more information, see [VM 
-         *     Types](https://docs.outscale.com/en/userguide/VM-Types.html).
-         *   --Filters.VolumeCounts: array integer
-         *     The maximum number of ephemeral storage disks.
-         *   --Filters.VolumeSizes: array integer
-         *     The size of one ephemeral storage disk, in gibibytes (GiB).
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_vm_type filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_vm_templates_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.CpuCores: array integer
-         *     The number of vCores.
-         *   --Filters.CpuGenerations: array string
-         *     The processor generations (for example, `v4`).
-         *   --Filters.CpuPerformances: array string
-         *     The performances of the VMs.
-         *   --Filters.Descriptions: array string
-         *     The descriptions of the VM templates.
-         *   --Filters.ImageIds: array string
-         *     The IDs of the OMIs.
-         *   --Filters.KeypairNames: array string
-         *     The names of the keypairs.
-         *   --Filters.Rams: array integer
-         *     The amount of RAM.
-         *   --Filters.TagKeys: array string
-         *     The keys of the tags associated with the VM templates.
-         *   --Filters.TagValues: array string
-         *     The values of the tags associated with the VM templates.
-         *   --Filters.Tags: array string
-         *     The key/value combination of the tags associated with the VM 
-         * templates, 
-         *     in the following format: 
-         *     
-         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
-         *   --Filters.VmTemplateIds: array string
-         *     The IDs of the VM templates.
-         *   --Filters.VmTemplateNames: array string
-         *     The names of the VM templates.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_vm_template filters;
-};
-
-struct osc_read_vm_groups_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.Descriptions: array string
-         *     The descriptions of the VM groups.
-         *   --Filters.SecurityGroupIds: array string
-         *     The IDs of the security groups.
-         *   --Filters.SubnetIds: array string
-         *     The IDs of the Subnets.
-         *   --Filters.TagKeys: array string
-         *     The keys of the tags associated with the VM groups.
-         *   --Filters.TagValues: array string
-         *     The values of the tags associated with the VM groups.
-         *   --Filters.Tags: array string
-         *     The key/value combination of the tags associated with the VMs, in 
-         * the 
-         *     following format: 
-         *     
-         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
-         *   --Filters.VmCounts: array integer
-         *     The number of VMs in the VM group.
-         *   --Filters.VmGroupIds: array string
-         *     The IDs of the VM groups.
-         *   --Filters.VmGroupNames: array string
-         *     The names of the VM groups.
-         *   --Filters.VmTemplateIds: array string
-         *     The IDs of the VM templates.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_vm_group filters;
-};
-
-struct osc_read_virtual_gateways_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.ConnectionTypes: array string
-         *     The types of the virtual gateways (always `ipsec.1`).
-         *   --Filters.LinkNetIds: array string
-         *     The IDs of the Nets the virtual gateways are attached to.
-         *   --Filters.LinkStates: array string
-         *     The current states of the attachments between the virtual 
-         * gateways and 
-         *     the Nets (`attaching` \\| `attached` \\| `detaching` \\| 
-         * `detached`).
-         *   --Filters.States: array string
-         *     The states of the virtual gateways (`pending` \\| `available` \\| 
-         *     `deleting` \\| `deleted`).
-         *   --Filters.TagKeys: array string
-         *     The keys of the tags associated with the virtual gateways.
-         *   --Filters.TagValues: array string
-         *     The values of the tags associated with the virtual gateways.
-         *   --Filters.Tags: array string
-         *     The key/value combination of the tags associated with the virtual 
-         *     gateways, in the following format: 
-         *     
-         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
-         *   --Filters.VirtualGatewayIds: array string
-         *     The IDs of the virtual gateways.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_virtual_gateway filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_users_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.UserIds: array string
-         *     The IDs of the users.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_users filters;
-        /*
-         * The item starting the list of users requested.
-         */
-        int is_set_first_item;
-	long long int first_item;
-        /*
-         * The maximum number of items that can be returned in a single response 
-         * (by default, `100`).
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_user_groups_per_user_arg  {
-        /* Required: user_name */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The name of the user.
-         */
-	char *user_name;
-        /*
-         * The path to the user (by default, `/`).
-         */
-	char *user_path;
-};
-
-struct osc_read_user_groups_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.PathPrefix: string
-         *     The path prefix of the groups. If not specified, it is set to a 
-         * slash 
-         *     (`/`).
-         *   --Filters.UserGroupIds: array string
-         *     The IDs of the user groups.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_user_group filters;
-        /*
-         * The item starting the list of groups requested.
-         */
-        int is_set_first_item;
-	long long int first_item;
-        /*
-         * The maximum number of items that can be returned in a single response 
-         * (by default, `100`).
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_user_group_policy_arg  {
-        /* Required: policy_name, user_group_name */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The name of the policy.
-         */
-	char *policy_name;
-        /*
-         * The name of the group.
-         */
-	char *user_group_name;
-        /*
-         * The path to the group. If not specified, it is set to a slash (`/`).
-         */
-	char *user_group_path;
-};
-
-struct osc_read_user_group_policies_arg  {
-        /* Required: user_group_name */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The item starting the list of policies requested.
-         */
-        int is_set_first_item;
-	long long int first_item;
-        /*
-         * The maximum number of items that can be returned in a single response 
-         * (by default, `100`).
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-        /*
-         * The name of the group.
-         */
-	char *user_group_name;
-        /*
-         * The path to the group. If not specified, it is set to a slash (`/`).
-         */
-	char *user_group_path;
-};
-
-struct osc_read_user_group_arg  {
-        /* Required: user_group_name */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The path to the group. If not specified, it is set to a slash (`/`).
-         */
-	char *path;
-        /*
-         * The name of the group.
-         */
-	char *user_group_name;
-};
-
-struct osc_read_unit_price_arg  {
-        /* Required: operation, service, type */
-        /*
-         * The operation associated with the catalog entry (for example, 
-         * `RunInstances-OD` or `CreateVolume`).
-         */
-	char *operation;
-        /*
-         * The service associated with the catalog entry (for example, 
-         * `TinaOS-FCU` or `TinaOS-OOS`).
-         */
-	char *service;
-        /*
-         * The type associated with the catalog entry (for example, 
-         * `BSU:VolumeIOPS:io1` or `BoxUsage:tinav6.c6r16p3`).
-         */
-	char *type;
-};
-
-struct osc_read_tags_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.Keys: array string
-         *     The keys of the tags that are assigned to the resources. You can 
-         * use 
-         *     this filter alongside the `Values` filter. In that case, you 
-         * filter the 
-         *     resources corresponding to each tag, regardless of the other 
-         * filter.
-         *   --Filters.ResourceIds: array string
-         *     The IDs of the resources with which the tags are associated.
-         *   --Filters.ResourceTypes: array string
-         *     The resource type (`vm` \\| `image` \\| `volume` \\| `snapshot` 
-         * \\| 
-         *     `public-ip` \\| `security-group` \\| `route-table` \\| `nic` \\| 
-         * `net` 
-         *     \\| `subnet` \\| `net-peering` \\| `net-access-point` \\| 
-         * `nat-service` 
-         *     \\| `internet-service` \\| `client-gateway` \\| `virtual-gateway` 
-         * \\| 
-         *     `vpn-connection` \\| `dhcp-options` \\| `task`).
-         *   --Filters.Values: array string
-         *     The values of the tags that are assigned to the resources. You 
-         * can use 
-         *     this filter alongside the `TagKeys` filter. In that case, you 
-         * filter the 
-         *     resources corresponding to each tag, regardless of the other 
-         * filter.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_tag filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_subregions_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.RegionNames: array string
-         *     The names of the Regions containing the Subregions.
-         *   --Filters.States: array string
-         *     The states of the Subregions.
-         *   --Filters.SubregionNames: array string
-         *     The names of the Subregions.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_subregion filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_subnets_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.AvailableIpsCounts: array integer
-         *     The number of available IPs.
-         *   --Filters.IpRanges: array string
-         *     The IP ranges in the Subnets, in CIDR notation (for example, 
-         *     `10.0.0.0/16`).
-         *   --Filters.NetIds: array string
-         *     The IDs of the Nets in which the Subnets are.
-         *   --Filters.States: array string
-         *     The states of the Subnets (`pending` \\| `available` \\| 
-         * `deleted`).
-         *   --Filters.SubnetIds: array string
-         *     The IDs of the Subnets.
-         *   --Filters.SubregionNames: array string
-         *     The names of the Subregions in which the Subnets are located.
-         *   --Filters.TagKeys: array string
-         *     The keys of the tags associated with the Subnets.
-         *   --Filters.TagValues: array string
-         *     The values of the tags associated with the Subnets.
-         *   --Filters.Tags: array string
-         *     The key/value combination of the tags associated with the 
-         * Subnets, in 
-         *     the following format: 
-         *     
-         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_subnet filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_snapshots_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.AccountAliases: array string
-         *     The account aliases of the owners of the snapshots.
-         *   --Filters.AccountIds: array string
-         *     The account IDs of the owners of the snapshots.
-         *   --Filters.Descriptions: array string
-         *     The descriptions of the snapshots.
-         *   --Filters.FromCreationDate: string
-         *     The beginning of the time period, in ISO 8601 date-time format 
-         * (for 
-         *     example, `2020-06-14T00:00:00.000Z`).
-         *   --Filters.PermissionsToCreateVolumeAccountIds: array string
-         *     The account IDs which have permissions to create volumes.
-         *   --Filters.PermissionsToCreateVolumeGlobalPermission: bool
-         *     If true, lists all public volumes. If false, lists all private 
-         * volumes.
-         *   --Filters.Progresses: array integer
-         *     The progresses of the snapshots, as a percentage.
-         *   --Filters.SnapshotIds: array string
-         *     The IDs of the snapshots.
-         *   --Filters.States: array string
-         *     The states of the snapshots (`in-queue` \\| `pending` \\| 
-         * `completed` 
-         *     \\| `error` \\| `deleting`).
-         *   --Filters.TagKeys: array string
-         *     The keys of the tags associated with the snapshots.
-         *   --Filters.TagValues: array string
-         *     The values of the tags associated with the snapshots.
-         *   --Filters.Tags: array string
-         *     The key/value combination of the tags associated with the 
-         * snapshots, in 
-         *     the following format: 
-         *     
-         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
-         *   --Filters.ToCreationDate: string
-         *     The end of the time period, in ISO 8601 date-time format (for 
-         * example, 
-         *     `2020-06-30T00:00:00.000Z`).
-         *   --Filters.VolumeIds: array string
-         *     The IDs of the volumes used to create the snapshots.
-         *   --Filters.VolumeSizes: array integer
-         *     The sizes of the volumes used to create the snapshots, in 
-         * gibibytes 
-         *     (GiB).
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_snapshot filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_snapshot_export_tasks_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.TaskIds: array string
-         *     The IDs of the export tasks.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_export_task filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_server_certificates_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.Paths: array string
-         *     The paths to the server certificates.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_server_certificate filters;
-};
-
-struct osc_read_security_groups_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.Descriptions: array string
-         *     The descriptions of the security groups.
-         *   --Filters.InboundRuleAccountIds: array string
-         *     The account IDs that have been granted permissions.
-         *   --Filters.InboundRuleFromPortRanges: array integer
-         *     The beginnings of the port ranges for the TCP and UDP protocols, 
-         * or the 
-         *     ICMP type numbers.
-         *   --Filters.InboundRuleIpRanges: array string
-         *     The IP ranges that have been granted permissions, in CIDR 
-         * notation (for 
-         *     example, `10.0.0.0/24`).
-         *   --Filters.InboundRuleProtocols: array string
-         *     The IP protocols for the permissions (`tcp` \\| `udp` \\| `icmp`, 
-         * or a 
-         *     protocol number, or `-1` for all protocols).
-         *   --Filters.InboundRuleSecurityGroupIds: array string
-         *     The IDs of the security groups that have been granted permissions.
-         *   --Filters.InboundRuleSecurityGroupNames: array string
-         *     The names of the security groups that have been granted 
-         * permissions.
-         *   --Filters.InboundRuleToPortRanges: array integer
-         *     The ends of the port ranges for the TCP and UDP protocols, or the 
-         * ICMP 
-         *     code numbers.
-         *   --Filters.NetIds: array string
-         *     The IDs of the Nets specified when the security groups were 
-         * created.
-         *   --Filters.OutboundRuleAccountIds: array string
-         *     The account IDs that have been granted permissions.
-         *   --Filters.OutboundRuleFromPortRanges: array integer
-         *     The beginnings of the port ranges for the TCP and UDP protocols, 
-         * or the 
-         *     ICMP type numbers.
-         *   --Filters.OutboundRuleIpRanges: array string
-         *     The IP ranges that have been granted permissions, in CIDR 
-         * notation (for 
-         *     example, `10.0.0.0/24`).
-         *   --Filters.OutboundRuleProtocols: array string
-         *     The IP protocols for the permissions (`tcp` \\| `udp` \\| `icmp`, 
-         * or a 
-         *     protocol number, or `-1` for all protocols).
-         *   --Filters.OutboundRuleSecurityGroupIds: array string
-         *     The IDs of the security groups that have been granted permissions.
-         *   --Filters.OutboundRuleSecurityGroupNames: array string
-         *     The names of the security groups that have been granted 
-         * permissions.
-         *   --Filters.OutboundRuleToPortRanges: array integer
-         *     The ends of the port ranges for the TCP and UDP protocols, or the 
-         * ICMP 
-         *     code numbers.
-         *   --Filters.SecurityGroupIds: array string
-         *     The IDs of the security groups.
-         *   --Filters.SecurityGroupNames: array string
-         *     The names of the security groups.
-         *   --Filters.TagKeys: array string
-         *     The keys of the tags associated with the security groups.
-         *   --Filters.TagValues: array string
-         *     The values of the tags associated with the security groups.
-         *   --Filters.Tags: array string
-         *     The key/value combination of the tags associated with the 
-         * security 
-         *     groups, in the following format: 
-         *     
-         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_security_group filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_secret_access_key_arg  {
-        /* Required: access_key_id */
-        /*
-         * The ID of the access key.
-         */
-	char *access_key_id;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-};
-
-struct osc_read_route_tables_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.LinkRouteTableIds: array string
-         *     The IDs of the route tables involved in the associations.
-         *   --Filters.LinkRouteTableLinkRouteTableIds: array string
-         *     The IDs of the associations between the route tables and the 
-         * Subnets.
-         *   --Filters.LinkRouteTableMain: bool
-         *     If true, the route tables are the main ones for their Nets.
-         *   --Filters.LinkSubnetIds: array string
-         *     The IDs of the Subnets involved in the associations.
-         *   --Filters.NetIds: array string
-         *     The IDs of the Nets for the route tables.
-         *   --Filters.RouteCreationMethods: array string
-         *     The methods used to create a route.
-         *   --Filters.RouteDestinationIpRanges: array string
-         *     The IP ranges specified in routes in the tables.
-         *   --Filters.RouteDestinationServiceIds: array string
-         *     The service IDs specified in routes in the tables.
-         *   --Filters.RouteGatewayIds: array string
-         *     The IDs of the gateways specified in routes in the tables.
-         *   --Filters.RouteNatServiceIds: array string
-         *     The IDs of the NAT services specified in routes in the tables.
-         *   --Filters.RouteNetPeeringIds: array string
-         *     The IDs of the Net peerings specified in routes in the tables.
-         *   --Filters.RouteStates: array string
-         *     The states of routes in the route tables (always `active`).
-         *   --Filters.RouteTableIds: array string
-         *     The IDs of the route tables.
-         *   --Filters.RouteVmIds: array string
-         *     The IDs of the VMs specified in routes in the tables.
-         *   --Filters.TagKeys: array string
-         *     The keys of the tags associated with the route tables.
-         *   --Filters.TagValues: array string
-         *     The values of the tags associated with the route tables.
-         *   --Filters.Tags: array string
-         *     The key/value combination of the tags associated with the route 
-         * tables, 
-         *     in the following format: 
-         *     
-         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_route_table filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_regions_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-};
-
-struct osc_read_quotas_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.Collections: array string
-         *     The group names of the quotas.
-         *   --Filters.QuotaNames: array string
-         *     The names of the quotas.
-         *   --Filters.QuotaTypes: array string
-         *     The resource IDs if these are resource-specific quotas, `global` 
-         * if they 
-         *     are not.
-         *   --Filters.ShortDescriptions: array string
-         *     The description of the quotas.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_quota filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_public_ips_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.LinkPublicIpIds: array string
-         *     The IDs representing the associations of public IPs with VMs or 
-         * NICs.
-         *   --Filters.NicAccountIds: array string
-         *     The account IDs of the owners of the NICs.
-         *   --Filters.NicIds: array string
-         *     The IDs of the NICs.
-         *   --Filters.Placements: array string
-         *     Whether the public IPs are for use in the public Cloud or in a 
-         * Net.
-         *   --Filters.PrivateIps: array string
-         *     The private IPs associated with the public IPs.
-         *   --Filters.PublicIpIds: array string
-         *     The IDs of the public IPs.
-         *   --Filters.PublicIps: array string
-         *     The public IPs.
-         *   --Filters.TagKeys: array string
-         *     The keys of the tags associated with the public IPs.
-         *   --Filters.TagValues: array string
-         *     The values of the tags associated with the public IPs.
-         *   --Filters.Tags: array string
-         *     The key/value combination of the tags associated with the public 
-         * IPs, in 
-         *     the following format: 
-         *     
-         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
-         *   --Filters.VmIds: array string
-         *     The IDs of the VMs.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_public_ip filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_public_ip_ranges_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_public_catalog_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-};
-
-struct osc_read_product_types_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.ProductTypeIds: array string
-         *     The IDs of the product types.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_product_type filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_policy_versions_arg  {
-        /* Required: policy_orn */
-        /*
-         * The item starting the list of policies requested.
-         */
-        int is_set_first_item;
-	long long int first_item;
-        /*
-         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
-         * see [Resource 
-         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
-         * rs.html).
-         */
-	char *policy_orn;
-        /*
-         * The maximum number of items that can be returned in a single response 
-         * (by default, `100`).
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_policy_version_arg  {
-        /* Required: policy_orn, version_id */
-        /*
-         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
-         * see [Resource 
-         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
-         * rs.html).
-         */
-	char *policy_orn;
-        /*
-         * The ID of the policy version.
-         */
-	char *version_id;
-};
-
-struct osc_read_policy_arg  {
-        /* Required: policy_orn */
-        /*
-         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
-         * see [Resource 
-         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
-         * rs.html).
-         */
-	char *policy_orn;
-};
-
-struct osc_read_policies_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.OnlyLinked: bool
-         *     If set to true, lists only the policies attached to a user.
-         *   --Filters.PathPrefix: string
-         *     The path prefix you can use to filter the results. If not 
-         * specified, it 
-         *     is set to a slash (`/`).
-         *   --Filters.Scope: string
-         *     The scope to filter policies (`OWS` \\| `LOCAL`).
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct read_policies_filters filters;
-        /*
-         * The item starting the list of policies requested.
-         */
-        int is_set_first_item;
-	long long int first_item;
-        /*
-         * The maximum number of items that can be returned in a single response 
-         * (by default, `100`).
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_nics_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.Descriptions: array string
-         *     The descriptions of the NICs.
-         *   --Filters.IsSourceDestCheck: bool
-         *     Whether the source/destination checking is enabled (true) or 
-         * disabled 
-         *     (false).
-         *   --Filters.LinkNicDeleteOnVmDeletion: bool
-         *     Whether the NICs are deleted when the VMs they are attached to 
-         * are 
-         *     terminated.
-         *   --Filters.LinkNicDeviceNumbers: array integer
-         *     The device numbers the NICs are attached to.
-         *   --Filters.LinkNicLinkNicIds: array string
-         *     The attachment IDs of the NICs.
-         *   --Filters.LinkNicStates: array string
-         *     The states of the attachments.
-         *   --Filters.LinkNicVmAccountIds: array string
-         *     The account IDs of the owners of the VMs the NICs are attached to.
-         *   --Filters.LinkNicVmIds: array string
-         *     The IDs of the VMs the NICs are attached to.
-         *   --Filters.LinkPublicIpAccountIds: array string
-         *     The account IDs of the owners of the public IPs associated with 
-         * the 
-         *     NICs.
-         *   --Filters.LinkPublicIpLinkPublicIpIds: array string
-         *     The association IDs returned when the public IPs were associated 
-         * with 
-         *     the NICs.
-         *   --Filters.LinkPublicIpPublicDnsNames: array string
-         *     The public DNS names associated with the public IPs.
-         *   --Filters.LinkPublicIpPublicIpIds: array string
-         *     The allocation IDs returned when the public IPs were allocated to 
-         * their 
-         *     accounts.
-         *   --Filters.LinkPublicIpPublicIps: array string
-         *     The public IPs associated with the NICs.
-         *   --Filters.MacAddresses: array string
-         *     The Media Access Control (MAC) addresses of the NICs.
-         *   --Filters.NetIds: array string
-         *     The IDs of the Nets where the NICs are located.
-         *   --Filters.NicIds: array string
-         *     The IDs of the NICs.
-         *   --Filters.PrivateDnsNames: array string
-         *     The private DNS names associated with the primary private IPs.
-         *   --Filters.PrivateIpsLinkPublicIpAccountIds: array string
-         *     The account IDs of the owner of the public IPs associated with 
-         * the 
-         *     private IPs.
-         *   --Filters.PrivateIpsLinkPublicIpPublicIps: array string
-         *     The public IPs associated with the private IPs.
-         *   --Filters.PrivateIpsPrimaryIp: bool
-         *     Whether the private IP is the primary IP associated with the NIC.
-         *   --Filters.PrivateIpsPrivateIps: array string
-         *     The private IPs of the NICs.
-         *   --Filters.SecurityGroupIds: array string
-         *     The IDs of the security groups associated with the NICs.
-         *   --Filters.SecurityGroupNames: array string
-         *     The names of the security groups associated with the NICs.
-         *   --Filters.States: array string
-         *     The states of the NICs.
-         *   --Filters.SubnetIds: array string
-         *     The IDs of the Subnets for the NICs.
-         *   --Filters.SubregionNames: array string
-         *     The Subregions where the NICs are located.
-         *   --Filters.TagKeys: array string
-         *     The keys of the tags associated with the NICs.
-         *   --Filters.TagValues: array string
-         *     The values of the tags associated with the NICs.
-         *   --Filters.Tags: array string
-         *     The key/value combination of the tags associated with the NICs, 
-         * in the 
-         *     following format: 
-         *     
-         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_nic filters;
-};
-
-struct osc_read_nets_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.DhcpOptionsSetIds: array string
-         *     The IDs of the DHCP options sets.
-         *   --Filters.IpRanges: array string
-         *     The IP ranges for the Nets, in CIDR notation (for example, 
-         *     `10.0.0.0/16`).
-         *   --Filters.IsDefault: bool
-         *     If true, the Net used is the default one.
-         *   --Filters.NetIds: array string
-         *     The IDs of the Nets.
-         *   --Filters.States: array string
-         *     The states of the Nets (`pending` \\| `available` \\| `deleting`).
-         *   --Filters.TagKeys: array string
-         *     The keys of the tags associated with the Nets.
-         *   --Filters.TagValues: array string
-         *     The values of the tags associated with the Nets.
-         *   --Filters.Tags: array string
-         *     The key/value combination of the tags associated with the Nets, 
-         * in the 
-         *     following format: 
-         *     
-         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_net filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_net_peerings_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.AccepterNetAccountIds: array string
-         *     The account IDs of the owners of the peer Nets.
-         *   --Filters.AccepterNetIpRanges: array string
-         *     The IP ranges of the peer Nets, in CIDR notation (for example, 
-         *     `10.0.0.0/24`).
-         *   --Filters.AccepterNetNetIds: array string
-         *     The IDs of the peer Nets.
-         *   --Filters.ExpirationDates: array string
-         *     The dates and times at which the Net peerings expire, in ISO 8601 
-         *     date-time format (for example, `2020-06-14T00:00:00.000Z`).
-         *   --Filters.NetPeeringIds: array string
-         *     The IDs of the Net peerings.
-         *   --Filters.SourceNetAccountIds: array string
-         *     The account IDs of the owners of the peer Nets.
-         *   --Filters.SourceNetIpRanges: array string
-         *     The IP ranges of the peer Nets.
-         *   --Filters.SourceNetNetIds: array string
-         *     The IDs of the peer Nets.
-         *   --Filters.StateMessages: array string
-         *     Additional information about the states of the Net peerings.
-         *   --Filters.StateNames: array string
-         *     The states of the Net peerings (`pending-acceptance` \\| `active` 
-         * \\| 
-         *     `rejected` \\| `failed` \\| `expired` \\| `deleted`).
-         *   --Filters.TagKeys: array string
-         *     The keys of the tags associated with the Net peerings.
-         *   --Filters.TagValues: array string
-         *     The values of the tags associated with the Net peerings.
-         *   --Filters.Tags: array string
-         *     The key/value combination of the tags associated with the Net 
-         * peerings, 
-         *     in the following format: 
-         *     
-         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_net_peering filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_net_access_points_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.NetAccessPointIds: array string
-         *     The IDs of the Net access points.
-         *   --Filters.NetIds: array string
-         *     The IDs of the Nets.
-         *   --Filters.ServiceNames: array string
-         *     The names of the services. For more information, see 
-         *     [ReadNetAccessPointServices](#readnetaccesspointservices).
-         *   --Filters.States: array string
-         *     The states of the Net access points (`pending` \\| `available` 
-         * \\| 
-         *     `deleting` \\| `deleted`).
-         *   --Filters.TagKeys: array string
-         *     The keys of the tags associated with the Net access points.
-         *   --Filters.TagValues: array string
-         *     The values of the tags associated with the Net access points.
-         *   --Filters.Tags: array string
-         *     The key/value combination of the tags associated with the Net 
-         * access 
-         *     points, in the following format: 
-         *     
-         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_net_access_point filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_net_access_point_services_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.ServiceIds: array string
-         *     The IDs of the services.
-         *   --Filters.ServiceNames: array string
-         *     The names of the services.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_service filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_nat_services_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.ClientTokens: array string
-         *     The idempotency tokens provided when creating the NAT services.
-         *   --Filters.NatServiceIds: array string
-         *     The IDs of the NAT services.
-         *   --Filters.NetIds: array string
-         *     The IDs of the Nets in which the NAT services are.
-         *   --Filters.States: array string
-         *     The states of the NAT services (`pending` \\| `available` \\| 
-         * `deleting` 
-         *     \\| `deleted`).
-         *   --Filters.SubnetIds: array string
-         *     The IDs of the Subnets in which the NAT services are.
-         *   --Filters.TagKeys: array string
-         *     The keys of the tags associated with the NAT services.
-         *   --Filters.TagValues: array string
-         *     The values of the tags associated with the NAT services.
-         *   --Filters.Tags: array string
-         *     The key/value combination of the tags associated with the NAT 
-         * services, 
-         *     in the following format: 
-         *     
-         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_nat_service filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_managed_policies_linked_to_user_group_arg  {
-        /* Required: user_group_name */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.PathPrefix: string
-         *     The path prefix of the groups. If not specified, it is set to a 
-         * slash 
-         *     (`/`).
-         *   --Filters.UserGroupIds: array string
-         *     The IDs of the user groups.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_user_group filters;
-        /*
-         * The item starting the list of policies requested.
-         */
-        int is_set_first_item;
-	long long int first_item;
-        /*
-         * The maximum number of items that can be returned in a single response 
-         * (by default, `100`).
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-        /*
-         * The name of the group.
-         */
-	char *user_group_name;
-};
-
-struct osc_read_locations_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_load_balancers_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.LoadBalancerNames: array string
-         *     The names of the load balancers.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_load_balancer filters;
-};
-
-struct osc_read_load_balancer_tags_arg  {
-        /* Required: load_balancer_names */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * One or more load balancer names.
-         */
-        char *load_balancer_names_str;
-	char **load_balancer_names;
-};
-
-struct osc_read_listener_rules_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.ListenerRuleNames: array string
-         *     The names of the listener rules.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_listener_rule filters;
-};
-
-struct osc_read_linked_policies_arg  {
-        /* Required: user_name */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.PathPrefix: string
-         *     The path prefix of the policies. If not specified, it is set to a 
-         * slash 
-         *     (`/`).
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct read_linked_policies_filters filters;
-        /*
-         * The item starting the list of policies requested.
-         */
-        int is_set_first_item;
-	long long int first_item;
-        /*
-         * The maximum number of items that can be returned in a single response 
-         * (by default, `100`).
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-        /*
-         * The name of the user the policies are linked to.
-         */
-	char *user_name;
-};
-
-struct osc_read_keypairs_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.KeypairFingerprints: array string
-         *     The fingerprints of the keypairs.
-         *   --Filters.KeypairNames: array string
-         *     The names of the keypairs.
-         *   --Filters.KeypairTypes: array string
-         *     The types of the keypairs (`ssh-rsa`, `ssh-ed25519`, 
-         *     `ecdsa-sha2-nistp256`, `ecdsa-sha2-nistp384`, or 
-         * `ecdsa-sha2-nistp521`).
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_keypair filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_internet_services_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.InternetServiceIds: array string
-         *     The IDs of the Internet services.
-         *   --Filters.LinkNetIds: array string
-         *     The IDs of the Nets the Internet services are attached to.
-         *   --Filters.LinkStates: array string
-         *     The current states of the attachments between the Internet 
-         * services and 
-         *     the Nets (only `available`, if the Internet gateway is attached 
-         * to a 
-         *     Net).
-         *   --Filters.TagKeys: array string
-         *     The keys of the tags associated with the Internet services.
-         *   --Filters.TagValues: array string
-         *     The values of the tags associated with the Internet services.
-         *   --Filters.Tags: array string
-         *     The key/value combination of the tags associated with the 
-         * Internet 
-         *     services, in the following format: 
-         *     
-         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_internet_service filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_images_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.AccountAliases: array string
-         *     The account aliases of the owners of the OMIs.
-         *   --Filters.AccountIds: array string
-         *     The account IDs of the owners of the OMIs. By default, all the 
-         * OMIs for 
-         *     which you have launch permissions are described.
-         *   --Filters.Architectures: array string
-         *     The architectures of the OMIs (`i386` \\| `x86_64`).
-         *   --Filters.BlockDeviceMappingDeleteOnVmDeletion: bool
-         *     Whether the volumes are deleted or not when terminating the VM.
-         *   --Filters.BlockDeviceMappingDeviceNames: array string
-         *     The device names for the volumes.
-         *   --Filters.BlockDeviceMappingSnapshotIds: array string
-         *     The IDs of the snapshots used to create the volumes.
-         *   --Filters.BlockDeviceMappingVolumeSizes: array integer
-         *     The sizes of the volumes, in gibibytes (GiB).
-         *   --Filters.BlockDeviceMappingVolumeTypes: array string
-         *     The types of volumes (`standard` \\| `gp2` \\| `io1`).
-         *   --Filters.Descriptions: array string
-         *     The descriptions of the OMIs, provided when they were created.
-         *   --Filters.FileLocations: array string
-         *     The locations of the buckets where the OMI files are stored.
-         *   --Filters.Hypervisors: array string
-         *     The hypervisor type of the OMI (always `xen`).
-         *   --Filters.ImageIds: array string
-         *     The IDs of the OMIs.
-         *   --Filters.ImageNames: array string
-         *     The names of the OMIs, provided when they were created.
-         *   --Filters.PermissionsToLaunchAccountIds: array string
-         *     The account IDs which have launch permissions for the OMIs.
-         *   --Filters.PermissionsToLaunchGlobalPermission: bool
-         *     If true, lists all public OMIs. If false, lists all private OMIs.
-         *   --Filters.ProductCodeNames: array string
-         *     The names of the product codes associated with the OMI.
-         *   --Filters.ProductCodes: array string
-         *     The product codes associated with the OMI.
-         *   --Filters.RootDeviceNames: array string
-         *     The name of the root device. This value must be /dev/sda1.
-         *   --Filters.RootDeviceTypes: array string
-         *     The types of root device used by the OMIs (`bsu` or `ebs`).
-         *   --Filters.States: array string
-         *     The states of the OMIs (`pending` \\| `available` \\| `failed`).
-         *   --Filters.TagKeys: array string
-         *     The keys of the tags associated with the OMIs.
-         *   --Filters.TagValues: array string
-         *     The values of the tags associated with the OMIs.
-         *   --Filters.Tags: array string
-         *     The key/value combination of the tags associated with the OMIs, 
-         * in the 
-         *     following format: 
-         *     
-         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
-         *   --Filters.VirtualizationTypes: array string
-         *     The virtualization types (always `hvm`).
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_image filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_image_export_tasks_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.TaskIds: array string
-         *     The IDs of the export tasks.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_export_task filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_flexible_gpus_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.DeleteOnVmDeletion: bool
-         *     Indicates whether the fGPU is deleted when terminating the VM.
-         *   --Filters.FlexibleGpuIds: array string
-         *     One or more IDs of fGPUs.
-         *   --Filters.Generations: array string
-         *     The processor generations that the fGPUs are compatible with.
-         *   --Filters.ModelNames: array string
-         *     One or more models of fGPUs. For more information, see [About 
-         * Flexible 
-         *     
-         * GPUs](https://docs.outscale.com/en/userguide/About-Flexible-GPUs.html)
-         * .
-         *   --Filters.States: array string
-         *     The states of the fGPUs (`allocated` \\| `attaching` \\| 
-         * `attached` \\| 
-         *     `detaching`).
-         *   --Filters.SubregionNames: array string
-         *     The Subregions where the fGPUs are located.
-         *   --Filters.VmIds: array string
-         *     One or more IDs of VMs.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_flexible_gpu filters;
-};
-
-struct osc_read_flexible_gpu_catalog_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-};
-
-struct osc_read_entities_linked_to_policy_arg  {
-        /* Required:none */
-        /*
-         * The type of entity linked to the policy (`ACCOUNT` \\| `USER` \\| 
-         * `GROUP`) you want to get information about.
-         */
-        char *entities_type_str;
-	char **entities_type;
-        /*
-         * The item starting the list of entities requested.
-         */
-        int is_set_first_item;
-	long long int first_item;
-        /*
-         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
-         * see [Resource 
-         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
-         * rs.html).
-         */
-	char *policy_orn;
-        /*
-         * The maximum number of items that can be returned in a single response 
-         * (by default, 100).
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_direct_links_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.DirectLinkIds: array string
-         *     The IDs of the DirectLinks.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_direct_link filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_direct_link_interfaces_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.DirectLinkIds: array string
-         *     The IDs of the DirectLinks.
-         *   --Filters.DirectLinkInterfaceIds: array string
-         *     The IDs of the DirectLink interfaces.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_direct_link_interface filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_dhcp_options_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.Default: bool
-         *     If true, lists all default DHCP options set. If false, lists all 
-         *     non-default DHCP options set.
-         *   --Filters.DhcpOptionsSetIds: array string
-         *     The IDs of the DHCP options sets.
-         *   --Filters.DomainNameServers: array string
-         *     The IPs of the domain name servers used for the DHCP options sets.
-         *   --Filters.DomainNames: array string
-         *     The domain names used for the DHCP options sets.
-         *   --Filters.LogServers: array string
-         *     The IPs of the log servers used for the DHCP options sets.
-         *   --Filters.NtpServers: array string
-         *     The IPs of the Network Time Protocol (NTP) servers used for the 
-         * DHCP 
-         *     options sets.
-         *   --Filters.TagKeys: array string
-         *     The keys of the tags associated with the DHCP options sets.
-         *   --Filters.TagValues: array string
-         *     The values of the tags associated with the DHCP options sets.
-         *   --Filters.Tags: array string
-         *     The key/value combination of the tags associated with the DHCP 
-         * options 
-         *     sets, in the following format: 
-         *     
-         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_dhcp_options filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_dedicated_groups_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.CpuGenerations: array integer
-         *     The processor generation for the VMs in the dedicated group (for 
-         *     example, `4`).
-         *   --Filters.DedicatedGroupIds: array string
-         *     The IDs of the dedicated groups.
-         *   --Filters.Names: array string
-         *     The names of the dedicated groups.
-         *   --Filters.SubregionNames: array string
-         *     The names of the Subregions in which the dedicated groups are 
-         * located.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_dedicated_group filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_consumption_account_arg  {
-        /* Required: from_date, to_date */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The beginning of the time period, in ISO 8601 date format (for 
-         * example, `2020-06-14`). The date-time format is also accepted, but 
-         * only with a time set to midnight (for example, 
-         * `2020-06-14T00:00:00.000Z`). This value is included in the time 
-         * period.
-         */
-	char *from_date;
-        /*
-         * By default or if false, returns only the consumption of the specific 
-         * account that sends this request. If true, returns either the overall 
-         * consumption of your paying account and all linked accounts (if the 
-         * account that sends this request is a paying account) or returns 
-         * nothing (if the account that sends this request is a linked account).
-         */
-        int is_set_overall;
-	int overall;
-        /*
-         * If true, the response also includes the unit price of the consumed 
-         * resource (`UnitPrice`) and the total price of the consumed resource 
-         * during the specified time period (`Price`), in the currency of your 
-         * account.
-         */
-        int is_set_show_price;
-	int show_price;
-        /*
-         * The end of the time period, in ISO 8601 date format (for example, 
-         * `2020-06-30`). The date-time format is also accepted, but only with a 
-         * time set to midnight (for example, `2020-06-30T00:00:00.000Z`). This 
-         * value is excluded from the time period, and must be set to a later 
-         * date than `FromDate`.
-         */
-	char *to_date;
-};
-
-struct osc_read_console_output_arg  {
-        /* Required: vm_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the VM.
-         */
-	char *vm_id;
-};
-
-struct osc_read_client_gateways_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.BgpAsns: array integer
-         *     The Border Gateway Protocol (BGP) Autonomous System Numbers 
-         * (ASNs) of 
-         *     the connections.
-         *   --Filters.ClientGatewayIds: array string
-         *     The IDs of the client gateways.
-         *   --Filters.ConnectionTypes: array string
-         *     The types of communication tunnels used by the client gateways 
-         * (always 
-         *     `ipsec.1`).
-         *   --Filters.PublicIps: array string
-         *     The public IPv4 addresses of the client gateways.
-         *   --Filters.States: array string
-         *     The states of the client gateways (`pending` \\| `available` \\| 
-         *     `deleting` \\| `deleted`).
-         *   --Filters.TagKeys: array string
-         *     The keys of the tags associated with the client gateways.
-         *   --Filters.TagValues: array string
-         *     The values of the tags associated with the client gateways.
-         *   --Filters.Tags: array string
-         *     The key/value combination of the tags associated with the client 
-         *     gateways, in the following format: 
-         *     
-         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_client_gateway filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-};
-
-struct osc_read_catalogs_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.CurrentCatalogOnly: bool
-         *     By default or if set to true, only returns the current catalog. 
-         * If 
-         *     false, returns the current catalog and past catalogs.
-         *   --Filters.FromDate: string
-         *     The beginning of the time period, in ISO 8601 date format (for 
-         * example, 
-         *     `2020-06-14`). This date cannot be older than 3 years. You must 
-         * specify 
-         *     the parameters `FromDate` and `ToDate` together.
-         *   --Filters.ToDate: string
-         *     The end of the time period, in ISO 8601 date format (for example, 
-         *     `2020-06-30`). You must specify the parameters `FromDate` and 
-         * `ToDate` 
-         *     together.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_catalogs filters;
-};
-
-struct osc_read_catalog_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-};
-
-struct osc_read_cas_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.CaFingerprints: array string
-         *     The fingerprints of the CAs.
-         *   --Filters.CaIds: array string
-         *     The IDs of the CAs.
-         *   --Filters.Descriptions: array string
-         *     The descriptions of the CAs.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_ca filters;
-};
-
-struct osc_read_api_logs_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.QueryAccessKeys: array string
-         *     The access keys used for the logged calls.
-         *   --Filters.QueryApiNames: array string
-         *     The names of the APIs of the logged calls (always `oapi` for the 
-         *     OUTSCALE API).
-         *   --Filters.QueryCallNames: array string
-         *     The names of the logged calls.
-         *   --Filters.QueryDateAfter: string
-         *     The date and time, or the date, after which you want to retrieve 
-         * logged 
-         *     calls, in ISO 8601 format (for example, 
-         * `2020-06-14T00:00:00.000Z` or 
-         *     `2020-06-14`). By default, this date is set to 48 hours before 
-         * the 
-         *     `QueryDateBefore` parameter value.
-         *   --Filters.QueryDateBefore: string
-         *     The date and time, or the date, before which you want to retrieve 
-         * logged 
-         *     calls, in ISO 8601 format (for example, 
-         * `2020-06-30T00:00:00.000Z` or 
-         *     `2020-06-14`). By default, this date is set to now, or 48 hours 
-         * after the 
-         *     `QueryDateAfter` parameter value.
-         *   --Filters.QueryIpAddresses: array string
-         *     The IPs used for the logged calls.
-         *   --Filters.QueryUserAgents: array string
-         *     The user agents of the HTTP requests of the logged calls.
-         *   --Filters.RequestIds: array string
-         *     The request IDs provided in the responses of the logged calls.
-         *   --Filters.ResponseStatusCodes: array integer
-         *     The HTTP status codes of the logged calls.
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_api_log filters;
-        /*
-         * The token to request the next page of results. Each token refers to a 
-         * specific page.
-         */
-	char *next_page_token;
-        /*
-         * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
-         */
-        int is_set_results_per_page;
-	long long int results_per_page;
-        /*
-         *   The information to display in each returned log.
-         *   --With.AccountId: bool
-         *     By default or if set to true, the account ID is displayed.
-         *   --With.CallDuration: bool
-         *     By default or if set to true, the duration of the call is 
-         * displayed.
-         *   --With.QueryAccessKey: bool
-         *     By default or if set to true, the access key is displayed.
-         *   --With.QueryApiName: bool
-         *     By default or if set to true, the name of the API is displayed.
-         *   --With.QueryApiVersion: bool
-         *     By default or if set to true, the version of the API is displayed.
-         *   --With.QueryCallName: bool
-         *     By default or if set to true, the name of the call is displayed.
-         *   --With.QueryDate: bool
-         *     By default or if set to true, the date of the call is displayed.
-         *   --With.QueryHeaderRaw: bool
-         *     By default or if set to true, the raw header of the HTTP request 
-         * is 
-         *     displayed.
-         *   --With.QueryHeaderSize: bool
-         *     By default or if set to true, the size of the raw header of the 
-         * HTTP 
-         *     request is displayed.
-         *   --With.QueryIpAddress: bool
-         *     By default or if set to true, the IP is displayed.
-         *   --With.QueryPayloadRaw: bool
-         *     By default or if set to true, the raw payload of the HTTP request 
-         * is 
-         *     displayed.
-         *   --With.QueryPayloadSize: bool
-         *     By default or if set to true, the size of the raw payload of the 
-         * HTTP 
-         *     request is displayed.
-         *   --With.QueryUserAgent: bool
-         *     By default or if set to true, the user agent of the HTTP request 
-         * is 
-         *     displayed.
-         *   --With.RequestId: bool
-         *     By default or if set to true, the request ID is displayed.
-         *   --With.ResponseSize: bool
-         *     By default or if set to true, the size of the response is 
-         * displayed.
-         *   --With.ResponseStatusCode: bool
-         *     By default or if set to true, the HTTP status code of the 
-         * response is 
-         *     displayed.
-         */
-        char *with_str;
-        int is_set_with;
-	struct with with;
-};
-
-struct osc_read_api_access_rules_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.ApiAccessRuleIds: array string
-         *     One or more IDs of API access rules.
-         *   --Filters.CaIds: array string
-         *     One or more IDs of Client Certificate Authorities (CAs).
-         *   --Filters.Cns: array string
-         *     One or more Client Certificate Common Names (CNs).
-         *   --Filters.Descriptions: array string
-         *     One or more descriptions of API access rules.
-         *   --Filters.IpRanges: array string
-         *     One or more IPs or CIDR blocks (for example, `192.0.2.0/16`).
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_api_access_rule filters;
-};
-
-struct osc_read_api_access_policy_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-};
-
-struct osc_read_admin_password_arg  {
-        /* Required: vm_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the VM.
-         */
-	char *vm_id;
-};
-
-struct osc_read_accounts_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-};
-
-struct osc_read_access_keys_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   One or more filters.
-         *   --Filters.AccessKeyIds: array string
-         *     The IDs of the access keys.
-         *   --Filters.States: array string
-         *     The states of the access keys (`ACTIVE` \\| `INACTIVE`).
-         */
-        char *filters_str;
-        int is_set_filters;
-	struct filters_access_keys filters;
-        /*
-         * The name of the EIM user. By default, the user who sends the request 
-         * (which can be the root account).
-         */
-	char *user_name;
-};
-
-struct osc_put_user_group_policy_arg  {
-        /* Required: policy_name, policy_document, user_group_name */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The policy document, corresponding to a JSON string that contains the 
-         * policy. For more information, see [EIM Reference 
-         * Information](https://docs.outscale.com/en/userguide/EIM-Reference-Info
-         * rmation.html) and [EIM Policy 
-         * Generator](https://docs.outscale.com/en/userguide/EIM-Policy-Generator
-         * .html).
-         */
-	char *policy_document;
-        /*
-         * The name of the policy.
-         */
-	char *policy_name;
-        /*
-         * The name of the group.
-         */
-	char *user_group_name;
-        /*
-         * The path to the group. If not specified, it is set to a slash (`/`).
-         */
-	char *user_group_path;
-};
-
-struct osc_link_volume_arg  {
-        /* Required: device_name, vm_id, volume_id */
-        /*
-         * The name of the device. For a root device, you must use `/dev/sda1`. 
-         * For other volumes, you must use `/dev/sdX`, `/dev/sdXX`, `/dev/xvdX`, 
-         * or `/dev/xvdXX` (where the first `X` is a letter between `b` and `z`, 
-         * and the second `X` is a letter between `a` and `z`).
-         */
-	char *device_name;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the VM you want to attach the volume to.
-         */
-	char *vm_id;
-        /*
-         * The ID of the volume you want to attach.
-         */
-	char *volume_id;
-};
-
-struct osc_link_virtual_gateway_arg  {
-        /* Required: net_id, virtual_gateway_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the Net to which you want to attach the virtual gateway.
-         */
-	char *net_id;
-        /*
-         * The ID of the virtual gateway.
-         */
-	char *virtual_gateway_id;
-};
-
-struct osc_link_route_table_arg  {
-        /* Required: route_table_id, subnet_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the route table.
-         */
-	char *route_table_id;
-        /*
-         * The ID of the Subnet.
-         */
-	char *subnet_id;
-};
-
-struct osc_link_public_ip_arg  {
-        /* Required:none */
-        /*
-         * If true, allows the public IP to be associated with the VM or NIC 
-         * that you specify even if it is already associated with another VM or 
-         * NIC. If false, prevents the public IP from being associated with the 
-         * VM or NIC that you specify if it is already associated with another 
-         * VM or NIC. (By default, true in the public Cloud, false in a Net.)
-         */
-        int is_set_allow_relink;
-	int allow_relink;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * (Net only) The ID of the NIC. This parameter is required if the VM 
-         * has more than one NIC attached. Otherwise, you need to specify the 
-         * `VmId` parameter instead. You cannot specify both parameters at the 
-         * same time.
-         */
-	char *nic_id;
-        /*
-         * (Net only) The primary or secondary private IP of the specified NIC. 
-         * By default, the primary private IP.
-         */
-	char *private_ip;
-        /*
-         * The public IP. This parameter is required unless you use the 
-         * `PublicIpId` parameter.
-         */
-	char *public_ip;
-        /*
-         * The allocation ID of the public IP. This parameter is required unless 
-         * you use the `PublicIp` parameter.
-         */
-	char *public_ip_id;
-        /*
-         * The ID of the VM.<br />\n- In the public Cloud, this parameter is 
-         * required.<br />\n- In a Net, this parameter is required if the VM has 
-         * only one NIC. Otherwise, you need to specify the `NicId` parameter 
-         * instead. You cannot specify both parameters at the same time.
-         */
-	char *vm_id;
-};
-
-struct osc_link_private_ips_arg  {
-        /* Required: nic_id */
-        /*
-         * If true, allows an IP that is already assigned to another NIC in the 
-         * same Subnet to be assigned to the NIC you specified.
-         */
-        int is_set_allow_relink;
-	int allow_relink;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the NIC.
-         */
-	char *nic_id;
-        /*
-         * The secondary private IP or IPs you want to assign to the NIC within 
-         * the IP range of the Subnet.
-         */
-        char *private_ips_str;
-	char **private_ips;
-        /*
-         * The number of secondary private IPs to assign to the NIC.
-         */
-        int is_set_secondary_private_ip_count;
-	long long int secondary_private_ip_count;
-};
-
-struct osc_link_policy_arg  {
-        /* Required: policy_orn, user_name */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
-         * see [Resource 
-         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
-         * rs.html).
-         */
-	char *policy_orn;
-        /*
-         * The name of the user you want to link the policy to (between 1 and 64 
-         * characters).
-         */
-	char *user_name;
-};
-
-struct osc_link_nic_arg  {
-        /* Required: device_number, vm_id, nic_id */
-        /*
-         * The index of the VM device for the NIC attachment (between `1` and 
-         * `7`, both included).
-         */
-        int is_set_device_number;
-	long long int device_number;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the NIC you want to attach.
-         */
-	char *nic_id;
-        /*
-         * The ID of the VM to which you want to attach the NIC.
-         */
-	char *vm_id;
-};
-
-struct osc_link_managed_policy_to_user_group_arg  {
-        /* Required: policy_orn, user_group_name */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
-         * see [Resource 
-         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
-         * rs.html).
-         */
-	char *policy_orn;
-        /*
-         * The name of the group you want to link the policy to.
-         */
-	char *user_group_name;
-};
-
-struct osc_link_load_balancer_backend_machines_arg  {
-        /* Required: load_balancer_name */
-        /*
-         * One or more public IPs of backend VMs.
-         */
-        char *backend_ips_str;
-	char **backend_ips;
-        /*
-         * One or more IDs of backend VMs.
-         */
-        char *backend_vm_ids_str;
-	char **backend_vm_ids;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The name of the load balancer.
-         */
-	char *load_balancer_name;
-};
-
-struct osc_link_internet_service_arg  {
-        /* Required: internet_service_id, net_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the Internet service you want to attach.
-         */
-	char *internet_service_id;
-        /*
-         * The ID of the Net to which you want to attach the Internet service.
-         */
-	char *net_id;
-};
-
-struct osc_link_flexible_gpu_arg  {
-        /* Required: flexible_gpu_id, vm_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the fGPU you want to attach.
-         */
-	char *flexible_gpu_id;
-        /*
-         * The ID of the VM you want to attach the fGPU to.
-         */
-	char *vm_id;
-};
-
-struct osc_deregister_vms_in_load_balancer_arg  {
-        /* Required: backend_vm_ids, load_balancer_name */
-        /*
-         * One or more IDs of backend VMs.
-         */
-        char *backend_vm_ids_str;
-	char **backend_vm_ids;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The name of the load balancer.
-         */
-	char *load_balancer_name;
-};
-
-struct osc_delete_vpn_connection_route_arg  {
-        /* Required: destination_ip_range, vpn_connection_id */
-        /*
-         * The network prefix of the route to delete, in CIDR notation (for 
-         * example, `10.12.0.0/16`).
-         */
-	char *destination_ip_range;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the target VPN connection of the static route to delete.
-         */
-	char *vpn_connection_id;
-};
-
-struct osc_delete_vpn_connection_arg  {
-        /* Required: vpn_connection_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the VPN connection you want to delete.
-         */
-	char *vpn_connection_id;
-};
-
-struct osc_delete_volume_arg  {
-        /* Required: volume_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the volume you want to delete.
-         */
-	char *volume_id;
-};
-
-struct osc_delete_vms_arg  {
-        /* Required: vm_ids */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * One or more IDs of VMs.
-         */
-        char *vm_ids_str;
-	char **vm_ids;
-};
-
-struct osc_delete_vm_template_arg  {
-        /* Required: vm_template_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the VM template you want to delete.
-         */
-	char *vm_template_id;
-};
-
-struct osc_delete_vm_group_arg  {
-        /* Required: vm_group_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the VM group you want to delete.
-         */
-	char *vm_group_id;
-};
-
-struct osc_delete_virtual_gateway_arg  {
-        /* Required: virtual_gateway_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the virtual gateway you want to delete.
-         */
-	char *virtual_gateway_id;
-};
-
-struct osc_delete_user_group_policy_arg  {
-        /* Required: user_group_name, policy_name */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The name of the policy document you want to delete.
-         */
-	char *policy_name;
-        /*
-         * The name of the group.
-         */
-	char *user_group_name;
-        /*
-         * The path to the group. If not specified, it is set to a slash (`/`).
-         */
-	char *user_group_path;
-};
-
-struct osc_delete_user_group_arg  {
-        /* Required: user_group_name */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * If true, forces the deletion of the user group even if it is not 
-         * empty.
-         */
-        int is_set_force;
-	int force;
-        /*
-         * The path to the group. If not specified, it is set to a slash (`/`).
-         */
-	char *path;
-        /*
-         * The name of the group you want to delete.
-         */
-	char *user_group_name;
-};
-
-struct osc_delete_user_arg  {
-        /* Required: user_name */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The name of the EIM user you want to delete.
-         */
-	char *user_name;
-};
-
-struct osc_delete_tags_arg  {
-        /* Required: resource_ids, tags */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * One or more resource IDs.
-         */
-        char *resource_ids_str;
-	char **resource_ids;
-        /*
-         * One or more tags to delete (if you set a tag value, only the tags 
-         * matching exactly this value are deleted).
-         *   Information about the tag.
-         *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
-         *   --Tags.INDEX.Value: string
-         *     The value of the tag, between 0 and 255 characters.
-         */
-        char *tags_str;
-        int nb_tags;
-	struct resource_tag *tags;
-};
-
-struct osc_delete_subnet_arg  {
-        /* Required: subnet_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the Subnet you want to delete.
-         */
-	char *subnet_id;
-};
-
-struct osc_delete_snapshot_arg  {
-        /* Required: snapshot_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the snapshot you want to delete.
-         */
-	char *snapshot_id;
-};
-
-struct osc_delete_server_certificate_arg  {
-        /* Required: name */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
         /*
-         * The name of the server certificate you want to delete.
+         * The name of the security group.<br />\nThis name must not start with 
+         * `sg-`.<br />\nThis name must be unique and contain between 1 and 255 
+         * characters. Allowed characters are `a-z`, `A-Z`, `0-9`, spaces, and 
+         * `_.-:/()#,@[]+=&;{}!$*`.
          */
-	char *name;
+	char *security_group_name;
 };
 
-struct osc_delete_security_group_rule_arg  {
-        /* Required: security_group_id, flow */
+struct osc_create_security_group_rule_arg  {
+        /* Required: SecurityGroupId Flow
+ */
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -11825,7 +8347,8 @@ struct osc_delete_security_group_rule_arg  {
 	char *flow;
         /*
          * The beginning of the port range for the TCP and UDP protocols, or an 
-         * ICMP type number.
+         * ICMP type number. If you specify this parameter, you cannot specify 
+         * the `Rules` parameter and its subparameters.
          */
         int is_set_from_port_range;
 	long long int from_port_range;
@@ -11834,16 +8357,21 @@ struct osc_delete_security_group_rule_arg  {
          * protocols). By default, `-1`. In a Net, this can also be an IP 
          * protocol number. For more information, see the [IANA.org 
          * website](https://www.iana.org/assignments/protocol-numbers/protocol-nu
-         * mbers.xhtml).
+         * mbers.xhtml). If you specify this parameter, you cannot specify the 
+         * `Rules` parameter and its subparameters.
          */
 	char *ip_protocol;
         /*
          * The IP range for the security group rule, in CIDR notation (for 
-         * example, `10.0.0.0/16`).
+         * example, 10.0.0.0/16). If you specify this parameter, you cannot 
+         * specify the `Rules` parameter and its subparameters.
          */
 	char *ip_range;
         /*
-         * One or more rules you want to delete from the security group.
+         * Information about the security group rule to create. If you specify 
+         * this parent parameter and its subparameters, you cannot specify the 
+         * following parent parameters: `FromPortRange`, `IpProtocol`, 
+         * `IpRange`, and `ToPortRange`.
          *   Information about the security group rule.
          *   --Rules.INDEX.FromPortRange: long long int
          *     The beginning of the port range for the TCP and UDP protocols, or 
@@ -11893,29 +8421,43 @@ struct osc_delete_security_group_rule_arg  {
         int nb_rules;
 	struct security_group_rule *rules;
         /*
-         * The account ID of the owner of the security group you want to delete 
-         * a rule from.
+         * The account ID that owns the source or destination security group 
+         * specified in the `SecurityGroupNameToLink` parameter.
          */
-	char *security_group_account_id_to_unlink;
+	char *security_group_account_id_to_link;
         /*
-         * The ID of the security group you want to delete a rule from.
+         * The ID of the security group for which you want to create a rule.
          */
 	char *security_group_id;
         /*
-         * The ID of the source security group. If you are in the Public Cloud, 
-         * you can also specify the name of the source security group.
+         * The ID of a source or destination security group that you want to 
+         * link to the security group of the rule.
          */
-	char *security_group_name_to_unlink;
+	char *security_group_name_to_link;
         /*
          * The end of the port range for the TCP and UDP protocols, or an ICMP 
-         * code number.
+         * code number. If you specify this parameter, you cannot specify the 
+         * `Rules` parameter and its subparameters.
          */
         int is_set_to_port_range;
 	long long int to_port_range;
 };
 
-struct osc_delete_security_group_arg  {
-        /* Required:none */
+struct osc_create_server_certificate_arg  {
+        /* Required: Body PrivateKey Name
+ */
+        /*
+         * The PEM-encoded X509 certificate.<br />With OSC CLI, use the 
+         * following syntax to make sure your certificate file is correctly 
+         * parsed: `--Body=&quot;$(cat FILENAME)&quot;`.
+         */
+	char *body;
+        /*
+         * The PEM-encoded intermediate certification authorities.<br />With OSC 
+         * CLI, use the following syntax to make sure your certificate chain 
+         * file is correctly parsed: `--Chain=&quot;$(cat FILENAME)&quot;`.
+         */
+	char *chain;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -11923,17 +8465,27 @@ struct osc_delete_security_group_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The ID of the security group you want to delete.
+         * A unique name for the certificate. Constraints: 1-128 alphanumeric 
+         * characters, pluses (`+`), equals (`=`), commas (`,`), periods (`.`), 
+         * at signs (`@`), minuses (`-`), or underscores (`_`).
          */
-	char *security_group_id;
+	char *name;
         /*
-         * The name of the security group.
+         * The path to the server certificate, set to a slash (`/`) if not 
+         * specified.
          */
-	char *security_group_name;
+	char *path;
+        /*
+         * The PEM-encoded private key matching the certificate.<br />With OSC 
+         * CLI, use the following syntax to make sure your key file is correctly 
+         * parsed: `--PrivateKey=&quot;$(cat FILENAME)&quot;`.
+         */
+	char *private_key;
 };
 
-struct osc_delete_route_table_arg  {
-        /* Required: route_table_id */
+struct osc_create_snapshot_export_task_arg  {
+        /* Required: OsuExport SnapshotId
+ */
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -11941,17 +8493,40 @@ struct osc_delete_route_table_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The ID of the route table you want to delete.
+         *   Information about the OOS export task to create.
+         *   --OsuExport.DiskImageFormat: string
+         *     The format of the export disk (`qcow2` \\| `raw`).
+         *   --OsuExport.OsuApiKey: ref OsuApiKey
+         *       Information about the OOS API key.
+         *       --OsuExport.OsuApiKey.ApiKeyId: string
+         *         The API key of the OOS account that enables you to access the 
+         * bucket.
+         *       --OsuExport.OsuApiKey.SecretKey: string
+         *         The secret key of the OOS account that enables you to access 
+         * the bucket.
+         *   --OsuExport.OsuBucket: string
+         *     The name of the OOS bucket where you want to export the object.
+         *   --OsuExport.OsuManifestUrl: string
+         *     The URL of the manifest file.
+         *   --OsuExport.OsuPrefix: string
+         *     The prefix for the key of the OOS object.
          */
-	char *route_table_id;
+        char *osu_export_str;
+        int is_set_osu_export;
+	struct osu_export_to_create osu_export;
+        /*
+         * The ID of the snapshot to export.
+         */
+	char *snapshot_id;
 };
 
-struct osc_delete_route_arg  {
-        /* Required: route_table_id, destination_ip_range */
+struct osc_create_snapshot_arg  {
+        /* Required: null
+ */
         /*
-         * The exact IP range for the route.
+         * A description for the snapshot.
          */
-	char *destination_ip_range;
+	char *description;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -11959,13 +8534,38 @@ struct osc_delete_route_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The ID of the route table from which you want to delete a route.
+         * **(when importing from a bucket)** The pre-signed URL of the snapshot 
+         * you want to import. For more information, see [Creating a Pre-signed 
+         * URL](https://docs.outscale.com/en/userguide/Creating-a-Pre-Signed-URL.
+         * html).
          */
-	char *route_table_id;
+	char *file_location;
+        /*
+         * **(when importing from a bucket)** The size of the snapshot you want 
+         * to create in your account, in bytes. This size must be greater than 
+         * or equal to the size of the original, uncompressed snapshot.
+         */
+        int is_set_snapshot_size;
+	long long int snapshot_size;
+        /*
+         * **(when copying a snapshot)** The name of the source Region, which 
+         * must be the same as the Region of your account.
+         */
+	char *source_region_name;
+        /*
+         * **(when copying a snapshot)** The ID of the snapshot you want to copy.
+         */
+	char *source_snapshot_id;
+        /*
+         * **(when creating from a volume)** The ID of the volume you want to 
+         * create a snapshot of.
+         */
+	char *volume_id;
 };
 
-struct osc_delete_public_ip_arg  {
-        /* Required:none */
+struct osc_create_subnet_arg  {
+        /* Required: IpRange NetId
+ */
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -11973,106 +8573,28 @@ struct osc_delete_public_ip_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The public IP. In the public Cloud, this parameter is required.
+         * The IP range in the Subnet, in CIDR notation (for example, 
+         * `10.0.0.0/16`).<br />\nThe IP range of the Subnet can be either the 
+         * same as the Net one if you create only a single Subnet in this Net, 
+         * or a subset of the Net one. In case of several Subnets in a Net, 
+         * their IP ranges must not overlap. The smallest Subnet you can create 
+         * uses a /29 netmask (eight IPs). For more information, see [About 
+         * Nets](https://docs.outscale.com/en/userguide/About-Nets.html).
          */
-	char *public_ip;
+	char *ip_range;
         /*
-         * The ID representing the association of the public IP with the VM or 
-         * the NIC. In a Net, this parameter is required.
-         */
-	char *public_ip_id;
-};
-
-struct osc_delete_policy_version_arg  {
-        /* Required: policy_orn, version_id */
-        /*
-         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
-         * see [Resource 
-         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
-         * rs.html).
-         */
-	char *policy_orn;
-        /*
-         * The ID of the version of the policy you want to delete.
-         */
-	char *version_id;
-};
-
-struct osc_delete_policy_arg  {
-        /* Required: policy_orn */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The OUTSCALE Resource Name (ORN) of the policy you want to delete. 
-         * For more information, see [Resource 
-         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
-         * rs.html).
-         */
-	char *policy_orn;
-};
-
-struct osc_delete_nic_arg  {
-        /* Required: nic_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the NIC you want to delete.
-         */
-	char *nic_id;
-};
-
-struct osc_delete_net_peering_arg  {
-        /* Required: net_peering_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the Net peering you want to delete.
-         */
-	char *net_peering_id;
-};
-
-struct osc_delete_net_access_point_arg  {
-        /* Required: net_access_point_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the Net access point.
-         */
-	char *net_access_point_id;
-};
-
-struct osc_delete_net_arg  {
-        /* Required: net_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the Net you want to delete.
+         * The ID of the Net for which you want to create a Subnet.
          */
 	char *net_id;
+        /*
+         * The name of the Subregion in which you want to create the Subnet.
+         */
+	char *subregion_name;
 };
 
-struct osc_delete_nat_service_arg  {
-        /* Required: nat_service_id */
+struct osc_create_tags_arg  {
+        /* Required: ResourceIds Tags
+ */
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -12080,37 +8602,26 @@ struct osc_delete_nat_service_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The ID of the NAT service you want to delete.
+         * One or more resource IDs.
          */
-	char *nat_service_id;
-};
-
-struct osc_delete_load_balancer_tags_arg  {
-        /* Required: load_balancer_names, tags */
+        char *resource_ids_str;
+	char **resource_ids;
         /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * One or more load balancer names.
-         */
-        char *load_balancer_names_str;
-	char **load_balancer_names;
-        /*
-         * One or more tags to delete from the load balancers.
+         * One or more tags to add to the specified resources.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
+         *   --Tags.INDEX.Value: string
+         *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_load_balancer_tag *tags;
+	struct resource_tag *tags;
 };
 
-struct osc_delete_load_balancer_policy_arg  {
-        /* Required: load_balancer_name, policy_name */
+struct osc_create_user_group_arg  {
+        /* Required: UserGroupName
+ */
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -12118,17 +8629,18 @@ struct osc_delete_load_balancer_policy_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The name of the load balancer for which you want to delete a policy.
+         * The path to the group. If not specified, it is set to a slash (`/`).
          */
-	char *load_balancer_name;
+	char *path;
         /*
-         * The name of the policy you want to delete.
+         * The name of the group.
          */
-	char *policy_name;
+	char *user_group_name;
 };
 
-struct osc_delete_load_balancer_listeners_arg  {
-        /* Required: load_balancer_name, load_balancer_ports */
+struct osc_create_user_arg  {
+        /* Required: UserName
+ */
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -12136,265 +8648,31 @@ struct osc_delete_load_balancer_listeners_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The name of the load balancer for which you want to delete listeners.
+         * The path to the EIM user you want to create (by default, `/`). This 
+         * path name must begin and end with a slash (`/`), and contain between 
+         * 1 and 512 alphanumeric characters and/or slashes (`/`), or 
+         * underscores (`_`).
          */
-	char *load_balancer_name;
+	char *path;
         /*
-         * One or more port numbers of the listeners you want to delete.
+         * The email address of the EIM user.
          */
-        char *load_balancer_ports_str;
-	int *load_balancer_ports;
-};
-
-struct osc_delete_load_balancer_arg  {
-        /* Required: load_balancer_name */
+	char *user_email;
         /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The name of the load balancer you want to delete.
-         */
-	char *load_balancer_name;
-};
-
-struct osc_delete_listener_rule_arg  {
-        /* Required: listener_rule_name */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The name of the rule you want to delete.
-         */
-	char *listener_rule_name;
-};
-
-struct osc_delete_keypair_arg  {
-        /* Required: keypair_name */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The name of the keypair you want to delete.
-         */
-	char *keypair_name;
-};
-
-struct osc_delete_internet_service_arg  {
-        /* Required: internet_service_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the Internet service you want to delete.
-         */
-	char *internet_service_id;
-};
-
-struct osc_delete_image_arg  {
-        /* Required: image_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the OMI you want to delete.
-         */
-	char *image_id;
-};
-
-struct osc_delete_flexible_gpu_arg  {
-        /* Required: flexible_gpu_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the fGPU you want to delete.
-         */
-	char *flexible_gpu_id;
-};
-
-struct osc_delete_export_task_arg  {
-        /* Required: export_task_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the export task to delete.
-         */
-	char *export_task_id;
-};
-
-struct osc_delete_direct_link_interface_arg  {
-        /* Required: direct_link_interface_id */
-        /*
-         * The ID of the DirectLink interface you want to delete.
-         */
-	char *direct_link_interface_id;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-};
-
-struct osc_delete_direct_link_arg  {
-        /* Required: direct_link_id */
-        /*
-         * The ID of the DirectLink you want to delete.
-         */
-	char *direct_link_id;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-};
-
-struct osc_delete_dhcp_options_arg  {
-        /* Required: dhcp_options_set_id */
-        /*
-         * The ID of the DHCP options set you want to delete.
-         */
-	char *dhcp_options_set_id;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-};
-
-struct osc_delete_dedicated_group_arg  {
-        /* Required: dedicated_group_id */
-        /*
-         * The ID of the dedicated group you want to delete.
-         */
-	char *dedicated_group_id;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * If true, forces the deletion of the dedicated group and all its 
-         * dependencies.
-         */
-        int is_set_force;
-	int force;
-};
-
-struct osc_delete_client_gateway_arg  {
-        /* Required: client_gateway_id */
-        /*
-         * The ID of the client gateway you want to delete.
-         */
-	char *client_gateway_id;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-};
-
-struct osc_delete_ca_arg  {
-        /* Required: ca_id */
-        /*
-         * The ID of the CA you want to delete.
-         */
-	char *ca_id;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-};
-
-struct osc_delete_api_access_rule_arg  {
-        /* Required: api_access_rule_id */
-        /*
-         * The ID of the API access rule you want to delete.
-         */
-	char *api_access_rule_id;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-};
-
-struct osc_delete_access_key_arg  {
-        /* Required: access_key_id */
-        /*
-         * The ID of the access key you want to delete.
-         */
-	char *access_key_id;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The name of the EIM user the access key you want to delete is 
-         * associated with. By default, the user who sends the request (which 
-         * can be the root account).
+         * The name of the EIM user. This user name must contain between 1 and 
+         * 64 alphanumeric characters and/or pluses (`+`), equals (`=`), commas 
+         * (`,`), periods (`.`), at signs (`@`), dashes (`-`), or underscores 
+         * (`_`).
          */
 	char *user_name;
 };
 
-struct osc_create_vpn_connection_route_arg  {
-        /* Required: destination_ip_range, vpn_connection_id */
+struct osc_create_virtual_gateway_arg  {
+        /* Required: ConnectionType
+ */
         /*
-         * The network prefix of the route, in CIDR notation (for example, 
-         * `10.12.0.0/16`).
-         */
-	char *destination_ip_range;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the target VPN connection of the static route.
-         */
-	char *vpn_connection_id;
-};
-
-struct osc_create_vpn_connection_arg  {
-        /* Required: client_gateway_id, connection_type, virtual_gateway_id */
-        /*
-         * The ID of the client gateway.
-         */
-	char *client_gateway_id;
-        /*
-         * The type of VPN connection (always `ipsec.1`).
+         * The type of VPN connection supported by the virtual gateway (always 
+         * `ipsec.1`).
          */
 	char *connection_type;
         /*
@@ -12403,24 +8681,15 @@ struct osc_create_vpn_connection_arg  {
          */
         int is_set_dry_run;
 	int dry_run;
-        /*
-         * By default or if false, the VPN connection uses dynamic routing with 
-         * Border Gateway Protocol (BGP). If true, routing is controlled using 
-         * static routes. For more information about how to create and delete 
-         * static routes, see 
-         * [CreateVpnConnectionRoute](#createvpnconnectionroute) and 
-         * [DeleteVpnConnectionRoute](#deletevpnconnectionroute).
-         */
-        int is_set_static_routes_only;
-	int static_routes_only;
-        /*
-         * The ID of the virtual gateway.
-         */
-	char *virtual_gateway_id;
 };
 
-struct osc_create_volume_arg  {
-        /* Required: subregion_name */
+struct osc_create_vm_group_arg  {
+        /* Required: SecurityGroupIds SubnetId VmGroupName VmTemplateId VmCount
+ */
+        /*
+         * A description for the VM group.
+         */
+	char *description;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -12428,41 +8697,109 @@ struct osc_create_volume_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The number of I/O operations per second (IOPS). This parameter must 
-         * be specified only if you create an `io1` volume. The maximum number 
-         * of IOPS allowed for `io1` volumes is `13000` with a maximum 
-         * performance ratio of 300 IOPS per gibibyte.
+         * The positioning strategy of VMs on hypervisors. By default, or if set 
+         * to `no-strategy` our orchestrator determines the most adequate 
+         * position for your VMs. If set to `attract`, your VMs are deployed on 
+         * the same hypervisor, which improves network performance. If set to 
+         * `repulse`, your VMs are deployed on a different hypervisor, which 
+         * improves fault tolerance.
          */
-        int is_set_iops;
-	long long int iops;
+	char *positioning_strategy;
         /*
-         * The size of the volume, in gibibytes (GiB). The maximum allowed size 
-         * for a volume is 14901 GiB. This parameter is required if the volume 
-         * is not created from a snapshot (`SnapshotId` unspecified).
+         * One or more IDs of security groups for the VM group.
          */
-        int is_set_size;
-	long long int size;
+        char *security_group_ids_str;
+	char **security_group_ids;
         /*
-         * The ID of the snapshot from which you want to create the volume.
+         * The ID of the Subnet in which you want to create the VM group.
          */
-	char *snapshot_id;
+	char *subnet_id;
         /*
-         * The Subregion in which you want to create the volume.
+         * One or more tags to add to the VM group.
+         *   Information about the tag.
+         *   --Tags.INDEX.Key: string
+         *     The key of the tag, with a minimum of 1 character.
+         *   --Tags.INDEX.Value: string
+         *     The value of the tag, between 0 and 255 characters.
          */
-	char *subregion_name;
+        char *tags_str;
+        int nb_tags;
+	struct resource_tag *tags;
         /*
-         * The type of volume you want to create (`io1` \\| `gp2` \\| 
-         * `standard`). If not specified, a `standard` volume is created.<br 
-         * />\nFor more information about volume types, see [About Volumes > 
-         * Volume Types and 
-         * IOPS](https://docs.outscale.com/en/userguide/About-Volumes.html#_volum
-         * e_types_and_iops).
+         * The number of VMs deployed in the VM group.
          */
-	char *volume_type;
+        int is_set_vm_count;
+	long long int vm_count;
+        /*
+         * The name of the VM group.
+         */
+	char *vm_group_name;
+        /*
+         * The ID of the VM template used to launch VMs in the VM group.
+         */
+	char *vm_template_id;
+};
+
+struct osc_create_vm_template_arg  {
+        /* Required: CpuCores CpuGeneration ImageId Ram VmTemplateName
+ */
+        /*
+         * The number of vCores to use for each VM.
+         */
+        int is_set_cpu_cores;
+	long long int cpu_cores;
+        /*
+         * The processor generation to use for each VM (for example, `v4`).
+         */
+	char *cpu_generation;
+        /*
+         * The performance of the VMs (`medium` \\| `high` \\| `highest`).
+         */
+	char *cpu_performance;
+        /*
+         * A description for the VM template.
+         */
+	char *description;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the OMI to use for each VM. You can find a list of OMIs by 
+         * calling the [ReadImages](#readimages) method.
+         */
+	char *image_id;
+        /*
+         * The name of the keypair to use for each VM.
+         */
+	char *keypair_name;
+        /*
+         * The amount of RAM to use for each VM.
+         */
+        int is_set_ram;
+	long long int ram;
+        /*
+         * One or more tags to add to the VM template.
+         *   Information about the tag.
+         *   --Tags.INDEX.Key: string
+         *     The key of the tag, with a minimum of 1 character.
+         *   --Tags.INDEX.Value: string
+         *     The value of the tag, between 0 and 255 characters.
+         */
+        char *tags_str;
+        int nb_tags;
+	struct resource_tag *tags;
+        /*
+         * The name of the VM template.
+         */
+	char *vm_template_name;
 };
 
 struct osc_create_vms_arg  {
-        /* Required: image_id */
+        /* Required: ImageId
+ */
         /*
          * One or more block device mappings.
          *   Information about the block device mapping.
@@ -12698,25 +9035,9 @@ struct osc_create_vms_arg  {
 	char *vm_type;
 };
 
-struct osc_create_vm_template_arg  {
-        /* Required: cpu_cores, cpu_generation, image_id, ram, vm_template_name */
-        /*
-         * The number of vCores to use for each VM.
-         */
-        int is_set_cpu_cores;
-	long long int cpu_cores;
-        /*
-         * The processor generation to use for each VM (for example, `v4`).
-         */
-	char *cpu_generation;
-        /*
-         * The performance of the VMs (`medium` \\| `high` \\| `highest`).
-         */
-	char *cpu_performance;
-        /*
-         * A description for the VM template.
-         */
-	char *description;
+struct osc_create_volume_arg  {
+        /* Required: SubregionName
+ */
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -12724,97 +9045,48 @@ struct osc_create_vm_template_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The ID of the OMI to use for each VM. You can find a list of OMIs by 
-         * calling the [ReadImages](#readimages) method.
+         * The number of I/O operations per second (IOPS). This parameter must 
+         * be specified only if you create an `io1` volume. The maximum number 
+         * of IOPS allowed for `io1` volumes is `13000` with a maximum 
+         * performance ratio of 300 IOPS per gibibyte.
          */
-	char *image_id;
+        int is_set_iops;
+	long long int iops;
         /*
-         * The name of the keypair to use for each VM.
+         * The size of the volume, in gibibytes (GiB). The maximum allowed size 
+         * for a volume is 14901 GiB. This parameter is required if the volume 
+         * is not created from a snapshot (`SnapshotId` unspecified).
          */
-	char *keypair_name;
+        int is_set_size;
+	long long int size;
         /*
-         * The amount of RAM to use for each VM.
+         * The ID of the snapshot from which you want to create the volume.
          */
-        int is_set_ram;
-	long long int ram;
+	char *snapshot_id;
         /*
-         * One or more tags to add to the VM template.
-         *   Information about the tag.
-         *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
-         *   --Tags.INDEX.Value: string
-         *     The value of the tag, between 0 and 255 characters.
+         * The Subregion in which you want to create the volume.
          */
-        char *tags_str;
-        int nb_tags;
-	struct resource_tag *tags;
+	char *subregion_name;
         /*
-         * The name of the VM template.
+         * The type of volume you want to create (`io1` \\| `gp2` \\| 
+         * `standard`). If not specified, a `standard` volume is created.<br 
+         * />\nFor more information about volume types, see [About Volumes > 
+         * Volume Types and 
+         * IOPS](https://docs.outscale.com/en/userguide/About-Volumes.html#_volum
+         * e_types_and_iops).
          */
-	char *vm_template_name;
+	char *volume_type;
 };
 
-struct osc_create_vm_group_arg  {
-        /* Required: security_group_ids, subnet_id, vm_group_name, vm_template_id, vm_count */
+struct osc_create_vpn_connection_arg  {
+        /* Required: ClientGatewayId ConnectionType VirtualGatewayId
+ */
         /*
-         * A description for the VM group.
+         * The ID of the client gateway.
          */
-	char *description;
+	char *client_gateway_id;
         /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The positioning strategy of VMs on hypervisors. By default, or if set 
-         * to `no-strategy` our orchestrator determines the most adequate 
-         * position for your VMs. If set to `attract`, your VMs are deployed on 
-         * the same hypervisor, which improves network performance. If set to 
-         * `repulse`, your VMs are deployed on a different hypervisor, which 
-         * improves fault tolerance.
-         */
-	char *positioning_strategy;
-        /*
-         * One or more IDs of security groups for the VM group.
-         */
-        char *security_group_ids_str;
-	char **security_group_ids;
-        /*
-         * The ID of the Subnet in which you want to create the VM group.
-         */
-	char *subnet_id;
-        /*
-         * One or more tags to add to the VM group.
-         *   Information about the tag.
-         *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
-         *   --Tags.INDEX.Value: string
-         *     The value of the tag, between 0 and 255 characters.
-         */
-        char *tags_str;
-        int nb_tags;
-	struct resource_tag *tags;
-        /*
-         * The number of VMs deployed in the VM group.
-         */
-        int is_set_vm_count;
-	long long int vm_count;
-        /*
-         * The name of the VM group.
-         */
-	char *vm_group_name;
-        /*
-         * The ID of the VM template used to launch VMs in the VM group.
-         */
-	char *vm_template_id;
-};
-
-struct osc_create_virtual_gateway_arg  {
-        /* Required: connection_type */
-        /*
-         * The type of VPN connection supported by the virtual gateway (always 
-         * `ipsec.1`).
+         * The type of VPN connection (always `ipsec.1`).
          */
 	char *connection_type;
         /*
@@ -12823,10 +9095,30 @@ struct osc_create_virtual_gateway_arg  {
          */
         int is_set_dry_run;
 	int dry_run;
+        /*
+         * By default or if false, the VPN connection uses dynamic routing with 
+         * Border Gateway Protocol (BGP). If true, routing is controlled using 
+         * static routes. For more information about how to create and delete 
+         * static routes, see 
+         * [CreateVpnConnectionRoute](#createvpnconnectionroute) and 
+         * [DeleteVpnConnectionRoute](#deletevpnconnectionroute).
+         */
+        int is_set_static_routes_only;
+	int static_routes_only;
+        /*
+         * The ID of the virtual gateway.
+         */
+	char *virtual_gateway_id;
 };
 
-struct osc_create_user_group_arg  {
-        /* Required: user_group_name */
+struct osc_create_vpn_connection_route_arg  {
+        /* Required: DestinationIpRange VpnConnectionId
+ */
+        /*
+         * The network prefix of the route, in CIDR notation (for example, 
+         * `10.12.0.0/16`).
+         */
+	char *destination_ip_range;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -12834,17 +9126,18 @@ struct osc_create_user_group_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The path to the group. If not specified, it is set to a slash (`/`).
+         * The ID of the target VPN connection of the static route.
          */
-	char *path;
-        /*
-         * The name of the group.
-         */
-	char *user_group_name;
+	char *vpn_connection_id;
 };
 
-struct osc_create_user_arg  {
-        /* Required: user_name */
+struct osc_delete_access_key_arg  {
+        /* Required: AccessKeyId
+ */
+        /*
+         * The ID of the access key you want to delete.
+         */
+	char *access_key_id;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -12852,27 +9145,65 @@ struct osc_create_user_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The path to the EIM user you want to create (by default, `/`). This 
-         * path name must begin and end with a slash (`/`), and contain between 
-         * 1 and 512 alphanumeric characters and/or slashes (`/`), or 
-         * underscores (`_`).
-         */
-	char *path;
-        /*
-         * The email address of the EIM user.
-         */
-	char *user_email;
-        /*
-         * The name of the EIM user. This user name must contain between 1 and 
-         * 64 alphanumeric characters and/or pluses (`+`), equals (`=`), commas 
-         * (`,`), periods (`.`), at signs (`@`), dashes (`-`), or underscores 
-         * (`_`).
+         * The name of the EIM user the access key you want to delete is 
+         * associated with. By default, the user who sends the request (which 
+         * can be the root account).
          */
 	char *user_name;
 };
 
-struct osc_create_tags_arg  {
-        /* Required: resource_ids, tags */
+struct osc_delete_api_access_rule_arg  {
+        /* Required: ApiAccessRuleId
+ */
+        /*
+         * The ID of the API access rule you want to delete.
+         */
+	char *api_access_rule_id;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+};
+
+struct osc_delete_ca_arg  {
+        /* Required: CaId
+ */
+        /*
+         * The ID of the CA you want to delete.
+         */
+	char *ca_id;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+};
+
+struct osc_delete_client_gateway_arg  {
+        /* Required: ClientGatewayId
+ */
+        /*
+         * The ID of the client gateway you want to delete.
+         */
+	char *client_gateway_id;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+};
+
+struct osc_delete_dedicated_group_arg  {
+        /* Required: DedicatedGroupId
+ */
+        /*
+         * The ID of the dedicated group you want to delete.
+         */
+	char *dedicated_group_id;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -12880,25 +9211,230 @@ struct osc_create_tags_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * One or more resource IDs.
+         * If true, forces the deletion of the dedicated group and all its 
+         * dependencies.
          */
-        char *resource_ids_str;
-	char **resource_ids;
+        int is_set_force;
+	int force;
+};
+
+struct osc_delete_dhcp_options_arg  {
+        /* Required: DhcpOptionsSetId
+ */
         /*
-         * One or more tags to add to the specified resources.
+         * The ID of the DHCP options set you want to delete.
+         */
+	char *dhcp_options_set_id;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+};
+
+struct osc_delete_direct_link_interface_arg  {
+        /* Required: DirectLinkInterfaceId
+ */
+        /*
+         * The ID of the DirectLink interface you want to delete.
+         */
+	char *direct_link_interface_id;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+};
+
+struct osc_delete_direct_link_arg  {
+        /* Required: DirectLinkId
+ */
+        /*
+         * The ID of the DirectLink you want to delete.
+         */
+	char *direct_link_id;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+};
+
+struct osc_delete_export_task_arg  {
+        /* Required: ExportTaskId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the export task to delete.
+         */
+	char *export_task_id;
+};
+
+struct osc_delete_flexible_gpu_arg  {
+        /* Required: FlexibleGpuId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the fGPU you want to delete.
+         */
+	char *flexible_gpu_id;
+};
+
+struct osc_delete_image_arg  {
+        /* Required: ImageId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the OMI you want to delete.
+         */
+	char *image_id;
+};
+
+struct osc_delete_internet_service_arg  {
+        /* Required: InternetServiceId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the Internet service you want to delete.
+         */
+	char *internet_service_id;
+};
+
+struct osc_delete_keypair_arg  {
+        /* Required: KeypairName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The name of the keypair you want to delete.
+         */
+	char *keypair_name;
+};
+
+struct osc_delete_listener_rule_arg  {
+        /* Required: ListenerRuleName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The name of the rule you want to delete.
+         */
+	char *listener_rule_name;
+};
+
+struct osc_delete_load_balancer_listeners_arg  {
+        /* Required: LoadBalancerName LoadBalancerPorts
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The name of the load balancer for which you want to delete listeners.
+         */
+	char *load_balancer_name;
+        /*
+         * One or more port numbers of the listeners you want to delete.
+         */
+        char *load_balancer_ports_str;
+	int *load_balancer_ports;
+};
+
+struct osc_delete_load_balancer_policy_arg  {
+        /* Required: LoadBalancerName PolicyName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The name of the load balancer for which you want to delete a policy.
+         */
+	char *load_balancer_name;
+        /*
+         * The name of the policy you want to delete.
+         */
+	char *policy_name;
+};
+
+struct osc_delete_load_balancer_arg  {
+        /* Required: LoadBalancerName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The name of the load balancer you want to delete.
+         */
+	char *load_balancer_name;
+};
+
+struct osc_delete_load_balancer_tags_arg  {
+        /* Required: LoadBalancerNames Tags
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * One or more load balancer names.
+         */
+        char *load_balancer_names_str;
+	char **load_balancer_names;
+        /*
+         * One or more tags to delete from the load balancers.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
-         *   --Tags.INDEX.Value: string
-         *     The value of the tag, between 0 and 255 characters.
          */
         char *tags_str;
         int nb_tags;
-	struct resource_tag *tags;
+	struct resource_load_balancer_tag *tags;
 };
 
-struct osc_create_subnet_arg  {
-        /* Required: ip_range, net_id */
+struct osc_delete_nat_service_arg  {
+        /* Required: NatServiceId
+ */
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -12906,27 +9442,59 @@ struct osc_create_subnet_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The IP range in the Subnet, in CIDR notation (for example, 
-         * `10.0.0.0/16`).<br />\nThe IP range of the Subnet can be either the 
-         * same as the Net one if you create only a single Subnet in this Net, 
-         * or a subset of the Net one. In case of several Subnets in a Net, 
-         * their IP ranges must not overlap. The smallest Subnet you can create 
-         * uses a /29 netmask (eight IPs). For more information, see [About 
-         * Nets](https://docs.outscale.com/en/userguide/About-Nets.html).
+         * The ID of the NAT service you want to delete.
          */
-	char *ip_range;
+	char *nat_service_id;
+};
+
+struct osc_delete_net_access_point_arg  {
+        /* Required: NetAccessPointId
+ */
         /*
-         * The ID of the Net for which you want to create a Subnet.
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the Net access point.
+         */
+	char *net_access_point_id;
+};
+
+struct osc_delete_net_peering_arg  {
+        /* Required: NetPeeringId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the Net peering you want to delete.
+         */
+	char *net_peering_id;
+};
+
+struct osc_delete_net_arg  {
+        /* Required: NetId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the Net you want to delete.
          */
 	char *net_id;
-        /*
-         * The name of the Subregion in which you want to create the Subnet.
-         */
-	char *subregion_name;
 };
 
-struct osc_create_snapshot_export_task_arg  {
-        /* Required: osu_export, snapshot_id */
+struct osc_delete_nic_arg  {
+        /* Required: NicId
+ */
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -12934,39 +9502,14 @@ struct osc_create_snapshot_export_task_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         *   Information about the OOS export task to create.
-         *   --OsuExport.DiskImageFormat: string
-         *     The format of the export disk (`qcow2` \\| `raw`).
-         *   --OsuExport.OsuApiKey: ref OsuApiKey
-         *       Information about the OOS API key.
-         *       --OsuExport.OsuApiKey.ApiKeyId: string
-         *         The API key of the OOS account that enables you to access the 
-         * bucket.
-         *       --OsuExport.OsuApiKey.SecretKey: string
-         *         The secret key of the OOS account that enables you to access 
-         * the bucket.
-         *   --OsuExport.OsuBucket: string
-         *     The name of the OOS bucket where you want to export the object.
-         *   --OsuExport.OsuManifestUrl: string
-         *     The URL of the manifest file.
-         *   --OsuExport.OsuPrefix: string
-         *     The prefix for the key of the OOS object.
+         * The ID of the NIC you want to delete.
          */
-        char *osu_export_str;
-        int is_set_osu_export;
-	struct osu_export_to_create osu_export;
-        /*
-         * The ID of the snapshot to export.
-         */
-	char *snapshot_id;
+	char *nic_id;
 };
 
-struct osc_create_snapshot_arg  {
-        /* Required:none */
-        /*
-         * A description for the snapshot.
-         */
-	char *description;
+struct osc_delete_policy_arg  {
+        /* Required: PolicyOrn
+ */
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -12974,49 +9517,33 @@ struct osc_create_snapshot_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * **(when importing from a bucket)** The pre-signed URL of the snapshot 
-         * you want to import. For more information, see [Creating a Pre-signed 
-         * URL](https://docs.outscale.com/en/userguide/Creating-a-Pre-Signed-URL.
-         * html).
+         * The OUTSCALE Resource Name (ORN) of the policy you want to delete. 
+         * For more information, see [Resource 
+         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
+         * rs.html).
          */
-	char *file_location;
-        /*
-         * **(when importing from a bucket)** The size of the snapshot you want 
-         * to create in your account, in bytes. This size must be greater than 
-         * or equal to the size of the original, uncompressed snapshot.
-         */
-        int is_set_snapshot_size;
-	long long int snapshot_size;
-        /*
-         * **(when copying a snapshot)** The name of the source Region, which 
-         * must be the same as the Region of your account.
-         */
-	char *source_region_name;
-        /*
-         * **(when copying a snapshot)** The ID of the snapshot you want to copy.
-         */
-	char *source_snapshot_id;
-        /*
-         * **(when creating from a volume)** The ID of the volume you want to 
-         * create a snapshot of.
-         */
-	char *volume_id;
+	char *policy_orn;
 };
 
-struct osc_create_server_certificate_arg  {
-        /* Required: body, private_key, name */
+struct osc_delete_policy_version_arg  {
+        /* Required: PolicyOrn VersionId
+ */
         /*
-         * The PEM-encoded X509 certificate.<br />With OSC CLI, use the 
-         * following syntax to make sure your certificate file is correctly 
-         * parsed: `--Body=&quot;$(cat FILENAME)&quot;`.
+         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
+         * see [Resource 
+         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
+         * rs.html).
          */
-	char *body;
+	char *policy_orn;
         /*
-         * The PEM-encoded intermediate certification authorities.<br />With OSC 
-         * CLI, use the following syntax to make sure your certificate chain 
-         * file is correctly parsed: `--Chain=&quot;$(cat FILENAME)&quot;`.
+         * The ID of the version of the policy you want to delete.
          */
-	char *chain;
+	char *version_id;
+};
+
+struct osc_delete_public_ip_arg  {
+        /* Required: null
+ */
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -13024,26 +9551,72 @@ struct osc_create_server_certificate_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * A unique name for the certificate. Constraints: 1-128 alphanumeric 
-         * characters, pluses (`+`), equals (`=`), commas (`,`), periods (`.`), 
-         * at signs (`@`), minuses (`-`), or underscores (`_`).
+         * The public IP. In the public Cloud, this parameter is required.
          */
-	char *name;
+	char *public_ip;
         /*
-         * The path to the server certificate, set to a slash (`/`) if not 
-         * specified.
+         * The ID representing the association of the public IP with the VM or 
+         * the NIC. In a Net, this parameter is required.
          */
-	char *path;
-        /*
-         * The PEM-encoded private key matching the certificate.<br />With OSC 
-         * CLI, use the following syntax to make sure your key file is correctly 
-         * parsed: `--PrivateKey=&quot;$(cat FILENAME)&quot;`.
-         */
-	char *private_key;
+	char *public_ip_id;
 };
 
-struct osc_create_security_group_rule_arg  {
-        /* Required: security_group_id, flow */
+struct osc_delete_route_arg  {
+        /* Required: RouteTableId DestinationIpRange
+ */
+        /*
+         * The exact IP range for the route.
+         */
+	char *destination_ip_range;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the route table from which you want to delete a route.
+         */
+	char *route_table_id;
+};
+
+struct osc_delete_route_table_arg  {
+        /* Required: RouteTableId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the route table you want to delete.
+         */
+	char *route_table_id;
+};
+
+struct osc_delete_security_group_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the security group you want to delete.
+         */
+	char *security_group_id;
+        /*
+         * The name of the security group.
+         */
+	char *security_group_name;
+};
+
+struct osc_delete_security_group_rule_arg  {
+        /* Required: SecurityGroupId Flow
+ */
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -13057,8 +9630,7 @@ struct osc_create_security_group_rule_arg  {
 	char *flow;
         /*
          * The beginning of the port range for the TCP and UDP protocols, or an 
-         * ICMP type number. If you specify this parameter, you cannot specify 
-         * the `Rules` parameter and its subparameters.
+         * ICMP type number.
          */
         int is_set_from_port_range;
 	long long int from_port_range;
@@ -13067,21 +9639,16 @@ struct osc_create_security_group_rule_arg  {
          * protocols). By default, `-1`. In a Net, this can also be an IP 
          * protocol number. For more information, see the [IANA.org 
          * website](https://www.iana.org/assignments/protocol-numbers/protocol-nu
-         * mbers.xhtml). If you specify this parameter, you cannot specify the 
-         * `Rules` parameter and its subparameters.
+         * mbers.xhtml).
          */
 	char *ip_protocol;
         /*
          * The IP range for the security group rule, in CIDR notation (for 
-         * example, 10.0.0.0/16). If you specify this parameter, you cannot 
-         * specify the `Rules` parameter and its subparameters.
+         * example, `10.0.0.0/16`).
          */
 	char *ip_range;
         /*
-         * Information about the security group rule to create. If you specify 
-         * this parent parameter and its subparameters, you cannot specify the 
-         * following parent parameters: `FromPortRange`, `IpProtocol`, 
-         * `IpRange`, and `ToPortRange`.
+         * One or more rules you want to delete from the security group.
          *   Information about the security group rule.
          *   --Rules.INDEX.FromPortRange: long long int
          *     The beginning of the port range for the TCP and UDP protocols, or 
@@ -13131,34 +9698,3887 @@ struct osc_create_security_group_rule_arg  {
         int nb_rules;
 	struct security_group_rule *rules;
         /*
-         * The account ID that owns the source or destination security group 
-         * specified in the `SecurityGroupNameToLink` parameter.
+         * The account ID of the owner of the security group you want to delete 
+         * a rule from.
          */
-	char *security_group_account_id_to_link;
+	char *security_group_account_id_to_unlink;
         /*
-         * The ID of the security group for which you want to create a rule.
+         * The ID of the security group you want to delete a rule from.
          */
 	char *security_group_id;
         /*
-         * The ID of a source or destination security group that you want to 
-         * link to the security group of the rule.
+         * The ID of the source security group. If you are in the Public Cloud, 
+         * you can also specify the name of the source security group.
          */
-	char *security_group_name_to_link;
+	char *security_group_name_to_unlink;
         /*
          * The end of the port range for the TCP and UDP protocols, or an ICMP 
-         * code number. If you specify this parameter, you cannot specify the 
-         * `Rules` parameter and its subparameters.
+         * code number.
          */
         int is_set_to_port_range;
 	long long int to_port_range;
 };
 
-struct osc_create_security_group_arg  {
-        /* Required: description, security_group_name */
+struct osc_delete_server_certificate_arg  {
+        /* Required: Name
+ */
         /*
-         * A description for the security group.<br />\nThis description can 
-         * contain between 1 and 255 characters. Allowed characters are `a-z`, 
-         * `A-Z`, `0-9`, accented letters, spaces, and `_.-:/()#,@[]+=&;{}!$*`.
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The name of the server certificate you want to delete.
+         */
+	char *name;
+};
+
+struct osc_delete_snapshot_arg  {
+        /* Required: SnapshotId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the snapshot you want to delete.
+         */
+	char *snapshot_id;
+};
+
+struct osc_delete_subnet_arg  {
+        /* Required: SubnetId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the Subnet you want to delete.
+         */
+	char *subnet_id;
+};
+
+struct osc_delete_tags_arg  {
+        /* Required: ResourceIds Tags
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * One or more resource IDs.
+         */
+        char *resource_ids_str;
+	char **resource_ids;
+        /*
+         * One or more tags to delete (if you set a tag value, only the tags 
+         * matching exactly this value are deleted).
+         *   Information about the tag.
+         *   --Tags.INDEX.Key: string
+         *     The key of the tag, with a minimum of 1 character.
+         *   --Tags.INDEX.Value: string
+         *     The value of the tag, between 0 and 255 characters.
+         */
+        char *tags_str;
+        int nb_tags;
+	struct resource_tag *tags;
+};
+
+struct osc_delete_user_group_policy_arg  {
+        /* Required: UserGroupName PolicyName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The name of the policy document you want to delete.
+         */
+	char *policy_name;
+        /*
+         * The name of the group.
+         */
+	char *user_group_name;
+        /*
+         * The path to the group. If not specified, it is set to a slash (`/`).
+         */
+	char *user_group_path;
+};
+
+struct osc_delete_user_group_arg  {
+        /* Required: UserGroupName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * If true, forces the deletion of the user group even if it is not 
+         * empty.
+         */
+        int is_set_force;
+	int force;
+        /*
+         * The path to the group. If not specified, it is set to a slash (`/`).
+         */
+	char *path;
+        /*
+         * The name of the group you want to delete.
+         */
+	char *user_group_name;
+};
+
+struct osc_delete_user_arg  {
+        /* Required: UserName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The name of the EIM user you want to delete.
+         */
+	char *user_name;
+};
+
+struct osc_delete_virtual_gateway_arg  {
+        /* Required: VirtualGatewayId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the virtual gateway you want to delete.
+         */
+	char *virtual_gateway_id;
+};
+
+struct osc_delete_vm_group_arg  {
+        /* Required: VmGroupId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the VM group you want to delete.
+         */
+	char *vm_group_id;
+};
+
+struct osc_delete_vm_template_arg  {
+        /* Required: VmTemplateId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the VM template you want to delete.
+         */
+	char *vm_template_id;
+};
+
+struct osc_delete_vms_arg  {
+        /* Required: VmIds
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * One or more IDs of VMs.
+         */
+        char *vm_ids_str;
+	char **vm_ids;
+};
+
+struct osc_delete_volume_arg  {
+        /* Required: VolumeId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the volume you want to delete.
+         */
+	char *volume_id;
+};
+
+struct osc_delete_vpn_connection_arg  {
+        /* Required: VpnConnectionId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the VPN connection you want to delete.
+         */
+	char *vpn_connection_id;
+};
+
+struct osc_delete_vpn_connection_route_arg  {
+        /* Required: DestinationIpRange VpnConnectionId
+ */
+        /*
+         * The network prefix of the route to delete, in CIDR notation (for 
+         * example, `10.12.0.0/16`).
+         */
+	char *destination_ip_range;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the target VPN connection of the static route to delete.
+         */
+	char *vpn_connection_id;
+};
+
+struct osc_deregister_vms_in_load_balancer_arg  {
+        /* Required: BackendVmIds LoadBalancerName
+ */
+        /*
+         * One or more IDs of backend VMs.
+         */
+        char *backend_vm_ids_str;
+	char **backend_vm_ids;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The name of the load balancer.
+         */
+	char *load_balancer_name;
+};
+
+struct osc_link_flexible_gpu_arg  {
+        /* Required: FlexibleGpuId VmId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the fGPU you want to attach.
+         */
+	char *flexible_gpu_id;
+        /*
+         * The ID of the VM you want to attach the fGPU to.
+         */
+	char *vm_id;
+};
+
+struct osc_link_internet_service_arg  {
+        /* Required: InternetServiceId NetId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the Internet service you want to attach.
+         */
+	char *internet_service_id;
+        /*
+         * The ID of the Net to which you want to attach the Internet service.
+         */
+	char *net_id;
+};
+
+struct osc_link_load_balancer_backend_machines_arg  {
+        /* Required: LoadBalancerName
+ */
+        /*
+         * One or more public IPs of backend VMs.
+         */
+        char *backend_ips_str;
+	char **backend_ips;
+        /*
+         * One or more IDs of backend VMs.
+         */
+        char *backend_vm_ids_str;
+	char **backend_vm_ids;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The name of the load balancer.
+         */
+	char *load_balancer_name;
+};
+
+struct osc_link_managed_policy_to_user_group_arg  {
+        /* Required: PolicyOrn UserGroupName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
+         * see [Resource 
+         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
+         * rs.html).
+         */
+	char *policy_orn;
+        /*
+         * The name of the group you want to link the policy to.
+         */
+	char *user_group_name;
+};
+
+struct osc_link_nic_arg  {
+        /* Required: DeviceNumber VmId NicId
+ */
+        /*
+         * The index of the VM device for the NIC attachment (between `1` and 
+         * `7`, both included).
+         */
+        int is_set_device_number;
+	long long int device_number;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the NIC you want to attach.
+         */
+	char *nic_id;
+        /*
+         * The ID of the VM to which you want to attach the NIC.
+         */
+	char *vm_id;
+};
+
+struct osc_link_policy_arg  {
+        /* Required: PolicyOrn UserName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
+         * see [Resource 
+         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
+         * rs.html).
+         */
+	char *policy_orn;
+        /*
+         * The name of the user you want to link the policy to (between 1 and 64 
+         * characters).
+         */
+	char *user_name;
+};
+
+struct osc_link_private_ips_arg  {
+        /* Required: NicId
+ */
+        /*
+         * If true, allows an IP that is already assigned to another NIC in the 
+         * same Subnet to be assigned to the NIC you specified.
+         */
+        int is_set_allow_relink;
+	int allow_relink;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the NIC.
+         */
+	char *nic_id;
+        /*
+         * The secondary private IP or IPs you want to assign to the NIC within 
+         * the IP range of the Subnet.
+         */
+        char *private_ips_str;
+	char **private_ips;
+        /*
+         * The number of secondary private IPs to assign to the NIC.
+         */
+        int is_set_secondary_private_ip_count;
+	long long int secondary_private_ip_count;
+};
+
+struct osc_link_public_ip_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, allows the public IP to be associated with the VM or NIC 
+         * that you specify even if it is already associated with another VM or 
+         * NIC. If false, prevents the public IP from being associated with the 
+         * VM or NIC that you specify if it is already associated with another 
+         * VM or NIC. (By default, true in the public Cloud, false in a Net.)
+         */
+        int is_set_allow_relink;
+	int allow_relink;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * (Net only) The ID of the NIC. This parameter is required if the VM 
+         * has more than one NIC attached. Otherwise, you need to specify the 
+         * `VmId` parameter instead. You cannot specify both parameters at the 
+         * same time.
+         */
+	char *nic_id;
+        /*
+         * (Net only) The primary or secondary private IP of the specified NIC. 
+         * By default, the primary private IP.
+         */
+	char *private_ip;
+        /*
+         * The public IP. This parameter is required unless you use the 
+         * `PublicIpId` parameter.
+         */
+	char *public_ip;
+        /*
+         * The allocation ID of the public IP. This parameter is required unless 
+         * you use the `PublicIp` parameter.
+         */
+	char *public_ip_id;
+        /*
+         * The ID of the VM.<br />\n- In the public Cloud, this parameter is 
+         * required.<br />\n- In a Net, this parameter is required if the VM has 
+         * only one NIC. Otherwise, you need to specify the `NicId` parameter 
+         * instead. You cannot specify both parameters at the same time.
+         */
+	char *vm_id;
+};
+
+struct osc_link_route_table_arg  {
+        /* Required: RouteTableId SubnetId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the route table.
+         */
+	char *route_table_id;
+        /*
+         * The ID of the Subnet.
+         */
+	char *subnet_id;
+};
+
+struct osc_link_virtual_gateway_arg  {
+        /* Required: NetId VirtualGatewayId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the Net to which you want to attach the virtual gateway.
+         */
+	char *net_id;
+        /*
+         * The ID of the virtual gateway.
+         */
+	char *virtual_gateway_id;
+};
+
+struct osc_link_volume_arg  {
+        /* Required: DeviceName VmId VolumeId
+ */
+        /*
+         * The name of the device. For a root device, you must use `/dev/sda1`. 
+         * For other volumes, you must use `/dev/sdX`, `/dev/sdXX`, `/dev/xvdX`, 
+         * or `/dev/xvdXX` (where the first `X` is a letter between `b` and `z`, 
+         * and the second `X` is a letter between `a` and `z`).
+         */
+	char *device_name;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the VM you want to attach the volume to.
+         */
+	char *vm_id;
+        /*
+         * The ID of the volume you want to attach.
+         */
+	char *volume_id;
+};
+
+struct osc_put_user_group_policy_arg  {
+        /* Required: PolicyName PolicyDocument UserGroupName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The policy document, corresponding to a JSON string that contains the 
+         * policy. For more information, see [EIM Reference 
+         * Information](https://docs.outscale.com/en/userguide/EIM-Reference-Info
+         * rmation.html) and [EIM Policy 
+         * Generator](https://docs.outscale.com/en/userguide/EIM-Policy-Generator
+         * .html).
+         */
+	char *policy_document;
+        /*
+         * The name of the policy.
+         */
+	char *policy_name;
+        /*
+         * The name of the group.
+         */
+	char *user_group_name;
+        /*
+         * The path to the group. If not specified, it is set to a slash (`/`).
+         */
+	char *user_group_path;
+};
+
+struct osc_read_access_keys_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.AccessKeyIds: array string
+         *     The IDs of the access keys.
+         *   --Filters.States: array string
+         *     The states of the access keys (`ACTIVE` \\| `INACTIVE`).
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_access_keys filters;
+        /*
+         * The name of the EIM user. By default, the user who sends the request 
+         * (which can be the root account).
+         */
+	char *user_name;
+};
+
+struct osc_read_accounts_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+};
+
+struct osc_read_admin_password_arg  {
+        /* Required: VmId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the VM.
+         */
+	char *vm_id;
+};
+
+struct osc_read_api_access_policy_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+};
+
+struct osc_read_api_access_rules_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.ApiAccessRuleIds: array string
+         *     One or more IDs of API access rules.
+         *   --Filters.CaIds: array string
+         *     One or more IDs of Client Certificate Authorities (CAs).
+         *   --Filters.Cns: array string
+         *     One or more Client Certificate Common Names (CNs).
+         *   --Filters.Descriptions: array string
+         *     One or more descriptions of API access rules.
+         *   --Filters.IpRanges: array string
+         *     One or more IPs or CIDR blocks (for example, `192.0.2.0/16`).
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_api_access_rule filters;
+};
+
+struct osc_read_api_logs_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.QueryAccessKeys: array string
+         *     The access keys used for the logged calls.
+         *   --Filters.QueryApiNames: array string
+         *     The names of the APIs of the logged calls (always `oapi` for the 
+         *     OUTSCALE API).
+         *   --Filters.QueryCallNames: array string
+         *     The names of the logged calls.
+         *   --Filters.QueryDateAfter: string
+         *     The date and time, or the date, after which you want to retrieve 
+         * logged 
+         *     calls, in ISO 8601 format (for example, 
+         * `2020-06-14T00:00:00.000Z` or 
+         *     `2020-06-14`). By default, this date is set to 48 hours before 
+         * the 
+         *     `QueryDateBefore` parameter value.
+         *   --Filters.QueryDateBefore: string
+         *     The date and time, or the date, before which you want to retrieve 
+         * logged 
+         *     calls, in ISO 8601 format (for example, 
+         * `2020-06-30T00:00:00.000Z` or 
+         *     `2020-06-14`). By default, this date is set to now, or 48 hours 
+         * after the 
+         *     `QueryDateAfter` parameter value.
+         *   --Filters.QueryIpAddresses: array string
+         *     The IPs used for the logged calls.
+         *   --Filters.QueryUserAgents: array string
+         *     The user agents of the HTTP requests of the logged calls.
+         *   --Filters.RequestIds: array string
+         *     The request IDs provided in the responses of the logged calls.
+         *   --Filters.ResponseStatusCodes: array integer
+         *     The HTTP status codes of the logged calls.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_api_log filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+        /*
+         *   The information to display in each returned log.
+         *   --With.AccountId: bool
+         *     By default or if set to true, the account ID is displayed.
+         *   --With.CallDuration: bool
+         *     By default or if set to true, the duration of the call is 
+         * displayed.
+         *   --With.QueryAccessKey: bool
+         *     By default or if set to true, the access key is displayed.
+         *   --With.QueryApiName: bool
+         *     By default or if set to true, the name of the API is displayed.
+         *   --With.QueryApiVersion: bool
+         *     By default or if set to true, the version of the API is displayed.
+         *   --With.QueryCallName: bool
+         *     By default or if set to true, the name of the call is displayed.
+         *   --With.QueryDate: bool
+         *     By default or if set to true, the date of the call is displayed.
+         *   --With.QueryHeaderRaw: bool
+         *     By default or if set to true, the raw header of the HTTP request 
+         * is 
+         *     displayed.
+         *   --With.QueryHeaderSize: bool
+         *     By default or if set to true, the size of the raw header of the 
+         * HTTP 
+         *     request is displayed.
+         *   --With.QueryIpAddress: bool
+         *     By default or if set to true, the IP is displayed.
+         *   --With.QueryPayloadRaw: bool
+         *     By default or if set to true, the raw payload of the HTTP request 
+         * is 
+         *     displayed.
+         *   --With.QueryPayloadSize: bool
+         *     By default or if set to true, the size of the raw payload of the 
+         * HTTP 
+         *     request is displayed.
+         *   --With.QueryUserAgent: bool
+         *     By default or if set to true, the user agent of the HTTP request 
+         * is 
+         *     displayed.
+         *   --With.RequestId: bool
+         *     By default or if set to true, the request ID is displayed.
+         *   --With.ResponseSize: bool
+         *     By default or if set to true, the size of the response is 
+         * displayed.
+         *   --With.ResponseStatusCode: bool
+         *     By default or if set to true, the HTTP status code of the 
+         * response is 
+         *     displayed.
+         */
+        char *with_str;
+        int is_set_with;
+	struct with with;
+};
+
+struct osc_read_cas_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.CaFingerprints: array string
+         *     The fingerprints of the CAs.
+         *   --Filters.CaIds: array string
+         *     The IDs of the CAs.
+         *   --Filters.Descriptions: array string
+         *     The descriptions of the CAs.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_ca filters;
+};
+
+struct osc_read_catalog_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+};
+
+struct osc_read_catalogs_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.CurrentCatalogOnly: bool
+         *     By default or if set to true, only returns the current catalog. 
+         * If 
+         *     false, returns the current catalog and past catalogs.
+         *   --Filters.FromDate: string
+         *     The beginning of the time period, in ISO 8601 date format (for 
+         * example, 
+         *     `2020-06-14`). This date cannot be older than 3 years. You must 
+         * specify 
+         *     the parameters `FromDate` and `ToDate` together.
+         *   --Filters.ToDate: string
+         *     The end of the time period, in ISO 8601 date format (for example, 
+         *     `2020-06-30`). You must specify the parameters `FromDate` and 
+         * `ToDate` 
+         *     together.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_catalogs filters;
+};
+
+struct osc_read_client_gateways_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.BgpAsns: array integer
+         *     The Border Gateway Protocol (BGP) Autonomous System Numbers 
+         * (ASNs) of 
+         *     the connections.
+         *   --Filters.ClientGatewayIds: array string
+         *     The IDs of the client gateways.
+         *   --Filters.ConnectionTypes: array string
+         *     The types of communication tunnels used by the client gateways 
+         * (always 
+         *     `ipsec.1`).
+         *   --Filters.PublicIps: array string
+         *     The public IPv4 addresses of the client gateways.
+         *   --Filters.States: array string
+         *     The states of the client gateways (`pending` \\| `available` \\| 
+         *     `deleting` \\| `deleted`).
+         *   --Filters.TagKeys: array string
+         *     The keys of the tags associated with the client gateways.
+         *   --Filters.TagValues: array string
+         *     The values of the tags associated with the client gateways.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the client 
+         *     gateways, in the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_client_gateway filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_console_output_arg  {
+        /* Required: VmId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the VM.
+         */
+	char *vm_id;
+};
+
+struct osc_read_consumption_account_arg  {
+        /* Required: FromDate ToDate
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The beginning of the time period, in ISO 8601 date format (for 
+         * example, `2020-06-14`). The date-time format is also accepted, but 
+         * only with a time set to midnight (for example, 
+         * `2020-06-14T00:00:00.000Z`). This value is included in the time 
+         * period.
+         */
+	char *from_date;
+        /*
+         * By default or if false, returns only the consumption of the specific 
+         * account that sends this request. If true, returns either the overall 
+         * consumption of your paying account and all linked accounts (if the 
+         * account that sends this request is a paying account) or returns 
+         * nothing (if the account that sends this request is a linked account).
+         */
+        int is_set_overall;
+	int overall;
+        /*
+         * If true, the response also includes the unit price of the consumed 
+         * resource (`UnitPrice`) and the total price of the consumed resource 
+         * during the specified time period (`Price`), in the currency of your 
+         * account.
+         */
+        int is_set_show_price;
+	int show_price;
+        /*
+         * The end of the time period, in ISO 8601 date format (for example, 
+         * `2020-06-30`). The date-time format is also accepted, but only with a 
+         * time set to midnight (for example, `2020-06-30T00:00:00.000Z`). This 
+         * value is excluded from the time period, and must be set to a later 
+         * date than `FromDate`.
+         */
+	char *to_date;
+};
+
+struct osc_read_dedicated_groups_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.CpuGenerations: array integer
+         *     The processor generation for the VMs in the dedicated group (for 
+         *     example, `4`).
+         *   --Filters.DedicatedGroupIds: array string
+         *     The IDs of the dedicated groups.
+         *   --Filters.Names: array string
+         *     The names of the dedicated groups.
+         *   --Filters.SubregionNames: array string
+         *     The names of the Subregions in which the dedicated groups are 
+         * located.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_dedicated_group filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_dhcp_options_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.Default: bool
+         *     If true, lists all default DHCP options set. If false, lists all 
+         *     non-default DHCP options set.
+         *   --Filters.DhcpOptionsSetIds: array string
+         *     The IDs of the DHCP options sets.
+         *   --Filters.DomainNameServers: array string
+         *     The IPs of the domain name servers used for the DHCP options sets.
+         *   --Filters.DomainNames: array string
+         *     The domain names used for the DHCP options sets.
+         *   --Filters.LogServers: array string
+         *     The IPs of the log servers used for the DHCP options sets.
+         *   --Filters.NtpServers: array string
+         *     The IPs of the Network Time Protocol (NTP) servers used for the 
+         * DHCP 
+         *     options sets.
+         *   --Filters.TagKeys: array string
+         *     The keys of the tags associated with the DHCP options sets.
+         *   --Filters.TagValues: array string
+         *     The values of the tags associated with the DHCP options sets.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the DHCP 
+         * options 
+         *     sets, in the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_dhcp_options filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_direct_link_interfaces_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.DirectLinkIds: array string
+         *     The IDs of the DirectLinks.
+         *   --Filters.DirectLinkInterfaceIds: array string
+         *     The IDs of the DirectLink interfaces.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_direct_link_interface filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_direct_links_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.DirectLinkIds: array string
+         *     The IDs of the DirectLinks.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_direct_link filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_entities_linked_to_policy_arg  {
+        /* Required: null
+ */
+        /*
+         * The type of entity linked to the policy (`ACCOUNT` \\| `USER` \\| 
+         * `GROUP`) you want to get information about.
+         */
+        char *entities_type_str;
+	char **entities_type;
+        /*
+         * The item starting the list of entities requested.
+         */
+        int is_set_first_item;
+	long long int first_item;
+        /*
+         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
+         * see [Resource 
+         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
+         * rs.html).
+         */
+	char *policy_orn;
+        /*
+         * The maximum number of items that can be returned in a single response 
+         * (by default, 100).
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_flexible_gpu_catalog_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+};
+
+struct osc_read_flexible_gpus_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.DeleteOnVmDeletion: bool
+         *     Indicates whether the fGPU is deleted when terminating the VM.
+         *   --Filters.FlexibleGpuIds: array string
+         *     One or more IDs of fGPUs.
+         *   --Filters.Generations: array string
+         *     The processor generations that the fGPUs are compatible with.
+         *   --Filters.ModelNames: array string
+         *     One or more models of fGPUs. For more information, see [About 
+         * Flexible 
+         *     
+         * GPUs](https://docs.outscale.com/en/userguide/About-Flexible-GPUs.html)
+         * .
+         *   --Filters.States: array string
+         *     The states of the fGPUs (`allocated` \\| `attaching` \\| 
+         * `attached` \\| 
+         *     `detaching`).
+         *   --Filters.SubregionNames: array string
+         *     The Subregions where the fGPUs are located.
+         *   --Filters.VmIds: array string
+         *     One or more IDs of VMs.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_flexible_gpu filters;
+};
+
+struct osc_read_image_export_tasks_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.TaskIds: array string
+         *     The IDs of the export tasks.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_export_task filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_images_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.AccountAliases: array string
+         *     The account aliases of the owners of the OMIs.
+         *   --Filters.AccountIds: array string
+         *     The account IDs of the owners of the OMIs. By default, all the 
+         * OMIs for 
+         *     which you have launch permissions are described.
+         *   --Filters.Architectures: array string
+         *     The architectures of the OMIs (`i386` \\| `x86_64`).
+         *   --Filters.BlockDeviceMappingDeleteOnVmDeletion: bool
+         *     Whether the volumes are deleted or not when terminating the VM.
+         *   --Filters.BlockDeviceMappingDeviceNames: array string
+         *     The device names for the volumes.
+         *   --Filters.BlockDeviceMappingSnapshotIds: array string
+         *     The IDs of the snapshots used to create the volumes.
+         *   --Filters.BlockDeviceMappingVolumeSizes: array integer
+         *     The sizes of the volumes, in gibibytes (GiB).
+         *   --Filters.BlockDeviceMappingVolumeTypes: array string
+         *     The types of volumes (`standard` \\| `gp2` \\| `io1`).
+         *   --Filters.Descriptions: array string
+         *     The descriptions of the OMIs, provided when they were created.
+         *   --Filters.FileLocations: array string
+         *     The locations of the buckets where the OMI files are stored.
+         *   --Filters.Hypervisors: array string
+         *     The hypervisor type of the OMI (always `xen`).
+         *   --Filters.ImageIds: array string
+         *     The IDs of the OMIs.
+         *   --Filters.ImageNames: array string
+         *     The names of the OMIs, provided when they were created.
+         *   --Filters.PermissionsToLaunchAccountIds: array string
+         *     The account IDs which have launch permissions for the OMIs.
+         *   --Filters.PermissionsToLaunchGlobalPermission: bool
+         *     If true, lists all public OMIs. If false, lists all private OMIs.
+         *   --Filters.ProductCodeNames: array string
+         *     The names of the product codes associated with the OMI.
+         *   --Filters.ProductCodes: array string
+         *     The product codes associated with the OMI.
+         *   --Filters.RootDeviceNames: array string
+         *     The name of the root device. This value must be /dev/sda1.
+         *   --Filters.RootDeviceTypes: array string
+         *     The types of root device used by the OMIs (`bsu` or `ebs`).
+         *   --Filters.States: array string
+         *     The states of the OMIs (`pending` \\| `available` \\| `failed`).
+         *   --Filters.TagKeys: array string
+         *     The keys of the tags associated with the OMIs.
+         *   --Filters.TagValues: array string
+         *     The values of the tags associated with the OMIs.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the OMIs, 
+         * in the 
+         *     following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         *   --Filters.VirtualizationTypes: array string
+         *     The virtualization types (always `hvm`).
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_image filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_internet_services_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.InternetServiceIds: array string
+         *     The IDs of the Internet services.
+         *   --Filters.LinkNetIds: array string
+         *     The IDs of the Nets the Internet services are attached to.
+         *   --Filters.LinkStates: array string
+         *     The current states of the attachments between the Internet 
+         * services and 
+         *     the Nets (only `available`, if the Internet gateway is attached 
+         * to a 
+         *     Net).
+         *   --Filters.TagKeys: array string
+         *     The keys of the tags associated with the Internet services.
+         *   --Filters.TagValues: array string
+         *     The values of the tags associated with the Internet services.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the 
+         * Internet 
+         *     services, in the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_internet_service filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_keypairs_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.KeypairFingerprints: array string
+         *     The fingerprints of the keypairs.
+         *   --Filters.KeypairNames: array string
+         *     The names of the keypairs.
+         *   --Filters.KeypairTypes: array string
+         *     The types of the keypairs (`ssh-rsa`, `ssh-ed25519`, 
+         *     `ecdsa-sha2-nistp256`, `ecdsa-sha2-nistp384`, or 
+         * `ecdsa-sha2-nistp521`).
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_keypair filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_linked_policies_arg  {
+        /* Required: UserName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.PathPrefix: string
+         *     The path prefix of the policies. If not specified, it is set to a 
+         * slash 
+         *     (`/`).
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct read_linked_policies_filters filters;
+        /*
+         * The item starting the list of policies requested.
+         */
+        int is_set_first_item;
+	long long int first_item;
+        /*
+         * The maximum number of items that can be returned in a single response 
+         * (by default, `100`).
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+        /*
+         * The name of the user the policies are linked to.
+         */
+	char *user_name;
+};
+
+struct osc_read_listener_rules_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.ListenerRuleNames: array string
+         *     The names of the listener rules.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_listener_rule filters;
+};
+
+struct osc_read_load_balancer_tags_arg  {
+        /* Required: LoadBalancerNames
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * One or more load balancer names.
+         */
+        char *load_balancer_names_str;
+	char **load_balancer_names;
+};
+
+struct osc_read_load_balancers_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.LoadBalancerNames: array string
+         *     The names of the load balancers.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_load_balancer filters;
+};
+
+struct osc_read_locations_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_managed_policies_linked_to_user_group_arg  {
+        /* Required: UserGroupName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.PathPrefix: string
+         *     The path prefix of the groups. If not specified, it is set to a 
+         * slash 
+         *     (`/`).
+         *   --Filters.UserGroupIds: array string
+         *     The IDs of the user groups.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_user_group filters;
+        /*
+         * The item starting the list of policies requested.
+         */
+        int is_set_first_item;
+	long long int first_item;
+        /*
+         * The maximum number of items that can be returned in a single response 
+         * (by default, `100`).
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+        /*
+         * The name of the group.
+         */
+	char *user_group_name;
+};
+
+struct osc_read_nat_services_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.ClientTokens: array string
+         *     The idempotency tokens provided when creating the NAT services.
+         *   --Filters.NatServiceIds: array string
+         *     The IDs of the NAT services.
+         *   --Filters.NetIds: array string
+         *     The IDs of the Nets in which the NAT services are.
+         *   --Filters.States: array string
+         *     The states of the NAT services (`pending` \\| `available` \\| 
+         * `deleting` 
+         *     \\| `deleted`).
+         *   --Filters.SubnetIds: array string
+         *     The IDs of the Subnets in which the NAT services are.
+         *   --Filters.TagKeys: array string
+         *     The keys of the tags associated with the NAT services.
+         *   --Filters.TagValues: array string
+         *     The values of the tags associated with the NAT services.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the NAT 
+         * services, 
+         *     in the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_nat_service filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_net_access_point_services_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.ServiceIds: array string
+         *     The IDs of the services.
+         *   --Filters.ServiceNames: array string
+         *     The names of the services.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_service filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_net_access_points_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.NetAccessPointIds: array string
+         *     The IDs of the Net access points.
+         *   --Filters.NetIds: array string
+         *     The IDs of the Nets.
+         *   --Filters.ServiceNames: array string
+         *     The names of the services. For more information, see 
+         *     [ReadNetAccessPointServices](#readnetaccesspointservices).
+         *   --Filters.States: array string
+         *     The states of the Net access points (`pending` \\| `available` 
+         * \\| 
+         *     `deleting` \\| `deleted`).
+         *   --Filters.TagKeys: array string
+         *     The keys of the tags associated with the Net access points.
+         *   --Filters.TagValues: array string
+         *     The values of the tags associated with the Net access points.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the Net 
+         * access 
+         *     points, in the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_net_access_point filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_net_peerings_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.AccepterNetAccountIds: array string
+         *     The account IDs of the owners of the peer Nets.
+         *   --Filters.AccepterNetIpRanges: array string
+         *     The IP ranges of the peer Nets, in CIDR notation (for example, 
+         *     `10.0.0.0/24`).
+         *   --Filters.AccepterNetNetIds: array string
+         *     The IDs of the peer Nets.
+         *   --Filters.ExpirationDates: array string
+         *     The dates and times at which the Net peerings expire, in ISO 8601 
+         *     date-time format (for example, `2020-06-14T00:00:00.000Z`).
+         *   --Filters.NetPeeringIds: array string
+         *     The IDs of the Net peerings.
+         *   --Filters.SourceNetAccountIds: array string
+         *     The account IDs of the owners of the peer Nets.
+         *   --Filters.SourceNetIpRanges: array string
+         *     The IP ranges of the peer Nets.
+         *   --Filters.SourceNetNetIds: array string
+         *     The IDs of the peer Nets.
+         *   --Filters.StateMessages: array string
+         *     Additional information about the states of the Net peerings.
+         *   --Filters.StateNames: array string
+         *     The states of the Net peerings (`pending-acceptance` \\| `active` 
+         * \\| 
+         *     `rejected` \\| `failed` \\| `expired` \\| `deleted`).
+         *   --Filters.TagKeys: array string
+         *     The keys of the tags associated with the Net peerings.
+         *   --Filters.TagValues: array string
+         *     The values of the tags associated with the Net peerings.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the Net 
+         * peerings, 
+         *     in the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_net_peering filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_nets_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.DhcpOptionsSetIds: array string
+         *     The IDs of the DHCP options sets.
+         *   --Filters.IpRanges: array string
+         *     The IP ranges for the Nets, in CIDR notation (for example, 
+         *     `10.0.0.0/16`).
+         *   --Filters.IsDefault: bool
+         *     If true, the Net used is the default one.
+         *   --Filters.NetIds: array string
+         *     The IDs of the Nets.
+         *   --Filters.States: array string
+         *     The states of the Nets (`pending` \\| `available` \\| `deleting`).
+         *   --Filters.TagKeys: array string
+         *     The keys of the tags associated with the Nets.
+         *   --Filters.TagValues: array string
+         *     The values of the tags associated with the Nets.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the Nets, 
+         * in the 
+         *     following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_net filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_nics_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.Descriptions: array string
+         *     The descriptions of the NICs.
+         *   --Filters.IsSourceDestCheck: bool
+         *     Whether the source/destination checking is enabled (true) or 
+         * disabled 
+         *     (false).
+         *   --Filters.LinkNicDeleteOnVmDeletion: bool
+         *     Whether the NICs are deleted when the VMs they are attached to 
+         * are 
+         *     terminated.
+         *   --Filters.LinkNicDeviceNumbers: array integer
+         *     The device numbers the NICs are attached to.
+         *   --Filters.LinkNicLinkNicIds: array string
+         *     The attachment IDs of the NICs.
+         *   --Filters.LinkNicStates: array string
+         *     The states of the attachments.
+         *   --Filters.LinkNicVmAccountIds: array string
+         *     The account IDs of the owners of the VMs the NICs are attached to.
+         *   --Filters.LinkNicVmIds: array string
+         *     The IDs of the VMs the NICs are attached to.
+         *   --Filters.LinkPublicIpAccountIds: array string
+         *     The account IDs of the owners of the public IPs associated with 
+         * the 
+         *     NICs.
+         *   --Filters.LinkPublicIpLinkPublicIpIds: array string
+         *     The association IDs returned when the public IPs were associated 
+         * with 
+         *     the NICs.
+         *   --Filters.LinkPublicIpPublicDnsNames: array string
+         *     The public DNS names associated with the public IPs.
+         *   --Filters.LinkPublicIpPublicIpIds: array string
+         *     The allocation IDs returned when the public IPs were allocated to 
+         * their 
+         *     accounts.
+         *   --Filters.LinkPublicIpPublicIps: array string
+         *     The public IPs associated with the NICs.
+         *   --Filters.MacAddresses: array string
+         *     The Media Access Control (MAC) addresses of the NICs.
+         *   --Filters.NetIds: array string
+         *     The IDs of the Nets where the NICs are located.
+         *   --Filters.NicIds: array string
+         *     The IDs of the NICs.
+         *   --Filters.PrivateDnsNames: array string
+         *     The private DNS names associated with the primary private IPs.
+         *   --Filters.PrivateIpsLinkPublicIpAccountIds: array string
+         *     The account IDs of the owner of the public IPs associated with 
+         * the 
+         *     private IPs.
+         *   --Filters.PrivateIpsLinkPublicIpPublicIps: array string
+         *     The public IPs associated with the private IPs.
+         *   --Filters.PrivateIpsPrimaryIp: bool
+         *     Whether the private IP is the primary IP associated with the NIC.
+         *   --Filters.PrivateIpsPrivateIps: array string
+         *     The private IPs of the NICs.
+         *   --Filters.SecurityGroupIds: array string
+         *     The IDs of the security groups associated with the NICs.
+         *   --Filters.SecurityGroupNames: array string
+         *     The names of the security groups associated with the NICs.
+         *   --Filters.States: array string
+         *     The states of the NICs.
+         *   --Filters.SubnetIds: array string
+         *     The IDs of the Subnets for the NICs.
+         *   --Filters.SubregionNames: array string
+         *     The Subregions where the NICs are located.
+         *   --Filters.TagKeys: array string
+         *     The keys of the tags associated with the NICs.
+         *   --Filters.TagValues: array string
+         *     The values of the tags associated with the NICs.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the NICs, 
+         * in the 
+         *     following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_nic filters;
+};
+
+struct osc_read_policies_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.OnlyLinked: bool
+         *     If set to true, lists only the policies attached to a user.
+         *   --Filters.PathPrefix: string
+         *     The path prefix you can use to filter the results. If not 
+         * specified, it 
+         *     is set to a slash (`/`).
+         *   --Filters.Scope: string
+         *     The scope to filter policies (`OWS` \\| `LOCAL`).
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct read_policies_filters filters;
+        /*
+         * The item starting the list of policies requested.
+         */
+        int is_set_first_item;
+	long long int first_item;
+        /*
+         * The maximum number of items that can be returned in a single response 
+         * (by default, `100`).
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_policy_arg  {
+        /* Required: PolicyOrn
+ */
+        /*
+         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
+         * see [Resource 
+         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
+         * rs.html).
+         */
+	char *policy_orn;
+};
+
+struct osc_read_policy_version_arg  {
+        /* Required: PolicyOrn VersionId
+ */
+        /*
+         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
+         * see [Resource 
+         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
+         * rs.html).
+         */
+	char *policy_orn;
+        /*
+         * The ID of the policy version.
+         */
+	char *version_id;
+};
+
+struct osc_read_policy_versions_arg  {
+        /* Required: PolicyOrn
+ */
+        /*
+         * The item starting the list of policies requested.
+         */
+        int is_set_first_item;
+	long long int first_item;
+        /*
+         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
+         * see [Resource 
+         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
+         * rs.html).
+         */
+	char *policy_orn;
+        /*
+         * The maximum number of items that can be returned in a single response 
+         * (by default, `100`).
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_product_types_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.ProductTypeIds: array string
+         *     The IDs of the product types.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_product_type filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_public_catalog_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+};
+
+struct osc_read_public_ip_ranges_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_public_ips_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.LinkPublicIpIds: array string
+         *     The IDs representing the associations of public IPs with VMs or 
+         * NICs.
+         *   --Filters.NicAccountIds: array string
+         *     The account IDs of the owners of the NICs.
+         *   --Filters.NicIds: array string
+         *     The IDs of the NICs.
+         *   --Filters.Placements: array string
+         *     Whether the public IPs are for use in the public Cloud or in a 
+         * Net.
+         *   --Filters.PrivateIps: array string
+         *     The private IPs associated with the public IPs.
+         *   --Filters.PublicIpIds: array string
+         *     The IDs of the public IPs.
+         *   --Filters.PublicIps: array string
+         *     The public IPs.
+         *   --Filters.TagKeys: array string
+         *     The keys of the tags associated with the public IPs.
+         *   --Filters.TagValues: array string
+         *     The values of the tags associated with the public IPs.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the public 
+         * IPs, in 
+         *     the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         *   --Filters.VmIds: array string
+         *     The IDs of the VMs.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_public_ip filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_quotas_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.Collections: array string
+         *     The group names of the quotas.
+         *   --Filters.QuotaNames: array string
+         *     The names of the quotas.
+         *   --Filters.QuotaTypes: array string
+         *     The resource IDs if these are resource-specific quotas, `global` 
+         * if they 
+         *     are not.
+         *   --Filters.ShortDescriptions: array string
+         *     The description of the quotas.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_quota filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_regions_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+};
+
+struct osc_read_route_tables_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.LinkRouteTableIds: array string
+         *     The IDs of the route tables involved in the associations.
+         *   --Filters.LinkRouteTableLinkRouteTableIds: array string
+         *     The IDs of the associations between the route tables and the 
+         * Subnets.
+         *   --Filters.LinkRouteTableMain: bool
+         *     If true, the route tables are the main ones for their Nets.
+         *   --Filters.LinkSubnetIds: array string
+         *     The IDs of the Subnets involved in the associations.
+         *   --Filters.NetIds: array string
+         *     The IDs of the Nets for the route tables.
+         *   --Filters.RouteCreationMethods: array string
+         *     The methods used to create a route.
+         *   --Filters.RouteDestinationIpRanges: array string
+         *     The IP ranges specified in routes in the tables.
+         *   --Filters.RouteDestinationServiceIds: array string
+         *     The service IDs specified in routes in the tables.
+         *   --Filters.RouteGatewayIds: array string
+         *     The IDs of the gateways specified in routes in the tables.
+         *   --Filters.RouteNatServiceIds: array string
+         *     The IDs of the NAT services specified in routes in the tables.
+         *   --Filters.RouteNetPeeringIds: array string
+         *     The IDs of the Net peerings specified in routes in the tables.
+         *   --Filters.RouteStates: array string
+         *     The states of routes in the route tables (always `active`).
+         *   --Filters.RouteTableIds: array string
+         *     The IDs of the route tables.
+         *   --Filters.RouteVmIds: array string
+         *     The IDs of the VMs specified in routes in the tables.
+         *   --Filters.TagKeys: array string
+         *     The keys of the tags associated with the route tables.
+         *   --Filters.TagValues: array string
+         *     The values of the tags associated with the route tables.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the route 
+         * tables, 
+         *     in the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_route_table filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_secret_access_key_arg  {
+        /* Required: AccessKeyId
+ */
+        /*
+         * The ID of the access key.
+         */
+	char *access_key_id;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+};
+
+struct osc_read_security_groups_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.Descriptions: array string
+         *     The descriptions of the security groups.
+         *   --Filters.InboundRuleAccountIds: array string
+         *     The account IDs that have been granted permissions.
+         *   --Filters.InboundRuleFromPortRanges: array integer
+         *     The beginnings of the port ranges for the TCP and UDP protocols, 
+         * or the 
+         *     ICMP type numbers.
+         *   --Filters.InboundRuleIpRanges: array string
+         *     The IP ranges that have been granted permissions, in CIDR 
+         * notation (for 
+         *     example, `10.0.0.0/24`).
+         *   --Filters.InboundRuleProtocols: array string
+         *     The IP protocols for the permissions (`tcp` \\| `udp` \\| `icmp`, 
+         * or a 
+         *     protocol number, or `-1` for all protocols).
+         *   --Filters.InboundRuleSecurityGroupIds: array string
+         *     The IDs of the security groups that have been granted permissions.
+         *   --Filters.InboundRuleSecurityGroupNames: array string
+         *     The names of the security groups that have been granted 
+         * permissions.
+         *   --Filters.InboundRuleToPortRanges: array integer
+         *     The ends of the port ranges for the TCP and UDP protocols, or the 
+         * ICMP 
+         *     code numbers.
+         *   --Filters.NetIds: array string
+         *     The IDs of the Nets specified when the security groups were 
+         * created.
+         *   --Filters.OutboundRuleAccountIds: array string
+         *     The account IDs that have been granted permissions.
+         *   --Filters.OutboundRuleFromPortRanges: array integer
+         *     The beginnings of the port ranges for the TCP and UDP protocols, 
+         * or the 
+         *     ICMP type numbers.
+         *   --Filters.OutboundRuleIpRanges: array string
+         *     The IP ranges that have been granted permissions, in CIDR 
+         * notation (for 
+         *     example, `10.0.0.0/24`).
+         *   --Filters.OutboundRuleProtocols: array string
+         *     The IP protocols for the permissions (`tcp` \\| `udp` \\| `icmp`, 
+         * or a 
+         *     protocol number, or `-1` for all protocols).
+         *   --Filters.OutboundRuleSecurityGroupIds: array string
+         *     The IDs of the security groups that have been granted permissions.
+         *   --Filters.OutboundRuleSecurityGroupNames: array string
+         *     The names of the security groups that have been granted 
+         * permissions.
+         *   --Filters.OutboundRuleToPortRanges: array integer
+         *     The ends of the port ranges for the TCP and UDP protocols, or the 
+         * ICMP 
+         *     code numbers.
+         *   --Filters.SecurityGroupIds: array string
+         *     The IDs of the security groups.
+         *   --Filters.SecurityGroupNames: array string
+         *     The names of the security groups.
+         *   --Filters.TagKeys: array string
+         *     The keys of the tags associated with the security groups.
+         *   --Filters.TagValues: array string
+         *     The values of the tags associated with the security groups.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the 
+         * security 
+         *     groups, in the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_security_group filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_server_certificates_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.Paths: array string
+         *     The paths to the server certificates.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_server_certificate filters;
+};
+
+struct osc_read_snapshot_export_tasks_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.TaskIds: array string
+         *     The IDs of the export tasks.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_export_task filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_snapshots_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.AccountAliases: array string
+         *     The account aliases of the owners of the snapshots.
+         *   --Filters.AccountIds: array string
+         *     The account IDs of the owners of the snapshots.
+         *   --Filters.Descriptions: array string
+         *     The descriptions of the snapshots.
+         *   --Filters.FromCreationDate: string
+         *     The beginning of the time period, in ISO 8601 date-time format 
+         * (for 
+         *     example, `2020-06-14T00:00:00.000Z`).
+         *   --Filters.PermissionsToCreateVolumeAccountIds: array string
+         *     The account IDs which have permissions to create volumes.
+         *   --Filters.PermissionsToCreateVolumeGlobalPermission: bool
+         *     If true, lists all public volumes. If false, lists all private 
+         * volumes.
+         *   --Filters.Progresses: array integer
+         *     The progresses of the snapshots, as a percentage.
+         *   --Filters.SnapshotIds: array string
+         *     The IDs of the snapshots.
+         *   --Filters.States: array string
+         *     The states of the snapshots (`in-queue` \\| `pending` \\| 
+         * `completed` 
+         *     \\| `error` \\| `deleting`).
+         *   --Filters.TagKeys: array string
+         *     The keys of the tags associated with the snapshots.
+         *   --Filters.TagValues: array string
+         *     The values of the tags associated with the snapshots.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the 
+         * snapshots, in 
+         *     the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         *   --Filters.ToCreationDate: string
+         *     The end of the time period, in ISO 8601 date-time format (for 
+         * example, 
+         *     `2020-06-30T00:00:00.000Z`).
+         *   --Filters.VolumeIds: array string
+         *     The IDs of the volumes used to create the snapshots.
+         *   --Filters.VolumeSizes: array integer
+         *     The sizes of the volumes used to create the snapshots, in 
+         * gibibytes 
+         *     (GiB).
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_snapshot filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_subnets_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.AvailableIpsCounts: array integer
+         *     The number of available IPs.
+         *   --Filters.IpRanges: array string
+         *     The IP ranges in the Subnets, in CIDR notation (for example, 
+         *     `10.0.0.0/16`).
+         *   --Filters.NetIds: array string
+         *     The IDs of the Nets in which the Subnets are.
+         *   --Filters.States: array string
+         *     The states of the Subnets (`pending` \\| `available` \\| 
+         * `deleted`).
+         *   --Filters.SubnetIds: array string
+         *     The IDs of the Subnets.
+         *   --Filters.SubregionNames: array string
+         *     The names of the Subregions in which the Subnets are located.
+         *   --Filters.TagKeys: array string
+         *     The keys of the tags associated with the Subnets.
+         *   --Filters.TagValues: array string
+         *     The values of the tags associated with the Subnets.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the 
+         * Subnets, in 
+         *     the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_subnet filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_subregions_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.RegionNames: array string
+         *     The names of the Regions containing the Subregions.
+         *   --Filters.States: array string
+         *     The states of the Subregions.
+         *   --Filters.SubregionNames: array string
+         *     The names of the Subregions.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_subregion filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_tags_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.Keys: array string
+         *     The keys of the tags that are assigned to the resources. You can 
+         * use 
+         *     this filter alongside the `Values` filter. In that case, you 
+         * filter the 
+         *     resources corresponding to each tag, regardless of the other 
+         * filter.
+         *   --Filters.ResourceIds: array string
+         *     The IDs of the resources with which the tags are associated.
+         *   --Filters.ResourceTypes: array string
+         *     The resource type (`vm` \\| `image` \\| `volume` \\| `snapshot` 
+         * \\| 
+         *     `public-ip` \\| `security-group` \\| `route-table` \\| `nic` \\| 
+         * `net` 
+         *     \\| `subnet` \\| `net-peering` \\| `net-access-point` \\| 
+         * `nat-service` 
+         *     \\| `internet-service` \\| `client-gateway` \\| `virtual-gateway` 
+         * \\| 
+         *     `vpn-connection` \\| `dhcp-options` \\| `task`).
+         *   --Filters.Values: array string
+         *     The values of the tags that are assigned to the resources. You 
+         * can use 
+         *     this filter alongside the `TagKeys` filter. In that case, you 
+         * filter the 
+         *     resources corresponding to each tag, regardless of the other 
+         * filter.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_tag filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_unit_price_arg  {
+        /* Required: Operation Service Type
+ */
+        /*
+         * The operation associated with the catalog entry (for example, 
+         * `RunInstances-OD` or `CreateVolume`).
+         */
+	char *operation;
+        /*
+         * The service associated with the catalog entry (for example, 
+         * `TinaOS-FCU` or `TinaOS-OOS`).
+         */
+	char *service;
+        /*
+         * The type associated with the catalog entry (for example, 
+         * `BSU:VolumeIOPS:io1` or `BoxUsage:tinav6.c6r16p3`).
+         */
+	char *type;
+};
+
+struct osc_read_user_group_policies_arg  {
+        /* Required: UserGroupName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The item starting the list of policies requested.
+         */
+        int is_set_first_item;
+	long long int first_item;
+        /*
+         * The maximum number of items that can be returned in a single response 
+         * (by default, `100`).
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+        /*
+         * The name of the group.
+         */
+	char *user_group_name;
+        /*
+         * The path to the group. If not specified, it is set to a slash (`/`).
+         */
+	char *user_group_path;
+};
+
+struct osc_read_user_group_policy_arg  {
+        /* Required: PolicyName UserGroupName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The name of the policy.
+         */
+	char *policy_name;
+        /*
+         * The name of the group.
+         */
+	char *user_group_name;
+        /*
+         * The path to the group. If not specified, it is set to a slash (`/`).
+         */
+	char *user_group_path;
+};
+
+struct osc_read_user_group_arg  {
+        /* Required: UserGroupName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The path to the group. If not specified, it is set to a slash (`/`).
+         */
+	char *path;
+        /*
+         * The name of the group.
+         */
+	char *user_group_name;
+};
+
+struct osc_read_user_groups_per_user_arg  {
+        /* Required: UserName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The name of the user.
+         */
+	char *user_name;
+        /*
+         * The path to the user (by default, `/`).
+         */
+	char *user_path;
+};
+
+struct osc_read_user_groups_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.PathPrefix: string
+         *     The path prefix of the groups. If not specified, it is set to a 
+         * slash 
+         *     (`/`).
+         *   --Filters.UserGroupIds: array string
+         *     The IDs of the user groups.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_user_group filters;
+        /*
+         * The item starting the list of groups requested.
+         */
+        int is_set_first_item;
+	long long int first_item;
+        /*
+         * The maximum number of items that can be returned in a single response 
+         * (by default, `100`).
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_users_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.UserIds: array string
+         *     The IDs of the users.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_users filters;
+        /*
+         * The item starting the list of users requested.
+         */
+        int is_set_first_item;
+	long long int first_item;
+        /*
+         * The maximum number of items that can be returned in a single response 
+         * (by default, `100`).
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_virtual_gateways_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.ConnectionTypes: array string
+         *     The types of the virtual gateways (always `ipsec.1`).
+         *   --Filters.LinkNetIds: array string
+         *     The IDs of the Nets the virtual gateways are attached to.
+         *   --Filters.LinkStates: array string
+         *     The current states of the attachments between the virtual 
+         * gateways and 
+         *     the Nets (`attaching` \\| `attached` \\| `detaching` \\| 
+         * `detached`).
+         *   --Filters.States: array string
+         *     The states of the virtual gateways (`pending` \\| `available` \\| 
+         *     `deleting` \\| `deleted`).
+         *   --Filters.TagKeys: array string
+         *     The keys of the tags associated with the virtual gateways.
+         *   --Filters.TagValues: array string
+         *     The values of the tags associated with the virtual gateways.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the virtual 
+         *     gateways, in the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         *   --Filters.VirtualGatewayIds: array string
+         *     The IDs of the virtual gateways.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_virtual_gateway filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_vm_groups_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.Descriptions: array string
+         *     The descriptions of the VM groups.
+         *   --Filters.SecurityGroupIds: array string
+         *     The IDs of the security groups.
+         *   --Filters.SubnetIds: array string
+         *     The IDs of the Subnets.
+         *   --Filters.TagKeys: array string
+         *     The keys of the tags associated with the VM groups.
+         *   --Filters.TagValues: array string
+         *     The values of the tags associated with the VM groups.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the VMs, in 
+         * the 
+         *     following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         *   --Filters.VmCounts: array integer
+         *     The number of VMs in the VM group.
+         *   --Filters.VmGroupIds: array string
+         *     The IDs of the VM groups.
+         *   --Filters.VmGroupNames: array string
+         *     The names of the VM groups.
+         *   --Filters.VmTemplateIds: array string
+         *     The IDs of the VM templates.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_vm_group filters;
+};
+
+struct osc_read_vm_templates_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.CpuCores: array integer
+         *     The number of vCores.
+         *   --Filters.CpuGenerations: array string
+         *     The processor generations (for example, `v4`).
+         *   --Filters.CpuPerformances: array string
+         *     The performances of the VMs.
+         *   --Filters.Descriptions: array string
+         *     The descriptions of the VM templates.
+         *   --Filters.ImageIds: array string
+         *     The IDs of the OMIs.
+         *   --Filters.KeypairNames: array string
+         *     The names of the keypairs.
+         *   --Filters.Rams: array integer
+         *     The amount of RAM.
+         *   --Filters.TagKeys: array string
+         *     The keys of the tags associated with the VM templates.
+         *   --Filters.TagValues: array string
+         *     The values of the tags associated with the VM templates.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the VM 
+         * templates, 
+         *     in the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         *   --Filters.VmTemplateIds: array string
+         *     The IDs of the VM templates.
+         *   --Filters.VmTemplateNames: array string
+         *     The names of the VM templates.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_vm_template filters;
+};
+
+struct osc_read_vm_types_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.BsuOptimized: bool
+         *     This parameter is not available. It is present in our API for the 
+         * sake 
+         *     of historical compatibility with AWS.
+         *   --Filters.EphemeralsTypes: array string
+         *     The types of ephemeral storage disk.
+         *   --Filters.Eths: array integer
+         *     The number of Ethernet interfaces available.
+         *   --Filters.Gpus: array integer
+         *     The number of GPUs available.
+         *   --Filters.MemorySizes: array double
+         *     The amounts of memory, in gibibytes (GiB).
+         *   --Filters.VcoreCounts: array integer
+         *     The numbers of vCores.
+         *   --Filters.VmTypeNames: array string
+         *     The names of the VM types. For more information, see [VM 
+         *     Types](https://docs.outscale.com/en/userguide/VM-Types.html).
+         *   --Filters.VolumeCounts: array integer
+         *     The maximum number of ephemeral storage disks.
+         *   --Filters.VolumeSizes: array integer
+         *     The size of one ephemeral storage disk, in gibibytes (GiB).
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_vm_type filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_vms_health_arg  {
+        /* Required: LoadBalancerName
+ */
+        /*
+         * One or more IDs of backend VMs.
+         */
+        char *backend_vm_ids_str;
+	char **backend_vm_ids;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The name of the load balancer.
+         */
+	char *load_balancer_name;
+};
+
+struct osc_read_vms_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.Architectures: array string
+         *     The architectures of the VMs (`i386` \\| `x86_64`).
+         *   --Filters.BlockDeviceMappingDeleteOnVmDeletion: bool
+         *     Whether the BSU volumes are deleted when terminating the VMs.
+         *   --Filters.BlockDeviceMappingDeviceNames: array string
+         *     The device names for the BSU volumes (in the format `/dev/sdX`, 
+         *     `/dev/sdXX`, `/dev/xvdX`, or `/dev/xvdXX`).
+         *   --Filters.BlockDeviceMappingLinkDates: array string
+         *     The link dates for the BSU volumes mapped to the VMs (for 
+         * example, 
+         *     `2016-01-23T18:45:30.000Z`).
+         *   --Filters.BlockDeviceMappingStates: array string
+         *     The states for the BSU volumes (`attaching` \\| `attached` \\| 
+         *     `detaching` \\| `detached`).
+         *   --Filters.BlockDeviceMappingVolumeIds: array string
+         *     The volume IDs of the BSU volumes.
+         *   --Filters.ClientTokens: array string
+         *     The idempotency tokens provided when launching the VMs.
+         *   --Filters.CreationDates: array string
+         *     The dates when the VMs were launched.
+         *   --Filters.ImageIds: array string
+         *     The IDs of the OMIs used to launch the VMs.
+         *   --Filters.IsSourceDestChecked: bool
+         *     Whether the source/destination checking is enabled (true) or 
+         * disabled 
+         *     (false).
+         *   --Filters.KeypairNames: array string
+         *     The names of the keypairs used when launching the VMs.
+         *   --Filters.LaunchNumbers: array integer
+         *     The numbers for the VMs when launching a group of several VMs 
+         * (for 
+         *     example, `0`, `1`, `2`, and so on).
+         *   --Filters.Lifecycles: array string
+         *     Whether the VMs are Spot Instances (spot).
+         *   --Filters.NetIds: array string
+         *     The IDs of the Nets in which the VMs are running.
+         *   --Filters.NicAccountIds: array string
+         *     The IDs of the NICs.
+         *   --Filters.NicDescriptions: array string
+         *     The descriptions of the NICs.
+         *   --Filters.NicIsSourceDestChecked: bool
+         *     Whether the source/destination checking is enabled (true) or 
+         * disabled 
+         *     (false).
+         *   --Filters.NicLinkNicDeleteOnVmDeletion: bool
+         *     Whether the NICs are deleted when the VMs they are attached to 
+         * are 
+         *     deleted.
+         *   --Filters.NicLinkNicDeviceNumbers: array integer
+         *     The device numbers the NICs are attached to.
+         *   --Filters.NicLinkNicLinkNicDates: array string
+         *     The dates and times (UTC) when the NICs were attached to the VMs.
+         *   --Filters.NicLinkNicLinkNicIds: array string
+         *     The IDs of the NIC attachments.
+         *   --Filters.NicLinkNicStates: array string
+         *     The states of the attachments.
+         *   --Filters.NicLinkNicVmAccountIds: array string
+         *     The account IDs of the owners of the VMs the NICs are attached to.
+         *   --Filters.NicLinkNicVmIds: array string
+         *     The IDs of the VMs the NICs are attached to.
+         *   --Filters.NicLinkPublicIpAccountIds: array string
+         *     The account IDs of the owners of the public IPs associated with 
+         * the 
+         *     NICs.
+         *   --Filters.NicLinkPublicIpLinkPublicIpIds: array string
+         *     The association IDs returned when the public IPs were associated 
+         * with 
+         *     the NICs.
+         *   --Filters.NicLinkPublicIpPublicIpIds: array string
+         *     The allocation IDs returned when the public IPs were allocated to 
+         * their 
+         *     accounts.
+         *   --Filters.NicLinkPublicIpPublicIps: array string
+         *     The public IPs associated with the NICs.
+         *   --Filters.NicMacAddresses: array string
+         *     The Media Access Control (MAC) addresses of the NICs.
+         *   --Filters.NicNetIds: array string
+         *     The IDs of the Nets where the NICs are located.
+         *   --Filters.NicNicIds: array string
+         *     The IDs of the NICs.
+         *   --Filters.NicPrivateIpsLinkPublicIpAccountIds: array string
+         *     The account IDs of the owner of the public IPs associated with 
+         * the 
+         *     private IPs.
+         *   --Filters.NicPrivateIpsLinkPublicIpIds: array string
+         *     The public IPs associated with the private IPs.
+         *   --Filters.NicPrivateIpsPrimaryIp: bool
+         *     Whether the private IPs are the primary IPs associated with the 
+         * NICs.
+         *   --Filters.NicPrivateIpsPrivateIps: array string
+         *     The private IPs of the NICs.
+         *   --Filters.NicSecurityGroupIds: array string
+         *     The IDs of the security groups associated with the NICs.
+         *   --Filters.NicSecurityGroupNames: array string
+         *     The names of the security groups associated with the NICs.
+         *   --Filters.NicStates: array string
+         *     The states of the NICs (`available` \\| `in-use`).
+         *   --Filters.NicSubnetIds: array string
+         *     The IDs of the Subnets for the NICs.
+         *   --Filters.NicSubregionNames: array string
+         *     The Subregions where the NICs are located.
+         *   --Filters.Platforms: array string
+         *     The platforms. Use windows if you have Windows VMs. Otherwise, 
+         * leave 
+         *     this filter blank.
+         *   --Filters.PrivateIps: array string
+         *     The private IPs of the VMs.
+         *   --Filters.ProductCodes: array string
+         *     The product codes associated with the OMI used to create the VMs.
+         *   --Filters.PublicIps: array string
+         *     The public IPs of the VMs.
+         *   --Filters.ReservationIds: array string
+         *     The IDs of the reservation of the VMs, created every time you 
+         * launch 
+         *     VMs. These reservation IDs can be associated with several VMs 
+         * when you 
+         *     lauch a group of VMs using the same launch request.
+         *   --Filters.RootDeviceNames: array string
+         *     The names of the root devices for the VMs (for example, 
+         * `/dev/sda1`)
+         *   --Filters.RootDeviceTypes: array string
+         *     The root devices types used by the VMs (always `ebs`)
+         *   --Filters.SecurityGroupIds: array string
+         *     The IDs of the security groups for the VMs (only in the public 
+         * Cloud).
+         *   --Filters.SecurityGroupNames: array string
+         *     The names of the security groups for the VMs (only in the public 
+         * Cloud).
+         *   --Filters.StateReasonCodes: array integer
+         *     The reason codes for the state changes.
+         *   --Filters.StateReasonMessages: array string
+         *     The messages describing the state changes.
+         *   --Filters.StateReasons: array string
+         *     The reasons explaining the current states of the VMs. This filter 
+         * is 
+         *     like the `StateReasonCodes` one.
+         *   --Filters.SubnetIds: array string
+         *     The IDs of the Subnets for the VMs.
+         *   --Filters.SubregionNames: array string
+         *     The names of the Subregions of the VMs.
+         *   --Filters.TagKeys: array string
+         *     The keys of the tags associated with the VMs.
+         *   --Filters.TagValues: array string
+         *     The values of the tags associated with the VMs.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the VMs, in 
+         * the 
+         *     following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         *   --Filters.Tenancies: array string
+         *     The tenancies of the VMs (`dedicated` \\| `default` \\| `host`).
+         *   --Filters.VmIds: array string
+         *     One or more IDs of VMs.
+         *   --Filters.VmSecurityGroupIds: array string
+         *     The IDs of the security groups for the VMs.
+         *   --Filters.VmSecurityGroupNames: array string
+         *     The names of the security group for the VMs.
+         *   --Filters.VmStateCodes: array integer
+         *     The state codes of the VMs: `-1` (quarantine), `0` (pending), 
+         * `16` 
+         *     (running), `32` (shutting-down), `48` (terminated), `64` 
+         * (stopping), and 
+         *     `80` (stopped).
+         *   --Filters.VmStateNames: array string
+         *     The state names of the VMs (`pending` \\| `running` \\| 
+         * `stopping` \\| 
+         *     `stopped` \\| `shutting-down` \\| `terminated` \\| `quarantine`).
+         *   --Filters.VmTypes: array string
+         *     The VM types (for example, t2.micro). For more information, see 
+         * [VM 
+         *     Types](https://docs.outscale.com/en/userguide/VM-Types.html).
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_vm filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_vms_state_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, includes the status of all VMs. By default or if set to 
+         * false, only includes the status of running VMs.
+         */
+        int is_set_all_vms;
+	int all_vms;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.MaintenanceEventCodes: array string
+         *     The code for the scheduled event (`system-reboot` \\| 
+         *     `system-maintenance`).
+         *   --Filters.MaintenanceEventDescriptions: array string
+         *     The description of the scheduled event.
+         *   --Filters.MaintenanceEventsNotAfter: array string
+         *     The latest date and time (UTC) the event can end.
+         *   --Filters.MaintenanceEventsNotBefore: array string
+         *     The earliest date and time (UTC) the event can start.
+         *   --Filters.SubregionNames: array string
+         *     The names of the Subregions of the VMs.
+         *   --Filters.VmIds: array string
+         *     One or more IDs of VMs.
+         *   --Filters.VmStates: array string
+         *     The states of the VMs (`pending` \\| `running` \\| `stopping` \\| 
+         *     `stopped` \\| `shutting-down` \\| `terminated` \\| `quarantine`).
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_vms_state filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_volumes_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.CreationDates: array string
+         *     The dates and times at which the volumes were created, in ISO 
+         * 8601 
+         *     date-time format (for example, `2020-06-30T00:00:00.000Z`).
+         *   --Filters.LinkVolumeDeleteOnVmDeletion: bool
+         *     Whether the volumes are deleted or not when terminating the VMs.
+         *   --Filters.LinkVolumeDeviceNames: array string
+         *     The VM device names.
+         *   --Filters.LinkVolumeLinkDates: array string
+         *     The dates and times at which the volumes were attached, in ISO 
+         * 8601 
+         *     date-time format (for example, `2020-06-30T00:00:00.000Z`).
+         *   --Filters.LinkVolumeLinkStates: array string
+         *     The attachment states of the volumes (`attaching` \\| `detaching` 
+         * \\| 
+         *     `attached` \\| `detached`).
+         *   --Filters.LinkVolumeVmIds: array string
+         *     One or more IDs of VMs.
+         *   --Filters.SnapshotIds: array string
+         *     The snapshots from which the volumes were created.
+         *   --Filters.SubregionNames: array string
+         *     The names of the Subregions in which the volumes were created.
+         *   --Filters.TagKeys: array string
+         *     The keys of the tags associated with the volumes.
+         *   --Filters.TagValues: array string
+         *     The values of the tags associated with the volumes.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the 
+         * volumes, in 
+         *     the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         *   --Filters.VolumeIds: array string
+         *     The IDs of the volumes.
+         *   --Filters.VolumeSizes: array integer
+         *     The sizes of the volumes, in gibibytes (GiB).
+         *   --Filters.VolumeStates: array string
+         *     The states of the volumes (`creating` \\| `available` \\| 
+         * `in-use` \\| 
+         *     `updating` \\| `deleting` \\| `error`).
+         *   --Filters.VolumeTypes: array string
+         *     The types of the volumes (`standard` \\| `gp2` \\| `io1`).
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_volume filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_read_vpn_connections_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   One or more filters.
+         *   --Filters.BgpAsns: array integer
+         *     The Border Gateway Protocol (BGP) Autonomous System Numbers 
+         * (ASNs) of 
+         *     the connections.
+         *   --Filters.ClientGatewayIds: array string
+         *     The IDs of the client gateways.
+         *   --Filters.ConnectionTypes: array string
+         *     The types of the VPN connections (always `ipsec.1`).
+         *   --Filters.RouteDestinationIpRanges: array string
+         *     The destination IP ranges.
+         *   --Filters.States: array string
+         *     The states of the VPN connections (`pending` \\| `available` \\| 
+         *     `deleting` \\| `deleted`).
+         *   --Filters.StaticRoutesOnly: bool
+         *     If false, the VPN connection uses dynamic routing with Border 
+         * Gateway 
+         *     Protocol (BGP). If true, routing is controlled using static 
+         * routes. For 
+         *     more information about how to create and delete static routes, 
+         * see 
+         *     [CreateVpnConnectionRoute](#createvpnconnectionroute) and 
+         *     [DeleteVpnConnectionRoute](#deletevpnconnectionroute).
+         *   --Filters.TagKeys: array string
+         *     The keys of the tags associated with the VPN connections.
+         *   --Filters.TagValues: array string
+         *     The values of the tags associated with the VPN connections.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the VPN 
+         *     connections, in the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         *   --Filters.VirtualGatewayIds: array string
+         *     The IDs of the virtual gateways.
+         *   --Filters.VpnConnectionIds: array string
+         *     The IDs of the VPN connections.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_vpn_connection filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
+struct osc_reboot_vms_arg  {
+        /* Required: VmIds
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * One or more IDs of the VMs you want to reboot.
+         */
+        char *vm_ids_str;
+	char **vm_ids;
+};
+
+struct osc_register_vms_in_load_balancer_arg  {
+        /* Required: BackendVmIds LoadBalancerName
+ */
+        /*
+         * One or more IDs of backend VMs.<br />\nSpecifying the same ID several 
+         * times has no effect as each backend VM has equal weight.
+         */
+        char *backend_vm_ids_str;
+	char **backend_vm_ids;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The name of the load balancer.
+         */
+	char *load_balancer_name;
+};
+
+struct osc_reject_net_peering_arg  {
+        /* Required: NetPeeringId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the Net peering you want to reject.
+         */
+	char *net_peering_id;
+};
+
+struct osc_remove_user_from_user_group_arg  {
+        /* Required: UserGroupName UserName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The name of the group you want to remove the user from.
+         */
+	char *user_group_name;
+        /*
+         * The path to the group. If not specified, it is set to a slash (`/`).
+         */
+	char *user_group_path;
+        /*
+         * The name of the user you want to remove from the group.
+         */
+	char *user_name;
+        /*
+         * The path to the user (by default, `/`).
+         */
+	char *user_path;
+};
+
+struct osc_scale_down_vm_group_arg  {
+        /* Required: VmGroupId VmSubtraction
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the VM group you want to scale down.
+         */
+	char *vm_group_id;
+        /*
+         * The number of VMs you want to delete from the VM group.
+         */
+        int is_set_vm_subtraction;
+	long long int vm_subtraction;
+};
+
+struct osc_scale_up_vm_group_arg  {
+        /* Required: VmGroupId VmAddition
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The number of VMs you want to add to the VM group.
+         */
+        int is_set_vm_addition;
+	long long int vm_addition;
+        /*
+         * The ID of the VM group you want to scale up.
+         */
+	char *vm_group_id;
+};
+
+struct osc_set_default_policy_version_arg  {
+        /* Required: PolicyOrn VersionId
+ */
+        /*
+         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
+         * see [Resource 
+         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
+         * rs.html).
+         */
+	char *policy_orn;
+        /*
+         * The ID of the version.
+         */
+	char *version_id;
+};
+
+struct osc_start_vms_arg  {
+        /* Required: VmIds
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * One or more IDs of VMs.
+         */
+        char *vm_ids_str;
+	char **vm_ids;
+};
+
+struct osc_stop_vms_arg  {
+        /* Required: VmIds
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * Forces the VM to stop.
+         */
+        int is_set_force_stop;
+	int force_stop;
+        /*
+         * One or more IDs of VMs.
+         */
+        char *vm_ids_str;
+	char **vm_ids;
+};
+
+struct osc_unlink_flexible_gpu_arg  {
+        /* Required: FlexibleGpuId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the fGPU you want to detach from your VM.
+         */
+	char *flexible_gpu_id;
+};
+
+struct osc_unlink_internet_service_arg  {
+        /* Required: InternetServiceId NetId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the Internet service you want to detach.
+         */
+	char *internet_service_id;
+        /*
+         * The ID of the Net from which you want to detach the Internet service.
+         */
+	char *net_id;
+};
+
+struct osc_unlink_load_balancer_backend_machines_arg  {
+        /* Required: LoadBalancerName
+ */
+        /*
+         * One or more public IPs of backend VMs.
+         */
+        char *backend_ips_str;
+	char **backend_ips;
+        /*
+         * One or more IDs of backend VMs.
+         */
+        char *backend_vm_ids_str;
+	char **backend_vm_ids;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The name of the load balancer.
+         */
+	char *load_balancer_name;
+};
+
+struct osc_unlink_managed_policy_from_user_group_arg  {
+        /* Required: PolicyOrn UserGroupName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
+         * see [Resource 
+         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
+         * rs.html).
+         */
+	char *policy_orn;
+        /*
+         * The name of the group you want to unlink the policy from.
+         */
+	char *user_group_name;
+};
+
+struct osc_unlink_nic_arg  {
+        /* Required: LinkNicId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the attachment operation.
+         */
+	char *link_nic_id;
+};
+
+struct osc_unlink_policy_arg  {
+        /* Required: PolicyOrn UserName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
+         * see [Resource 
+         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
+         * rs.html).
+         */
+	char *policy_orn;
+        /*
+         * The name of the user you want to detach the policy from.
+         */
+	char *user_name;
+};
+
+struct osc_unlink_private_ips_arg  {
+        /* Required: NicId PrivateIps
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the NIC.
+         */
+	char *nic_id;
+        /*
+         * One or more secondary private IPs you want to unassign from the NIC.
+         */
+        char *private_ips_str;
+	char **private_ips;
+};
+
+struct osc_unlink_public_ip_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID representing the association of the public IP with the VM or 
+         * the NIC. This parameter is required unless you use the `PublicIp` 
+         * parameter.
+         */
+	char *link_public_ip_id;
+        /*
+         * The public IP. This parameter is required unless you use the 
+         * `LinkPublicIpId` parameter.
+         */
+	char *public_ip;
+};
+
+struct osc_unlink_route_table_arg  {
+        /* Required: LinkRouteTableId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the association between the route table and the Subnet.
+         */
+	char *link_route_table_id;
+};
+
+struct osc_unlink_virtual_gateway_arg  {
+        /* Required: NetId VirtualGatewayId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the Net from which you want to detach the virtual gateway.
+         */
+	char *net_id;
+        /*
+         * The ID of the virtual gateway.
+         */
+	char *virtual_gateway_id;
+};
+
+struct osc_unlink_volume_arg  {
+        /* Required: VolumeId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * Forces the detachment of the volume in case of previous failure. 
+         * Important: This action may damage your data or file systems.
+         */
+        int is_set_force_unlink;
+	int force_unlink;
+        /*
+         * The ID of the volume you want to detach.
+         */
+	char *volume_id;
+};
+
+struct osc_update_access_key_arg  {
+        /* Required: AccessKeyId State
+ */
+        /*
+         * The ID of the access key.
+         */
+	char *access_key_id;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The date and time, or the date, at which you want the access key to 
+         * expire, in ISO 8601 format (for example, `2020-06-14T00:00:00.000Z` 
+         * or `2020-06-14`). If not specified, the access key is set to not 
+         * expire.
+         */
+	char *expiration_date;
+        /*
+         * The new state for the access key (`ACTIVE` \\| `INACTIVE`). When set 
+         * to `ACTIVE`, the access key is enabled and can be used to send 
+         * requests. When set to `INACTIVE`, the access key is disabled.
+         */
+	char *state;
+        /*
+         * The name of the EIM user that the access key you want to modify is 
+         * associated with. If you do not specify a user name, this action 
+         * modifies the access key of the user who sends the request (which can 
+         * be the root account).
+         */
+	char *user_name;
+};
+
+struct osc_update_account_arg  {
+        /* Required: null
+ */
+        /*
+         * One or more additional email addresses for the account. These 
+         * addresses are used for notifications only. If you already have a list 
+         * of additional emails registered, you cannot add to it, only replace 
+         * it. To remove all registered additional emails, specify an empty list.
+         */
+        char *additional_emails_str;
+	char **additional_emails;
+        /*
+         * The new city of the account owner.
+         */
+	char *city;
+        /*
+         * The new name of the company for the account.
+         */
+	char *company_name;
+        /*
+         * The new country of the account owner.
+         */
+	char *country;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The main email address for the account. This address is used for your 
+         * credentials and notifications.
+         */
+	char *email;
+        /*
+         * The new first name of the account owner.
+         */
+	char *first_name;
+        /*
+         * The new job title of the account owner.
+         */
+	char *job_title;
+        /*
+         * The new last name of the account owner.
+         */
+	char *last_name;
+        /*
+         * The new mobile phone number of the account owner.
+         */
+	char *mobile_number;
+        /*
+         * The new landline phone number of the account owner.
+         */
+	char *phone_number;
+        /*
+         * The new state/province of the account owner.
+         */
+	char *state_province;
+        /*
+         * The new value added tax (VAT) number for the account.
+         */
+	char *vat_number;
+        /*
+         * The new ZIP code of the city.
+         */
+	char *zip_code;
+};
+
+struct osc_update_api_access_policy_arg  {
+        /* Required: MaxAccessKeyExpirationSeconds RequireTrustedEnv
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The maximum possible lifetime for your access keys, in seconds 
+         * (between `0` and `3153600000`, both included). If set to `O`, your 
+         * access keys can have unlimited lifetimes, but a trusted session 
+         * cannot be activated. Otherwise, all your access keys must have an 
+         * expiration date. This value must be greater than the remaining 
+         * lifetime of each access key of your account.
+         */
+        int is_set_max_access_key_expiration_seconds;
+	long long int max_access_key_expiration_seconds;
+        /*
+         * If true, a trusted session is activated, provided that you specify 
+         * the `MaxAccessKeyExpirationSeconds` parameter with a value greater 
+         * than `0`.<br />\nEnabling this will require you and all your users to 
+         * log in to Cockpit v2 using the WebAuthn method for multi-factor 
+         * authentication. For more information, see [About Authentication > 
+         * Multi-Factor 
+         * Authentication](https://docs.outscale.com/en/userguide/About-Authentic
+         * ation.html#_multi_factor_authentication).
+         */
+        int is_set_require_trusted_env;
+	int require_trusted_env;
+};
+
+struct osc_update_api_access_rule_arg  {
+        /* Required: ApiAccessRuleId
+ */
+        /*
+         * The ID of the API access rule you want to update.
+         */
+	char *api_access_rule_id;
+        /*
+         * One or more IDs of Client Certificate Authorities (CAs).
+         */
+        char *ca_ids_str;
+	char **ca_ids;
+        /*
+         * One or more Client Certificate Common Names (CNs).
+         */
+        char *cns_str;
+	char **cns;
+        /*
+         * A new description for the API access rule.
          */
 	char *description;
         /*
@@ -13168,20 +13588,38 @@ struct osc_create_security_group_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The ID of the Net for the security group.
+         * One or more IPs or CIDR blocks (for example, `192.0.2.0/16`).
          */
-	char *net_id;
-        /*
-         * The name of the security group.<br />\nThis name must not start with 
-         * `sg-`.<br />\nThis name must be unique and contain between 1 and 255 
-         * characters. Allowed characters are `a-z`, `A-Z`, `0-9`, spaces, and 
-         * `_.-:/()#,@[]+=&;{}!$*`.
-         */
-	char *security_group_name;
+        char *ip_ranges_str;
+	char **ip_ranges;
 };
 
-struct osc_create_route_table_arg  {
-        /* Required: net_id */
+struct osc_update_ca_arg  {
+        /* Required: CaId
+ */
+        /*
+         * The ID of the CA.
+         */
+	char *ca_id;
+        /*
+         * The description of the CA.
+         */
+	char *description;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+};
+
+struct osc_update_dedicated_group_arg  {
+        /* Required: DedicatedGroupId Name
+ */
+        /*
+         * The ID of the dedicated group you want to update.
+         */
+	char *dedicated_group_id;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -13189,13 +13627,359 @@ struct osc_create_route_table_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The ID of the Net for which you want to create a route table.
+         * The new name of the dedicated group.
+         */
+	char *name;
+};
+
+struct osc_update_direct_link_interface_arg  {
+        /* Required: DirectLinkInterfaceId Mtu
+ */
+        /*
+         * The ID of the DirectLink interface you want to update.
+         */
+	char *direct_link_interface_id;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The maximum transmission unit (MTU) of the DirectLink interface, in 
+         * bytes (always `1500`).
+         */
+        int is_set_mtu;
+	long long int mtu;
+};
+
+struct osc_update_flexible_gpu_arg  {
+        /* Required: FlexibleGpuId
+ */
+        /*
+         * If true, the fGPU is deleted when the VM is terminated.
+         */
+        int is_set_delete_on_vm_deletion;
+	int delete_on_vm_deletion;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the fGPU you want to modify.
+         */
+	char *flexible_gpu_id;
+};
+
+struct osc_update_image_arg  {
+        /* Required: ImageId
+ */
+        /*
+         * A new description for the image.
+         */
+	char *description;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the OMI you want to modify.
+         */
+	char *image_id;
+        /*
+         *   Information about the permissions for the resource.<br />\nSpecify 
+         *   either the `Additions` or the `Removals` parameter.
+         *   --PermissionsToLaunch.Additions: ref PermissionsOnResource
+         *       Permissions for the resource.
+         *       --PermissionsToLaunch.Additions.AccountIds: array string
+         *         One or more account IDs that the permission is associated 
+         * with.
+         *       --PermissionsToLaunch.Additions.GlobalPermission: bool
+         *         A global permission for all accounts.<br />\n(Request) Set 
+         * this 
+         *         parameter to true to make the resource public (if the parent 
+         * parameter is 
+         *         `Additions`) or to make the resource private (if the parent 
+         * parameter is 
+         *         `Removals`).<br />\n(Response) If true, the resource is 
+         * public. If false, 
+         *         the resource is private.
+         *   --PermissionsToLaunch.Removals: ref PermissionsOnResource
+         *       Permissions for the resource.
+         *       --PermissionsToLaunch.Removals.AccountIds: array string
+         *         One or more account IDs that the permission is associated 
+         * with.
+         *       --PermissionsToLaunch.Removals.GlobalPermission: bool
+         *         A global permission for all accounts.<br />\n(Request) Set 
+         * this 
+         *         parameter to true to make the resource public (if the parent 
+         * parameter is 
+         *         `Additions`) or to make the resource private (if the parent 
+         * parameter is 
+         *         `Removals`).<br />\n(Response) If true, the resource is 
+         * public. If false, 
+         *         the resource is private.
+         */
+        char *permissions_to_launch_str;
+        int is_set_permissions_to_launch;
+	struct permissions_on_resource_creation permissions_to_launch;
+};
+
+struct osc_update_listener_rule_arg  {
+        /* Required: ListenerRuleName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * A host-name pattern for the rule, with a maximum length of 128 
+         * characters. This host-name pattern supports maximum three wildcards, 
+         * and must not contain any special characters except `-.?`.
+         */
+	char *host_pattern;
+        /*
+         * The name of the listener rule.
+         */
+	char *listener_rule_name;
+        /*
+         * A path pattern for the rule, with a maximum length of 128 characters. 
+         * This path pattern supports maximum three wildcards, and must not 
+         * contain any special characters except `_-.$/~&quot;'@:+?`.
+         */
+	char *path_pattern;
+};
+
+struct osc_update_load_balancer_arg  {
+        /* Required: LoadBalancerName
+ */
+        /*
+         *   Information about access logs.
+         *   --AccessLog.IsEnabled: bool
+         *     If true, access logs are enabled for your load balancer. If 
+         * false, they 
+         *     are not. If you set this to true in your request, the 
+         * `OsuBucketName` 
+         *     parameter is required.
+         *   --AccessLog.OsuBucketName: string
+         *     The name of the OOS bucket for the access logs.
+         *   --AccessLog.OsuBucketPrefix: string
+         *     The path to the folder of the access logs in your OOS bucket (by 
+         *     default, the `root` level of your bucket).
+         *   --AccessLog.PublicationInterval: long long int
+         *     The time interval for the publication of access logs in the OOS 
+         * bucket, 
+         *     in minutes. This value can be either `5` or `60` (by default, 
+         * `60`).
+         */
+        char *access_log_str;
+        int is_set_access_log;
+	struct access_log access_log;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   Information about the health check configuration.
+         *   --HealthCheck.CheckInterval: long long int
+         *     The number of seconds between two requests (between `5` and `600` 
+         * both 
+         *     included).
+         *   --HealthCheck.HealthyThreshold: long long int
+         *     The number of consecutive successful requests before considering 
+         * the VM 
+         *     as healthy (between `2` and `10` both included).
+         *   --HealthCheck.Path: string
+         *     If you use the HTTP or HTTPS protocols, the request URL path.
+         *   --HealthCheck.Port: long long int
+         *     The port number (between `1` and `65535`, both included).
+         *   --HealthCheck.Protocol: string
+         *     The protocol for the URL of the VM (`HTTP` \\| `HTTPS` \\| `TCP` 
+         * \\| 
+         *     `SSL`).
+         *   --HealthCheck.Timeout: long long int
+         *     The maximum waiting time for a response before considering the VM 
+         * as 
+         *     unhealthy, in seconds (between `2` and `60` both included).
+         *   --HealthCheck.UnhealthyThreshold: long long int
+         *     The number of consecutive failed requests before considering the 
+         * VM as 
+         *     unhealthy (between `2` and `10` both included).
+         */
+        char *health_check_str;
+        int is_set_health_check;
+	struct health_check health_check;
+        /*
+         * The name of the load balancer.
+         */
+	char *load_balancer_name;
+        /*
+         * The port on which the load balancer is listening (between `1` and 
+         * `65535`, both included). This parameter is required if you want to 
+         * update the server certificate.
+         */
+        int is_set_load_balancer_port;
+	long long int load_balancer_port;
+        /*
+         * The name of the policy you want to enable for the listener.
+         */
+        char *policy_names_str;
+	char **policy_names;
+        /*
+         * (internet-facing only) The public IP you want to associate with the 
+         * load balancer. The former public IP of the load balancer is then 
+         * disassociated. If you specify an empty string and the former public 
+         * IP belonged to you, it is disassociated and replaced by a public IP 
+         * owned by 3DS OUTSCALE.
+         */
+	char *public_ip;
+        /*
+         * If true, secure cookies are enabled for the load balancer.
+         */
+        int is_set_secured_cookies;
+	int secured_cookies;
+        /*
+         * (Net only) One or more IDs of security groups you want to assign to 
+         * the load balancer. You need to specify the already assigned security 
+         * groups that you want to keep along with the new ones you are 
+         * assigning. If the list is empty, the default security group of the 
+         * Net is assigned to the load balancer.
+         */
+        char *security_groups_str;
+	char **security_groups;
+        /*
+         * The OUTSCALE Resource Name (ORN) of the server certificate. For more 
+         * information, see [Resource Identifiers > OUTSCALE Resource Names 
+         * (ORNs)](https://docs.outscale.com/en/userguide/Resource-Identifiers.ht
+         * ml#_outscale_resource_names_orns). If this parameter is specified, 
+         * you must also specify the `LoadBalancerPort` parameter.
+         */
+	char *server_certificate_id;
+};
+
+struct osc_update_net_access_point_arg  {
+        /* Required: NetAccessPointId
+ */
+        /*
+         * One or more IDs of route tables to associate with the specified Net 
+         * access point.
+         */
+        char *add_route_table_ids_str;
+	char **add_route_table_ids;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the Net access point.
+         */
+	char *net_access_point_id;
+        /*
+         * One or more IDs of route tables to disassociate from the specified 
+         * Net access point.
+         */
+        char *remove_route_table_ids_str;
+	char **remove_route_table_ids;
+};
+
+struct osc_update_net_arg  {
+        /* Required: DhcpOptionsSetId NetId
+ */
+        /*
+         * The ID of the DHCP options set (or `default` if you want to associate 
+         * the default one).
+         */
+	char *dhcp_options_set_id;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The ID of the Net.
          */
 	char *net_id;
 };
 
-struct osc_create_route_arg  {
-        /* Required: destination_ip_range, route_table_id */
+struct osc_update_nic_arg  {
+        /* Required: NicId
+ */
+        /*
+         * A new description for the NIC.
+         */
+	char *description;
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   Information about the NIC attachment. If you are modifying the 
+         *   `DeleteOnVmDeletion` attribute, you must specify the ID of the NIC 
+         *   attachment.
+         *   --LinkNic.DeleteOnVmDeletion: bool
+         *     If true, the NIC is deleted when the VM is terminated. If false, 
+         * the NIC 
+         *     is detached from the VM.
+         *   --LinkNic.LinkNicId: string
+         *     The ID of the NIC attachment.
+         */
+        char *link_nic_str;
+        int is_set_link_nic;
+	struct link_nic_to_update link_nic;
+        /*
+         * The ID of the NIC you want to modify.
+         */
+	char *nic_id;
+        /*
+         * One or more IDs of security groups for the NIC.<br />\nYou must 
+         * specify at least one group, even if you use the default security 
+         * group in the Net.
+         */
+        char *security_group_ids_str;
+	char **security_group_ids;
+};
+
+struct osc_update_route_propagation_arg  {
+        /* Required: Enable RouteTableId VirtualGatewayId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * If true, a virtual gateway can propagate routes to a specified route 
+         * table of a Net. If false, the propagation is disabled.
+         */
+        int is_set_enable;
+	int enable;
+        /*
+         * The ID of the route table.
+         */
+	char *route_table_id;
+        /*
+         * The ID of the virtual gateway.
+         */
+	char *virtual_gateway_id;
+};
+
+struct osc_update_route_arg  {
+        /* Required: RouteTableId DestinationIpRange
+ */
         /*
          * The IP range used for the destination match, in CIDR notation (for 
          * example, `10.0.0.0/24`).
@@ -13220,35 +14004,22 @@ struct osc_create_route_arg  {
          */
 	char *net_peering_id;
         /*
-         * The ID of a NIC.
+         * The ID of a network interface card (NIC).
          */
 	char *nic_id;
         /*
-         * The ID of the route table for which you want to create a route.
+         * The ID of the route table.
          */
 	char *route_table_id;
         /*
-         * The ID of a NAT VM in your Net (attached to exactly one NIC).
+         * The ID of a NAT VM in your Net.
          */
 	char *vm_id;
 };
 
-struct osc_create_public_ip_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-};
-
-struct osc_create_product_type_arg  {
-        /* Required: description */
-        /*
-         * The description of the product type.
-         */
-	char *description;
+struct osc_update_route_table_link_arg  {
+        /* Required: RouteTableId LinkRouteTableId
+ */
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -13256,52 +14027,18 @@ struct osc_create_product_type_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The vendor of the product type.
+         * The ID of the current route table link.
          */
-	char *vendor;
+	char *link_route_table_id;
+        /*
+         * The ID of the new route table to associate with the Subnet.
+         */
+	char *route_table_id;
 };
 
-struct osc_create_policy_version_arg  {
-        /* Required: document, policy_orn */
-        /*
-         * The policy document, corresponding to a JSON string that contains the 
-         * policy. For more information, see [EIM Reference 
-         * Information](https://docs.outscale.com/en/userguide/EIM-Reference-Info
-         * rmation.html) and [EIM Policy 
-         * Generator](https://docs.outscale.com/en/userguide/EIM-Policy-Generator
-         * .html).
-         */
-	char *document;
-        /*
-         * The OUTSCALE Resource Name (ORN) of the policy. For more information, 
-         * see [Resource 
-         * Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifie
-         * rs.html).
-         */
-	char *policy_orn;
-        /*
-         * If set to true, the new policy version is set as the default version 
-         * and becomes the operative one.
-         */
-        int is_set_set_as_default;
-	int set_as_default;
-};
-
-struct osc_create_policy_arg  {
-        /* Required: document, policy_name */
-        /*
-         * A description for the policy.
-         */
-	char *description;
-        /*
-         * The policy document, corresponding to a JSON string that contains the 
-         * policy. For more information, see [EIM Reference 
-         * Information](https://docs.outscale.com/en/userguide/EIM-Reference-Info
-         * rmation.html) and [EIM Policy 
-         * Generator](https://docs.outscale.com/en/userguide/EIM-Policy-Generator
-         * .html).
-         */
-	char *document;
+struct osc_update_server_certificate_arg  {
+        /* Required: Name
+ */
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -13309,19 +14046,152 @@ struct osc_create_policy_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The path of the policy.
+         * The name of the server certificate you want to modify.
+         */
+	char *name;
+        /*
+         * A new name for the server certificate.
+         */
+	char *new_name;
+        /*
+         * A new path for the server certificate.
+         */
+	char *new_path;
+};
+
+struct osc_update_snapshot_arg  {
+        /* Required: SnapshotId PermissionsToCreateVolume
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         *   Information about the permissions for the resource.<br />\nSpecify 
+         *   either the `Additions` or the `Removals` parameter.
+         *   --PermissionsToCreateVolume.Additions: ref PermissionsOnResource
+         *       Permissions for the resource.
+         *       --PermissionsToCreateVolume.Additions.AccountIds: array string
+         *         One or more account IDs that the permission is associated 
+         * with.
+         *       --PermissionsToCreateVolume.Additions.GlobalPermission: bool
+         *         A global permission for all accounts.<br />\n(Request) Set 
+         * this 
+         *         parameter to true to make the resource public (if the parent 
+         * parameter is 
+         *         `Additions`) or to make the resource private (if the parent 
+         * parameter is 
+         *         `Removals`).<br />\n(Response) If true, the resource is 
+         * public. If false, 
+         *         the resource is private.
+         *   --PermissionsToCreateVolume.Removals: ref PermissionsOnResource
+         *       Permissions for the resource.
+         *       --PermissionsToCreateVolume.Removals.AccountIds: array string
+         *         One or more account IDs that the permission is associated 
+         * with.
+         *       --PermissionsToCreateVolume.Removals.GlobalPermission: bool
+         *         A global permission for all accounts.<br />\n(Request) Set 
+         * this 
+         *         parameter to true to make the resource public (if the parent 
+         * parameter is 
+         *         `Additions`) or to make the resource private (if the parent 
+         * parameter is 
+         *         `Removals`).<br />\n(Response) If true, the resource is 
+         * public. If false, 
+         *         the resource is private.
+         */
+        char *permissions_to_create_volume_str;
+        int is_set_permissions_to_create_volume;
+	struct permissions_on_resource_creation permissions_to_create_volume;
+        /*
+         * The ID of the snapshot.
+         */
+	char *snapshot_id;
+};
+
+struct osc_update_subnet_arg  {
+        /* Required: SubnetId MapPublicIpOnLaunch
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * If true, a public IP is assigned to the network interface cards 
+         * (NICs) created in the specified Subnet.
+         */
+        int is_set_map_public_ip_on_launch;
+	int map_public_ip_on_launch;
+        /*
+         * The ID of the Subnet.
+         */
+	char *subnet_id;
+};
+
+struct osc_update_user_group_arg  {
+        /* Required: UserGroupName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * A new path for the group. If not specified, it is set to a slash 
+         * (`/`).
+         */
+	char *new_path;
+        /*
+         * A new name for the user group.
+         */
+	char *new_user_group_name;
+        /*
+         * The path to the group. If not specified, it is set to a slash (`/`).
          */
 	char *path;
         /*
-         * The name of the policy.
+         * The name of the group you want to update.
          */
-	char *policy_name;
+	char *user_group_name;
 };
 
-struct osc_create_nic_arg  {
-        /* Required: subnet_id */
+struct osc_update_user_arg  {
+        /* Required: UserName
+ */
         /*
-         * A description for the NIC.
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * A new path for the EIM user.
+         */
+	char *new_path;
+        /*
+         * A new email address for the EIM user.
+         */
+	char *new_user_email;
+        /*
+         * A new name for the EIM user.
+         */
+	char *new_user_name;
+        /*
+         * The name of the EIM user you want to modify.
+         */
+	char *user_name;
+};
+
+struct osc_update_vm_group_arg  {
+        /* Required: VmGroupId
+ */
+        /*
+         * A new description for the VM group.
          */
 	char *description;
         /*
@@ -13331,139 +14201,7 @@ struct osc_create_nic_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The primary private IP for the NIC.<br />\nThis IP must be within the 
-         * IP range of the Subnet that you specify with the `SubnetId` 
-         * attribute.<br />\nIf you do not specify this attribute, a random 
-         * private IP is selected within the IP range of the Subnet.
-         *   Information about the private IP.
-         *   --PrivateIps.INDEX.IsPrimary: bool
-         *     If true, the IP is the primary private IP of the NIC.
-         *   --PrivateIps.INDEX.PrivateIp: string
-         *     The private IP of the NIC.
-         */
-        char *private_ips_str;
-        int nb_private_ips;
-	struct private_ip_light *private_ips;
-        /*
-         * One or more IDs of security groups for the NIC.
-         */
-        char *security_group_ids_str;
-	char **security_group_ids;
-        /*
-         * The ID of the Subnet in which you want to create the NIC.
-         */
-	char *subnet_id;
-};
-
-struct osc_create_net_peering_arg  {
-        /* Required: accepter_net_id, source_net_id */
-        /*
-         * The ID of the Net you want to connect with.
-         */
-	char *accepter_net_id;
-        /*
-         * The account ID of the owner of the Net you want to connect with. By 
-         * default, the account ID of the owner of the Net from which the 
-         * peering request is sent.
-         */
-	char *accepter_owner_id;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the Net you send the peering request from.
-         */
-	char *source_net_id;
-};
-
-struct osc_create_net_access_point_arg  {
-        /* Required: service_name, net_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the Net.
-         */
-	char *net_id;
-        /*
-         * One or more IDs of route tables to use for the connection.
-         */
-        char *route_table_ids_str;
-	char **route_table_ids;
-        /*
-         * The name of the service (in the format `com.outscale.region.service`).
-         */
-	char *service_name;
-};
-
-struct osc_create_net_arg  {
-        /* Required: ip_range */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The IP range for the Net, in CIDR notation (for example, 
-         * `10.0.0.0/16`).
-         */
-	char *ip_range;
-        /*
-         * The tenancy options for the VMs:<br />\n- `default` if a VM created 
-         * in a Net can be launched with any tenancy.<br />\n- `dedicated` if it 
-         * can be launched with dedicated tenancy VMs running on single-tenant 
-         * hardware.<br />\n- `dedicated group ID`: if it can be launched in a 
-         * dedicated group on single-tenant hardware.
-         */
-	char *tenancy;
-};
-
-struct osc_create_nat_service_arg  {
-        /* Required: public_ip_id, subnet_id */
-        /*
-         * A unique identifier which enables you to manage the idempotency.
-         */
-	char *client_token;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The allocation ID of the public IP to associate with the NAT 
-         * service.<br />\nIf the public IP is already associated with another 
-         * resource, you must first disassociate it.
-         */
-	char *public_ip_id;
-        /*
-         * The ID of the Subnet in which you want to create the NAT service.
-         */
-	char *subnet_id;
-};
-
-struct osc_create_load_balancer_tags_arg  {
-        /* Required: load_balancer_names, tags */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * One or more load balancer names.
-         */
-        char *load_balancer_names_str;
-	char **load_balancer_names;
-        /*
-         * One or more tags to add to the specified load balancers.
+         * New tags for your VM group.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
@@ -13473,344 +14211,34 @@ struct osc_create_load_balancer_tags_arg  {
         char *tags_str;
         int nb_tags;
 	struct resource_tag *tags;
+        /*
+         * The ID of the VM group you want to update.
+         */
+	char *vm_group_id;
+        /*
+         * A new name for your VM group.
+         */
+	char *vm_group_name;
+        /*
+         * A new VM template ID for your VM group.
+         */
+	char *vm_template_id;
 };
 
-struct osc_create_load_balancer_policy_arg  {
-        /* Required: policy_type, load_balancer_name, policy_name */
+struct osc_update_vm_arg  {
+        /* Required: VmId
+ */
         /*
-         * The lifetime of the cookie, in seconds. If not specified, the default 
-         * value of this parameter is `1`, which means that the sticky session 
-         * lasts for the duration of the browser session.
-         */
-        int is_set_cookie_expiration_period;
-	long long int cookie_expiration_period;
-        /*
-         * The name of the application cookie used for stickiness. This 
-         * parameter is required if you create a stickiness policy based on an 
-         * application-generated cookie.
-         */
-	char *cookie_name;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The name of the load balancer for which you want to create a policy.
-         */
-	char *load_balancer_name;
-        /*
-         * The unique name of the policy, with a maximum length of 32 
-         * alphanumeric characters and dashes (`-`).
-         */
-	char *policy_name;
-        /*
-         * The type of stickiness policy you want to create: `app` or 
-         * `load_balancer`.
-         */
-	char *policy_type;
-};
-
-struct osc_create_load_balancer_listeners_arg  {
-        /* Required: listeners, load_balancer_name */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * One or more listeners for the load balancer.
-         *   Information about the listener to create.
-         *   --Listeners.INDEX.BackendPort: long long int
-         *     The port on which the backend VM is listening (between `1` and 
-         * `65535`, 
-         *     both included).
-         *   --Listeners.INDEX.BackendProtocol: string
-         *     The protocol for routing traffic to backend VMs (`HTTP` \\| 
-         * `HTTPS` \\| 
-         *     `TCP` \\| `SSL`).
-         *   --Listeners.INDEX.LoadBalancerPort: long long int
-         *     The port on which the load balancer is listening (between `1` and 
-         *     `65535`, both included).
-         *   --Listeners.INDEX.LoadBalancerProtocol: string
-         *     The routing protocol (`HTTP` \\| `HTTPS` \\| `TCP` \\| `SSL`).
-         *   --Listeners.INDEX.ServerCertificateId: string
-         *     The OUTSCALE Resource Name (ORN) of the server certificate. For 
-         * more 
-         *     information, see [Resource Identifiers > OUTSCALE Resource Names 
-         *     
-         * (ORNs)](https://docs.outscale.com/en/userguide/Resource-Identifiers.ht
-         * ml#_
-         *     outscale_resource_names_orns).
-         */
-        char *listeners_str;
-        int nb_listeners;
-	struct listener_for_creation *listeners;
-        /*
-         * The name of the load balancer for which you want to create listeners.
-         */
-	char *load_balancer_name;
-};
-
-struct osc_create_load_balancer_arg  {
-        /* Required: listeners, load_balancer_name */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * One or more listeners to create.
-         *   Information about the listener to create.
-         *   --Listeners.INDEX.BackendPort: long long int
-         *     The port on which the backend VM is listening (between `1` and 
-         * `65535`, 
-         *     both included).
-         *   --Listeners.INDEX.BackendProtocol: string
-         *     The protocol for routing traffic to backend VMs (`HTTP` \\| 
-         * `HTTPS` \\| 
-         *     `TCP` \\| `SSL`).
-         *   --Listeners.INDEX.LoadBalancerPort: long long int
-         *     The port on which the load balancer is listening (between `1` and 
-         *     `65535`, both included).
-         *   --Listeners.INDEX.LoadBalancerProtocol: string
-         *     The routing protocol (`HTTP` \\| `HTTPS` \\| `TCP` \\| `SSL`).
-         *   --Listeners.INDEX.ServerCertificateId: string
-         *     The OUTSCALE Resource Name (ORN) of the server certificate. For 
-         * more 
-         *     information, see [Resource Identifiers > OUTSCALE Resource Names 
-         *     
-         * (ORNs)](https://docs.outscale.com/en/userguide/Resource-Identifiers.ht
-         * ml#_
-         *     outscale_resource_names_orns).
-         */
-        char *listeners_str;
-        int nb_listeners;
-	struct listener_for_creation *listeners;
-        /*
-         * The unique name of the load balancer, with a maximum length of 32 
-         * alphanumeric characters and dashes (`-`). This name must not start or 
-         * end with a dash.
-         */
-	char *load_balancer_name;
-        /*
-         * The type of load balancer: `internet-facing` or `internal`. Use this 
-         * parameter only for load balancers in a Net.
-         */
-	char *load_balancer_type;
-        /*
-         * (internet-facing only) The public IP you want to associate with the 
-         * load balancer. If not specified, a public IP owned by 3DS OUTSCALE is 
-         * associated.
-         */
-	char *public_ip;
-        /*
-         * (Net only) One or more IDs of security groups you want to assign to 
-         * the load balancer. If not specified, the default security group of 
-         * the Net is assigned to the load balancer.
-         */
-        char *security_groups_str;
-	char **security_groups;
-        /*
-         * (Net only) The ID of the Subnet in which you want to create the load 
-         * balancer. Regardless of this Subnet, the load balancer can distribute 
-         * traffic to all Subnets. This parameter is required in a Net.
-         */
-        char *subnets_str;
-	char **subnets;
-        /*
-         * (public Cloud only) The Subregion in which you want to create the 
-         * load balancer. Regardless of this Subregion, the load balancer can 
-         * distribute traffic to all Subregions. This parameter is required in 
-         * the public Cloud.
-         */
-        char *subregion_names_str;
-	char **subregion_names;
-        /*
-         * One or more tags assigned to the load balancer.
-         *   Information about the tag.
-         *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
-         *   --Tags.INDEX.Value: string
-         *     The value of the tag, between 0 and 255 characters.
-         */
-        char *tags_str;
-        int nb_tags;
-	struct resource_tag *tags;
-};
-
-struct osc_create_listener_rule_arg  {
-        /* Required: vm_ids, listener, listener_rule */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         *   Information about the load balancer.
-         *   --Listener.LoadBalancerName: string
-         *     The name of the load balancer to which the listener is attached.
-         *   --Listener.LoadBalancerPort: long long int
-         *     The port of load balancer on which the load balancer is listening 
-         *     (between `1` and `65535` both included).
-         */
-        char *listener_str;
-        int is_set_listener;
-	struct load_balancer_light listener;
-        /*
-         *   Information about the listener rule.
-         *   --ListenerRule.Action: string
-         *     The type of action for the rule (always `forward`).
-         *   --ListenerRule.HostNamePattern: string
-         *     A host-name pattern for the rule, with a maximum length of 128 
-         *     characters. This host-name pattern supports maximum three 
-         * wildcards, and 
-         *     must not contain any special characters except `-.?`.
-         *   --ListenerRule.ListenerRuleName: string
-         *     A human-readable name for the listener rule.
-         *   --ListenerRule.PathPattern: string
-         *     A path pattern for the rule, with a maximum length of 128 
-         * characters. 
-         *     This path pattern supports maximum three wildcards, and must not 
-         * contain 
-         *     any special characters except `_-.$/~&quot;'@:+?`.
-         *   --ListenerRule.Priority: long long int
-         *     The priority level of the listener rule, between `1` and `19999` 
-         * both 
-         *     included. Each rule must have a unique priority level. Otherwise, 
-         * an 
-         *     error is returned.
-         */
-        char *listener_rule_str;
-        int is_set_listener_rule;
-	struct listener_rule_for_creation listener_rule;
-        /*
-         * The IDs of the backend VMs.
-         */
-        char *vm_ids_str;
-	char **vm_ids;
-};
-
-struct osc_create_keypair_arg  {
-        /* Required: keypair_name */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * A unique name for the keypair, with a maximum length of 255 [ASCII 
-         * printable 
-         * characters](https://en.wikipedia.org/wiki/ASCII#Printable_characters).
-         */
-	char *keypair_name;
-        /*
-         * The public key to import in your account, if you are importing an 
-         * existing keypair. This value must be Base64-encoded.
-         */
-	char *public_key;
-};
-
-struct osc_create_internet_service_arg  {
-        /* Required:none */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-};
-
-struct osc_create_image_export_task_arg  {
-        /* Required: osu_export, image_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the OMI to export.
-         */
-	char *image_id;
-        /*
-         *   Information about the OOS export task to create.
-         *   --OsuExport.DiskImageFormat: string
-         *     The format of the export disk (`qcow2` \\| `raw`).
-         *   --OsuExport.OsuApiKey: ref OsuApiKey
-         *       Information about the OOS API key.
-         *       --OsuExport.OsuApiKey.ApiKeyId: string
-         *         The API key of the OOS account that enables you to access the 
-         * bucket.
-         *       --OsuExport.OsuApiKey.SecretKey: string
-         *         The secret key of the OOS account that enables you to access 
-         * the bucket.
-         *   --OsuExport.OsuBucket: string
-         *     The name of the OOS bucket where you want to export the object.
-         *   --OsuExport.OsuManifestUrl: string
-         *     The URL of the manifest file.
-         *   --OsuExport.OsuPrefix: string
-         *     The prefix for the key of the OOS object.
-         */
-        char *osu_export_str;
-        int is_set_osu_export;
-	struct osu_export_to_create osu_export;
-};
-
-struct osc_create_image_arg  {
-        /* Required:none */
-        /*
-         * **(when registering from a snapshot)** The architecture of the OMI 
-         * (`i386` or `x86_64`).
-         */
-	char *architecture;
-        /*
-         * **(when registering from a snapshot)** One or more block device 
-         * mappings.
-         *   One or more parameters used to automatically set up volumes when 
-         * the VM 
-         *   is created.
-         *   --BlockDeviceMappings.INDEX.Bsu: ref BsuToCreate
-         *       Information about the BSU volume to create.
+         * One or more block device mappings of the VM.
+         *   Information about the block device mapping.
+         *   --BlockDeviceMappings.INDEX.Bsu: ref BsuToUpdateVm
+         *       Information about the BSU volume.
          *       --BlockDeviceMappings.INDEX.Bsu.DeleteOnVmDeletion: bool
-         *         By default or if set to true, the volume is deleted when 
-         * terminating the 
-         *         VM. If false, the volume is not deleted when terminating the 
-         * VM.
-         *       --BlockDeviceMappings.INDEX.Bsu.Iops: long long int
-         *         The number of I/O operations per second (IOPS). This 
-         * parameter must be 
-         *         specified only if you create an `io1` volume. The maximum 
-         * number of IOPS 
-         *         allowed for `io1` volumes is `13000` with a maximum 
-         * performance ratio of 
-         *         300 IOPS per gibibyte.
-         *       --BlockDeviceMappings.INDEX.Bsu.SnapshotId: string
-         *         The ID of the snapshot used to create the volume.
-         *       --BlockDeviceMappings.INDEX.Bsu.VolumeSize: long long int
-         *         The size of the volume, in gibibytes (GiB).<br />\nIf you 
-         * specify a 
-         *         snapshot ID, the volume size must be at least equal to the 
-         * snapshot 
-         *         size.<br />\nIf you specify a snapshot ID but no volume size, 
-         * the volume 
-         *         is created with a size similar to the snapshot one.
-         *       --BlockDeviceMappings.INDEX.Bsu.VolumeType: string
-         *         The type of the volume (`standard` \\| `io1` \\| `gp2`). If 
-         * not 
-         *         specified in the request, a `standard` volume is created.<br 
-         * />\nFor more 
-         *         information about volume types, see [About Volumes > Volume 
-         * Types and 
-         *         
-         * IOPS](https://docs.outscale.com/en/userguide/About-Volumes.html#_volum
-         * e_ty
-         *         pes_and_iops).
+         *         If set to true, the volume is deleted when terminating the 
+         * VM. If set to 
+         *         false, the volume is not deleted when terminating the VM.
+         *       --BlockDeviceMappings.INDEX.Bsu.VolumeId: string
+         *         The ID of the volume.
          *   --BlockDeviceMappings.INDEX.DeviceName: string
          *     The device name for the volume. For a root device, you must use 
          *     `/dev/sda1`. For other volumes, you must use `/dev/sdX`, 
@@ -13818,16 +14246,28 @@ struct osc_create_image_arg  {
          *     `/dev/xvdX`, or `/dev/xvdXX` (where the first `X` is a letter 
          * between `b` 
          *     and `z`, and the second `X` is a letter between `a` and `z`).
+         *   --BlockDeviceMappings.INDEX.NoDevice: string
+         *     Removes the device which is included in the block device mapping 
+         * of the 
+         *     OMI.
          *   --BlockDeviceMappings.INDEX.VirtualDeviceName: string
          *     The name of the virtual device (`ephemeralN`).
          */
         char *block_device_mappings_str;
         int nb_block_device_mappings;
-	struct block_device_mapping_image *block_device_mappings;
+	struct block_device_mapping_vm_update *block_device_mappings;
         /*
-         * A description for the new OMI.
+         * This parameter is not available. It is present in our API for the 
+         * sake of historical compatibility with AWS.
          */
-	char *description;
+        int is_set_bsu_optimized;
+	int bsu_optimized;
+        /*
+         * If true, you cannot delete the VM unless you change this parameter 
+         * back to false.
+         */
+        int is_set_deletion_protection;
+	int deletion_protection;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -13835,274 +14275,64 @@ struct osc_create_image_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * **(when registering from a bucket by using a manifest file)** The 
-         * pre-signed URL of the manifest file for the OMI you want to register. 
-         * For more information, see [Creating a Pre-signed 
-         * URL](https://docs.outscale.com/en/userguide/Creating-a-Pre-Signed-URL.
-         * html).
+         * (Net only) If true, the source/destination check is enabled. If 
+         * false, it is disabled.
          */
-	char *file_location;
+        int is_set_is_source_dest_checked;
+	int is_source_dest_checked;
         /*
-         * A unique name for the new OMI.<br />\nConstraints: 3-128 alphanumeric 
-         * characters, underscores (`_`), spaces (` `), parentheses (`()`), 
-         * slashes (`/`), periods (`.`), or dashes (`-`).
+         * The name of a keypair you want to associate with the VM.<br />\nWhen 
+         * you replace the keypair of a VM with another one, the metadata of the 
+         * VM is modified to reflect the new public key, but the replacement is 
+         * still not effective in the operating system of the VM. To complete 
+         * the replacement and effectively apply the new keypair, you need to 
+         * perform other actions inside the VM. For more information, see 
+         * [Modifying the Keypair of a 
+         * VM](https://docs.outscale.com/en/userguide/Modifying-the-Keypair-of-a-
+         * VM.html).
          */
-	char *image_name;
+	char *keypair_name;
         /*
-         * **(when creating from a VM)** If false, the VM shuts down before 
-         * creating the OMI and then reboots. If true, the VM does not.
+         * (dedicated tenancy only) If true, nested virtualization is enabled. 
+         * If false, it is disabled.
          */
-        int is_set_no_reboot;
-	int no_reboot;
+        int is_set_nested_virtualization;
+	int nested_virtualization;
         /*
-         * The product codes associated with the OMI.
+         * The performance of the VM (`medium` \\| `high` \\| `highest`).
          */
-        char *product_codes_str;
-	char **product_codes;
+	char *performance;
         /*
-         * **(when registering from a snapshot)** The name of the root device 
-         * for the new OMI.
+         * One or more IDs of security groups for the VM.
          */
-	char *root_device_name;
+        char *security_group_ids_str;
+	char **security_group_ids;
         /*
-         * **(when copying an OMI)** The ID of the OMI you want to copy.
+         * The Base64-encoded MIME user data, limited to 500 kibibytes (KiB).
          */
-	char *source_image_id;
+	char *user_data;
         /*
-         * **(when copying an OMI)** The name of the source Region (always the 
-         * same as the Region of your account).
-         */
-	char *source_region_name;
-        /*
-         * **(when creating from a VM)** The ID of the VM from which you want to 
-         * create the OMI.
+         * The ID of the VM.
          */
 	char *vm_id;
+        /*
+         * The VM behavior when you stop it. If set to `stop`, the VM stops. If 
+         * set to `restart`, the VM stops then automatically restarts. If set to 
+         * `terminate`, the VM stops and is terminated.
+         */
+	char *vm_initiated_shutdown_behavior;
+        /*
+         * The type of VM. For more information, see [VM 
+         * Types](https://docs.outscale.com/en/userguide/VM-Types.html).
+         */
+	char *vm_type;
 };
 
-struct osc_create_flexible_gpu_arg  {
-        /* Required: model_name, subregion_name */
+struct osc_update_vm_template_arg  {
+        /* Required: VmTemplateId
+ */
         /*
-         * If true, the fGPU is deleted when the VM is terminated.
-         */
-        int is_set_delete_on_vm_deletion;
-	int delete_on_vm_deletion;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The processor generation that the fGPU must be compatible with. If 
-         * not specified, the oldest possible processor generation is selected 
-         * (as provided by [ReadFlexibleGpuCatalog](#readflexiblegpucatalog) for 
-         * the specified model of fGPU).
-         */
-	char *generation;
-        /*
-         * The model of fGPU you want to allocate. For more information, see 
-         * [About Flexible 
-         * GPUs](https://docs.outscale.com/en/userguide/About-Flexible-GPUs.html)
-         * .
-         */
-	char *model_name;
-        /*
-         * The Subregion in which you want to create the fGPU.
-         */
-	char *subregion_name;
-};
-
-struct osc_create_direct_link_interface_arg  {
-        /* Required: direct_link_id, direct_link_interface */
-        /*
-         * The ID of the existing DirectLink for which you want to create the 
-         * DirectLink interface.
-         */
-	char *direct_link_id;
-        /*
-         *   Information about the DirectLink interface.
-         *   --DirectLinkInterface.BgpAsn: long long int
-         *     The BGP (Border Gateway Protocol) ASN (Autonomous System Number) 
-         * on the 
-         *     customer's side of the DirectLink interface. This number must be 
-         * between 
-         *     `64512` and `65534`.
-         *   --DirectLinkInterface.BgpKey: string
-         *     The BGP authentication key.
-         *   --DirectLinkInterface.ClientPrivateIp: string
-         *     The IP on the customer's side of the DirectLink interface.
-         *   --DirectLinkInterface.DirectLinkInterfaceName: string
-         *     The name of the DirectLink interface.
-         *   --DirectLinkInterface.OutscalePrivateIp: string
-         *     The IP on the OUTSCALE side of the DirectLink interface.
-         *   --DirectLinkInterface.VirtualGatewayId: string
-         *     The ID of the target virtual gateway.
-         *   --DirectLinkInterface.Vlan: long long int
-         *     The VLAN number associated with the DirectLink interface. This 
-         * number 
-         *     must be unique and be between `2` and `4094`.
-         */
-        char *direct_link_interface_str;
-        int is_set_direct_link_interface;
-	struct direct_link_interface direct_link_interface;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-};
-
-struct osc_create_direct_link_arg  {
-        /* Required: bandwidth, direct_link_name, location */
-        /*
-         * The bandwidth of the DirectLink (`1Gbps` \\| `10Gbps`).
-         */
-	char *bandwidth;
-        /*
-         * The name of the DirectLink.
-         */
-	char *direct_link_name;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The code of the requested location for the DirectLink, returned by 
-         * the [ReadLocations](#readlocations) method.
-         */
-	char *location;
-};
-
-struct osc_create_dhcp_options_arg  {
-        /* Required:none */
-        /*
-         * Specify a domain name (for example, `MyCompany.com`). You can specify 
-         * only one domain name. You must specify at least one of the following 
-         * parameters: `DomainName`, `DomainNameServers`, `LogServers`, or 
-         * `NtpServers`.
-         */
-	char *domain_name;
-        /*
-         * The IPs of domain name servers. If no IPs are specified, the 
-         * `OutscaleProvidedDNS` value is set by default. You must specify at 
-         * least one of the following parameters: `DomainName`, 
-         * `DomainNameServers`, `LogServers`, or `NtpServers`.
-         */
-        char *domain_name_servers_str;
-	char **domain_name_servers;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The IPs of the log servers. You must specify at least one of the 
-         * following parameters: `DomainName`, `DomainNameServers`, 
-         * `LogServers`, or `NtpServers`.
-         */
-        char *log_servers_str;
-	char **log_servers;
-        /*
-         * The IPs of the Network Time Protocol (NTP) servers. You must specify 
-         * at least one of the following parameters: `DomainName`, 
-         * `DomainNameServers`, `LogServers`, or `NtpServers`.
-         */
-        char *ntp_servers_str;
-	char **ntp_servers;
-};
-
-struct osc_create_dedicated_group_arg  {
-        /* Required: cpu_generation, name, subregion_name */
-        /*
-         * The processor generation for the VMs in the dedicated group (for 
-         * example, `4`).
-         */
-        int is_set_cpu_generation;
-	long long int cpu_generation;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * A name for the dedicated group.
-         */
-	char *name;
-        /*
-         * The Subregion in which you want to create the dedicated group.
-         */
-	char *subregion_name;
-};
-
-struct osc_create_client_gateway_arg  {
-        /* Required: bgp_asn, public_ip, connection_type */
-        /*
-         * The Autonomous System Number (ASN) used by the Border Gateway 
-         * Protocol (BGP) to find the path to your client gateway through the 
-         * Internet. <br/>\nThis number must be between `1` and `4294967295`. If 
-         * you do not have an ASN, you can choose one between 64512 and 65534, 
-         * or between 4200000000 and 4294967294.
-         */
-        int is_set_bgp_asn;
-	long long int bgp_asn;
-        /*
-         * The communication protocol used to establish tunnel with your client 
-         * gateway (always `ipsec.1`).
-         */
-	char *connection_type;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The public fixed IPv4 address of your client gateway.
-         */
-	char *public_ip;
-};
-
-struct osc_create_ca_arg  {
-        /* Required: ca_pem */
-        /*
-         * The CA in PEM format.<br />With OSC CLI, use the following syntax to 
-         * make sure your CA file is correctly parsed: `--CaPem=&quot;$(cat 
-         * FILENAME)&quot;`.
-         */
-	char *ca_pem;
-        /*
-         * The description of the CA.
-         */
-	char *description;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-};
-
-struct osc_create_api_access_rule_arg  {
-        /* Required:none */
-        /*
-         * One or more IDs of Client Certificate Authorities (CAs).
-         */
-        char *ca_ids_str;
-	char **ca_ids;
-        /*
-         * One or more Client Certificate Common Names (CNs). If this parameter 
-         * is specified, you must also specify the `CaIds` parameter.
-         */
-        char *cns_str;
-	char **cns;
-        /*
-         * A description for the API access rule.
+         * A new description for the VM template.
          */
 	char *description;
         /*
@@ -14112,38 +14342,29 @@ struct osc_create_api_access_rule_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * One or more IPs or CIDR blocks (for example, `192.0.2.0/16`).
+         * New tags for your VM template.
+         *   Information about the tag.
+         *   --Tags.INDEX.Key: string
+         *     The key of the tag, with a minimum of 1 character.
+         *   --Tags.INDEX.Value: string
+         *     The value of the tag, between 0 and 255 characters.
          */
-        char *ip_ranges_str;
-	char **ip_ranges;
+        char *tags_str;
+        int nb_tags;
+	struct resource_tag *tags;
+        /*
+         * The ID of the VM template you want to update.
+         */
+	char *vm_template_id;
+        /*
+         * A new name for your VM template.
+         */
+	char *vm_template_name;
 };
 
-struct osc_create_account_arg  {
-        /* Required: city, company_name, country, customer_id, email, first_name, last_name, zip_code */
-        /*
-         * One or more additional email addresses for the account. These 
-         * addresses are used for notifications only. If you already have a list 
-         * of additional emails registered, you cannot add to it, only replace 
-         * it. To remove all registered additional emails, specify an empty list.
-         */
-        char *additional_emails_str;
-	char **additional_emails;
-        /*
-         * The city of the account owner.
-         */
-	char *city;
-        /*
-         * The name of the company for the account.
-         */
-	char *company_name;
-        /*
-         * The country of the account owner.
-         */
-	char *country;
-        /*
-         * The ID of the customer. It must be 8 digits.
-         */
-	char *customer_id;
+struct osc_update_volume_arg  {
+        /* Required: VolumeId
+ */
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -14151,46 +14372,45 @@ struct osc_create_account_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The main email address for the account. This address is used for your 
-         * credentials and notifications.
+         * **Cold volume**: the new number of I/O operations per second (IOPS). 
+         * This parameter can be specified only if you update an `io1` volume or 
+         * if you change the type of the volume for an `io1`. This modification 
+         * is instantaneous. <br />\n**Hot volume**: the new number of I/O 
+         * operations per second (IOPS). This parameter can be specified only if 
+         * you update an `io1` volume. This modification is not instantaneous. 
+         * <br /><br />\nThe maximum number of IOPS allowed for `io1` volumes is 
+         * `13000` with a maximum performance ratio of 300 IOPS per gibibyte.
          */
-	char *email;
+        int is_set_iops;
+	long long int iops;
         /*
-         * The first name of the account owner.
+         * **Cold volume**: the new size of the volume, in gibibytes (GiB). This 
+         * value must be equal to or greater than the current size of the 
+         * volume. This modification is not instantaneous. <br />\n**Hot 
+         * volume**: you cannot change the size of a hot volume.
          */
-	char *first_name;
+        int is_set_size;
+	long long int size;
         /*
-         * The job title of the account owner.
+         * The ID of the volume you want to update.
          */
-	char *job_title;
+	char *volume_id;
         /*
-         * The last name of the account owner.
+         * **Cold volume**: the new type of the volume (`standard` \\| `io1` \\| 
+         * `gp2`). This modification is instantaneous. If you update to an `io1` 
+         * volume, you must also specify the `Iops` parameter.<br />\n**Hot 
+         * volume**: you cannot change the type of a hot volume.
          */
-	char *last_name;
-        /*
-         * The mobile phone number of the account owner.
-         */
-	char *mobile_number;
-        /*
-         * The landline phone number of the account owner.
-         */
-	char *phone_number;
-        /*
-         * The state/province of the account.
-         */
-	char *state_province;
-        /*
-         * The value added tax (VAT) number for the account.
-         */
-	char *vat_number;
-        /*
-         * The ZIP code of the city.
-         */
-	char *zip_code;
+	char *volume_type;
 };
 
-struct osc_create_access_key_arg  {
-        /* Required:none */
+struct osc_update_vpn_connection_arg  {
+        /* Required: VpnConnectionId
+ */
+        /*
+         * The ID of the client gateway.
+         */
+	char *client_gateway_id;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -14198,79 +14418,88 @@ struct osc_create_access_key_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The date and time, or the date, at which you want the access key to 
-         * expire, in ISO 8601 format (for example, `2020-06-14T00:00:00.000Z`, 
-         * or `2020-06-14`). To remove an existing expiration date, use the 
-         * method without specifying this parameter.
+         * The ID of the virtual gateway.
          */
-	char *expiration_date;
+	char *virtual_gateway_id;
         /*
-         * The name of the EIM user that owns the key to be created. If you do 
-         * not specify a user name, this action creates an access key for the 
-         * user who sends the request (which can be the root account).
+         * The ID of the VPN connection you want to modify.
          */
-	char *user_name;
+	char *vpn_connection_id;
+        /*
+         *   Information about the VPN options.
+         *   --VpnOptions.Phase1Options: ref Phase1Options
+         *       Information about Phase 1 of the Internet Key Exchange (IKE) 
+         *       negotiation. When Phase 1 finishes successfully, peers proceed 
+         * to Phase 2 
+         *       negotiations.
+         *       --VpnOptions.Phase1Options.DpdTimeoutAction: string
+         *         The action to carry out after a Dead Peer Detection (DPD) 
+         * timeout 
+         *         occurs.
+         *       --VpnOptions.Phase1Options.DpdTimeoutSeconds: long long int
+         *         The maximum waiting time for a Dead Peer Detection (DPD) 
+         * response before 
+         *         considering the peer as dead, in seconds.
+         *       --VpnOptions.Phase1Options.IkeVersions: array string
+         *         The Internet Key Exchange (IKE) versions allowed for the VPN 
+         * tunnel.
+         *       --VpnOptions.Phase1Options.Phase1DhGroupNumbers: array integer
+         *         The Diffie-Hellman (DH) group numbers allowed for the VPN 
+         * tunnel for 
+         *         phase 1.
+         *       --VpnOptions.Phase1Options.Phase1EncryptionAlgorithms: array 
+         * string
+         *         The encryption algorithms allowed for the VPN tunnel for 
+         * phase 1.
+         *       --VpnOptions.Phase1Options.Phase1IntegrityAlgorithms: array 
+         * string
+         *         The integrity algorithms allowed for the VPN tunnel for phase 
+         * 1.
+         *       --VpnOptions.Phase1Options.Phase1LifetimeSeconds: long long int
+         *         The lifetime for phase 1 of the IKE negotiation process, in 
+         * seconds.
+         *       --VpnOptions.Phase1Options.ReplayWindowSize: long long int
+         *         The number of packets in an IKE replay window.
+         *       --VpnOptions.Phase1Options.StartupAction: string
+         *         The action to carry out when establishing tunnels for a VPN 
+         * connection.
+         *   --VpnOptions.Phase2Options: ref Phase2Options
+         *       Information about Phase 2 of the Internet Key Exchange (IKE) 
+         *       negotiation.
+         *       --VpnOptions.Phase2Options.Phase2DhGroupNumbers: array integer
+         *         The Diffie-Hellman (DH) group numbers allowed for the VPN 
+         * tunnel for 
+         *         phase 2.
+         *       --VpnOptions.Phase2Options.Phase2EncryptionAlgorithms: array 
+         * string
+         *         The encryption algorithms allowed for the VPN tunnel for 
+         * phase 2.
+         *       --VpnOptions.Phase2Options.Phase2IntegrityAlgorithms: array 
+         * string
+         *         The integrity algorithms allowed for the VPN tunnel for phase 
+         * 2.
+         *       --VpnOptions.Phase2Options.Phase2LifetimeSeconds: long long int
+         *         The lifetime for phase 2 of the Internet Key Exchange (IKE) 
+         * negociation 
+         *         process, in seconds.
+         *       --VpnOptions.Phase2Options.PreSharedKey: string
+         *         The pre-shared key to establish the initial authentication 
+         * between the 
+         *         client gateway and the virtual gateway. This key can contain 
+         * any 
+         *         character except line breaks and double quotes (&quot;).
+         *   --VpnOptions.TunnelInsideIpRange: string
+         *     The range of inside IPs for the tunnel. This must be a /30 CIDR 
+         * block 
+         *     from the 169.254.254.0/24 range.
+         */
+        char *vpn_options_str;
+        int is_set_vpn_options;
+	struct vpn_options vpn_options;
 };
 
-struct osc_check_authentication_arg  {
-        /* Required: login, password */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The email address of the account.
-         */
-	char *login;
-        /*
-         * The password of the account.
-         */
-	char *password;
-};
 
-struct osc_add_user_to_user_group_arg  {
-        /* Required: user_group_name, user_name */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The name of the group you want to add a user to.
-         */
-	char *user_group_name;
-        /*
-         * The path to the group. If not specified, it is set to a slash (`/`).
-         */
-	char *user_group_path;
-        /*
-         * The name of the user you want to add to the group.
-         */
-	char *user_name;
-        /*
-         * The path to the user. If not specified, it is set to a slash (`/`).
-         */
-	char *user_path;
-};
-
-struct osc_accept_net_peering_arg  {
-        /* Required: net_peering_id */
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
-        /*
-         * The ID of the Net peering you want to accept.
-         */
-	char *net_peering_id;
-};
-
-
+int osc_set_extra_flag_from_conf(const char *profile, unsigned int *flag);
 int osc_load_ak_sk_from_conf(const char *profile, char **ak, char **sk);
 int osc_load_region_from_conf(const char *profile, char **region);
 int osc_load_loging_password_from_conf(const char *profile,
@@ -14357,229 +14586,229 @@ const char **osc_calls_name(void);
 
 #endif /* WITH_DESCRIPTION */
 
-int osc_update_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc_update_vpn_connection_arg *args);
-int osc_update_volume(struct osc_env *e, struct osc_str *out, struct osc_update_volume_arg *args);
-int osc_update_vm_template(struct osc_env *e, struct osc_str *out, struct osc_update_vm_template_arg *args);
-int osc_update_vm_group(struct osc_env *e, struct osc_str *out, struct osc_update_vm_group_arg *args);
-int osc_update_vm(struct osc_env *e, struct osc_str *out, struct osc_update_vm_arg *args);
-int osc_update_user_group(struct osc_env *e, struct osc_str *out, struct osc_update_user_group_arg *args);
-int osc_update_user(struct osc_env *e, struct osc_str *out, struct osc_update_user_arg *args);
-int osc_update_subnet(struct osc_env *e, struct osc_str *out, struct osc_update_subnet_arg *args);
-int osc_update_snapshot(struct osc_env *e, struct osc_str *out, struct osc_update_snapshot_arg *args);
-int osc_update_server_certificate(struct osc_env *e, struct osc_str *out, struct osc_update_server_certificate_arg *args);
-int osc_update_route_table_link(struct osc_env *e, struct osc_str *out, struct osc_update_route_table_link_arg *args);
-int osc_update_route_propagation(struct osc_env *e, struct osc_str *out, struct osc_update_route_propagation_arg *args);
-int osc_update_route(struct osc_env *e, struct osc_str *out, struct osc_update_route_arg *args);
-int osc_update_nic(struct osc_env *e, struct osc_str *out, struct osc_update_nic_arg *args);
-int osc_update_net_access_point(struct osc_env *e, struct osc_str *out, struct osc_update_net_access_point_arg *args);
-int osc_update_net(struct osc_env *e, struct osc_str *out, struct osc_update_net_arg *args);
-int osc_update_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_update_load_balancer_arg *args);
-int osc_update_listener_rule(struct osc_env *e, struct osc_str *out, struct osc_update_listener_rule_arg *args);
-int osc_update_image(struct osc_env *e, struct osc_str *out, struct osc_update_image_arg *args);
-int osc_update_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_update_flexible_gpu_arg *args);
-int osc_update_direct_link_interface(struct osc_env *e, struct osc_str *out, struct osc_update_direct_link_interface_arg *args);
-int osc_update_dedicated_group(struct osc_env *e, struct osc_str *out, struct osc_update_dedicated_group_arg *args);
-int osc_update_ca(struct osc_env *e, struct osc_str *out, struct osc_update_ca_arg *args);
-int osc_update_api_access_rule(struct osc_env *e, struct osc_str *out, struct osc_update_api_access_rule_arg *args);
-int osc_update_api_access_policy(struct osc_env *e, struct osc_str *out, struct osc_update_api_access_policy_arg *args);
-int osc_update_account(struct osc_env *e, struct osc_str *out, struct osc_update_account_arg *args);
-int osc_update_access_key(struct osc_env *e, struct osc_str *out, struct osc_update_access_key_arg *args);
-int osc_unlink_volume(struct osc_env *e, struct osc_str *out, struct osc_unlink_volume_arg *args);
-int osc_unlink_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_unlink_virtual_gateway_arg *args);
-int osc_unlink_route_table(struct osc_env *e, struct osc_str *out, struct osc_unlink_route_table_arg *args);
-int osc_unlink_public_ip(struct osc_env *e, struct osc_str *out, struct osc_unlink_public_ip_arg *args);
-int osc_unlink_private_ips(struct osc_env *e, struct osc_str *out, struct osc_unlink_private_ips_arg *args);
-int osc_unlink_policy(struct osc_env *e, struct osc_str *out, struct osc_unlink_policy_arg *args);
-int osc_unlink_nic(struct osc_env *e, struct osc_str *out, struct osc_unlink_nic_arg *args);
-int osc_unlink_managed_policy_from_user_group(struct osc_env *e, struct osc_str *out, struct osc_unlink_managed_policy_from_user_group_arg *args);
-int osc_unlink_load_balancer_backend_machines(struct osc_env *e, struct osc_str *out, struct osc_unlink_load_balancer_backend_machines_arg *args);
-int osc_unlink_internet_service(struct osc_env *e, struct osc_str *out, struct osc_unlink_internet_service_arg *args);
-int osc_unlink_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_unlink_flexible_gpu_arg *args);
-int osc_stop_vms(struct osc_env *e, struct osc_str *out, struct osc_stop_vms_arg *args);
-int osc_start_vms(struct osc_env *e, struct osc_str *out, struct osc_start_vms_arg *args);
-int osc_set_default_policy_version(struct osc_env *e, struct osc_str *out, struct osc_set_default_policy_version_arg *args);
-int osc_scale_up_vm_group(struct osc_env *e, struct osc_str *out, struct osc_scale_up_vm_group_arg *args);
-int osc_scale_down_vm_group(struct osc_env *e, struct osc_str *out, struct osc_scale_down_vm_group_arg *args);
-int osc_remove_user_from_user_group(struct osc_env *e, struct osc_str *out, struct osc_remove_user_from_user_group_arg *args);
-int osc_reject_net_peering(struct osc_env *e, struct osc_str *out, struct osc_reject_net_peering_arg *args);
-int osc_register_vms_in_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_register_vms_in_load_balancer_arg *args);
-int osc_reboot_vms(struct osc_env *e, struct osc_str *out, struct osc_reboot_vms_arg *args);
-int osc_read_vpn_connections(struct osc_env *e, struct osc_str *out, struct osc_read_vpn_connections_arg *args);
-int osc_read_volumes(struct osc_env *e, struct osc_str *out, struct osc_read_volumes_arg *args);
-int osc_read_vms_state(struct osc_env *e, struct osc_str *out, struct osc_read_vms_state_arg *args);
-int osc_read_vms_health(struct osc_env *e, struct osc_str *out, struct osc_read_vms_health_arg *args);
-int osc_read_vms(struct osc_env *e, struct osc_str *out, struct osc_read_vms_arg *args);
-int osc_read_vm_types(struct osc_env *e, struct osc_str *out, struct osc_read_vm_types_arg *args);
-int osc_read_vm_templates(struct osc_env *e, struct osc_str *out, struct osc_read_vm_templates_arg *args);
-int osc_read_vm_groups(struct osc_env *e, struct osc_str *out, struct osc_read_vm_groups_arg *args);
-int osc_read_virtual_gateways(struct osc_env *e, struct osc_str *out, struct osc_read_virtual_gateways_arg *args);
-int osc_read_users(struct osc_env *e, struct osc_str *out, struct osc_read_users_arg *args);
-int osc_read_user_groups_per_user(struct osc_env *e, struct osc_str *out, struct osc_read_user_groups_per_user_arg *args);
-int osc_read_user_groups(struct osc_env *e, struct osc_str *out, struct osc_read_user_groups_arg *args);
-int osc_read_user_group_policy(struct osc_env *e, struct osc_str *out, struct osc_read_user_group_policy_arg *args);
-int osc_read_user_group_policies(struct osc_env *e, struct osc_str *out, struct osc_read_user_group_policies_arg *args);
-int osc_read_user_group(struct osc_env *e, struct osc_str *out, struct osc_read_user_group_arg *args);
-int osc_read_unit_price(struct osc_env *e, struct osc_str *out, struct osc_read_unit_price_arg *args);
-int osc_read_tags(struct osc_env *e, struct osc_str *out, struct osc_read_tags_arg *args);
-int osc_read_subregions(struct osc_env *e, struct osc_str *out, struct osc_read_subregions_arg *args);
-int osc_read_subnets(struct osc_env *e, struct osc_str *out, struct osc_read_subnets_arg *args);
-int osc_read_snapshots(struct osc_env *e, struct osc_str *out, struct osc_read_snapshots_arg *args);
-int osc_read_snapshot_export_tasks(struct osc_env *e, struct osc_str *out, struct osc_read_snapshot_export_tasks_arg *args);
-int osc_read_server_certificates(struct osc_env *e, struct osc_str *out, struct osc_read_server_certificates_arg *args);
-int osc_read_security_groups(struct osc_env *e, struct osc_str *out, struct osc_read_security_groups_arg *args);
-int osc_read_secret_access_key(struct osc_env *e, struct osc_str *out, struct osc_read_secret_access_key_arg *args);
-int osc_read_route_tables(struct osc_env *e, struct osc_str *out, struct osc_read_route_tables_arg *args);
-int osc_read_regions(struct osc_env *e, struct osc_str *out, struct osc_read_regions_arg *args);
-int osc_read_quotas(struct osc_env *e, struct osc_str *out, struct osc_read_quotas_arg *args);
-int osc_read_public_ips(struct osc_env *e, struct osc_str *out, struct osc_read_public_ips_arg *args);
-int osc_read_public_ip_ranges(struct osc_env *e, struct osc_str *out, struct osc_read_public_ip_ranges_arg *args);
-int osc_read_public_catalog(struct osc_env *e, struct osc_str *out, struct osc_read_public_catalog_arg *args);
-int osc_read_product_types(struct osc_env *e, struct osc_str *out, struct osc_read_product_types_arg *args);
-int osc_read_policy_versions(struct osc_env *e, struct osc_str *out, struct osc_read_policy_versions_arg *args);
-int osc_read_policy_version(struct osc_env *e, struct osc_str *out, struct osc_read_policy_version_arg *args);
-int osc_read_policy(struct osc_env *e, struct osc_str *out, struct osc_read_policy_arg *args);
-int osc_read_policies(struct osc_env *e, struct osc_str *out, struct osc_read_policies_arg *args);
-int osc_read_nics(struct osc_env *e, struct osc_str *out, struct osc_read_nics_arg *args);
-int osc_read_nets(struct osc_env *e, struct osc_str *out, struct osc_read_nets_arg *args);
-int osc_read_net_peerings(struct osc_env *e, struct osc_str *out, struct osc_read_net_peerings_arg *args);
-int osc_read_net_access_points(struct osc_env *e, struct osc_str *out, struct osc_read_net_access_points_arg *args);
-int osc_read_net_access_point_services(struct osc_env *e, struct osc_str *out, struct osc_read_net_access_point_services_arg *args);
-int osc_read_nat_services(struct osc_env *e, struct osc_str *out, struct osc_read_nat_services_arg *args);
-int osc_read_managed_policies_linked_to_user_group(struct osc_env *e, struct osc_str *out, struct osc_read_managed_policies_linked_to_user_group_arg *args);
-int osc_read_locations(struct osc_env *e, struct osc_str *out, struct osc_read_locations_arg *args);
-int osc_read_load_balancers(struct osc_env *e, struct osc_str *out, struct osc_read_load_balancers_arg *args);
-int osc_read_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct osc_read_load_balancer_tags_arg *args);
-int osc_read_listener_rules(struct osc_env *e, struct osc_str *out, struct osc_read_listener_rules_arg *args);
-int osc_read_linked_policies(struct osc_env *e, struct osc_str *out, struct osc_read_linked_policies_arg *args);
-int osc_read_keypairs(struct osc_env *e, struct osc_str *out, struct osc_read_keypairs_arg *args);
-int osc_read_internet_services(struct osc_env *e, struct osc_str *out, struct osc_read_internet_services_arg *args);
-int osc_read_images(struct osc_env *e, struct osc_str *out, struct osc_read_images_arg *args);
-int osc_read_image_export_tasks(struct osc_env *e, struct osc_str *out, struct osc_read_image_export_tasks_arg *args);
-int osc_read_flexible_gpus(struct osc_env *e, struct osc_str *out, struct osc_read_flexible_gpus_arg *args);
-int osc_read_flexible_gpu_catalog(struct osc_env *e, struct osc_str *out, struct osc_read_flexible_gpu_catalog_arg *args);
-int osc_read_entities_linked_to_policy(struct osc_env *e, struct osc_str *out, struct osc_read_entities_linked_to_policy_arg *args);
-int osc_read_direct_links(struct osc_env *e, struct osc_str *out, struct osc_read_direct_links_arg *args);
-int osc_read_direct_link_interfaces(struct osc_env *e, struct osc_str *out, struct osc_read_direct_link_interfaces_arg *args);
-int osc_read_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_read_dhcp_options_arg *args);
-int osc_read_dedicated_groups(struct osc_env *e, struct osc_str *out, struct osc_read_dedicated_groups_arg *args);
-int osc_read_consumption_account(struct osc_env *e, struct osc_str *out, struct osc_read_consumption_account_arg *args);
-int osc_read_console_output(struct osc_env *e, struct osc_str *out, struct osc_read_console_output_arg *args);
-int osc_read_client_gateways(struct osc_env *e, struct osc_str *out, struct osc_read_client_gateways_arg *args);
-int osc_read_catalogs(struct osc_env *e, struct osc_str *out, struct osc_read_catalogs_arg *args);
-int osc_read_catalog(struct osc_env *e, struct osc_str *out, struct osc_read_catalog_arg *args);
-int osc_read_cas(struct osc_env *e, struct osc_str *out, struct osc_read_cas_arg *args);
-int osc_read_api_logs(struct osc_env *e, struct osc_str *out, struct osc_read_api_logs_arg *args);
-int osc_read_api_access_rules(struct osc_env *e, struct osc_str *out, struct osc_read_api_access_rules_arg *args);
-int osc_read_api_access_policy(struct osc_env *e, struct osc_str *out, struct osc_read_api_access_policy_arg *args);
-int osc_read_admin_password(struct osc_env *e, struct osc_str *out, struct osc_read_admin_password_arg *args);
-int osc_read_accounts(struct osc_env *e, struct osc_str *out, struct osc_read_accounts_arg *args);
-int osc_read_access_keys(struct osc_env *e, struct osc_str *out, struct osc_read_access_keys_arg *args);
-int osc_put_user_group_policy(struct osc_env *e, struct osc_str *out, struct osc_put_user_group_policy_arg *args);
-int osc_link_volume(struct osc_env *e, struct osc_str *out, struct osc_link_volume_arg *args);
-int osc_link_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_link_virtual_gateway_arg *args);
-int osc_link_route_table(struct osc_env *e, struct osc_str *out, struct osc_link_route_table_arg *args);
-int osc_link_public_ip(struct osc_env *e, struct osc_str *out, struct osc_link_public_ip_arg *args);
-int osc_link_private_ips(struct osc_env *e, struct osc_str *out, struct osc_link_private_ips_arg *args);
-int osc_link_policy(struct osc_env *e, struct osc_str *out, struct osc_link_policy_arg *args);
-int osc_link_nic(struct osc_env *e, struct osc_str *out, struct osc_link_nic_arg *args);
-int osc_link_managed_policy_to_user_group(struct osc_env *e, struct osc_str *out, struct osc_link_managed_policy_to_user_group_arg *args);
-int osc_link_load_balancer_backend_machines(struct osc_env *e, struct osc_str *out, struct osc_link_load_balancer_backend_machines_arg *args);
-int osc_link_internet_service(struct osc_env *e, struct osc_str *out, struct osc_link_internet_service_arg *args);
-int osc_link_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_link_flexible_gpu_arg *args);
-int osc_deregister_vms_in_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_deregister_vms_in_load_balancer_arg *args);
-int osc_delete_vpn_connection_route(struct osc_env *e, struct osc_str *out, struct osc_delete_vpn_connection_route_arg *args);
-int osc_delete_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc_delete_vpn_connection_arg *args);
-int osc_delete_volume(struct osc_env *e, struct osc_str *out, struct osc_delete_volume_arg *args);
-int osc_delete_vms(struct osc_env *e, struct osc_str *out, struct osc_delete_vms_arg *args);
-int osc_delete_vm_template(struct osc_env *e, struct osc_str *out, struct osc_delete_vm_template_arg *args);
-int osc_delete_vm_group(struct osc_env *e, struct osc_str *out, struct osc_delete_vm_group_arg *args);
-int osc_delete_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_delete_virtual_gateway_arg *args);
+int osc_accept_net_peering(struct osc_env *e, struct osc_str *out, struct osc_accept_net_peering_arg *args);
+int osc_add_user_to_user_group(struct osc_env *e, struct osc_str *out, struct osc_add_user_to_user_group_arg *args);
+int osc_check_authentication(struct osc_env *e, struct osc_str *out, struct osc_check_authentication_arg *args);
+int osc_create_access_key(struct osc_env *e, struct osc_str *out, struct osc_create_access_key_arg *args);
+int osc_create_account(struct osc_env *e, struct osc_str *out, struct osc_create_account_arg *args);
+int osc_create_api_access_rule(struct osc_env *e, struct osc_str *out, struct osc_create_api_access_rule_arg *args);
+int osc_create_ca(struct osc_env *e, struct osc_str *out, struct osc_create_ca_arg *args);
+int osc_create_client_gateway(struct osc_env *e, struct osc_str *out, struct osc_create_client_gateway_arg *args);
+int osc_create_dedicated_group(struct osc_env *e, struct osc_str *out, struct osc_create_dedicated_group_arg *args);
+int osc_create_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_create_dhcp_options_arg *args);
+int osc_create_direct_link_interface(struct osc_env *e, struct osc_str *out, struct osc_create_direct_link_interface_arg *args);
+int osc_create_direct_link(struct osc_env *e, struct osc_str *out, struct osc_create_direct_link_arg *args);
+int osc_create_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_create_flexible_gpu_arg *args);
+int osc_create_image_export_task(struct osc_env *e, struct osc_str *out, struct osc_create_image_export_task_arg *args);
+int osc_create_image(struct osc_env *e, struct osc_str *out, struct osc_create_image_arg *args);
+int osc_create_internet_service(struct osc_env *e, struct osc_str *out, struct osc_create_internet_service_arg *args);
+int osc_create_keypair(struct osc_env *e, struct osc_str *out, struct osc_create_keypair_arg *args);
+int osc_create_listener_rule(struct osc_env *e, struct osc_str *out, struct osc_create_listener_rule_arg *args);
+int osc_create_load_balancer_listeners(struct osc_env *e, struct osc_str *out, struct osc_create_load_balancer_listeners_arg *args);
+int osc_create_load_balancer_policy(struct osc_env *e, struct osc_str *out, struct osc_create_load_balancer_policy_arg *args);
+int osc_create_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_create_load_balancer_arg *args);
+int osc_create_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct osc_create_load_balancer_tags_arg *args);
+int osc_create_nat_service(struct osc_env *e, struct osc_str *out, struct osc_create_nat_service_arg *args);
+int osc_create_net_access_point(struct osc_env *e, struct osc_str *out, struct osc_create_net_access_point_arg *args);
+int osc_create_net_peering(struct osc_env *e, struct osc_str *out, struct osc_create_net_peering_arg *args);
+int osc_create_net(struct osc_env *e, struct osc_str *out, struct osc_create_net_arg *args);
+int osc_create_nic(struct osc_env *e, struct osc_str *out, struct osc_create_nic_arg *args);
+int osc_create_policy(struct osc_env *e, struct osc_str *out, struct osc_create_policy_arg *args);
+int osc_create_policy_version(struct osc_env *e, struct osc_str *out, struct osc_create_policy_version_arg *args);
+int osc_create_product_type(struct osc_env *e, struct osc_str *out, struct osc_create_product_type_arg *args);
+int osc_create_public_ip(struct osc_env *e, struct osc_str *out, struct osc_create_public_ip_arg *args);
+int osc_create_route(struct osc_env *e, struct osc_str *out, struct osc_create_route_arg *args);
+int osc_create_route_table(struct osc_env *e, struct osc_str *out, struct osc_create_route_table_arg *args);
+int osc_create_security_group(struct osc_env *e, struct osc_str *out, struct osc_create_security_group_arg *args);
+int osc_create_security_group_rule(struct osc_env *e, struct osc_str *out, struct osc_create_security_group_rule_arg *args);
+int osc_create_server_certificate(struct osc_env *e, struct osc_str *out, struct osc_create_server_certificate_arg *args);
+int osc_create_snapshot_export_task(struct osc_env *e, struct osc_str *out, struct osc_create_snapshot_export_task_arg *args);
+int osc_create_snapshot(struct osc_env *e, struct osc_str *out, struct osc_create_snapshot_arg *args);
+int osc_create_subnet(struct osc_env *e, struct osc_str *out, struct osc_create_subnet_arg *args);
+int osc_create_tags(struct osc_env *e, struct osc_str *out, struct osc_create_tags_arg *args);
+int osc_create_user_group(struct osc_env *e, struct osc_str *out, struct osc_create_user_group_arg *args);
+int osc_create_user(struct osc_env *e, struct osc_str *out, struct osc_create_user_arg *args);
+int osc_create_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_create_virtual_gateway_arg *args);
+int osc_create_vm_group(struct osc_env *e, struct osc_str *out, struct osc_create_vm_group_arg *args);
+int osc_create_vm_template(struct osc_env *e, struct osc_str *out, struct osc_create_vm_template_arg *args);
+int osc_create_vms(struct osc_env *e, struct osc_str *out, struct osc_create_vms_arg *args);
+int osc_create_volume(struct osc_env *e, struct osc_str *out, struct osc_create_volume_arg *args);
+int osc_create_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc_create_vpn_connection_arg *args);
+int osc_create_vpn_connection_route(struct osc_env *e, struct osc_str *out, struct osc_create_vpn_connection_route_arg *args);
+int osc_delete_access_key(struct osc_env *e, struct osc_str *out, struct osc_delete_access_key_arg *args);
+int osc_delete_api_access_rule(struct osc_env *e, struct osc_str *out, struct osc_delete_api_access_rule_arg *args);
+int osc_delete_ca(struct osc_env *e, struct osc_str *out, struct osc_delete_ca_arg *args);
+int osc_delete_client_gateway(struct osc_env *e, struct osc_str *out, struct osc_delete_client_gateway_arg *args);
+int osc_delete_dedicated_group(struct osc_env *e, struct osc_str *out, struct osc_delete_dedicated_group_arg *args);
+int osc_delete_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_delete_dhcp_options_arg *args);
+int osc_delete_direct_link_interface(struct osc_env *e, struct osc_str *out, struct osc_delete_direct_link_interface_arg *args);
+int osc_delete_direct_link(struct osc_env *e, struct osc_str *out, struct osc_delete_direct_link_arg *args);
+int osc_delete_export_task(struct osc_env *e, struct osc_str *out, struct osc_delete_export_task_arg *args);
+int osc_delete_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_delete_flexible_gpu_arg *args);
+int osc_delete_image(struct osc_env *e, struct osc_str *out, struct osc_delete_image_arg *args);
+int osc_delete_internet_service(struct osc_env *e, struct osc_str *out, struct osc_delete_internet_service_arg *args);
+int osc_delete_keypair(struct osc_env *e, struct osc_str *out, struct osc_delete_keypair_arg *args);
+int osc_delete_listener_rule(struct osc_env *e, struct osc_str *out, struct osc_delete_listener_rule_arg *args);
+int osc_delete_load_balancer_listeners(struct osc_env *e, struct osc_str *out, struct osc_delete_load_balancer_listeners_arg *args);
+int osc_delete_load_balancer_policy(struct osc_env *e, struct osc_str *out, struct osc_delete_load_balancer_policy_arg *args);
+int osc_delete_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_delete_load_balancer_arg *args);
+int osc_delete_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct osc_delete_load_balancer_tags_arg *args);
+int osc_delete_nat_service(struct osc_env *e, struct osc_str *out, struct osc_delete_nat_service_arg *args);
+int osc_delete_net_access_point(struct osc_env *e, struct osc_str *out, struct osc_delete_net_access_point_arg *args);
+int osc_delete_net_peering(struct osc_env *e, struct osc_str *out, struct osc_delete_net_peering_arg *args);
+int osc_delete_net(struct osc_env *e, struct osc_str *out, struct osc_delete_net_arg *args);
+int osc_delete_nic(struct osc_env *e, struct osc_str *out, struct osc_delete_nic_arg *args);
+int osc_delete_policy(struct osc_env *e, struct osc_str *out, struct osc_delete_policy_arg *args);
+int osc_delete_policy_version(struct osc_env *e, struct osc_str *out, struct osc_delete_policy_version_arg *args);
+int osc_delete_public_ip(struct osc_env *e, struct osc_str *out, struct osc_delete_public_ip_arg *args);
+int osc_delete_route(struct osc_env *e, struct osc_str *out, struct osc_delete_route_arg *args);
+int osc_delete_route_table(struct osc_env *e, struct osc_str *out, struct osc_delete_route_table_arg *args);
+int osc_delete_security_group(struct osc_env *e, struct osc_str *out, struct osc_delete_security_group_arg *args);
+int osc_delete_security_group_rule(struct osc_env *e, struct osc_str *out, struct osc_delete_security_group_rule_arg *args);
+int osc_delete_server_certificate(struct osc_env *e, struct osc_str *out, struct osc_delete_server_certificate_arg *args);
+int osc_delete_snapshot(struct osc_env *e, struct osc_str *out, struct osc_delete_snapshot_arg *args);
+int osc_delete_subnet(struct osc_env *e, struct osc_str *out, struct osc_delete_subnet_arg *args);
+int osc_delete_tags(struct osc_env *e, struct osc_str *out, struct osc_delete_tags_arg *args);
 int osc_delete_user_group_policy(struct osc_env *e, struct osc_str *out, struct osc_delete_user_group_policy_arg *args);
 int osc_delete_user_group(struct osc_env *e, struct osc_str *out, struct osc_delete_user_group_arg *args);
 int osc_delete_user(struct osc_env *e, struct osc_str *out, struct osc_delete_user_arg *args);
-int osc_delete_tags(struct osc_env *e, struct osc_str *out, struct osc_delete_tags_arg *args);
-int osc_delete_subnet(struct osc_env *e, struct osc_str *out, struct osc_delete_subnet_arg *args);
-int osc_delete_snapshot(struct osc_env *e, struct osc_str *out, struct osc_delete_snapshot_arg *args);
-int osc_delete_server_certificate(struct osc_env *e, struct osc_str *out, struct osc_delete_server_certificate_arg *args);
-int osc_delete_security_group_rule(struct osc_env *e, struct osc_str *out, struct osc_delete_security_group_rule_arg *args);
-int osc_delete_security_group(struct osc_env *e, struct osc_str *out, struct osc_delete_security_group_arg *args);
-int osc_delete_route_table(struct osc_env *e, struct osc_str *out, struct osc_delete_route_table_arg *args);
-int osc_delete_route(struct osc_env *e, struct osc_str *out, struct osc_delete_route_arg *args);
-int osc_delete_public_ip(struct osc_env *e, struct osc_str *out, struct osc_delete_public_ip_arg *args);
-int osc_delete_policy_version(struct osc_env *e, struct osc_str *out, struct osc_delete_policy_version_arg *args);
-int osc_delete_policy(struct osc_env *e, struct osc_str *out, struct osc_delete_policy_arg *args);
-int osc_delete_nic(struct osc_env *e, struct osc_str *out, struct osc_delete_nic_arg *args);
-int osc_delete_net_peering(struct osc_env *e, struct osc_str *out, struct osc_delete_net_peering_arg *args);
-int osc_delete_net_access_point(struct osc_env *e, struct osc_str *out, struct osc_delete_net_access_point_arg *args);
-int osc_delete_net(struct osc_env *e, struct osc_str *out, struct osc_delete_net_arg *args);
-int osc_delete_nat_service(struct osc_env *e, struct osc_str *out, struct osc_delete_nat_service_arg *args);
-int osc_delete_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct osc_delete_load_balancer_tags_arg *args);
-int osc_delete_load_balancer_policy(struct osc_env *e, struct osc_str *out, struct osc_delete_load_balancer_policy_arg *args);
-int osc_delete_load_balancer_listeners(struct osc_env *e, struct osc_str *out, struct osc_delete_load_balancer_listeners_arg *args);
-int osc_delete_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_delete_load_balancer_arg *args);
-int osc_delete_listener_rule(struct osc_env *e, struct osc_str *out, struct osc_delete_listener_rule_arg *args);
-int osc_delete_keypair(struct osc_env *e, struct osc_str *out, struct osc_delete_keypair_arg *args);
-int osc_delete_internet_service(struct osc_env *e, struct osc_str *out, struct osc_delete_internet_service_arg *args);
-int osc_delete_image(struct osc_env *e, struct osc_str *out, struct osc_delete_image_arg *args);
-int osc_delete_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_delete_flexible_gpu_arg *args);
-int osc_delete_export_task(struct osc_env *e, struct osc_str *out, struct osc_delete_export_task_arg *args);
-int osc_delete_direct_link_interface(struct osc_env *e, struct osc_str *out, struct osc_delete_direct_link_interface_arg *args);
-int osc_delete_direct_link(struct osc_env *e, struct osc_str *out, struct osc_delete_direct_link_arg *args);
-int osc_delete_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_delete_dhcp_options_arg *args);
-int osc_delete_dedicated_group(struct osc_env *e, struct osc_str *out, struct osc_delete_dedicated_group_arg *args);
-int osc_delete_client_gateway(struct osc_env *e, struct osc_str *out, struct osc_delete_client_gateway_arg *args);
-int osc_delete_ca(struct osc_env *e, struct osc_str *out, struct osc_delete_ca_arg *args);
-int osc_delete_api_access_rule(struct osc_env *e, struct osc_str *out, struct osc_delete_api_access_rule_arg *args);
-int osc_delete_access_key(struct osc_env *e, struct osc_str *out, struct osc_delete_access_key_arg *args);
-int osc_create_vpn_connection_route(struct osc_env *e, struct osc_str *out, struct osc_create_vpn_connection_route_arg *args);
-int osc_create_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc_create_vpn_connection_arg *args);
-int osc_create_volume(struct osc_env *e, struct osc_str *out, struct osc_create_volume_arg *args);
-int osc_create_vms(struct osc_env *e, struct osc_str *out, struct osc_create_vms_arg *args);
-int osc_create_vm_template(struct osc_env *e, struct osc_str *out, struct osc_create_vm_template_arg *args);
-int osc_create_vm_group(struct osc_env *e, struct osc_str *out, struct osc_create_vm_group_arg *args);
-int osc_create_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_create_virtual_gateway_arg *args);
-int osc_create_user_group(struct osc_env *e, struct osc_str *out, struct osc_create_user_group_arg *args);
-int osc_create_user(struct osc_env *e, struct osc_str *out, struct osc_create_user_arg *args);
-int osc_create_tags(struct osc_env *e, struct osc_str *out, struct osc_create_tags_arg *args);
-int osc_create_subnet(struct osc_env *e, struct osc_str *out, struct osc_create_subnet_arg *args);
-int osc_create_snapshot_export_task(struct osc_env *e, struct osc_str *out, struct osc_create_snapshot_export_task_arg *args);
-int osc_create_snapshot(struct osc_env *e, struct osc_str *out, struct osc_create_snapshot_arg *args);
-int osc_create_server_certificate(struct osc_env *e, struct osc_str *out, struct osc_create_server_certificate_arg *args);
-int osc_create_security_group_rule(struct osc_env *e, struct osc_str *out, struct osc_create_security_group_rule_arg *args);
-int osc_create_security_group(struct osc_env *e, struct osc_str *out, struct osc_create_security_group_arg *args);
-int osc_create_route_table(struct osc_env *e, struct osc_str *out, struct osc_create_route_table_arg *args);
-int osc_create_route(struct osc_env *e, struct osc_str *out, struct osc_create_route_arg *args);
-int osc_create_public_ip(struct osc_env *e, struct osc_str *out, struct osc_create_public_ip_arg *args);
-int osc_create_product_type(struct osc_env *e, struct osc_str *out, struct osc_create_product_type_arg *args);
-int osc_create_policy_version(struct osc_env *e, struct osc_str *out, struct osc_create_policy_version_arg *args);
-int osc_create_policy(struct osc_env *e, struct osc_str *out, struct osc_create_policy_arg *args);
-int osc_create_nic(struct osc_env *e, struct osc_str *out, struct osc_create_nic_arg *args);
-int osc_create_net_peering(struct osc_env *e, struct osc_str *out, struct osc_create_net_peering_arg *args);
-int osc_create_net_access_point(struct osc_env *e, struct osc_str *out, struct osc_create_net_access_point_arg *args);
-int osc_create_net(struct osc_env *e, struct osc_str *out, struct osc_create_net_arg *args);
-int osc_create_nat_service(struct osc_env *e, struct osc_str *out, struct osc_create_nat_service_arg *args);
-int osc_create_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct osc_create_load_balancer_tags_arg *args);
-int osc_create_load_balancer_policy(struct osc_env *e, struct osc_str *out, struct osc_create_load_balancer_policy_arg *args);
-int osc_create_load_balancer_listeners(struct osc_env *e, struct osc_str *out, struct osc_create_load_balancer_listeners_arg *args);
-int osc_create_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_create_load_balancer_arg *args);
-int osc_create_listener_rule(struct osc_env *e, struct osc_str *out, struct osc_create_listener_rule_arg *args);
-int osc_create_keypair(struct osc_env *e, struct osc_str *out, struct osc_create_keypair_arg *args);
-int osc_create_internet_service(struct osc_env *e, struct osc_str *out, struct osc_create_internet_service_arg *args);
-int osc_create_image_export_task(struct osc_env *e, struct osc_str *out, struct osc_create_image_export_task_arg *args);
-int osc_create_image(struct osc_env *e, struct osc_str *out, struct osc_create_image_arg *args);
-int osc_create_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_create_flexible_gpu_arg *args);
-int osc_create_direct_link_interface(struct osc_env *e, struct osc_str *out, struct osc_create_direct_link_interface_arg *args);
-int osc_create_direct_link(struct osc_env *e, struct osc_str *out, struct osc_create_direct_link_arg *args);
-int osc_create_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_create_dhcp_options_arg *args);
-int osc_create_dedicated_group(struct osc_env *e, struct osc_str *out, struct osc_create_dedicated_group_arg *args);
-int osc_create_client_gateway(struct osc_env *e, struct osc_str *out, struct osc_create_client_gateway_arg *args);
-int osc_create_ca(struct osc_env *e, struct osc_str *out, struct osc_create_ca_arg *args);
-int osc_create_api_access_rule(struct osc_env *e, struct osc_str *out, struct osc_create_api_access_rule_arg *args);
-int osc_create_account(struct osc_env *e, struct osc_str *out, struct osc_create_account_arg *args);
-int osc_create_access_key(struct osc_env *e, struct osc_str *out, struct osc_create_access_key_arg *args);
-int osc_check_authentication(struct osc_env *e, struct osc_str *out, struct osc_check_authentication_arg *args);
-int osc_add_user_to_user_group(struct osc_env *e, struct osc_str *out, struct osc_add_user_to_user_group_arg *args);
-int osc_accept_net_peering(struct osc_env *e, struct osc_str *out, struct osc_accept_net_peering_arg *args);
+int osc_delete_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_delete_virtual_gateway_arg *args);
+int osc_delete_vm_group(struct osc_env *e, struct osc_str *out, struct osc_delete_vm_group_arg *args);
+int osc_delete_vm_template(struct osc_env *e, struct osc_str *out, struct osc_delete_vm_template_arg *args);
+int osc_delete_vms(struct osc_env *e, struct osc_str *out, struct osc_delete_vms_arg *args);
+int osc_delete_volume(struct osc_env *e, struct osc_str *out, struct osc_delete_volume_arg *args);
+int osc_delete_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc_delete_vpn_connection_arg *args);
+int osc_delete_vpn_connection_route(struct osc_env *e, struct osc_str *out, struct osc_delete_vpn_connection_route_arg *args);
+int osc_deregister_vms_in_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_deregister_vms_in_load_balancer_arg *args);
+int osc_link_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_link_flexible_gpu_arg *args);
+int osc_link_internet_service(struct osc_env *e, struct osc_str *out, struct osc_link_internet_service_arg *args);
+int osc_link_load_balancer_backend_machines(struct osc_env *e, struct osc_str *out, struct osc_link_load_balancer_backend_machines_arg *args);
+int osc_link_managed_policy_to_user_group(struct osc_env *e, struct osc_str *out, struct osc_link_managed_policy_to_user_group_arg *args);
+int osc_link_nic(struct osc_env *e, struct osc_str *out, struct osc_link_nic_arg *args);
+int osc_link_policy(struct osc_env *e, struct osc_str *out, struct osc_link_policy_arg *args);
+int osc_link_private_ips(struct osc_env *e, struct osc_str *out, struct osc_link_private_ips_arg *args);
+int osc_link_public_ip(struct osc_env *e, struct osc_str *out, struct osc_link_public_ip_arg *args);
+int osc_link_route_table(struct osc_env *e, struct osc_str *out, struct osc_link_route_table_arg *args);
+int osc_link_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_link_virtual_gateway_arg *args);
+int osc_link_volume(struct osc_env *e, struct osc_str *out, struct osc_link_volume_arg *args);
+int osc_put_user_group_policy(struct osc_env *e, struct osc_str *out, struct osc_put_user_group_policy_arg *args);
+int osc_read_access_keys(struct osc_env *e, struct osc_str *out, struct osc_read_access_keys_arg *args);
+int osc_read_accounts(struct osc_env *e, struct osc_str *out, struct osc_read_accounts_arg *args);
+int osc_read_admin_password(struct osc_env *e, struct osc_str *out, struct osc_read_admin_password_arg *args);
+int osc_read_api_access_policy(struct osc_env *e, struct osc_str *out, struct osc_read_api_access_policy_arg *args);
+int osc_read_api_access_rules(struct osc_env *e, struct osc_str *out, struct osc_read_api_access_rules_arg *args);
+int osc_read_api_logs(struct osc_env *e, struct osc_str *out, struct osc_read_api_logs_arg *args);
+int osc_read_cas(struct osc_env *e, struct osc_str *out, struct osc_read_cas_arg *args);
+int osc_read_catalog(struct osc_env *e, struct osc_str *out, struct osc_read_catalog_arg *args);
+int osc_read_catalogs(struct osc_env *e, struct osc_str *out, struct osc_read_catalogs_arg *args);
+int osc_read_client_gateways(struct osc_env *e, struct osc_str *out, struct osc_read_client_gateways_arg *args);
+int osc_read_console_output(struct osc_env *e, struct osc_str *out, struct osc_read_console_output_arg *args);
+int osc_read_consumption_account(struct osc_env *e, struct osc_str *out, struct osc_read_consumption_account_arg *args);
+int osc_read_dedicated_groups(struct osc_env *e, struct osc_str *out, struct osc_read_dedicated_groups_arg *args);
+int osc_read_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_read_dhcp_options_arg *args);
+int osc_read_direct_link_interfaces(struct osc_env *e, struct osc_str *out, struct osc_read_direct_link_interfaces_arg *args);
+int osc_read_direct_links(struct osc_env *e, struct osc_str *out, struct osc_read_direct_links_arg *args);
+int osc_read_entities_linked_to_policy(struct osc_env *e, struct osc_str *out, struct osc_read_entities_linked_to_policy_arg *args);
+int osc_read_flexible_gpu_catalog(struct osc_env *e, struct osc_str *out, struct osc_read_flexible_gpu_catalog_arg *args);
+int osc_read_flexible_gpus(struct osc_env *e, struct osc_str *out, struct osc_read_flexible_gpus_arg *args);
+int osc_read_image_export_tasks(struct osc_env *e, struct osc_str *out, struct osc_read_image_export_tasks_arg *args);
+int osc_read_images(struct osc_env *e, struct osc_str *out, struct osc_read_images_arg *args);
+int osc_read_internet_services(struct osc_env *e, struct osc_str *out, struct osc_read_internet_services_arg *args);
+int osc_read_keypairs(struct osc_env *e, struct osc_str *out, struct osc_read_keypairs_arg *args);
+int osc_read_linked_policies(struct osc_env *e, struct osc_str *out, struct osc_read_linked_policies_arg *args);
+int osc_read_listener_rules(struct osc_env *e, struct osc_str *out, struct osc_read_listener_rules_arg *args);
+int osc_read_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct osc_read_load_balancer_tags_arg *args);
+int osc_read_load_balancers(struct osc_env *e, struct osc_str *out, struct osc_read_load_balancers_arg *args);
+int osc_read_locations(struct osc_env *e, struct osc_str *out, struct osc_read_locations_arg *args);
+int osc_read_managed_policies_linked_to_user_group(struct osc_env *e, struct osc_str *out, struct osc_read_managed_policies_linked_to_user_group_arg *args);
+int osc_read_nat_services(struct osc_env *e, struct osc_str *out, struct osc_read_nat_services_arg *args);
+int osc_read_net_access_point_services(struct osc_env *e, struct osc_str *out, struct osc_read_net_access_point_services_arg *args);
+int osc_read_net_access_points(struct osc_env *e, struct osc_str *out, struct osc_read_net_access_points_arg *args);
+int osc_read_net_peerings(struct osc_env *e, struct osc_str *out, struct osc_read_net_peerings_arg *args);
+int osc_read_nets(struct osc_env *e, struct osc_str *out, struct osc_read_nets_arg *args);
+int osc_read_nics(struct osc_env *e, struct osc_str *out, struct osc_read_nics_arg *args);
+int osc_read_policies(struct osc_env *e, struct osc_str *out, struct osc_read_policies_arg *args);
+int osc_read_policy(struct osc_env *e, struct osc_str *out, struct osc_read_policy_arg *args);
+int osc_read_policy_version(struct osc_env *e, struct osc_str *out, struct osc_read_policy_version_arg *args);
+int osc_read_policy_versions(struct osc_env *e, struct osc_str *out, struct osc_read_policy_versions_arg *args);
+int osc_read_product_types(struct osc_env *e, struct osc_str *out, struct osc_read_product_types_arg *args);
+int osc_read_public_catalog(struct osc_env *e, struct osc_str *out, struct osc_read_public_catalog_arg *args);
+int osc_read_public_ip_ranges(struct osc_env *e, struct osc_str *out, struct osc_read_public_ip_ranges_arg *args);
+int osc_read_public_ips(struct osc_env *e, struct osc_str *out, struct osc_read_public_ips_arg *args);
+int osc_read_quotas(struct osc_env *e, struct osc_str *out, struct osc_read_quotas_arg *args);
+int osc_read_regions(struct osc_env *e, struct osc_str *out, struct osc_read_regions_arg *args);
+int osc_read_route_tables(struct osc_env *e, struct osc_str *out, struct osc_read_route_tables_arg *args);
+int osc_read_secret_access_key(struct osc_env *e, struct osc_str *out, struct osc_read_secret_access_key_arg *args);
+int osc_read_security_groups(struct osc_env *e, struct osc_str *out, struct osc_read_security_groups_arg *args);
+int osc_read_server_certificates(struct osc_env *e, struct osc_str *out, struct osc_read_server_certificates_arg *args);
+int osc_read_snapshot_export_tasks(struct osc_env *e, struct osc_str *out, struct osc_read_snapshot_export_tasks_arg *args);
+int osc_read_snapshots(struct osc_env *e, struct osc_str *out, struct osc_read_snapshots_arg *args);
+int osc_read_subnets(struct osc_env *e, struct osc_str *out, struct osc_read_subnets_arg *args);
+int osc_read_subregions(struct osc_env *e, struct osc_str *out, struct osc_read_subregions_arg *args);
+int osc_read_tags(struct osc_env *e, struct osc_str *out, struct osc_read_tags_arg *args);
+int osc_read_unit_price(struct osc_env *e, struct osc_str *out, struct osc_read_unit_price_arg *args);
+int osc_read_user_group_policies(struct osc_env *e, struct osc_str *out, struct osc_read_user_group_policies_arg *args);
+int osc_read_user_group_policy(struct osc_env *e, struct osc_str *out, struct osc_read_user_group_policy_arg *args);
+int osc_read_user_group(struct osc_env *e, struct osc_str *out, struct osc_read_user_group_arg *args);
+int osc_read_user_groups_per_user(struct osc_env *e, struct osc_str *out, struct osc_read_user_groups_per_user_arg *args);
+int osc_read_user_groups(struct osc_env *e, struct osc_str *out, struct osc_read_user_groups_arg *args);
+int osc_read_users(struct osc_env *e, struct osc_str *out, struct osc_read_users_arg *args);
+int osc_read_virtual_gateways(struct osc_env *e, struct osc_str *out, struct osc_read_virtual_gateways_arg *args);
+int osc_read_vm_groups(struct osc_env *e, struct osc_str *out, struct osc_read_vm_groups_arg *args);
+int osc_read_vm_templates(struct osc_env *e, struct osc_str *out, struct osc_read_vm_templates_arg *args);
+int osc_read_vm_types(struct osc_env *e, struct osc_str *out, struct osc_read_vm_types_arg *args);
+int osc_read_vms_health(struct osc_env *e, struct osc_str *out, struct osc_read_vms_health_arg *args);
+int osc_read_vms(struct osc_env *e, struct osc_str *out, struct osc_read_vms_arg *args);
+int osc_read_vms_state(struct osc_env *e, struct osc_str *out, struct osc_read_vms_state_arg *args);
+int osc_read_volumes(struct osc_env *e, struct osc_str *out, struct osc_read_volumes_arg *args);
+int osc_read_vpn_connections(struct osc_env *e, struct osc_str *out, struct osc_read_vpn_connections_arg *args);
+int osc_reboot_vms(struct osc_env *e, struct osc_str *out, struct osc_reboot_vms_arg *args);
+int osc_register_vms_in_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_register_vms_in_load_balancer_arg *args);
+int osc_reject_net_peering(struct osc_env *e, struct osc_str *out, struct osc_reject_net_peering_arg *args);
+int osc_remove_user_from_user_group(struct osc_env *e, struct osc_str *out, struct osc_remove_user_from_user_group_arg *args);
+int osc_scale_down_vm_group(struct osc_env *e, struct osc_str *out, struct osc_scale_down_vm_group_arg *args);
+int osc_scale_up_vm_group(struct osc_env *e, struct osc_str *out, struct osc_scale_up_vm_group_arg *args);
+int osc_set_default_policy_version(struct osc_env *e, struct osc_str *out, struct osc_set_default_policy_version_arg *args);
+int osc_start_vms(struct osc_env *e, struct osc_str *out, struct osc_start_vms_arg *args);
+int osc_stop_vms(struct osc_env *e, struct osc_str *out, struct osc_stop_vms_arg *args);
+int osc_unlink_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_unlink_flexible_gpu_arg *args);
+int osc_unlink_internet_service(struct osc_env *e, struct osc_str *out, struct osc_unlink_internet_service_arg *args);
+int osc_unlink_load_balancer_backend_machines(struct osc_env *e, struct osc_str *out, struct osc_unlink_load_balancer_backend_machines_arg *args);
+int osc_unlink_managed_policy_from_user_group(struct osc_env *e, struct osc_str *out, struct osc_unlink_managed_policy_from_user_group_arg *args);
+int osc_unlink_nic(struct osc_env *e, struct osc_str *out, struct osc_unlink_nic_arg *args);
+int osc_unlink_policy(struct osc_env *e, struct osc_str *out, struct osc_unlink_policy_arg *args);
+int osc_unlink_private_ips(struct osc_env *e, struct osc_str *out, struct osc_unlink_private_ips_arg *args);
+int osc_unlink_public_ip(struct osc_env *e, struct osc_str *out, struct osc_unlink_public_ip_arg *args);
+int osc_unlink_route_table(struct osc_env *e, struct osc_str *out, struct osc_unlink_route_table_arg *args);
+int osc_unlink_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_unlink_virtual_gateway_arg *args);
+int osc_unlink_volume(struct osc_env *e, struct osc_str *out, struct osc_unlink_volume_arg *args);
+int osc_update_access_key(struct osc_env *e, struct osc_str *out, struct osc_update_access_key_arg *args);
+int osc_update_account(struct osc_env *e, struct osc_str *out, struct osc_update_account_arg *args);
+int osc_update_api_access_policy(struct osc_env *e, struct osc_str *out, struct osc_update_api_access_policy_arg *args);
+int osc_update_api_access_rule(struct osc_env *e, struct osc_str *out, struct osc_update_api_access_rule_arg *args);
+int osc_update_ca(struct osc_env *e, struct osc_str *out, struct osc_update_ca_arg *args);
+int osc_update_dedicated_group(struct osc_env *e, struct osc_str *out, struct osc_update_dedicated_group_arg *args);
+int osc_update_direct_link_interface(struct osc_env *e, struct osc_str *out, struct osc_update_direct_link_interface_arg *args);
+int osc_update_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_update_flexible_gpu_arg *args);
+int osc_update_image(struct osc_env *e, struct osc_str *out, struct osc_update_image_arg *args);
+int osc_update_listener_rule(struct osc_env *e, struct osc_str *out, struct osc_update_listener_rule_arg *args);
+int osc_update_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_update_load_balancer_arg *args);
+int osc_update_net_access_point(struct osc_env *e, struct osc_str *out, struct osc_update_net_access_point_arg *args);
+int osc_update_net(struct osc_env *e, struct osc_str *out, struct osc_update_net_arg *args);
+int osc_update_nic(struct osc_env *e, struct osc_str *out, struct osc_update_nic_arg *args);
+int osc_update_route_propagation(struct osc_env *e, struct osc_str *out, struct osc_update_route_propagation_arg *args);
+int osc_update_route(struct osc_env *e, struct osc_str *out, struct osc_update_route_arg *args);
+int osc_update_route_table_link(struct osc_env *e, struct osc_str *out, struct osc_update_route_table_link_arg *args);
+int osc_update_server_certificate(struct osc_env *e, struct osc_str *out, struct osc_update_server_certificate_arg *args);
+int osc_update_snapshot(struct osc_env *e, struct osc_str *out, struct osc_update_snapshot_arg *args);
+int osc_update_subnet(struct osc_env *e, struct osc_str *out, struct osc_update_subnet_arg *args);
+int osc_update_user_group(struct osc_env *e, struct osc_str *out, struct osc_update_user_group_arg *args);
+int osc_update_user(struct osc_env *e, struct osc_str *out, struct osc_update_user_arg *args);
+int osc_update_vm_group(struct osc_env *e, struct osc_str *out, struct osc_update_vm_group_arg *args);
+int osc_update_vm(struct osc_env *e, struct osc_str *out, struct osc_update_vm_arg *args);
+int osc_update_vm_template(struct osc_env *e, struct osc_str *out, struct osc_update_vm_template_arg *args);
+int osc_update_volume(struct osc_env *e, struct osc_str *out, struct osc_update_volume_arg *args);
+int osc_update_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc_update_vpn_connection_arg *args);
 
 #ifdef __cplusplus
 }
