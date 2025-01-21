@@ -47,7 +47,7 @@
 
 #define OAPI_RAW_OUTPUT 1
 
-#define OAPI_CLI_VERSION "0.6.0"
+#define OAPI_CLI_VERSION "0.7.0"
 
 #define OAPI_CLI_UAGENT "oapi-cli/"OAPI_CLI_VERSION"; osc-sdk-c/"
 
@@ -320,9 +320,9 @@ int filters_users_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_virtual_gateway_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_vm_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_vm_group_parser(void *s, char *str, char *aa, struct ptr_array *pa);
-int filters_vms_state_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_vm_template_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_vm_type_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int filters_vms_state_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_volume_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_vpn_connection_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int flexible_gpu_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -334,14 +334,14 @@ int inline_policy_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int internet_service_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int keypair_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int keypair_created_parser(void *s, char *str, char *aa, struct ptr_array *pa);
-int linked_policy_parser(void *s, char *str, char *aa, struct ptr_array *pa);
-int linked_volume_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int link_nic_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int link_nic_light_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int link_nic_to_update_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int link_public_ip_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int link_public_ip_light_for_vm_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int link_route_table_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int linked_policy_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int linked_volume_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int listener_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int listener_for_creation_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int listener_rule_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -4158,6 +4158,34 @@ int filters_keypair_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
                TRY(!aa, "KeypairFingerprints[] argument missing\n");
                SET_NEXT(s->keypair_fingerprints, (aa), pa);
          } else
+	if ((aret = argcmp(str, "KeypairIds")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "KeypairIds argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "KeypairIds require an index\n");
+                      if (s->keypair_ids) {
+                              for (; s->keypair_ids[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->keypair_ids[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->keypair_ids, "", pa);
+                              SET_NEXT(s->keypair_ids, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "KeypairIds argument missing\n");
+                     s->keypair_ids_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "KeypairIds[]")) || aret == '=') {
+               TRY(!aa, "KeypairIds[] argument missing\n");
+               SET_NEXT(s->keypair_ids, (aa), pa);
+         } else
 	if ((aret = argcmp(str, "KeypairNames")) == 0 || aret == '=' || aret == '.') {
                  if (aret == '.') {
                       int pos;
@@ -4213,6 +4241,90 @@ int filters_keypair_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
          } else if (!(aret = argcmp(str, "KeypairTypes[]")) || aret == '=') {
                TRY(!aa, "KeypairTypes[] argument missing\n");
                SET_NEXT(s->keypair_types, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "TagKeys")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "TagKeys argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "TagKeys require an index\n");
+                      if (s->tag_keys) {
+                              for (; s->tag_keys[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->tag_keys[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->tag_keys, "", pa);
+                              SET_NEXT(s->tag_keys, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "TagKeys argument missing\n");
+                     s->tag_keys_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "TagKeys[]")) || aret == '=') {
+               TRY(!aa, "TagKeys[] argument missing\n");
+               SET_NEXT(s->tag_keys, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "TagValues")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "TagValues argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "TagValues require an index\n");
+                      if (s->tag_values) {
+                              for (; s->tag_values[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->tag_values[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->tag_values, "", pa);
+                              SET_NEXT(s->tag_values, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "TagValues argument missing\n");
+                     s->tag_values_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "TagValues[]")) || aret == '=') {
+               TRY(!aa, "TagValues[] argument missing\n");
+               SET_NEXT(s->tag_values, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "Tags argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "Tags require an index\n");
+                      if (s->tags) {
+                              for (; s->tags[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->tags[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->tags, "", pa);
+                              SET_NEXT(s->tags, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "Tags argument missing\n");
+                     s->tags_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "Tags[]")) || aret == '=') {
+               TRY(!aa, "Tags[] argument missing\n");
+               SET_NEXT(s->tags, (aa), pa);
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersKeypair'\n", str);
@@ -10904,212 +11016,6 @@ int filters_vm_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
 	return 0;
 }
 
-int filters_vms_state_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
-	    struct filters_vms_state *s = v_s;
-	    int aret = 0;
-	if ((aret = argcmp(str, "MaintenanceEventCodes")) == 0 || aret == '=' || aret == '.') {
-                 if (aret == '.') {
-                      int pos;
-                      char *endptr;
-                      int last = 0;
-                      char *dot_pos = strchr(str, '.');
-
-                      TRY(!(dot_pos++), "MaintenanceEventCodes argument missing\n");
-                      pos = strtoul(dot_pos, &endptr, 0);
-                      TRY(endptr == dot_pos, "MaintenanceEventCodes require an index\n");
-                      if (s->maintenance_event_codes) {
-                              for (; s->maintenance_event_codes[last]; ++last);
-                      }
-                      if (pos < last) {
-                              s->maintenance_event_codes[pos] = (aa);
-                      } else {
-                              for (int i = last; i < pos; ++i)
-                                      SET_NEXT(s->maintenance_event_codes, "", pa);
-                              SET_NEXT(s->maintenance_event_codes, (aa), pa);
-                      }
-                 } else {
-            	       TRY(!aa, "MaintenanceEventCodes argument missing\n");
-                     s->maintenance_event_codes_str = aa;
-                 }
-         } else if (!(aret = argcmp(str, "MaintenanceEventCodes[]")) || aret == '=') {
-               TRY(!aa, "MaintenanceEventCodes[] argument missing\n");
-               SET_NEXT(s->maintenance_event_codes, (aa), pa);
-         } else
-	if ((aret = argcmp(str, "MaintenanceEventDescriptions")) == 0 || aret == '=' || aret == '.') {
-                 if (aret == '.') {
-                      int pos;
-                      char *endptr;
-                      int last = 0;
-                      char *dot_pos = strchr(str, '.');
-
-                      TRY(!(dot_pos++), "MaintenanceEventDescriptions argument missing\n");
-                      pos = strtoul(dot_pos, &endptr, 0);
-                      TRY(endptr == dot_pos, "MaintenanceEventDescriptions require an index\n");
-                      if (s->maintenance_event_descriptions) {
-                              for (; s->maintenance_event_descriptions[last]; ++last);
-                      }
-                      if (pos < last) {
-                              s->maintenance_event_descriptions[pos] = (aa);
-                      } else {
-                              for (int i = last; i < pos; ++i)
-                                      SET_NEXT(s->maintenance_event_descriptions, "", pa);
-                              SET_NEXT(s->maintenance_event_descriptions, (aa), pa);
-                      }
-                 } else {
-            	       TRY(!aa, "MaintenanceEventDescriptions argument missing\n");
-                     s->maintenance_event_descriptions_str = aa;
-                 }
-         } else if (!(aret = argcmp(str, "MaintenanceEventDescriptions[]")) || aret == '=') {
-               TRY(!aa, "MaintenanceEventDescriptions[] argument missing\n");
-               SET_NEXT(s->maintenance_event_descriptions, (aa), pa);
-         } else
-	if ((aret = argcmp(str, "MaintenanceEventsNotAfter")) == 0 || aret == '=' || aret == '.') {
-                 if (aret == '.') {
-                      int pos;
-                      char *endptr;
-                      int last = 0;
-                      char *dot_pos = strchr(str, '.');
-
-                      TRY(!(dot_pos++), "MaintenanceEventsNotAfter argument missing\n");
-                      pos = strtoul(dot_pos, &endptr, 0);
-                      TRY(endptr == dot_pos, "MaintenanceEventsNotAfter require an index\n");
-                      if (s->maintenance_events_not_after) {
-                              for (; s->maintenance_events_not_after[last]; ++last);
-                      }
-                      if (pos < last) {
-                              s->maintenance_events_not_after[pos] = (aa);
-                      } else {
-                              for (int i = last; i < pos; ++i)
-                                      SET_NEXT(s->maintenance_events_not_after, "", pa);
-                              SET_NEXT(s->maintenance_events_not_after, (aa), pa);
-                      }
-                 } else {
-            	       TRY(!aa, "MaintenanceEventsNotAfter argument missing\n");
-                     s->maintenance_events_not_after_str = aa;
-                 }
-         } else if (!(aret = argcmp(str, "MaintenanceEventsNotAfter[]")) || aret == '=') {
-               TRY(!aa, "MaintenanceEventsNotAfter[] argument missing\n");
-               SET_NEXT(s->maintenance_events_not_after, (aa), pa);
-         } else
-	if ((aret = argcmp(str, "MaintenanceEventsNotBefore")) == 0 || aret == '=' || aret == '.') {
-                 if (aret == '.') {
-                      int pos;
-                      char *endptr;
-                      int last = 0;
-                      char *dot_pos = strchr(str, '.');
-
-                      TRY(!(dot_pos++), "MaintenanceEventsNotBefore argument missing\n");
-                      pos = strtoul(dot_pos, &endptr, 0);
-                      TRY(endptr == dot_pos, "MaintenanceEventsNotBefore require an index\n");
-                      if (s->maintenance_events_not_before) {
-                              for (; s->maintenance_events_not_before[last]; ++last);
-                      }
-                      if (pos < last) {
-                              s->maintenance_events_not_before[pos] = (aa);
-                      } else {
-                              for (int i = last; i < pos; ++i)
-                                      SET_NEXT(s->maintenance_events_not_before, "", pa);
-                              SET_NEXT(s->maintenance_events_not_before, (aa), pa);
-                      }
-                 } else {
-            	       TRY(!aa, "MaintenanceEventsNotBefore argument missing\n");
-                     s->maintenance_events_not_before_str = aa;
-                 }
-         } else if (!(aret = argcmp(str, "MaintenanceEventsNotBefore[]")) || aret == '=') {
-               TRY(!aa, "MaintenanceEventsNotBefore[] argument missing\n");
-               SET_NEXT(s->maintenance_events_not_before, (aa), pa);
-         } else
-	if ((aret = argcmp(str, "SubregionNames")) == 0 || aret == '=' || aret == '.') {
-                 if (aret == '.') {
-                      int pos;
-                      char *endptr;
-                      int last = 0;
-                      char *dot_pos = strchr(str, '.');
-
-                      TRY(!(dot_pos++), "SubregionNames argument missing\n");
-                      pos = strtoul(dot_pos, &endptr, 0);
-                      TRY(endptr == dot_pos, "SubregionNames require an index\n");
-                      if (s->subregion_names) {
-                              for (; s->subregion_names[last]; ++last);
-                      }
-                      if (pos < last) {
-                              s->subregion_names[pos] = (aa);
-                      } else {
-                              for (int i = last; i < pos; ++i)
-                                      SET_NEXT(s->subregion_names, "", pa);
-                              SET_NEXT(s->subregion_names, (aa), pa);
-                      }
-                 } else {
-            	       TRY(!aa, "SubregionNames argument missing\n");
-                     s->subregion_names_str = aa;
-                 }
-         } else if (!(aret = argcmp(str, "SubregionNames[]")) || aret == '=') {
-               TRY(!aa, "SubregionNames[] argument missing\n");
-               SET_NEXT(s->subregion_names, (aa), pa);
-         } else
-	if ((aret = argcmp(str, "VmIds")) == 0 || aret == '=' || aret == '.') {
-                 if (aret == '.') {
-                      int pos;
-                      char *endptr;
-                      int last = 0;
-                      char *dot_pos = strchr(str, '.');
-
-                      TRY(!(dot_pos++), "VmIds argument missing\n");
-                      pos = strtoul(dot_pos, &endptr, 0);
-                      TRY(endptr == dot_pos, "VmIds require an index\n");
-                      if (s->vm_ids) {
-                              for (; s->vm_ids[last]; ++last);
-                      }
-                      if (pos < last) {
-                              s->vm_ids[pos] = (aa);
-                      } else {
-                              for (int i = last; i < pos; ++i)
-                                      SET_NEXT(s->vm_ids, "", pa);
-                              SET_NEXT(s->vm_ids, (aa), pa);
-                      }
-                 } else {
-            	       TRY(!aa, "VmIds argument missing\n");
-                     s->vm_ids_str = aa;
-                 }
-         } else if (!(aret = argcmp(str, "VmIds[]")) || aret == '=') {
-               TRY(!aa, "VmIds[] argument missing\n");
-               SET_NEXT(s->vm_ids, (aa), pa);
-         } else
-	if ((aret = argcmp(str, "VmStates")) == 0 || aret == '=' || aret == '.') {
-                 if (aret == '.') {
-                      int pos;
-                      char *endptr;
-                      int last = 0;
-                      char *dot_pos = strchr(str, '.');
-
-                      TRY(!(dot_pos++), "VmStates argument missing\n");
-                      pos = strtoul(dot_pos, &endptr, 0);
-                      TRY(endptr == dot_pos, "VmStates require an index\n");
-                      if (s->vm_states) {
-                              for (; s->vm_states[last]; ++last);
-                      }
-                      if (pos < last) {
-                              s->vm_states[pos] = (aa);
-                      } else {
-                              for (int i = last; i < pos; ++i)
-                                      SET_NEXT(s->vm_states, "", pa);
-                              SET_NEXT(s->vm_states, (aa), pa);
-                      }
-                 } else {
-            	       TRY(!aa, "VmStates argument missing\n");
-                     s->vm_states_str = aa;
-                 }
-         } else if (!(aret = argcmp(str, "VmStates[]")) || aret == '=') {
-               TRY(!aa, "VmStates[] argument missing\n");
-               SET_NEXT(s->vm_states, (aa), pa);
-         } else
-	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersVmsState'\n", str);
-		return -1;
-	}
-	return 0;
-}
-
 int filters_vm_template_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_vm_template *s = v_s;
 	    int aret = 0;
@@ -11695,6 +11601,212 @@ int filters_vm_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'FiltersVmType'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
+int filters_vms_state_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct filters_vms_state *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "MaintenanceEventCodes")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "MaintenanceEventCodes argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "MaintenanceEventCodes require an index\n");
+                      if (s->maintenance_event_codes) {
+                              for (; s->maintenance_event_codes[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->maintenance_event_codes[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->maintenance_event_codes, "", pa);
+                              SET_NEXT(s->maintenance_event_codes, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "MaintenanceEventCodes argument missing\n");
+                     s->maintenance_event_codes_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "MaintenanceEventCodes[]")) || aret == '=') {
+               TRY(!aa, "MaintenanceEventCodes[] argument missing\n");
+               SET_NEXT(s->maintenance_event_codes, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "MaintenanceEventDescriptions")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "MaintenanceEventDescriptions argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "MaintenanceEventDescriptions require an index\n");
+                      if (s->maintenance_event_descriptions) {
+                              for (; s->maintenance_event_descriptions[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->maintenance_event_descriptions[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->maintenance_event_descriptions, "", pa);
+                              SET_NEXT(s->maintenance_event_descriptions, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "MaintenanceEventDescriptions argument missing\n");
+                     s->maintenance_event_descriptions_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "MaintenanceEventDescriptions[]")) || aret == '=') {
+               TRY(!aa, "MaintenanceEventDescriptions[] argument missing\n");
+               SET_NEXT(s->maintenance_event_descriptions, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "MaintenanceEventsNotAfter")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "MaintenanceEventsNotAfter argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "MaintenanceEventsNotAfter require an index\n");
+                      if (s->maintenance_events_not_after) {
+                              for (; s->maintenance_events_not_after[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->maintenance_events_not_after[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->maintenance_events_not_after, "", pa);
+                              SET_NEXT(s->maintenance_events_not_after, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "MaintenanceEventsNotAfter argument missing\n");
+                     s->maintenance_events_not_after_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "MaintenanceEventsNotAfter[]")) || aret == '=') {
+               TRY(!aa, "MaintenanceEventsNotAfter[] argument missing\n");
+               SET_NEXT(s->maintenance_events_not_after, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "MaintenanceEventsNotBefore")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "MaintenanceEventsNotBefore argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "MaintenanceEventsNotBefore require an index\n");
+                      if (s->maintenance_events_not_before) {
+                              for (; s->maintenance_events_not_before[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->maintenance_events_not_before[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->maintenance_events_not_before, "", pa);
+                              SET_NEXT(s->maintenance_events_not_before, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "MaintenanceEventsNotBefore argument missing\n");
+                     s->maintenance_events_not_before_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "MaintenanceEventsNotBefore[]")) || aret == '=') {
+               TRY(!aa, "MaintenanceEventsNotBefore[] argument missing\n");
+               SET_NEXT(s->maintenance_events_not_before, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "SubregionNames")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "SubregionNames argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "SubregionNames require an index\n");
+                      if (s->subregion_names) {
+                              for (; s->subregion_names[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->subregion_names[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->subregion_names, "", pa);
+                              SET_NEXT(s->subregion_names, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "SubregionNames argument missing\n");
+                     s->subregion_names_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "SubregionNames[]")) || aret == '=') {
+               TRY(!aa, "SubregionNames[] argument missing\n");
+               SET_NEXT(s->subregion_names, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "VmIds")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "VmIds argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "VmIds require an index\n");
+                      if (s->vm_ids) {
+                              for (; s->vm_ids[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->vm_ids[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->vm_ids, "", pa);
+                              SET_NEXT(s->vm_ids, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "VmIds argument missing\n");
+                     s->vm_ids_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "VmIds[]")) || aret == '=') {
+               TRY(!aa, "VmIds[] argument missing\n");
+               SET_NEXT(s->vm_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "VmStates")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "VmStates argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "VmStates require an index\n");
+                      if (s->vm_states) {
+                              for (; s->vm_states[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->vm_states[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->vm_states, "", pa);
+                              SET_NEXT(s->vm_states, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "VmStates argument missing\n");
+                     s->vm_states_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "VmStates[]")) || aret == '=') {
+               TRY(!aa, "VmStates[] argument missing\n");
+               SET_NEXT(s->vm_states, (aa), pa);
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'FiltersVmsState'\n", str);
 		return -1;
 	}
 	return 0;
@@ -12902,6 +13014,11 @@ int keypair_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             s->keypair_fingerprint = aa; // string string
 
          } else
+	if ((aret = argcmp(str, "KeypairId")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "KeypairId argument missing\n");
+            s->keypair_id = aa; // string string
+
+         } else
 	if ((aret = argcmp(str, "KeypairName")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "KeypairName argument missing\n");
             s->keypair_name = aa; // string string
@@ -12911,6 +13028,31 @@ int keypair_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             TRY(!aa, "KeypairType argument missing\n");
             s->keypair_type = aa; // string string
 
+         } else
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=' || aret == '.') {
+            char *dot_pos = strchr(str, '.');
+
+            if (dot_pos) {
+            	      int pos;
+            	      char *endptr;
+
+            	      ++dot_pos;
+            	      pos = strtoul(dot_pos, &endptr, 0);
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
+            	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
+            	      cascade_struct = &s->tags[pos];
+            	      cascade_parser = resource_tag_parser;
+            	      if (endptr[1] == '.') {
+            		     ++endptr;
+            	      }
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
+             } else {
+            	TRY(!aa, "Tags argument missing\n");
+            	s->tags_str = aa; // array ref ResourceTag ref
+            }
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Keypair'\n", str);
@@ -12925,6 +13067,11 @@ int keypair_created_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
 	if ((aret = argcmp(str, "KeypairFingerprint")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "KeypairFingerprint argument missing\n");
             s->keypair_fingerprint = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "KeypairId")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "KeypairId argument missing\n");
+            s->keypair_id = aa; // string string
 
          } else
 	if ((aret = argcmp(str, "KeypairName")) == 0 || aret == '=' || aret == '.') {
@@ -12942,83 +13089,33 @@ int keypair_created_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
             s->private_key = aa; // string string
 
          } else
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=' || aret == '.') {
+            char *dot_pos = strchr(str, '.');
+
+            if (dot_pos) {
+            	      int pos;
+            	      char *endptr;
+
+            	      ++dot_pos;
+            	      pos = strtoul(dot_pos, &endptr, 0);
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a .\n");
+            	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
+            	      cascade_struct = &s->tags[pos];
+            	      cascade_parser = resource_tag_parser;
+            	      if (endptr[1] == '.') {
+            		     ++endptr;
+            	      }
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
+             } else {
+            	TRY(!aa, "Tags argument missing\n");
+            	s->tags_str = aa; // array ref ResourceTag ref
+            }
+         } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'KeypairCreated'\n", str);
-		return -1;
-	}
-	return 0;
-}
-
-int linked_policy_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
-	    struct linked_policy *s = v_s;
-	    int aret = 0;
-	if ((aret = argcmp(str, "CreationDate")) == 0 || aret == '=' || aret == '.') {
-            TRY(!aa, "CreationDate argument missing\n");
-            s->creation_date = aa; // string string
-
-         } else
-	if ((aret = argcmp(str, "LastModificationDate")) == 0 || aret == '=' || aret == '.') {
-            TRY(!aa, "LastModificationDate argument missing\n");
-            s->last_modification_date = aa; // string string
-
-         } else
-	if ((aret = argcmp(str, "Orn")) == 0 || aret == '=' || aret == '.') {
-            TRY(!aa, "Orn argument missing\n");
-            s->orn = aa; // string string
-
-         } else
-	if ((aret = argcmp(str, "PolicyId")) == 0 || aret == '=' || aret == '.') {
-            TRY(!aa, "PolicyId argument missing\n");
-            s->policy_id = aa; // string string
-
-         } else
-	if ((aret = argcmp(str, "PolicyName")) == 0 || aret == '=' || aret == '.') {
-            TRY(!aa, "PolicyName argument missing\n");
-            s->policy_name = aa; // string string
-
-         } else
-	{
-		fprintf(stderr, "'%s' not an argumemt of 'LinkedPolicy'\n", str);
-		return -1;
-	}
-	return 0;
-}
-
-int linked_volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
-	    struct linked_volume *s = v_s;
-	    int aret = 0;
-	if ((aret = argcmp(str, "DeleteOnVmDeletion")) == 0 || aret == '=' || aret == '.') {
-            s->is_set_delete_on_vm_deletion = 1;
-            if (!aa || !strcasecmp(aa, "true")) {
-            		s->delete_on_vm_deletion = 1;
-             } else if (!strcasecmp(aa, "false")) {
-            		s->delete_on_vm_deletion = 0;
-             } else {
-            		BAD_RET("DeleteOnVmDeletion require true/false\n");
-             }
-        } else
-	if ((aret = argcmp(str, "DeviceName")) == 0 || aret == '=' || aret == '.') {
-            TRY(!aa, "DeviceName argument missing\n");
-            s->device_name = aa; // string string
-
-         } else
-	if ((aret = argcmp(str, "State")) == 0 || aret == '=' || aret == '.') {
-            TRY(!aa, "State argument missing\n");
-            s->state = aa; // string string
-
-         } else
-	if ((aret = argcmp(str, "VmId")) == 0 || aret == '=' || aret == '.') {
-            TRY(!aa, "VmId argument missing\n");
-            s->vm_id = aa; // string string
-
-         } else
-	if ((aret = argcmp(str, "VolumeId")) == 0 || aret == '=' || aret == '.') {
-            TRY(!aa, "VolumeId argument missing\n");
-            s->volume_id = aa; // string string
-
-         } else
-	{
-		fprintf(stderr, "'%s' not an argumemt of 'LinkedVolume'\n", str);
 		return -1;
 	}
 	return 0;
@@ -13224,6 +13321,81 @@ int link_route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'LinkRouteTable'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
+int linked_policy_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct linked_policy *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "CreationDate")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "CreationDate argument missing\n");
+            s->creation_date = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "LastModificationDate")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "LastModificationDate argument missing\n");
+            s->last_modification_date = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "Orn")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "Orn argument missing\n");
+            s->orn = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "PolicyId")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "PolicyId argument missing\n");
+            s->policy_id = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "PolicyName")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "PolicyName argument missing\n");
+            s->policy_name = aa; // string string
+
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'LinkedPolicy'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
+int linked_volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct linked_volume *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "DeleteOnVmDeletion")) == 0 || aret == '=' || aret == '.') {
+            s->is_set_delete_on_vm_deletion = 1;
+            if (!aa || !strcasecmp(aa, "true")) {
+            		s->delete_on_vm_deletion = 1;
+             } else if (!strcasecmp(aa, "false")) {
+            		s->delete_on_vm_deletion = 0;
+             } else {
+            		BAD_RET("DeleteOnVmDeletion require true/false\n");
+             }
+        } else
+	if ((aret = argcmp(str, "DeviceName")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "DeviceName argument missing\n");
+            s->device_name = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "State argument missing\n");
+            s->state = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "VmId")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "VmId argument missing\n");
+            s->vm_id = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "VolumeId")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "VolumeId argument missing\n");
+            s->volume_id = aa; // string string
+
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'LinkedVolume'\n", str);
 		return -1;
 	}
 	return 0;
@@ -27445,6 +27617,17 @@ int main(int ac, char **av)
 				          		BAD_RET("DryRun require true/false\n");
 				           }
 				      } else
+			      if ((aret = argcmp(next_a, "KeypairId")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "KeypairId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "KeypairId argument missing\n");
+				          s->keypair_id = aa; // string string
+
+				       } else
 			      if ((aret = argcmp(next_a, "KeypairName")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
 			      	 if (eq_ptr) {
@@ -28830,6 +29013,128 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_delete_policy_version(&e, &r, &a);
             	     TRY(cret, "fail to call DeletePolicyVersion: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     }
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("DeleteProductType", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_delete_product_type_arg a = {0};
+		     struct osc_delete_product_type_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     delete_product_type_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS({CHK_BAD_RET(aa[0] == '-', "cascade need an argument"); })
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto delete_product_type_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				 	META_ARGS({ aa = 0; incr = 1; });
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "Force")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Force argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_force = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->force = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->force = 0;
+				           } else {
+				          		BAD_RET("Force require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "ProductTypeId")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ProductTypeId argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ProductTypeId argument missing\n");
+				          s->product_type_id = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'DeleteProductType'\n", next_a);
+			    }
+		            i += incr;
+			    goto delete_product_type_arg;
+		     }
+		     cret = osc_delete_product_type(&e, &r, &a);
+            	     TRY(cret, "fail to call DeleteProductType: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)
@@ -38689,112 +38994,6 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_route_tables(&e, &r, &a);
             	     TRY(cret, "fail to call ReadRouteTables: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
-		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
-			     jobj = json_tokener_parse(r.buf);
-			     puts(json_object_to_json_string_ext(jobj,
-					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
-					color_flag));
-		     }
-		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
-		     	     ++i;
-			     TRY(i + 1 >= ac, "--set-var require an argument");
-		     	     if (!jobj)
-			     	jobj = json_tokener_parse(r.buf);
-			     if (parse_variable(jobj, av, ac, i))
-			     	return -1;
-		     	     ++i;
-		      }
-
-		      if (jobj) {
-			     json_object_put(jobj);
-			     jobj = NULL;
-		      }
-		     osc_deinit_str(&r);
-	      } else
-              if (!strcmp("ReadSecretAccessKey", av[i])) {
-		     auto_osc_json_c json_object *jobj = NULL;
-		     auto_ptr_array struct ptr_array opa = {0};
-		     struct ptr_array *pa = &opa;
-	      	     struct osc_read_secret_access_key_arg a = {0};
-		     struct osc_read_secret_access_key_arg *s = &a;
-		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
-	             int cret;
-
-		     cascade_struct = NULL;
-		     cascade_parser = NULL;
-
-		     read_secret_access_key_arg:
-
-		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
- 		           char *next_a = &av[i + 1][2];
-		           char *aa = i + 2 < ac ? av[i + 2] : 0;
-			   int incr = 2;
-			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
-			   if (eq_ptr) {
-			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
-			      	  incr = 1;
-				  aa = eq_ptr + 1;
-			   } else {
-			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
-					  META_ARGS({CHK_BAD_RET(aa[0] == '-', "cascade need an argument"); })
-			   }
-		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
-			   i += incr;
-		       	   goto read_secret_access_key_arg;
-		      }
-
-		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
- 		             char *next_a = &av[i + 1][2];
-			     char *str = next_a;
- 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
-			     int aret = 0;
-			     int incr = aa ? 2 : 1;
-
-			     (void)str;
-			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
-				 	META_ARGS({ aa = 0; incr = 1; });
-			     }
-			      if ((aret = argcmp(next_a, "AccessKeyId")) == 0 || aret == '='  || aret == '.') {
-			      	 char *eq_ptr = strchr(next_a, '=');
-			      	 if (eq_ptr) {
-				    TRY((!*eq_ptr), "AccessKeyId argument missing\n");
-				    aa = eq_ptr + 1;
-				    incr = 1;
-				 }
-				          TRY(!aa, "AccessKeyId argument missing\n");
-				          s->access_key_id = aa; // string string
-
-				       } else
-			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '='  || aret == '.') {
-			      	 char *eq_ptr = strchr(next_a, '=');
-			      	 if (eq_ptr) {
-				    TRY((!*eq_ptr), "DryRun argument missing\n");
-				    aa = eq_ptr + 1;
-				    incr = 1;
-				 }
-				          s->is_set_dry_run = 1;
-				          if (!aa || !strcasecmp(aa, "true")) {
-				          		s->dry_run = 1;
-				           } else if (!strcasecmp(aa, "false")) {
-				          		s->dry_run = 0;
-				           } else {
-				          		BAD_RET("DryRun require true/false\n");
-				           }
-				      } else
-			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadSecretAccessKey'\n", next_a);
-			    }
-		            i += incr;
-			    goto read_secret_access_key_arg;
-		     }
-		     cret = osc_read_secret_access_key(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadSecretAccessKey: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)

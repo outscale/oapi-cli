@@ -153,6 +153,7 @@ static const char *calls_name[] = {
 	"DeleteNic",
 	"DeletePolicy",
 	"DeletePolicyVersion",
+	"DeleteProductType",
 	"DeletePublicIp",
 	"DeleteRoute",
 	"DeleteRouteTable",
@@ -231,7 +232,6 @@ static const char *calls_name[] = {
 	"ReadQuotas",
 	"ReadRegions",
 	"ReadRouteTables",
-	"ReadSecretAccessKey",
 	"ReadSecurityGroups",
 	"ReadServerCertificates",
 	"ReadSnapshotExportTasks",
@@ -334,9 +334,9 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli CreateImageExportTask --OsuExport=osuexport --ImageId=imageid [OPTIONS]\n" "Exports an OUTSCALE machine image (OMI) to an OUTSCALE Object Storage (OOS) \n" "bucket.\nThis enables you to copy an OMI between accounts in different \n" "Regions.\nThis action creates the necessary snapshots and manifest file in the \n" "bucket. The OMI can then be imported to another account using a pre-signed URL \n" "of its manifest file. For more information, see [Creating a Pre-Signed \n" "URL](https://docs.outscale.com/en/userguide/Creating-a-Pre-Signed-URL.html).\nTo\n" " copy an OMI in the same Region, you can also use the \n" "[CreateImage](#createimage) method.\n\n**[IMPORTANT]**\nYou cannot export a \n" "shared or public OMI, as they do not belong to you. To do so, you must first \n" "copy it to your account. The copy then belongs to you and you can export \n" "it.\nFor more information, see [About \n" "OMIs](https://docs.outscale.com/en/userguide/About-OMIs.html).\n" "\nRequired Argument: OsuExport ImageId \n"
 ,
-	"Usage: oapi-cli CreateImage [OPTIONS]\n" "Creates an OUTSCALE machine image (OMI).\nYou can use this method in different \n" "ways:\n* **Creating from a VM**: You create an OMI from one of your virtual \n" "machines (VMs).<br>\n* **Copying an OMI**: You copy an existing OMI. The source \n" "OMI can be one of your own OMIs, or an OMI owned by another account that has \n" "granted you permission via the [UpdateImage](#updateimage) method.<br>\n* \n" "**Registering from a snapshot**: You register an OMI from an existing snapshot. \n" "The source snapshot can be one of your own snapshots, or a snapshot owned by \n" "another account that has granted you permission via the \n" "[UpdateSnapshot](#updatesnapshot) method.<br>\n* **Registering from a bucket by \n" "using a manifest file**: You register an OMI from the manifest file of an OMI \n" "that was exported to an OUTSCALE Object Storage (OOS) bucket. First, the owner \n" "of the source OMI must export it to the bucket by using the \n" "[CreateImageExportTask](#createimageexporttask) method. Then, they must grant \n" "you permission to read the manifest file via a pre-signed URL. For more \n" "information, see [Creating a Pre-Signed \n" "URL](https://docs.outscale.com/en/userguide/Creating-a-Pre-Signed-URL.html).\n\n\n" "**[TIP]**\nRegistering from a bucket enables you to copy an OMI across \n" "Regions.\n\nFor more information, see [About \n" "OMIs](https://docs.outscale.com/en/userguide/About-OMIs.html).\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli CreateImage [OPTIONS]\n" "Creates an OUTSCALE machine image (OMI).\nYou can use this method for different \n" "use cases:\n* **Creating from a VM**: You create an OMI from one of your \n" "virtual machines (VMs).<br>\n* **Copying an OMI**: You copy an existing OMI. \n" "The source OMI can be one of your own OMIs, or an OMI owned by another account \n" "that has granted you permission via the [UpdateImage](#updateimage) \n" "method.<br>\n* **Registering from a snapshot**: You register an OMI from an \n" "existing snapshot. The source snapshot can be one of your own snapshots, or a \n" "snapshot owned by another account that has granted you permission via the \n" "[UpdateSnapshot](#updatesnapshot) method.<br>\n* **Registering from a bucket by \n" "using a manifest file**: You register an OMI from the manifest file of an OMI \n" "that was exported to an OUTSCALE Object Storage (OOS) bucket. First, the owner \n" "of the source OMI must export it to the bucket by using the \n" "[CreateImageExportTask](#createimageexporttask) method. Then, they must grant \n" "you permission to read the manifest file via a pre-signed URL. For more \n" "information, see [Creating a Pre-Signed \n" "URL](https://docs.outscale.com/en/userguide/Creating-a-Pre-Signed-URL.html).\n\n\n" "**[TIP]**\nRegistering from a bucket enables you to copy an OMI across \n" "Regions.\n\nFor more information, see [About \n" "OMIs](https://docs.outscale.com/en/userguide/About-OMIs.html).\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli CreateInternetService [OPTIONS]\n" "Creates an Internet service you can use with a Net.\nAn Internet service \n" "enables virtual machines (VMs) launched in a Net to connect to the Internet. It \n" "allows routing of incoming and outgoing Internet traffic and management of \n" "public IP addresses.\nFor more information, see [About Internet \n" "Services](https://docs.outscale.com/en/userguide/About-Internet-Services.html).\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli CreateInternetService [OPTIONS]\n" "Creates an internet service you can use with a Net.\nAn internet service \n" "enables virtual machines (VMs) launched in a Net to connect to the Internet. It \n" "allows routing of incoming and outgoing Internet traffic and management of \n" "public IP addresses.\nFor more information, see [About Internet \n" "Services](https://docs.outscale.com/en/userguide/About-Internet-Services.html).\n" "\nRequired Argument: null \n"
 ,
 	"Usage: oapi-cli CreateKeypair --KeypairName=keypairname [OPTIONS]\n" "Creates a keypair to use with your virtual machines (VMs).\nYou can use this \n" "method in two different ways:\n* **Creating a keypair**: In that case, 3DS \n" "OUTSCALE creates a 2048-bit RSA keypair, stores its public key in your account, \n" "and returns its private key in the response of the call so that you can save it \n" "in a file.\nWhen you save the returned private key, make sure you replace the \n" "`\\n` escape sequences with real line breaks.\n* **Importing a keypair created \n" "locally**: If you already have a keypair that you have created locally with a \n" "third-party tool, you can import its public key in your account. The following \n" "types of key can be imported: RSA (2048 bits or preferably 4096 bits), Ed25519, \n" "and ECDSA (256 bits, 384 bits, or 521 bits). The following formats can be used: \n" "PEM, PKCS8, RFC4716, and OpenSSH.\n\nFor more information, see [About \n" "Keypairs](https://docs.outscale.com/en/userguide/About-Keypairs.html).\n" "\nRequired Argument: KeypairName \n"
 ,
@@ -384,7 +384,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli CreateSubnet --IpRange=iprange --NetId=netid [OPTIONS]\n" "Creates a Subnet in an existing Net.\nTo create a Subnet in a Net, you have to \n" "provide the ID of the Net and the IP range for the Subnet (its network range). \n" "Once the Subnet is created, you cannot modify its IP range.\nFor more \n" "information, see [About \n" "Nets](https://docs.outscale.com/en/userguide/About-Nets.html).\n" "\nRequired Argument: IpRange NetId \n"
 ,
-	"Usage: oapi-cli CreateTags --ResourceIds=resourceids --Tags=tags [OPTIONS]\n" "Adds one or more tags to the specified resources.\nIf a tag with the same key \n" "already exists for the resource, the tag value is replaced.\nYou can tag the \n" "following resources using their IDs:\n\n* Virtual machines (VMs) \n" "(i-xxxxxxxx)\n* OMIs (ami-xxxxxxxx)\n* Volumes (vol-xxxxxxxx)\n* Snapshots \n" "(snap-xxxxxxxx)\n* Public IPs (eipalloc-xxxxxxxx)\n* Security groups \n" "(sg-xxxxxxxx)\n* Route tables (rtb-xxxxxxxx)\n* Network interface cards (NIC) \n" "(eni-xxxxxxxx)\n* Nets (vpc-xxxxxxxx)\n* Subnets (subnet-xxxxxxxx)\n* Net \n" "peerings (vpcx-xxxxxxxx)\n* Net endpoints (vpce-xxxxxxxx)\n* NAT services \n" "(nat-xxxxxxxx)\n* Internet services (igw-xxxxxxxx)\n* Client gateways \n" "(cgw-xxxxxxxx)\n* Virtual gateways (vgw-xxxxxxxx)\n* VPN connections \n" "(vpn-xxxxxxxx)\n* DHCP options (dopt-xxxxxxxx)\n* OMI export tasks \n" "(image-export-xxxxxxxx)\n* Snapshot export tasks (snap-export-xxxxxxxx)\n\nFor \n" "more information, see [About \n" "Tags](https://docs.outscale.com/en/userguide/About-Tags.html).\n" "\nRequired Argument: ResourceIds Tags \n"
+	"Usage: oapi-cli CreateTags --ResourceIds=resourceids --Tags=tags [OPTIONS]\n" "Adds one or more tags to the specified resources.\nIf a tag with the same key \n" "already exists for the resource, the tag value is replaced.\nYou can tag the \n" "following resources using their IDs:\n\n* Client gateways (cgw-xxxxxxxx)\n* \n" "DHCP options (dopt-xxxxxxxx)\n* Images (ami-xxxxxxxx)\n* Internet services \n" "(igw-xxxxxxxx)\n* Keypairs (key-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx)\n* NAT \n" "services (nat-xxxxxxxx)\n* Net endpoints (vpce-xxxxxxxx)\n* Net peerings \n" "(vpcx-xxxxxxxx)\n* Nets (vpc-xxxxxxxx)\n* Network interface cards (NIC) \n" "(eni-xxxxxxxx)\n* OMI export tasks (image-export-xxxxxxxx)\n* OMIs \n" "(ami-xxxxxxxx)\n* Public IPs (eipalloc-xxxxxxxx)\n* Route tables \n" "(rtb-xxxxxxxx)\n* Security groups (sg-xxxxxxxx)\n* Snapshot export tasks \n" "(snap-export-xxxxxxxx)\n* Snapshots (snap-xxxxxxxx)\n* Subnets \n" "(subnet-xxxxxxxx)\n* Virtual gateways (vgw-xxxxxxxx)\n* Virtual machines (VMs) \n" "(i-xxxxxxxx)\n* Volumes (vol-xxxxxxxx)\n* VPN connections (vpn-xxxxxxxx)\n\nFor \n" "more information, see [About \n" "Tags](https://docs.outscale.com/en/userguide/About-Tags.html).\n" "\nRequired Argument: ResourceIds Tags \n"
 ,
 	"Usage: oapi-cli CreateUserGroup --UserGroupName=usergroupname [OPTIONS]\n" "Creates a group to which you can add users.\nYou can also add an inline policy \n" "or link a managed policy to the group, which is applied to all its users.\n" "\nRequired Argument: UserGroupName \n"
 ,
@@ -406,7 +406,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli DeleteAccessKey --AccessKeyId=accesskeyid [OPTIONS]\n" "Deletes the specified access key of either your root account or an EIM \n" "user.\nThe access key of an EIM user must be in the `INACTIVE` state to be \n" "deleted.\n" "\nRequired Argument: AccessKeyId \n"
 ,
-	"Usage: oapi-cli DeleteApiAccessRule --ApiAccessRuleId=apiaccessruleid [OPTIONS]\n" "Deletes a specified API access rule.\n\n**[IMPORTANT]** \nYou cannot delete the \n" "last remaining API access rule. However, if you delete all the API access rules \n" "that allow you to access the APIs, you need to contact the Support team to \n" "regain access. For more information, see [Technical \n" "Support](https://docs.outscale.com/en/userguide/Technical-Support.html).\n" "\nRequired Argument: ApiAccessRuleId \n"
+	"Usage: oapi-cli DeleteApiAccessRule --ApiAccessRuleId=apiaccessruleid [OPTIONS]\n" "Deletes a specified API access rule.\n\n**[IMPORTANT]**\nYou cannot delete the \n" "last remaining API access rule. However, if you delete all the API access rules \n" "that allow you to access the APIs, you need to contact the Support team to \n" "regain access. For more information, see [Technical \n" "Support](https://docs.outscale.com/en/userguide/Technical-Support.html).\n" "\nRequired Argument: ApiAccessRuleId \n"
 ,
 	"Usage: oapi-cli DeleteCa --CaId=caid [OPTIONS]\n" "Deletes a specified Client Certificate Authority (CA).\n" "\nRequired Argument: CaId \n"
 ,
@@ -426,9 +426,9 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli DeleteImage --ImageId=imageid [OPTIONS]\n" "Deletes an OUTSCALE machine image (OMI) so that you cannot use it anymore to \n" "launch virtual machines (VMs). However, you can still use VMs already launched \n" "from this OMI.\n" "\nRequired Argument: ImageId \n"
 ,
-	"Usage: oapi-cli DeleteInternetService --InternetServiceId=internetserviceid [OPTIONS]\n" "Deletes an Internet service.\nBefore deleting an Internet service, you must \n" "detach it from any Net it is attached to.\n" "\nRequired Argument: InternetServiceId \n"
+	"Usage: oapi-cli DeleteInternetService --InternetServiceId=internetserviceid [OPTIONS]\n" "Deletes an internet service.\nBefore deleting an internet service, you must \n" "detach it from any Net it is attached to.\n" "\nRequired Argument: InternetServiceId \n"
 ,
-	"Usage: oapi-cli DeleteKeypair --KeypairName=keypairname [OPTIONS]\n" "Deletes the specified keypair.\nThis action deletes the public key stored by \n" "3DS OUTSCALE, thus deleting the keypair.\n" "\nRequired Argument: KeypairName \n"
+	"Usage: oapi-cli DeleteKeypair [OPTIONS]\n" "Deletes the specified keypair.\nThis action deletes the public key stored by \n" "3DS OUTSCALE, thus deleting the keypair.\n" "\nRequired Argument: null \n"
 ,
 	"Usage: oapi-cli DeleteListenerRule --ListenerRuleName=listenerrulename [OPTIONS]\n" "Deletes a listener rule.\nThe previously active rule is disabled after deletion.\n" "\nRequired Argument: ListenerRuleName \n"
 ,
@@ -446,13 +446,15 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli DeleteNetPeering --NetPeeringId=netpeeringid [OPTIONS]\n" "Deletes a Net peering.\nIf the Net peering is in the `active` state, it can be \n" "deleted either by the owner of the requester Net or the owner of the peer \n" "Net.\nIf it is in the `pending-acceptance` state, it can be deleted only by the \n" "owner of the requester Net.\nIf it is in the `rejected`, `failed`, or `expired` \n" "states, it cannot be deleted.\n" "\nRequired Argument: NetPeeringId \n"
 ,
-	"Usage: oapi-cli DeleteNet --NetId=netid [OPTIONS]\n" "Deletes a specified Net.\nBefore deleting the Net, you need to delete or detach \n" "all the resources associated with the Net:\n\n* Virtual machines (VMs)\n* Net \n" "peerings\n* Custom route tables\n* Public IPs allocated to resources in the \n" "Net\n* Network Interface Cards (NICs) created in the Subnets\n* Virtual \n" "gateways, Internet services and NAT services\n* Load balancers\n* Security \n" "groups\n* Subnets\n" "\nRequired Argument: NetId \n"
+	"Usage: oapi-cli DeleteNet --NetId=netid [OPTIONS]\n" "Deletes a specified Net.\nBefore deleting the Net, you need to delete or detach \n" "all the resources associated with the Net:\n\n* Virtual machines (VMs)\n* Net \n" "peerings\n* Custom route tables\n* Public IPs allocated to resources in the \n" "Net\n* Network Interface Cards (NICs) created in the Subnets\n* Virtual \n" "gateways, internet services and NAT services\n* Load balancers\n* Security \n" "groups\n* Subnets\n" "\nRequired Argument: NetId \n"
 ,
 	"Usage: oapi-cli DeleteNic --NicId=nicid [OPTIONS]\n" "Deletes the specified network interface card (NIC).\nThe network interface must \n" "not be attached to any virtual machine (VM).\n" "\nRequired Argument: NicId \n"
 ,
-	"Usage: oapi-cli DeletePolicy --PolicyOrn=policyorn [OPTIONS]\n" "Deletes a managed policy.\nBefore deleting a managed policy, you must unlink \n" "all users linked to it and delete all the versions of the policy using the \n" "`DeletePolicyVersion` method.\n" "\nRequired Argument: PolicyOrn \n"
+	"Usage: oapi-cli DeletePolicy --PolicyOrn=policyorn [OPTIONS]\n" "Deletes a managed policy.\nBefore deleting a managed policy, you must unlink \n" "all users linked to it and delete all the versions of the policy, except the \n" "default one, using the `DeletePolicyVersion` method.\n" "\nRequired Argument: PolicyOrn \n"
 ,
 	"Usage: oapi-cli DeletePolicyVersion --PolicyOrn=policyorn --VersionId=versionid [OPTIONS]\n" "Deletes a specified version of a managed policy, if it is not set as the \n" "default one.\n" "\nRequired Argument: PolicyOrn VersionId \n"
+,
+	"Usage: oapi-cli DeleteProductType --ProductTypeId=producttypeid [OPTIONS]\n" "Deletes a specified product type that belongs to you.\n\n**[WARNING]**\nThe \n" "product type must not be associated with one or more OMIs to be deleted. \n" "Otherwise, you need to force the deletion.\nIf you force the deletion, the \n" "product type is deleted and remains associated with the OMIs.\n" "\nRequired Argument: ProductTypeId \n"
 ,
 	"Usage: oapi-cli DeletePublicIp [OPTIONS]\n" "Releases a public IP.\nYou can release a public IP associated with your \n" "account. This address is released in the public IP pool and can be used by \n" "someone else. Before releasing a public IP, ensure you updated all your \n" "resources communicating with this address.\n" "\nRequired Argument: null \n"
 ,
@@ -496,7 +498,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli LinkFlexibleGpu --FlexibleGpuId=flexiblegpuid --VmId=vmid [OPTIONS]\n" "Attaches one of your allocated flexible GPUs (fGPUs) to one of your virtual \n" "machines (VMs).\nTo complete the linking of the fGPU, you need to do a \n" "stop/start of the VM. A simple restart is not sufficient, as the linking of the \n" "fGPU is done when the VM goes through the `stopped` state. For the difference \n" "between stop/start and restart, see [About VM \n" "Lifecycle](https://docs.outscale.com/en/userguide/About-VM-Lifecycle.html).\n\n*\n" "*[NOTE]**\nYou can attach fGPUs only to VMs with the `highest` (1) performance \n" "flag. For more information see [About Flexible \n" "GPUs](https://docs.outscale.com/en/userguide/About-Flexible-GPUs.html) and [VM \n" "Types](https://docs.outscale.com/en/userguide/VM-Types.html).\n" "\nRequired Argument: FlexibleGpuId VmId \n"
 ,
-	"Usage: oapi-cli LinkInternetService --InternetServiceId=internetserviceid --NetId=netid [OPTIONS]\n" "Attaches an Internet service to a Net.\nTo enable the connection between the \n" "Internet and a Net, you must attach an Internet service to this Net.\n" "\nRequired Argument: InternetServiceId NetId \n"
+	"Usage: oapi-cli LinkInternetService --InternetServiceId=internetserviceid --NetId=netid [OPTIONS]\n" "Attaches an internet service to a Net.\nTo enable the connection between the \n" "Internet and a Net, you must attach an internet service to this Net.\n" "\nRequired Argument: InternetServiceId NetId \n"
 ,
 	"Usage: oapi-cli LinkLoadBalancerBackendMachines --LoadBalancerName=loadbalancername [OPTIONS]\n" "Attaches one or more virtual machines (VMs) to a specified load balancer. You \n" "need to specify at least the `BackendIps` or the `BackendVmIds` parameter.\nThe \n" "VMs can be in different Subnets and different Subregions than the load \n" "balancer, as long as the VMs and load balancers are all in the public Cloud or \n" "all in the same Net. It may take a little time for a VM to be registered with \n" "the load balancer. Once the VM is registered with a load balancer, it receives \n" "traffic and requests from this load balancer and is called a backend VM.\n" "\nRequired Argument: LoadBalancerName \n"
 ,
@@ -508,7 +510,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli LinkPrivateIps --NicId=nicid [OPTIONS]\n" "Assigns one or more secondary private IPs to a specified network interface card \n" "(NIC). This action is only available in a Net. The private IPs to be assigned \n" "can be added individually using the `PrivateIps` parameter, or you can specify \n" "the number of private IPs to be automatically chosen within the Subnet range \n" "using the `SecondaryPrivateIpCount` parameter. You can specify only one of \n" "these two parameters. If none of these parameters are specified, a private IP \n" "is chosen within the Subnet range.\n" "\nRequired Argument: NicId \n"
 ,
-	"Usage: oapi-cli LinkPublicIp [OPTIONS]\n" "Associates a public IP with a virtual machine (VM) or a network interface card \n" "(NIC), in the public Cloud or in a Net. You can associate a public IP with only \n" "one VM or network interface at a time.\nTo associate a public IP in a Net, \n" "ensure that the Net has an Internet service attached. For more information, see \n" "the [LinkInternetService](#linkinternetservice) method.\nBy default, the public \n" "IP is disassociated every time you stop and start the VM. For a persistent \n" "association, you can add the `osc.fcu.eip.auto-attach` tag to the VM with the \n" "public IP as value. For more information, see the [CreateTags](#createtags) \n" "method.\n\n**[IMPORTANT]**\nYou can associate a public IP with a network \n" "address translation (NAT) service only when creating the NAT service. To modify \n" "its public IP, you need to delete the NAT service and re-create it with the new \n" "public IP. For more information, see the [CreateNatService](#createnatservice) \n" "method.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli LinkPublicIp [OPTIONS]\n" "Associates a public IP with a virtual machine (VM) or a network interface card \n" "(NIC), in the public Cloud or in a Net. You can associate a public IP with only \n" "one VM or network interface at a time.\nTo associate a public IP in a Net, \n" "ensure that the Net has an internet service attached. For more information, see \n" "the [LinkInternetService](#linkinternetservice) method.\nBy default, the public \n" "IP is disassociated every time you stop and start the VM. For a persistent \n" "association, you can add the `osc.fcu.eip.auto-attach` tag to the VM with the \n" "public IP as value. For more information, see the [CreateTags](#createtags) \n" "method.\n\n**[IMPORTANT]**\nYou can associate a public IP with a network \n" "address translation (NAT) service only when creating the NAT service. To modify \n" "its public IP, you need to delete the NAT service and re-create it with the new \n" "public IP. For more information, see the [CreateNatService](#createnatservice) \n" "method.\n" "\nRequired Argument: null \n"
 ,
 	"Usage: oapi-cli LinkRouteTable --RouteTableId=routetableid --SubnetId=subnetid [OPTIONS]\n" "Associates a Subnet with a route table.\nThe Subnet and the route table must be \n" "in the same Net. The traffic is routed according to the route table defined \n" "within this Net. You can associate a route table with several Subnets.\n" "\nRequired Argument: RouteTableId SubnetId \n"
 ,
@@ -538,7 +540,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli ReadClientGateways [OPTIONS]\n" "Lists one or more of your client gateways.\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadConsoleOutput --VmId=vmid [OPTIONS]\n" "Gets the console output for a virtual machine (VM). This console provides the \n" "most recent 64 KiB output.\n\n**[IMPORTANT]**\nOn Windows VMs, the console is \n" "handled only on the first boot. It returns no output after the first boot.\n" "\nRequired Argument: VmId \n"
+	"Usage: oapi-cli ReadConsoleOutput --VmId=vmid [OPTIONS]\n" "Gets the console output for a virtual machine (VM). This console is not in \n" "real-time. It is refreshed every two seconds and provides the most recent 64 \n" "KiB output.\n\n**[IMPORTANT]**\nOn Windows VMs, the console is handled only on \n" "the first boot. It returns no output after the first boot.\n" "\nRequired Argument: VmId \n"
 ,
 	"Usage: oapi-cli ReadConsumptionAccount --FromDate=fromdate --ToDate=todate [OPTIONS]\n" "Gets information about the consumption of your account for each billable \n" "resource within the specified time period.\n" "\nRequired Argument: FromDate ToDate \n"
 ,
@@ -560,7 +562,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli ReadImages [OPTIONS]\n" "Lists one or more OUTSCALE machine images (OMIs) you can use.\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadInternetServices [OPTIONS]\n" "Lists one or more of your Internet services.\nAn Internet service enables \n" "virtual machines (VMs) launched in a Net to connect to the Internet. It allows \n" "routing of incoming and outgoing Internet traffic and management of public IP \n" "addresses.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadInternetServices [OPTIONS]\n" "Lists one or more of your internet services.\nAn internet service enables \n" "virtual machines (VMs) launched in a Net to connect to the Internet. It allows \n" "routing of incoming and outgoing Internet traffic and management of public IP \n" "addresses.\n" "\nRequired Argument: null \n"
 ,
 	"Usage: oapi-cli ReadKeypairs [OPTIONS]\n" "Lists one or more of your keypairs.\n" "\nRequired Argument: null \n"
 ,
@@ -610,8 +612,6 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli ReadRouteTables [OPTIONS]\n" "Lists one or more of your route tables.\nIn your Net, each Subnet must be \n" "associated with a route table. If a Subnet is not explicitly associated with a \n" "route table, it is implicitly associated with the main route table of the Net.\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadSecretAccessKey --AccessKeyId=accesskeyid [OPTIONS]\n" "> [WARNING]\n> Deprecated: This call will be removed after October 1, \n" "2024.\n\nLists information about the specified access key of your root account, \n" "including its secret key.\n" "\nRequired Argument: AccessKeyId \n"
-,
 	"Usage: oapi-cli ReadSecurityGroups [OPTIONS]\n" "Lists one or more security groups.\nYou can specify either the name of the \n" "security groups or their IDs.\n" "\nRequired Argument: null \n"
 ,
 	"Usage: oapi-cli ReadServerCertificates [OPTIONS]\n" "Lists your server certificates.\n" "\nRequired Argument: null \n"
@@ -636,9 +636,9 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli ReadUserGroupsPerUser --UserName=username [OPTIONS]\n" "Lists the groups a specified user belongs to.\n" "\nRequired Argument: UserName \n"
 ,
-	"Usage: oapi-cli ReadUserGroups [OPTIONS]\n" "Lists the groups with the specified path prefix.\nIf you do not specify any \n" "path prefix, this action returns all the groups (or an empty list if there are \n" "none).\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadUserGroups [OPTIONS]\n" "Lists all the user groups of the account.\nThe response can be filtered using \n" "either the PathPrefix or the UserGroupIds.\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadUsers [OPTIONS]\n" "Lists all EIM users that have a specified path.\nIf you do not specify a path, \n" "this action returns a list of all users in the account (or an empty list if \n" "there are none).\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadUsers [OPTIONS]\n" "Lists all EIM users in the account.\nThe response can be filtered using the \n" "UserIds.\n" "\nRequired Argument: null \n"
 ,
 	"Usage: oapi-cli ReadVirtualGateways [OPTIONS]\n" "Lists one or more virtual gateways.\n" "\nRequired Argument: null \n"
 ,
@@ -678,7 +678,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli UnlinkFlexibleGpu --FlexibleGpuId=flexiblegpuid [OPTIONS]\n" "Detaches a flexible GPU (fGPU) from a virtual machine (VM).\nThe fGPU is in the \n" "`detaching` state until the VM is stopped, after which it becomes `allocated`. \n" "It is then available again for attachment to a VM.\n" "\nRequired Argument: FlexibleGpuId \n"
 ,
-	"Usage: oapi-cli UnlinkInternetService --InternetServiceId=internetserviceid --NetId=netid [OPTIONS]\n" "Detaches an Internet service from a Net.\nThis action disables and detaches an \n" "Internet service from a Net. The Net must not contain virtual machines (VMs) \n" "using public IPs nor internet-facing load balancers.\n" "\nRequired Argument: InternetServiceId NetId \n"
+	"Usage: oapi-cli UnlinkInternetService --InternetServiceId=internetserviceid --NetId=netid [OPTIONS]\n" "Detaches an internet service from a Net.\nThis action disables and detaches an \n" "internet service from a Net. The Net must not contain virtual machines (VMs) \n" "using public IPs nor internet-facing load balancers.\n" "\nRequired Argument: InternetServiceId NetId \n"
 ,
 	"Usage: oapi-cli UnlinkLoadBalancerBackendMachines --LoadBalancerName=loadbalancername [OPTIONS]\n" "Detaches one or more backend virtual machines (VMs) from a load balancer. You \n" "need to specify at least the `BackendIps` or the `BackendVmIds` parameter.\n" "\nRequired Argument: LoadBalancerName \n"
 ,
@@ -698,13 +698,13 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli UnlinkVolume --VolumeId=volumeid [OPTIONS]\n" "Detaches a Block Storage Unit (BSU) volume from a virtual machine (VM).\nTo \n" "detach the root device of a VM, this VM must be stopped.\n" "\nRequired Argument: VolumeId \n"
 ,
-	"Usage: oapi-cli UpdateAccessKey --AccessKeyId=accesskeyid --State=state [OPTIONS]\n" "Modifies the attributes of the specified access key of either your root account \n" "or an EIM user.\n" "\nRequired Argument: AccessKeyId State \n"
+	"Usage: oapi-cli UpdateAccessKey --AccessKeyId=accesskeyid --State=state [OPTIONS]\n" "Modifies the attributes of the specified access key of either your root account \n" "or an EIM user.\nThe parameter `ExpirationDate` is not required when updating \n" "the state of your access key. However, if you do not specify the expiration \n" "date of an access key when updating its state, it is then set to not expire.\n" "\nRequired Argument: AccessKeyId State \n"
 ,
 	"Usage: oapi-cli UpdateAccount [OPTIONS]\n" "Updates the account information for the account that sends the request.\n" "\nRequired Argument: null \n"
 ,
 	"Usage: oapi-cli UpdateApiAccessPolicy --MaxAccessKeyExpirationSeconds=maxaccesskeyexpirationseconds --RequireTrustedEnv=requiretrustedenv [OPTIONS]\n" "Updates the API access policy of your account.\n\n**[IMPORTANT]**\nOnly one API \n" "access policy can be associated with your account.\n" "\nRequired Argument: MaxAccessKeyExpirationSeconds RequireTrustedEnv \n"
 ,
-	"Usage: oapi-cli UpdateApiAccessRule --ApiAccessRuleId=apiaccessruleid [OPTIONS]\n" "Modifies a specified API access rule.\n\n**[WARNING]** \n- The new rule you \n" "specify fully replaces the old rule. Therefore, for a parameter that is not \n" "specified, any previously set value is deleted.\n- If, as result of your \n" "modification, you no longer have access to the APIs, you will need to contact \n" "the Support team to regain access. For more information, see [Technical \n" "Support](https://docs.outscale.com/en/userguide/Technical-Support.html).\n" "\nRequired Argument: ApiAccessRuleId \n"
+	"Usage: oapi-cli UpdateApiAccessRule --ApiAccessRuleId=apiaccessruleid [OPTIONS]\n" "Modifies a specified API access rule.\n\n**[WARNING]**\n- The new rule you \n" "specify fully replaces the old rule. Therefore, for a parameter that is not \n" "specified, any previously set value is deleted.\n- If, as result of your \n" "modification, you no longer have access to the APIs, you will need to contact \n" "the Support team to regain access. For more information, see [Technical \n" "Support](https://docs.outscale.com/en/userguide/Technical-Support.html).\n" "\nRequired Argument: ApiAccessRuleId \n"
 ,
 	"Usage: oapi-cli UpdateCa --CaId=caid [OPTIONS]\n" "Modifies the specified attribute of a Client Certificate Authority (CA).\n" "\nRequired Argument: CaId \n"
 ,
@@ -848,8 +848,9 @@ static const char *calls_args_descriptions[] = {
 	"--BgpAsn: long long int\n"
 	"  The Autonomous System Number (ASN) used by the Border Gateway Protocol (BGP) to find the \n"
 	"  path to your client gateway through the Internet. <br/>\nThis number must be between `1` \n"
-	"  and `4294967295`. If you do not have an ASN, you can choose one between 64512 and 65534, or \n"
-	"  between 4200000000 and 4294967294.\n"
+	"  and `4294967295`, except `50624`, `53306`, and `132418`. <br/>\nIf you do not have an ASN, \n"
+	"  you can choose one between `64512` and `65534` (both included), or between `4200000000` and \n"
+	"  `4294967295` (both included).\n"
 "--ConnectionType: string\n"
 	"  The communication protocol used to establish tunnel with your client gateway (always \n"
 	"  `ipsec.1`).\n"
@@ -954,9 +955,9 @@ static const char *calls_args_descriptions[] = {
 	"      The prefix for the key of the OOS object.\n"
 ,
 	"--Architecture: string\n"
-	"  **(when registering from a snapshot)** The architecture of the OMI (`i386` or `x86_64`).\n"
+	"  **When registering from a snapshot:** The architecture of the OMI (`i386` or `x86_64`).\n"
 "--BlockDeviceMappings: array ref BlockDeviceMappingImage\n"
-	"  **(when registering from a snapshot)** One or more block device mappings.\n"
+	"  **(required) When registering from a snapshot:** One or more block device mappings.\n"
 	"    One or more parameters used to automatically set up volumes when the VM \n"
 	"    is created.\n"
 	"    --BlockDeviceMappings.INDEX.Bsu: ref BsuToCreate\n"
@@ -994,26 +995,28 @@ static const char *calls_args_descriptions[] = {
 "--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--FileLocation: string\n"
-	"  **(when registering from a bucket by using a manifest file)** The pre-signed URL of the \n"
-	"  manifest file for the OMI you want to register. For more information, see [Creating a \n"
-	"  Pre-signed URL](https://docs.outscale.com/en/userguide/Creating-a-Pre-Signed-URL.html).\n"
+	"  **(required) When registering from a bucket by using a manifest file:** The pre-signed URL \n"
+	"  of the manifest file for the OMI you want to register. For more information, see [Creating \n"
+	"  a Pre-signed URL](https://docs.outscale.com/en/userguide/Creating-a-Pre-Signed-URL.html).\n"
 "--ImageName: string\n"
 	"  A unique name for the new OMI.\nConstraints: 3-128 alphanumeric characters, underscores \n"
 	"  (`_`), spaces (` `), parentheses (`()`), slashes (`/`), periods (`.`), or dashes (`-`).\n"
 "--NoReboot: bool\n"
-	"  **(when creating from a VM)** If false, the VM shuts down before creating the OMI and then \n"
+	"  **When creating from a VM:** If false, the VM shuts down before creating the OMI and then \n"
 	"  reboots. If true, the VM does not.\n"
 "--ProductCodes: array string\n"
 	"  The product codes associated with the OMI.\n"
 "--RootDeviceName: string\n"
-	"  **(when registering from a snapshot)** The name of the root device for the new OMI.\n"
+	"  **(required) When registering from a snapshot:** The name of the root device for the new \n"
+	"  OMI.\n"
 "--SourceImageId: string\n"
-	"  **(when copying an OMI)** The ID of the OMI you want to copy.\n"
+	"  **(required) When copying an OMI:** The ID of the OMI you want to copy.\n"
 "--SourceRegionName: string\n"
-	"  **(when copying an OMI)** The name of the source Region (always the same as the Region of \n"
-	"  your account).\n"
+	"  **(required) When copying an OMI:** The name of the source Region (always the same as the \n"
+	"  Region of your account).\n"
 "--VmId: string\n"
-	"  **(when creating from a VM)** The ID of the VM from which you want to create the OMI.\n"
+	"  **(required) When creating from a VM:** The ID of the VM from which you want to create the \n"
+	"  OMI.\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -1179,10 +1182,13 @@ static const char *calls_args_descriptions[] = {
 	"  The name of the service (in the format `com.outscale.region.service`).\n"
 ,
 	"--AccepterNetId: string\n"
-	"  The ID of the Net you want to connect with.\n"
+	"  The ID of the Net you want to connect with. <br/ > <br/ > \nIf the Net does not belong to \n"
+	"  you, you must also specify the `AccepterOwnerId` parameter with the account ID owning the \n"
+	"  Net you want to connect with.\n"
 "--AccepterOwnerId: string\n"
 	"  The account ID of the owner of the Net you want to connect with. By default, the account ID \n"
-	"  of the owner of the Net from which the peering request is sent.\n"
+	"  of the owner of the Net from which the peering request is sent. <br/ > \nThis parameter is \n"
+	"  required if the Net you want to connect with does not belong to you.\n"
 "--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--SourceNetId: string\n"
@@ -1219,8 +1225,9 @@ static const char *calls_args_descriptions[] = {
 	"--Description: string\n"
 	"  A description for the policy.\n"
 "--Document: string\n"
-	"  The policy document, corresponding to a JSON string that contains the policy. For more \n"
-	"  information, see [EIM Reference \n"
+	"  The policy document, corresponding to a JSON string that contains the policy. This policy \n"
+	"  document can contain a maximum of 5120 non-whitespace characters. For more information, see \n"
+	"  [EIM Reference \n"
 	"  Information](https://docs.outscale.com/en/userguide/EIM-Reference-Information.html) and \n"
 	"  [EIM Policy Generator](https://docs.outscale.com/en/userguide/EIM-Policy-Generator.html).\n"
 "--DryRun: bool\n"
@@ -1231,8 +1238,9 @@ static const char *calls_args_descriptions[] = {
 	"  The name of the policy.\n"
 ,
 	"--Document: string\n"
-	"  The policy document, corresponding to a JSON string that contains the policy. For more \n"
-	"  information, see [EIM Reference \n"
+	"  The policy document, corresponding to a JSON string that contains the policy. This policy \n"
+	"  document can contain a maximum of 5120 non-whitespace characters. For more information, see \n"
+	"  [EIM Reference \n"
 	"  Information](https://docs.outscale.com/en/userguide/EIM-Reference-Information.html) and \n"
 	"  [EIM Policy Generator](https://docs.outscale.com/en/userguide/EIM-Policy-Generator.html).\n"
 "--PolicyOrn: string\n"
@@ -1257,7 +1265,7 @@ static const char *calls_args_descriptions[] = {
 "--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--GatewayId: string\n"
-	"  The ID of an Internet service or virtual gateway attached to your Net.\n"
+	"  The ID of an internet service or virtual gateway attached to your Net.\n"
 "--NatServiceId: string\n"
 	"  The ID of a NAT service.\n"
 "--NetPeeringId: string\n"
@@ -1757,10 +1765,12 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--InternetServiceId: string\n"
-	"  The ID of the Internet service you want to delete.\n"
+	"  The ID of the internet service you want to delete.\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
+"--KeypairId: string\n"
+	"  The ID of the keypair you want to delete.\n"
 "--KeypairName: string\n"
 	"  The name of the keypair you want to delete.\n"
 ,
@@ -1835,6 +1845,13 @@ static const char *calls_args_descriptions[] = {
 	"  Identifiers](https://docs.outscale.com/en/userguide/Resource-Identifiers.html).\n"
 "--VersionId: string\n"
 	"  The ID of the version of the policy you want to delete.\n"
+,
+	"--DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform the action.\n"
+"--Force: bool\n"
+	"  If true, forces the deletion of the product type associated with one or more OMIs.\n"
+"--ProductTypeId: string\n"
+	"  The ID of the product type you want to delete.\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -2024,9 +2041,9 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--InternetServiceId: string\n"
-	"  The ID of the Internet service you want to attach.\n"
+	"  The ID of the internet service you want to attach.\n"
 "--NetId: string\n"
-	"  The ID of the Net to which you want to attach the Internet service.\n"
+	"  The ID of the Net to which you want to attach the internet service.\n"
 ,
 	"--BackendIps: array string\n"
 	"  One or more public IPs of backend VMs.\n"
@@ -2528,19 +2545,19 @@ static const char *calls_args_descriptions[] = {
 "--Filters: ref FiltersInternetService\n"
 	"    One or more filters.\n"
 	"    --Filters.InternetServiceIds: array string\n"
-	"      The IDs of the Internet services.\n"
+	"      The IDs of the internet services.\n"
 	"    --Filters.LinkNetIds: array string\n"
-	"      The IDs of the Nets the Internet services are attached to.\n"
+	"      The IDs of the Nets the internet services are attached to.\n"
 	"    --Filters.LinkStates: array string\n"
-	"      The current states of the attachments between the Internet services and \n"
-	"      the Nets (only `available`, if the Internet gateway is attached to a \n"
+	"      The current states of the attachments between the internet services and \n"
+	"      the Nets (only `available`, if the internet gateway is attached to a \n"
 	"      Net).\n"
 	"    --Filters.TagKeys: array string\n"
-	"      The keys of the tags associated with the Internet services.\n"
+	"      The keys of the tags associated with the internet services.\n"
 	"    --Filters.TagValues: array string\n"
-	"      The values of the tags associated with the Internet services.\n"
+	"      The values of the tags associated with the internet services.\n"
 	"    --Filters.Tags: array string\n"
-	"      The key/value combination of the tags associated with the Internet \n"
+	"      The key/value combination of the tags associated with the internet \n"
 	"      services, in the following format: \n"
 	"      \"Filters\":{\"Tags\":[\"TAGKEY=TAGVALUE\"]}.\n"
 "--NextPageToken: string\n"
@@ -2555,11 +2572,21 @@ static const char *calls_args_descriptions[] = {
 	"    One or more filters.\n"
 	"    --Filters.KeypairFingerprints: array string\n"
 	"      The fingerprints of the keypairs.\n"
+	"    --Filters.KeypairIds: array string\n"
+	"      The IDs of the keypairs.\n"
 	"    --Filters.KeypairNames: array string\n"
 	"      The names of the keypairs.\n"
 	"    --Filters.KeypairTypes: array string\n"
 	"      The types of the keypairs (`ssh-rsa`, `ssh-ed25519`, \n"
 	"      `ecdsa-sha2-nistp256`, `ecdsa-sha2-nistp384`, or `ecdsa-sha2-nistp521`).\n"
+	"    --Filters.TagKeys: array string\n"
+	"      The keys of the tags associated with the keypairs.\n"
+	"    --Filters.TagValues: array string\n"
+	"      The values of the tags associated with the keypairs.\n"
+	"    --Filters.Tags: array string\n"
+	"      The key/value combination of the tags associated with the keypairs, in \n"
+	"      the following format: \n"
+	"      \"Filters\":{\"Tags\":[\"TAGKEY=TAGVALUE\"]}.\n"
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
@@ -2845,7 +2872,9 @@ static const char *calls_args_descriptions[] = {
 	"      The path prefix you can use to filter the results. If not specified, it \n"
 	"      is set to a slash (`/`).\n"
 	"    --Filters.Scope: string\n"
-	"      The scope to filter policies (`OWS` \\| `LOCAL`).\n"
+	"      The scope of the policies. A policy can either be created by Outscale \n"
+	"      (`OWS`), and therefore applies to all accounts, or be created by its \n"
+	"      users (`LOCAL`).\n"
 "--FirstItem: long long int\n"
 	"  The item starting the list of policies requested.\n"
 "--ResultsPerPage: long long int\n"
@@ -2993,11 +3022,6 @@ static const char *calls_args_descriptions[] = {
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included). By default, `100`.\n"
-,
-	"--AccessKeyId: string\n"
-	"  The ID of the access key.\n"
-"--DryRun: bool\n"
-	"  If true, checks whether you have the required permissions to perform the action.\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -3184,11 +3208,11 @@ static const char *calls_args_descriptions[] = {
 	"    --Filters.ResourceIds: array string\n"
 	"      The IDs of the resources with which the tags are associated.\n"
 	"    --Filters.ResourceTypes: array string\n"
-	"      The resource type (`vm` \\| `image` \\| `volume` \\| `snapshot` \\| \n"
-	"      `public-ip` \\| `security-group` \\| `route-table` \\| `nic` \\| `net` \n"
-	"      \\| `subnet` \\| `net-peering` \\| `net-access-point` \\| `nat-service` \n"
-	"      \\| `internet-service` \\| `client-gateway` \\| `virtual-gateway` \\| \n"
-	"      `vpn-connection` \\| `dhcp-options` \\| `task`).\n"
+	"      The resource type (`customer-gateway` \\| `dhcpoptions` \\| `image` \\| \n"
+	"      `instance` \\| `keypair` \\| `natgateway` \\| `network-interface` \\| \n"
+	"      `public-ip` \\| `route-table` \\| `security-group` \\| `snapshot` \\| \n"
+	"      `subnet` \\| `task` \\| `virtual-private-gateway` \\| `volume` \\| `vpc` \n"
+	"      \\| `vpc-endpoint` \\| `vpc-peering-connection`\\| `vpn-connection`).\n"
 	"    --Filters.Values: array string\n"
 	"      The values of the tags that are assigned to the resources. You can use \n"
 	"      this filter alongside the `TagKeys` filter. In that case, you filter the \n"
@@ -3499,7 +3523,7 @@ static const char *calls_args_descriptions[] = {
 	"    --Filters.ReservationIds: array string\n"
 	"      The IDs of the reservation of the VMs, created every time you launch \n"
 	"      VMs. These reservation IDs can be associated with several VMs when you \n"
-	"      lauch a group of VMs using the same launch request.\n"
+	"      launch a group of VMs using the same launch request.\n"
 	"    --Filters.RootDeviceNames: array string\n"
 	"      The names of the root devices for the VMs (for example, `/dev/sda1`)\n"
 	"    --Filters.RootDeviceTypes: array string\n"
@@ -3735,9 +3759,9 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--InternetServiceId: string\n"
-	"  The ID of the Internet service you want to detach.\n"
+	"  The ID of the internet service you want to detach.\n"
 "--NetId: string\n"
-	"  The ID of the Net from which you want to detach the Internet service.\n"
+	"  The ID of the Net from which you want to detach the internet service.\n"
 ,
 	"--BackendIps: array string\n"
 	"  One or more public IPs of backend VMs.\n"
@@ -4067,7 +4091,7 @@ static const char *calls_args_descriptions[] = {
 "--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--GatewayId: string\n"
-	"  The ID of an Internet service or virtual gateway attached to your Net.\n"
+	"  The ID of an internet service or virtual gateway attached to your Net.\n"
 "--NatServiceId: string\n"
 	"  The ID of a NAT service.\n"
 "--NetPeeringId: string\n"
@@ -4307,7 +4331,7 @@ static const char *calls_args_descriptions[] = {
 	"        --VpnOptions.Phase2Options.Phase2IntegrityAlgorithms: array string\n"
 	"          The integrity algorithms allowed for the VPN tunnel for phase 2.\n"
 	"        --VpnOptions.Phase2Options.Phase2LifetimeSeconds: long long int\n"
-	"          The lifetime for phase 2 of the Internet Key Exchange (IKE) negociation \n"
+	"          The lifetime for phase 2 of the Internet Key Exchange (IKE) negotiation \n"
 	"          process, in seconds.\n"
 	"        --VpnOptions.Phase2Options.PreSharedKey: string\n"
 	"          The pre-shared key to establish the initial authentication between the \n"
@@ -4811,9 +4835,9 @@ static int filters_users_setter(struct filters_users *args, struct osc_str *data
 static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, struct osc_str *data);
 static int filters_vm_setter(struct filters_vm *args, struct osc_str *data);
 static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str *data);
-static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_str *data);
 static int filters_vm_template_setter(struct filters_vm_template *args, struct osc_str *data);
 static int filters_vm_type_setter(struct filters_vm_type *args, struct osc_str *data);
+static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_str *data);
 static int filters_volume_setter(struct filters_volume *args, struct osc_str *data);
 static int filters_vpn_connection_setter(struct filters_vpn_connection *args, struct osc_str *data);
 static int flexible_gpu_setter(struct flexible_gpu *args, struct osc_str *data);
@@ -4825,14 +4849,14 @@ static int inline_policy_setter(struct inline_policy *args, struct osc_str *data
 static int internet_service_setter(struct internet_service *args, struct osc_str *data);
 static int keypair_setter(struct keypair *args, struct osc_str *data);
 static int keypair_created_setter(struct keypair_created *args, struct osc_str *data);
-static int linked_policy_setter(struct linked_policy *args, struct osc_str *data);
-static int linked_volume_setter(struct linked_volume *args, struct osc_str *data);
 static int link_nic_setter(struct link_nic *args, struct osc_str *data);
 static int link_nic_light_setter(struct link_nic_light *args, struct osc_str *data);
 static int link_nic_to_update_setter(struct link_nic_to_update *args, struct osc_str *data);
 static int link_public_ip_setter(struct link_public_ip *args, struct osc_str *data);
 static int link_public_ip_light_for_vm_setter(struct link_public_ip_light_for_vm *args, struct osc_str *data);
 static int link_route_table_setter(struct link_route_table *args, struct osc_str *data);
+static int linked_policy_setter(struct linked_policy *args, struct osc_str *data);
+static int linked_volume_setter(struct linked_volume *args, struct osc_str *data);
 static int listener_setter(struct listener *args, struct osc_str *data);
 static int listener_for_creation_setter(struct listener_for_creation *args, struct osc_str *data);
 static int listener_rule_setter(struct listener_rule *args, struct osc_str *data);
@@ -7323,6 +7347,22 @@ static int filters_keypair_setter(struct filters_keypair *args, struct osc_str *
 		ARG_TO_JSON(KeypairFingerprints, string, args->keypair_fingerprints_str);
 		ret += 1;
 	}
+	if (args->keypair_ids) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"KeypairIds\":[" ));
+		for (as = args->keypair_ids; *as; ++as) {
+			if (as != args->keypair_ids)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->keypair_ids_str) {
+		ARG_TO_JSON(KeypairIds, string, args->keypair_ids_str);
+		ret += 1;
+	}
 	if (args->keypair_names) {
 		char **as;
 
@@ -7353,6 +7393,54 @@ static int filters_keypair_setter(struct filters_keypair *args, struct osc_str *
 		ret += 1;
 	} else if (args->keypair_types_str) {
 		ARG_TO_JSON(KeypairTypes, string, args->keypair_types_str);
+		ret += 1;
+	}
+	if (args->tag_keys) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"TagKeys\":[" ));
+		for (as = args->tag_keys; *as; ++as) {
+			if (as != args->tag_keys)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->tag_keys_str) {
+		ARG_TO_JSON(TagKeys, string, args->tag_keys_str);
+		ret += 1;
+	}
+	if (args->tag_values) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"TagValues\":[" ));
+		for (as = args->tag_values; *as; ++as) {
+			if (as != args->tag_values)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->tag_values_str) {
+		ARG_TO_JSON(TagValues, string, args->tag_values_str);
+		ret += 1;
+	}
+	if (args->tags) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"Tags\":[" ));
+		for (as = args->tags; *as; ++as) {
+			if (as != args->tags)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->tags_str) {
+		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
 
@@ -11171,124 +11259,6 @@ static int filters_vm_group_setter(struct filters_vm_group *args, struct osc_str
 
 	return !!ret;
 }
-static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_str *data) {
-       int count_args = 0;
-       int ret = 0;
-	if (args->maintenance_event_codes) {
-		char **as;
-
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MaintenanceEventCodes\":[" ));
-		for (as = args->maintenance_event_codes; *as; ++as) {
-			if (as != args->maintenance_event_codes)
-				STRY(osc_str_append_string(data, "," ));
-			ARG_TO_JSON_STR("", *as);
-		}
-		STRY(osc_str_append_string(data, "]" ));
-		ret += 1;
-	} else if (args->maintenance_event_codes_str) {
-		ARG_TO_JSON(MaintenanceEventCodes, string, args->maintenance_event_codes_str);
-		ret += 1;
-	}
-	if (args->maintenance_event_descriptions) {
-		char **as;
-
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MaintenanceEventDescriptions\":[" ));
-		for (as = args->maintenance_event_descriptions; *as; ++as) {
-			if (as != args->maintenance_event_descriptions)
-				STRY(osc_str_append_string(data, "," ));
-			ARG_TO_JSON_STR("", *as);
-		}
-		STRY(osc_str_append_string(data, "]" ));
-		ret += 1;
-	} else if (args->maintenance_event_descriptions_str) {
-		ARG_TO_JSON(MaintenanceEventDescriptions, string, args->maintenance_event_descriptions_str);
-		ret += 1;
-	}
-	if (args->maintenance_events_not_after) {
-		char **as;
-
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MaintenanceEventsNotAfter\":[" ));
-		for (as = args->maintenance_events_not_after; *as; ++as) {
-			if (as != args->maintenance_events_not_after)
-				STRY(osc_str_append_string(data, "," ));
-			ARG_TO_JSON_STR("", *as);
-		}
-		STRY(osc_str_append_string(data, "]" ));
-		ret += 1;
-	} else if (args->maintenance_events_not_after_str) {
-		ARG_TO_JSON(MaintenanceEventsNotAfter, string, args->maintenance_events_not_after_str);
-		ret += 1;
-	}
-	if (args->maintenance_events_not_before) {
-		char **as;
-
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"MaintenanceEventsNotBefore\":[" ));
-		for (as = args->maintenance_events_not_before; *as; ++as) {
-			if (as != args->maintenance_events_not_before)
-				STRY(osc_str_append_string(data, "," ));
-			ARG_TO_JSON_STR("", *as);
-		}
-		STRY(osc_str_append_string(data, "]" ));
-		ret += 1;
-	} else if (args->maintenance_events_not_before_str) {
-		ARG_TO_JSON(MaintenanceEventsNotBefore, string, args->maintenance_events_not_before_str);
-		ret += 1;
-	}
-	if (args->subregion_names) {
-		char **as;
-
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"SubregionNames\":[" ));
-		for (as = args->subregion_names; *as; ++as) {
-			if (as != args->subregion_names)
-				STRY(osc_str_append_string(data, "," ));
-			ARG_TO_JSON_STR("", *as);
-		}
-		STRY(osc_str_append_string(data, "]" ));
-		ret += 1;
-	} else if (args->subregion_names_str) {
-		ARG_TO_JSON(SubregionNames, string, args->subregion_names_str);
-		ret += 1;
-	}
-	if (args->vm_ids) {
-		char **as;
-
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
-		for (as = args->vm_ids; *as; ++as) {
-			if (as != args->vm_ids)
-				STRY(osc_str_append_string(data, "," ));
-			ARG_TO_JSON_STR("", *as);
-		}
-		STRY(osc_str_append_string(data, "]" ));
-		ret += 1;
-	} else if (args->vm_ids_str) {
-		ARG_TO_JSON(VmIds, string, args->vm_ids_str);
-		ret += 1;
-	}
-	if (args->vm_states) {
-		char **as;
-
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"VmStates\":[" ));
-		for (as = args->vm_states; *as; ++as) {
-			if (as != args->vm_states)
-				STRY(osc_str_append_string(data, "," ));
-			ARG_TO_JSON_STR("", *as);
-		}
-		STRY(osc_str_append_string(data, "]" ));
-		ret += 1;
-	} else if (args->vm_states_str) {
-		ARG_TO_JSON(VmStates, string, args->vm_states_str);
-		ret += 1;
-	}
-
-	return !!ret;
-}
 static int filters_vm_template_setter(struct filters_vm_template *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
@@ -11620,6 +11590,124 @@ static int filters_vm_type_setter(struct filters_vm_type *args, struct osc_str *
 		ret += 1;
 	} else if (args->volume_sizes_str) {
 		ARG_TO_JSON(VolumeSizes, string, args->volume_sizes_str);
+		ret += 1;
+	}
+
+	return !!ret;
+}
+static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->maintenance_event_codes) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"MaintenanceEventCodes\":[" ));
+		for (as = args->maintenance_event_codes; *as; ++as) {
+			if (as != args->maintenance_event_codes)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->maintenance_event_codes_str) {
+		ARG_TO_JSON(MaintenanceEventCodes, string, args->maintenance_event_codes_str);
+		ret += 1;
+	}
+	if (args->maintenance_event_descriptions) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"MaintenanceEventDescriptions\":[" ));
+		for (as = args->maintenance_event_descriptions; *as; ++as) {
+			if (as != args->maintenance_event_descriptions)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->maintenance_event_descriptions_str) {
+		ARG_TO_JSON(MaintenanceEventDescriptions, string, args->maintenance_event_descriptions_str);
+		ret += 1;
+	}
+	if (args->maintenance_events_not_after) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"MaintenanceEventsNotAfter\":[" ));
+		for (as = args->maintenance_events_not_after; *as; ++as) {
+			if (as != args->maintenance_events_not_after)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->maintenance_events_not_after_str) {
+		ARG_TO_JSON(MaintenanceEventsNotAfter, string, args->maintenance_events_not_after_str);
+		ret += 1;
+	}
+	if (args->maintenance_events_not_before) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"MaintenanceEventsNotBefore\":[" ));
+		for (as = args->maintenance_events_not_before; *as; ++as) {
+			if (as != args->maintenance_events_not_before)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->maintenance_events_not_before_str) {
+		ARG_TO_JSON(MaintenanceEventsNotBefore, string, args->maintenance_events_not_before_str);
+		ret += 1;
+	}
+	if (args->subregion_names) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"SubregionNames\":[" ));
+		for (as = args->subregion_names; *as; ++as) {
+			if (as != args->subregion_names)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->subregion_names_str) {
+		ARG_TO_JSON(SubregionNames, string, args->subregion_names_str);
+		ret += 1;
+	}
+	if (args->vm_ids) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"VmIds\":[" ));
+		for (as = args->vm_ids; *as; ++as) {
+			if (as != args->vm_ids)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->vm_ids_str) {
+		ARG_TO_JSON(VmIds, string, args->vm_ids_str);
+		ret += 1;
+	}
+	if (args->vm_states) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"VmStates\":[" ));
+		for (as = args->vm_states; *as; ++as) {
+			if (as != args->vm_states)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->vm_states_str) {
+		ARG_TO_JSON(VmStates, string, args->vm_states_str);
 		ret += 1;
 	}
 
@@ -12403,6 +12491,11 @@ static int keypair_setter(struct keypair *args, struct osc_str *data) {
 	        ARG_TO_JSON_STR("\"KeypairFingerprint\":", args->keypair_fingerprint);
 	   	ret += 1;
 	}
+	if (args->keypair_id) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"KeypairId\":", args->keypair_id);
+	   	ret += 1;
+	}
 	if (args->keypair_name) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"KeypairName\":", args->keypair_name);
@@ -12413,6 +12506,24 @@ static int keypair_setter(struct keypair *args, struct osc_str *data) {
 	        ARG_TO_JSON_STR("\"KeypairType\":", args->keypair_type);
 	   	ret += 1;
 	}
+        if (args->tags) {
+	        TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"Tags\":[" ));
+		for (int i = 0; i < args->nb_tags; ++i) {
+	       	    struct resource_tag *p = &args->tags[i];
+		    if (p != args->tags)
+		        STRY(osc_str_append_string(data, "," ));
+		    STRY(osc_str_append_string(data, "{ " ));
+	       	    STRY(resource_tag_setter(p, data) < 0);
+	       	    STRY(osc_str_append_string(data, "}" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else
+	if (args->tags_str) {
+		ARG_TO_JSON(Tags, string, args->tags_str);
+		ret += 1;
+	}
 
 	return !!ret;
 }
@@ -12422,6 +12533,11 @@ static int keypair_created_setter(struct keypair_created *args, struct osc_str *
 	if (args->keypair_fingerprint) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"KeypairFingerprint\":", args->keypair_fingerprint);
+	   	ret += 1;
+	}
+	if (args->keypair_id) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"KeypairId\":", args->keypair_id);
 	   	ret += 1;
 	}
 	if (args->keypair_name) {
@@ -12439,66 +12555,23 @@ static int keypair_created_setter(struct keypair_created *args, struct osc_str *
 	        ARG_TO_JSON_STR("\"PrivateKey\":", args->private_key);
 	   	ret += 1;
 	}
-
-	return !!ret;
-}
-static int linked_policy_setter(struct linked_policy *args, struct osc_str *data) {
-       int count_args = 0;
-       int ret = 0;
-	if (args->creation_date) {
-		TRY_APPEND_COL(count_args, data);
-	        ARG_TO_JSON_STR("\"CreationDate\":", args->creation_date);
-	   	ret += 1;
-	}
-	if (args->last_modification_date) {
-		TRY_APPEND_COL(count_args, data);
-	        ARG_TO_JSON_STR("\"LastModificationDate\":", args->last_modification_date);
-	   	ret += 1;
-	}
-	if (args->orn) {
-		TRY_APPEND_COL(count_args, data);
-	        ARG_TO_JSON_STR("\"Orn\":", args->orn);
-	   	ret += 1;
-	}
-	if (args->policy_id) {
-		TRY_APPEND_COL(count_args, data);
-	        ARG_TO_JSON_STR("\"PolicyId\":", args->policy_id);
-	   	ret += 1;
-	}
-	if (args->policy_name) {
-		TRY_APPEND_COL(count_args, data);
-	        ARG_TO_JSON_STR("\"PolicyName\":", args->policy_name);
-	   	ret += 1;
-	}
-
-	return !!ret;
-}
-static int linked_volume_setter(struct linked_volume *args, struct osc_str *data) {
-       int count_args = 0;
-       int ret = 0;
-	if (args->is_set_delete_on_vm_deletion) {
-		ARG_TO_JSON(DeleteOnVmDeletion, bool, args->delete_on_vm_deletion);
-	   	ret += 1;
-	}
-	if (args->device_name) {
-		TRY_APPEND_COL(count_args, data);
-	        ARG_TO_JSON_STR("\"DeviceName\":", args->device_name);
-	   	ret += 1;
-	}
-	if (args->state) {
-		TRY_APPEND_COL(count_args, data);
-	        ARG_TO_JSON_STR("\"State\":", args->state);
-	   	ret += 1;
-	}
-	if (args->vm_id) {
-		TRY_APPEND_COL(count_args, data);
-	        ARG_TO_JSON_STR("\"VmId\":", args->vm_id);
-	   	ret += 1;
-	}
-	if (args->volume_id) {
-		TRY_APPEND_COL(count_args, data);
-	        ARG_TO_JSON_STR("\"VolumeId\":", args->volume_id);
-	   	ret += 1;
+        if (args->tags) {
+	        TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"Tags\":[" ));
+		for (int i = 0; i < args->nb_tags; ++i) {
+	       	    struct resource_tag *p = &args->tags[i];
+		    if (p != args->tags)
+		        STRY(osc_str_append_string(data, "," ));
+		    STRY(osc_str_append_string(data, "{ " ));
+	       	    STRY(resource_tag_setter(p, data) < 0);
+	       	    STRY(osc_str_append_string(data, "}" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else
+	if (args->tags_str) {
+		ARG_TO_JSON(Tags, string, args->tags_str);
+		ret += 1;
 	}
 
 	return !!ret;
@@ -12653,6 +12726,67 @@ static int link_route_table_setter(struct link_route_table *args, struct osc_str
 	if (args->subnet_id) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"SubnetId\":", args->subnet_id);
+	   	ret += 1;
+	}
+
+	return !!ret;
+}
+static int linked_policy_setter(struct linked_policy *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->creation_date) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CreationDate\":", args->creation_date);
+	   	ret += 1;
+	}
+	if (args->last_modification_date) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"LastModificationDate\":", args->last_modification_date);
+	   	ret += 1;
+	}
+	if (args->orn) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Orn\":", args->orn);
+	   	ret += 1;
+	}
+	if (args->policy_id) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PolicyId\":", args->policy_id);
+	   	ret += 1;
+	}
+	if (args->policy_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PolicyName\":", args->policy_name);
+	   	ret += 1;
+	}
+
+	return !!ret;
+}
+static int linked_volume_setter(struct linked_volume *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->is_set_delete_on_vm_deletion) {
+		ARG_TO_JSON(DeleteOnVmDeletion, bool, args->delete_on_vm_deletion);
+	   	ret += 1;
+	}
+	if (args->device_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"DeviceName\":", args->device_name);
+	   	ret += 1;
+	}
+	if (args->state) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
+	   	ret += 1;
+	}
+	if (args->vm_id) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VmId\":", args->vm_id);
+	   	ret += 1;
+	}
+	if (args->volume_id) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VolumeId\":", args->volume_id);
 	   	ret += 1;
 	}
 
@@ -20657,6 +20791,11 @@ static  int delete_keypair_data(struct osc_env *e, struct osc_delete_keypair_arg
 		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
 	}
+	if (args->keypair_id) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"KeypairId\":", args->keypair_id);
+	   	ret += 1;
+	}
 	if (args->keypair_name) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"KeypairName\":", args->keypair_name);
@@ -21354,6 +21493,62 @@ int osc_delete_policy_version(struct osc_env *e, struct osc_str *out, struct osc
 
 	osc_init_str(&data);
 	r = delete_policy_version_data(e, args, &data);
+	if (r < 0)
+		goto out;
+
+        curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&data);
+	return res;
+}
+static  int delete_product_type_data(struct osc_env *e, struct osc_delete_product_type_arg *args, struct osc_str *data)
+{
+	struct osc_str end_call;
+	int ret = 0;
+	int count_args = 0;
+
+	(void)count_args; /* if use only query/header and path, this is unused */
+	osc_init_str(&end_call);
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	if (!args)
+		goto no_data;
+
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	if (args->is_set_force) {
+		ARG_TO_JSON(Force, bool, args->force);
+	   	ret += 1;
+	}
+	if (args->product_type_id) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ProductTypeId\":", args->product_type_id);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+
+no_data:
+	osc_str_append_string(&end_call, "/api/v1/DeleteProductType");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	osc_deinit_str(&end_call);
+	return !!ret;
+}
+
+int osc_delete_product_type(struct osc_env *e, struct osc_str *out, struct osc_delete_product_type_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	int r;
+
+	osc_init_str(&data);
+	r = delete_product_type_data(e, args, &data);
 	if (r < 0)
 		goto out;
 
@@ -26093,58 +26288,6 @@ int osc_read_route_tables(struct osc_env *e, struct osc_str *out, struct osc_rea
 
 	osc_init_str(&data);
 	r = read_route_tables_data(e, args, &data);
-	if (r < 0)
-		goto out;
-
-        curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
-	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
-	if (e->flag & OSC_VERBOSE_MODE) {
-	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
-	}
-	res = curl_easy_perform(e->c);
-out:
-	osc_deinit_str(&data);
-	return res;
-}
-static  int read_secret_access_key_data(struct osc_env *e, struct osc_read_secret_access_key_arg *args, struct osc_str *data)
-{
-	struct osc_str end_call;
-	int ret = 0;
-	int count_args = 0;
-
-	(void)count_args; /* if use only query/header and path, this is unused */
-	osc_init_str(&end_call);
-	osc_str_append_string(&end_call, e->endpoint.buf);
-	if (!args)
-		goto no_data;
-
-	osc_str_append_string(data, "{");
-	if (args->access_key_id) {
-		TRY_APPEND_COL(count_args, data);
-	        ARG_TO_JSON_STR("\"AccessKeyId\":", args->access_key_id);
-	   	ret += 1;
-	}
-	if (args->is_set_dry_run) {
-		ARG_TO_JSON(DryRun, bool, args->dry_run);
-	   	ret += 1;
-	}
-	osc_str_append_string(data, "}");
-
-no_data:
-	osc_str_append_string(&end_call, "/api/v1/ReadSecretAccessKey");
-	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
-	osc_deinit_str(&end_call);
-	return !!ret;
-}
-
-int osc_read_secret_access_key(struct osc_env *e, struct osc_str *out, struct osc_read_secret_access_key_arg *args)
-{
-	CURLcode res = CURLE_OUT_OF_MEMORY;
-	struct osc_str data;
-	int r;
-
-	osc_init_str(&data);
-	r = read_secret_access_key_data(e, args, &data);
 	if (r < 0)
 		goto out;
 

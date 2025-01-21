@@ -77,8 +77,8 @@ struct osc_str {
 
 #define OSC_ENV_FREE_AK_SK (OSC_ENV_FREE_AK | OSC_ENV_FREE_SK)
 
-#define OSC_API_VERSION "1.33.1"
-#define OSC_SDK_VERSION 0X001200
+#define OSC_API_VERSION "1.34.0"
+#define OSC_SDK_VERSION 0X001300
 
 enum osc_auth_method {
 	OSC_AKSK_METHOD,
@@ -1540,34 +1540,34 @@ struct filters_image {
 
 struct filters_internet_service {
         /*
-         * The IDs of the Internet services.
+         * The IDs of the internet services.
          */
         char *internet_service_ids_str;
 	char **internet_service_ids;
         /*
-         * The IDs of the Nets the Internet services are attached to.
+         * The IDs of the Nets the internet services are attached to.
          */
         char *link_net_ids_str;
 	char **link_net_ids;
         /*
-         * The current states of the attachments between the Internet services 
-         * and the Nets (only `available`, if the Internet gateway is attached 
+         * The current states of the attachments between the internet services 
+         * and the Nets (only `available`, if the internet gateway is attached 
          * to a Net).
          */
         char *link_states_str;
 	char **link_states;
         /*
-         * The keys of the tags associated with the Internet services.
+         * The keys of the tags associated with the internet services.
          */
         char *tag_keys_str;
 	char **tag_keys;
         /*
-         * The values of the tags associated with the Internet services.
+         * The values of the tags associated with the internet services.
          */
         char *tag_values_str;
 	char **tag_values;
         /*
-         * The key/value combination of the tags associated with the Internet 
+         * The key/value combination of the tags associated with the internet 
          * services, in the following format: 
          * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
@@ -1582,6 +1582,11 @@ struct filters_keypair {
         char *keypair_fingerprints_str;
 	char **keypair_fingerprints;
         /*
+         * The IDs of the keypairs.
+         */
+        char *keypair_ids_str;
+	char **keypair_ids;
+        /*
          * The names of the keypairs.
          */
         char *keypair_names_str;
@@ -1593,6 +1598,23 @@ struct filters_keypair {
          */
         char *keypair_types_str;
 	char **keypair_types;
+        /*
+         * The keys of the tags associated with the keypairs.
+         */
+        char *tag_keys_str;
+	char **tag_keys;
+        /*
+         * The values of the tags associated with the keypairs.
+         */
+        char *tag_values_str;
+	char **tag_values;
+        /*
+         * The key/value combination of the tags associated with the keypairs, 
+         * in the following format: 
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         */
+        char *tags_str;
+	char **tags;
 };
 
 struct filters_listener_rule {
@@ -2462,11 +2484,12 @@ struct filters_tag {
         char *resource_ids_str;
 	char **resource_ids;
         /*
-         * The resource type (`vm` \\| `image` \\| `volume` \\| `snapshot` \\| 
-         * `public-ip` \\| `security-group` \\| `route-table` \\| `nic` \\| 
-         * `net` \\| `subnet` \\| `net-peering` \\| `net-access-point` \\| 
-         * `nat-service` \\| `internet-service` \\| `client-gateway` \\| 
-         * `virtual-gateway` \\| `vpn-connection` \\| `dhcp-options` \\| `task`).
+         * The resource type (`customer-gateway` \\| `dhcpoptions` \\| `image` 
+         * \\| `instance` \\| `keypair` \\| `natgateway` \\| `network-interface` 
+         * \\| `public-ip` \\| `route-table` \\| `security-group` \\| `snapshot` 
+         * \\| `subnet` \\| `task` \\| `virtual-private-gateway` \\| `volume` 
+         * \\| `vpc` \\| `vpc-endpoint` \\| `vpc-peering-connection`\\| 
+         * `vpn-connection`).
          */
         char *resource_types_str;
 	char **resource_types;
@@ -2785,7 +2808,7 @@ struct filters_vm {
         /*
          * The IDs of the reservation of the VMs, created every time you launch 
          * VMs. These reservation IDs can be associated with several VMs when 
-         * you lauch a group of VMs using the same launch request.
+         * you launch a group of VMs using the same launch request.
          */
         char *reservation_ids_str;
 	char **reservation_ids;
@@ -3621,20 +3644,20 @@ struct inline_policy {
 
 struct internet_service {
         /*
-         * The ID of the Internet service.
+         * The ID of the internet service.
          */
 	char *internet_service_id;
         /*
-         * The ID of the Net attached to the Internet service.
+         * The ID of the Net attached to the internet service.
          */
 	char *net_id;
         /*
-         * The state of the attachment of the Internet service to the Net 
+         * The state of the attachment of the internet service to the Net 
          * (always `available`).
          */
 	char *state;
         /*
-         * One or more tags associated with the Internet service.
+         * One or more tags associated with the internet service.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
@@ -3652,6 +3675,10 @@ struct keypair {
          */
 	char *keypair_fingerprint;
         /*
+         * The ID of the keypair.
+         */
+	char *keypair_id;
+        /*
          * The name of the keypair.
          */
 	char *keypair_name;
@@ -3661,6 +3688,17 @@ struct keypair {
          * `ecdsa-sha2-nistp521`).
          */
 	char *keypair_type;
+        /*
+         * One or more tags associated with the keypair.
+         *   Information about the tag.
+         *   --Tags.INDEX.Key: string
+         *     The key of the tag, with a minimum of 1 character.
+         *   --Tags.INDEX.Value: string
+         *     The value of the tag, between 0 and 255 characters.
+         */
+        char *tags_str;
+        int nb_tags;
+	struct resource_tag *tags;
 };
 
 struct keypair_created {
@@ -3668,6 +3706,10 @@ struct keypair_created {
          * The MD5 public key fingerprint, as specified in section 4 of RFC 4716.
          */
 	char *keypair_fingerprint;
+        /*
+         * The ID of the keypair.
+         */
+	char *keypair_id;
         /*
          * The name of the keypair.
          */
@@ -3685,6 +3727,17 @@ struct keypair_created {
          * breaks.
          */
 	char *private_key;
+        /*
+         * One or more tags associated with the keypair.
+         *   Information about the tag.
+         *   --Tags.INDEX.Key: string
+         *     The key of the tag, with a minimum of 1 character.
+         *   --Tags.INDEX.Value: string
+         *     The value of the tag, between 0 and 255 characters.
+         */
+        char *tags_str;
+        int nb_tags;
+	struct resource_tag *tags;
 };
 
 struct link_nic {
@@ -5074,7 +5127,7 @@ struct phase2_options {
 	char **phase2_integrity_algorithms;
         /*
          * The lifetime for phase 2 of the Internet Key Exchange (IKE) 
-         * negociation process, in seconds.
+         * negotiation process, in seconds.
          */
         int is_set_phase2_lifetime_seconds;
 	long long int phase2_lifetime_seconds;
@@ -5478,7 +5531,9 @@ struct read_policies_filters {
          */
 	char *path_prefix;
         /*
-         * The scope to filter policies (`OWS` \\| `LOCAL`).
+         * The scope of the policies. A policy can either be created by Outscale 
+         * (`OWS`), and therefore applies to all accounts, or be created by its 
+         * users (`LOCAL`).
          */
 	char *scope;
 };
@@ -5527,7 +5582,7 @@ struct route {
          */
 	char *destination_service_id;
         /*
-         * The ID of the Internet service or virtual gateway attached to the Net.
+         * The ID of the internet service or virtual gateway attached to the Net.
          */
 	char *gateway_id;
         /*
@@ -5636,7 +5691,7 @@ struct route_table {
          *   --Routes.INDEX.DestinationServiceId: string
          *     The ID of the OUTSCALE service.
          *   --Routes.INDEX.GatewayId: string
-         *     The ID of the Internet service or virtual gateway attached to the 
+         *     The ID of the internet service or virtual gateway attached to the 
          * Net.
          *   --Routes.INDEX.NatServiceId: string
          *     The ID of a NAT service attached to the Net.
@@ -6916,7 +6971,7 @@ struct vpn_options {
          *     The integrity algorithms allowed for the VPN tunnel for phase 2.
          *   --Phase2Options.Phase2LifetimeSeconds: long long int
          *     The lifetime for phase 2 of the Internet Key Exchange (IKE) 
-         * negociation 
+         * negotiation 
          *     process, in seconds.
          *   --Phase2Options.PreSharedKey: string
          *     The pre-shared key to establish the initial authentication 
@@ -7073,7 +7128,7 @@ struct vpn_connection {
          * 2.
          *       --VpnOptions.Phase2Options.Phase2LifetimeSeconds: long long int
          *         The lifetime for phase 2 of the Internet Key Exchange (IKE) 
-         * negociation 
+         * negotiation 
          *         process, in seconds.
          *       --VpnOptions.Phase2Options.PreSharedKey: string
          *         The pre-shared key to establish the initial authentication 
@@ -7395,9 +7450,10 @@ struct osc_create_client_gateway_arg  {
         /*
          * The Autonomous System Number (ASN) used by the Border Gateway 
          * Protocol (BGP) to find the path to your client gateway through the 
-         * Internet. <br/>\nThis number must be between `1` and `4294967295`. If 
-         * you do not have an ASN, you can choose one between 64512 and 65534, 
-         * or between 4200000000 and 4294967294.
+         * Internet. <br/>\nThis number must be between `1` and `4294967295`, 
+         * except `50624`, `53306`, and `132418`. <br/>\nIf you do not have an 
+         * ASN, you can choose one between `64512` and `65534` (both included), 
+         * or between `4200000000` and `4294967295` (both included).
          */
         int is_set_bgp_asn;
 	long long int bgp_asn;
@@ -7624,13 +7680,13 @@ struct osc_create_image_arg  {
         /* Required: null
  */
         /*
-         * **(when registering from a snapshot)** The architecture of the OMI 
+         * **When registering from a snapshot:** The architecture of the OMI 
          * (`i386` or `x86_64`).
          */
 	char *architecture;
         /*
-         * **(when registering from a snapshot)** One or more block device 
-         * mappings.
+         * **(required) When registering from a snapshot:** One or more block 
+         * device mappings.
          *   One or more parameters used to automatically set up volumes when 
          * the VM 
          *   is created.
@@ -7694,9 +7750,9 @@ struct osc_create_image_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * **(when registering from a bucket by using a manifest file)** The 
-         * pre-signed URL of the manifest file for the OMI you want to register. 
-         * For more information, see [Creating a Pre-signed 
+         * **(required) When registering from a bucket by using a manifest 
+         * file:** The pre-signed URL of the manifest file for the OMI you want 
+         * to register. For more information, see [Creating a Pre-signed 
          * URL](https://docs.outscale.com/en/userguide/Creating-a-Pre-Signed-URL.
          * html).
          */
@@ -7708,7 +7764,7 @@ struct osc_create_image_arg  {
          */
 	char *image_name;
         /*
-         * **(when creating from a VM)** If false, the VM shuts down before 
+         * **When creating from a VM:** If false, the VM shuts down before 
          * creating the OMI and then reboots. If true, the VM does not.
          */
         int is_set_no_reboot;
@@ -7719,22 +7775,23 @@ struct osc_create_image_arg  {
         char *product_codes_str;
 	char **product_codes;
         /*
-         * **(when registering from a snapshot)** The name of the root device 
-         * for the new OMI.
+         * **(required) When registering from a snapshot:** The name of the root 
+         * device for the new OMI.
          */
 	char *root_device_name;
         /*
-         * **(when copying an OMI)** The ID of the OMI you want to copy.
+         * **(required) When copying an OMI:** The ID of the OMI you want to 
+         * copy.
          */
 	char *source_image_id;
         /*
-         * **(when copying an OMI)** The name of the source Region (always the 
-         * same as the Region of your account).
+         * **(required) When copying an OMI:** The name of the source Region 
+         * (always the same as the Region of your account).
          */
 	char *source_region_name;
         /*
-         * **(when creating from a VM)** The ID of the VM from which you want to 
-         * create the OMI.
+         * **(required) When creating from a VM:** The ID of the VM from which 
+         * you want to create the OMI.
          */
 	char *vm_id;
 };
@@ -8076,13 +8133,17 @@ struct osc_create_net_peering_arg  {
         /* Required: AccepterNetId SourceNetId
  */
         /*
-         * The ID of the Net you want to connect with.
+         * The ID of the Net you want to connect with. <br/ > <br/ > \nIf the 
+         * Net does not belong to you, you must also specify the 
+         * `AccepterOwnerId` parameter with the account ID owning the Net you 
+         * want to connect with.
          */
 	char *accepter_net_id;
         /*
          * The account ID of the owner of the Net you want to connect with. By 
          * default, the account ID of the owner of the Net from which the 
-         * peering request is sent.
+         * peering request is sent. <br /><br/ > \nThis parameter is required if 
+         * the Net you want to connect with does not belong to you.
          */
 	char *accepter_owner_id;
         /*
@@ -8168,7 +8229,8 @@ struct osc_create_policy_arg  {
 	char *description;
         /*
          * The policy document, corresponding to a JSON string that contains the 
-         * policy. For more information, see [EIM Reference 
+         * policy. This policy document can contain a maximum of 5120 
+         * non-whitespace characters. For more information, see [EIM Reference 
          * Information](https://docs.outscale.com/en/userguide/EIM-Reference-Info
          * rmation.html) and [EIM Policy 
          * Generator](https://docs.outscale.com/en/userguide/EIM-Policy-Generator
@@ -8196,7 +8258,8 @@ struct osc_create_policy_version_arg  {
  */
         /*
          * The policy document, corresponding to a JSON string that contains the 
-         * policy. For more information, see [EIM Reference 
+         * policy. This policy document can contain a maximum of 5120 
+         * non-whitespace characters. For more information, see [EIM Reference 
          * Information](https://docs.outscale.com/en/userguide/EIM-Reference-Info
          * rmation.html) and [EIM Policy 
          * Generator](https://docs.outscale.com/en/userguide/EIM-Policy-Generator
@@ -8263,7 +8326,7 @@ struct osc_create_route_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The ID of an Internet service or virtual gateway attached to your Net.
+         * The ID of an internet service or virtual gateway attached to your Net.
          */
 	char *gateway_id;
         /*
@@ -9318,13 +9381,13 @@ struct osc_delete_internet_service_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The ID of the Internet service you want to delete.
+         * The ID of the internet service you want to delete.
          */
 	char *internet_service_id;
 };
 
 struct osc_delete_keypair_arg  {
-        /* Required: KeypairName
+        /* Required: null
  */
         /*
          * If true, checks whether you have the required permissions to perform 
@@ -9332,6 +9395,10 @@ struct osc_delete_keypair_arg  {
          */
         int is_set_dry_run;
 	int dry_run;
+        /*
+         * The ID of the keypair you want to delete.
+         */
+	char *keypair_id;
         /*
          * The name of the keypair you want to delete.
          */
@@ -9539,6 +9606,27 @@ struct osc_delete_policy_version_arg  {
          * The ID of the version of the policy you want to delete.
          */
 	char *version_id;
+};
+
+struct osc_delete_product_type_arg  {
+        /* Required: ProductTypeId
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * If true, forces the deletion of the product type associated with one 
+         * or more OMIs.
+         */
+        int is_set_force;
+	int force;
+        /*
+         * The ID of the product type you want to delete.
+         */
+	char *product_type_id;
 };
 
 struct osc_delete_public_ip_arg  {
@@ -10015,11 +10103,11 @@ struct osc_link_internet_service_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The ID of the Internet service you want to attach.
+         * The ID of the internet service you want to attach.
          */
 	char *internet_service_id;
         /*
-         * The ID of the Net to which you want to attach the Internet service.
+         * The ID of the Net to which you want to attach the internet service.
          */
 	char *net_id;
 };
@@ -11028,22 +11116,22 @@ struct osc_read_internet_services_arg  {
         /*
          *   One or more filters.
          *   --Filters.InternetServiceIds: array string
-         *     The IDs of the Internet services.
+         *     The IDs of the internet services.
          *   --Filters.LinkNetIds: array string
-         *     The IDs of the Nets the Internet services are attached to.
+         *     The IDs of the Nets the internet services are attached to.
          *   --Filters.LinkStates: array string
-         *     The current states of the attachments between the Internet 
+         *     The current states of the attachments between the internet 
          * services and 
-         *     the Nets (only `available`, if the Internet gateway is attached 
+         *     the Nets (only `available`, if the internet gateway is attached 
          * to a 
          *     Net).
          *   --Filters.TagKeys: array string
-         *     The keys of the tags associated with the Internet services.
+         *     The keys of the tags associated with the internet services.
          *   --Filters.TagValues: array string
-         *     The values of the tags associated with the Internet services.
+         *     The values of the tags associated with the internet services.
          *   --Filters.Tags: array string
          *     The key/value combination of the tags associated with the 
-         * Internet 
+         * internet 
          *     services, in the following format: 
          *     
          * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
@@ -11077,12 +11165,24 @@ struct osc_read_keypairs_arg  {
          *   One or more filters.
          *   --Filters.KeypairFingerprints: array string
          *     The fingerprints of the keypairs.
+         *   --Filters.KeypairIds: array string
+         *     The IDs of the keypairs.
          *   --Filters.KeypairNames: array string
          *     The names of the keypairs.
          *   --Filters.KeypairTypes: array string
          *     The types of the keypairs (`ssh-rsa`, `ssh-ed25519`, 
          *     `ecdsa-sha2-nistp256`, `ecdsa-sha2-nistp384`, or 
          * `ecdsa-sha2-nistp521`).
+         *   --Filters.TagKeys: array string
+         *     The keys of the tags associated with the keypairs.
+         *   --Filters.TagValues: array string
+         *     The values of the tags associated with the keypairs.
+         *   --Filters.Tags: array string
+         *     The key/value combination of the tags associated with the 
+         * keypairs, in 
+         *     the following format: 
+         *     
+         * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          */
         char *filters_str;
         int is_set_filters;
@@ -11601,7 +11701,11 @@ struct osc_read_policies_arg  {
          * specified, it 
          *     is set to a slash (`/`).
          *   --Filters.Scope: string
-         *     The scope to filter policies (`OWS` \\| `LOCAL`).
+         *     The scope of the policies. A policy can either be created by 
+         * Outscale 
+         *     (`OWS`), and therefore applies to all accounts, or be created by 
+         * its 
+         *     users (`LOCAL`).
          */
         char *filters_str;
         int is_set_filters;
@@ -11903,21 +12007,6 @@ struct osc_read_route_tables_arg  {
          */
         int is_set_results_per_page;
 	long long int results_per_page;
-};
-
-struct osc_read_secret_access_key_arg  {
-        /* Required: AccessKeyId
- */
-        /*
-         * The ID of the access key.
-         */
-	char *access_key_id;
-        /*
-         * If true, checks whether you have the required permissions to perform 
-         * the action.
-         */
-        int is_set_dry_run;
-	int dry_run;
 };
 
 struct osc_read_security_groups_arg  {
@@ -12240,15 +12329,16 @@ struct osc_read_tags_arg  {
          *   --Filters.ResourceIds: array string
          *     The IDs of the resources with which the tags are associated.
          *   --Filters.ResourceTypes: array string
-         *     The resource type (`vm` \\| `image` \\| `volume` \\| `snapshot` 
+         *     The resource type (`customer-gateway` \\| `dhcpoptions` \\| 
+         * `image` \\| 
+         *     `instance` \\| `keypair` \\| `natgateway` \\| `network-interface` 
          * \\| 
-         *     `public-ip` \\| `security-group` \\| `route-table` \\| `nic` \\| 
-         * `net` 
-         *     \\| `subnet` \\| `net-peering` \\| `net-access-point` \\| 
-         * `nat-service` 
-         *     \\| `internet-service` \\| `client-gateway` \\| `virtual-gateway` 
+         *     `public-ip` \\| `route-table` \\| `security-group` \\| `snapshot` 
          * \\| 
-         *     `vpn-connection` \\| `dhcp-options` \\| `task`).
+         *     `subnet` \\| `task` \\| `virtual-private-gateway` \\| `volume` 
+         * \\| `vpc` 
+         *     \\| `vpc-endpoint` \\| `vpc-peering-connection`\\| 
+         * `vpn-connection`).
          *   --Filters.Values: array string
          *     The values of the tags that are assigned to the resources. You 
          * can use 
@@ -12781,7 +12871,7 @@ struct osc_read_vms_arg  {
          * launch 
          *     VMs. These reservation IDs can be associated with several VMs 
          * when you 
-         *     lauch a group of VMs using the same launch request.
+         *     launch a group of VMs using the same launch request.
          *   --Filters.RootDeviceNames: array string
          *     The names of the root devices for the VMs (for example, 
          * `/dev/sda1`)
@@ -13234,11 +13324,11 @@ struct osc_unlink_internet_service_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The ID of the Internet service you want to detach.
+         * The ID of the internet service you want to detach.
          */
 	char *internet_service_id;
         /*
-         * The ID of the Net from which you want to detach the Internet service.
+         * The ID of the Net from which you want to detach the internet service.
          */
 	char *net_id;
 };
@@ -13992,7 +14082,7 @@ struct osc_update_route_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The ID of an Internet service or virtual gateway attached to your Net.
+         * The ID of an internet service or virtual gateway attached to your Net.
          */
 	char *gateway_id;
         /*
@@ -14480,7 +14570,7 @@ struct osc_update_vpn_connection_arg  {
          * 2.
          *       --VpnOptions.Phase2Options.Phase2LifetimeSeconds: long long int
          *         The lifetime for phase 2 of the Internet Key Exchange (IKE) 
-         * negociation 
+         * negotiation 
          *         process, in seconds.
          *       --VpnOptions.Phase2Options.PreSharedKey: string
          *         The pre-shared key to establish the initial authentication 
@@ -14660,6 +14750,7 @@ int osc_delete_net(struct osc_env *e, struct osc_str *out, struct osc_delete_net
 int osc_delete_nic(struct osc_env *e, struct osc_str *out, struct osc_delete_nic_arg *args);
 int osc_delete_policy(struct osc_env *e, struct osc_str *out, struct osc_delete_policy_arg *args);
 int osc_delete_policy_version(struct osc_env *e, struct osc_str *out, struct osc_delete_policy_version_arg *args);
+int osc_delete_product_type(struct osc_env *e, struct osc_str *out, struct osc_delete_product_type_arg *args);
 int osc_delete_public_ip(struct osc_env *e, struct osc_str *out, struct osc_delete_public_ip_arg *args);
 int osc_delete_route(struct osc_env *e, struct osc_str *out, struct osc_delete_route_arg *args);
 int osc_delete_route_table(struct osc_env *e, struct osc_str *out, struct osc_delete_route_table_arg *args);
@@ -14738,7 +14829,6 @@ int osc_read_public_ips(struct osc_env *e, struct osc_str *out, struct osc_read_
 int osc_read_quotas(struct osc_env *e, struct osc_str *out, struct osc_read_quotas_arg *args);
 int osc_read_regions(struct osc_env *e, struct osc_str *out, struct osc_read_regions_arg *args);
 int osc_read_route_tables(struct osc_env *e, struct osc_str *out, struct osc_read_route_tables_arg *args);
-int osc_read_secret_access_key(struct osc_env *e, struct osc_str *out, struct osc_read_secret_access_key_arg *args);
 int osc_read_security_groups(struct osc_env *e, struct osc_str *out, struct osc_read_security_groups_arg *args);
 int osc_read_server_certificates(struct osc_env *e, struct osc_str *out, struct osc_read_server_certificates_arg *args);
 int osc_read_snapshot_export_tasks(struct osc_env *e, struct osc_str *out, struct osc_read_snapshot_export_tasks_arg *args);
