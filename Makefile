@@ -1,7 +1,5 @@
-LD_LIB_PATH=:./json-c-build
-JSON_C_LDFLAGS=./json-c-build/libjson-c.a
-JSON_C_CFLAGS=-I./json-c -I./json-c-build
-JSON_C_RULE=./json-c-build/libjson-c.a
+JSON_C_LDFLAGS=$(shell pkg-config --libs json-c)
+JSON_C_CFLAGS=$(shell pkg-config --cflags json-c)
 API_RULE_DEPEDENCIES=
 OAPI_APPIMAGE_RULE_DEPEDENCIES=
 APPIMAGETOOL_OPTION=
@@ -46,7 +44,7 @@ COGNAC/:
 	git submodule update --init
 
 COGNAC/config.mk: COGNAC/
-	cd COGNAC && ./configure --compile-json-c $$COGNAC_CONFIG
+	cd COGNAC && ./configure $$COGNAC_CONFIG
 
 COGNAC/main.c: COGNAC/config.mk
 	cp version COGNAC/cli-version
