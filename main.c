@@ -47,7 +47,7 @@
 
 #define OAPI_RAW_OUTPUT 1
 
-#define OAPI_CLI_VERSION "0.7.0"
+#define OAPI_CLI_VERSION "0.8.0"
 
 #define OAPI_CLI_UAGENT "oapi-cli/"OAPI_CLI_VERSION"; osc-sdk-c/"
 
@@ -475,6 +475,11 @@ int access_key_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             s->state = aa; // string string
 
          } else
+	if ((aret = argcmp(str, "Tag")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "Tag argument missing\n");
+            s->tag = aa; // string string
+
+         } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'AccessKey'\n", str);
 		return -1;
@@ -513,6 +518,11 @@ int access_key_secret_key_parser(void *v_s, char *str, char *aa, struct ptr_arra
 	if ((aret = argcmp(str, "State")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "Tag")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "Tag argument missing\n");
+            s->tag = aa; // string string
 
          } else
 	{
@@ -19051,6 +19061,17 @@ int main(int ac, char **av)
 				          s->expiration_date = aa; // string string
 
 				       } else
+			      if ((aret = argcmp(next_a, "Tag")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Tag argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "Tag argument missing\n");
+				          s->tag = aa; // string string
+
+				       } else
 			      if ((aret = argcmp(next_a, "UserName")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
 			      	 if (eq_ptr) {
@@ -30571,6 +30592,123 @@ int main(int ac, char **av)
 		      }
 		     osc_deinit_str(&r);
 	      } else
+              if (!strcmp("DeleteUserPolicy", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_delete_user_policy_arg a = {0};
+		     struct osc_delete_user_policy_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     delete_user_policy_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS({CHK_BAD_RET(aa[0] == '-', "cascade need an argument"); })
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto delete_user_policy_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				 	META_ARGS({ aa = 0; incr = 1; });
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "PolicyName")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PolicyName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "PolicyName argument missing\n");
+				          s->policy_name = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserName")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserName argument missing\n");
+				          s->user_name = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'DeleteUserPolicy'\n", next_a);
+			    }
+		            i += incr;
+			    goto delete_user_policy_arg;
+		     }
+		     cret = osc_delete_user_policy(&e, &r, &a);
+            	     TRY(cret, "fail to call DeleteUserPolicy: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     }
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
               if (!strcmp("DeleteUser", av[i])) {
 		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
@@ -33197,6 +33335,134 @@ int main(int ac, char **av)
 		      }
 		     osc_deinit_str(&r);
 	      } else
+              if (!strcmp("PutUserPolicy", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_put_user_policy_arg a = {0};
+		     struct osc_put_user_policy_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     put_user_policy_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS({CHK_BAD_RET(aa[0] == '-', "cascade need an argument"); })
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto put_user_policy_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				 	META_ARGS({ aa = 0; incr = 1; });
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "PolicyDocument")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PolicyDocument argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "PolicyDocument argument missing\n");
+				          s->policy_document = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "PolicyName")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PolicyName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "PolicyName argument missing\n");
+				          s->policy_name = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserName")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserName argument missing\n");
+				          s->user_name = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'PutUserPolicy'\n", next_a);
+			    }
+		            i += incr;
+			    goto put_user_policy_arg;
+		     }
+		     cret = osc_put_user_policy(&e, &r, &a);
+            	     TRY(cret, "fail to call PutUserPolicy: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     }
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
               if (!strcmp("ReadAccessKeys", av[i])) {
 		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
@@ -33280,6 +33546,17 @@ int main(int ac, char **av)
 				           } else {
 				                 s->filters_str = aa;
 				           }
+				       } else
+			      if ((aret = argcmp(next_a, "Tag")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Tag argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "Tag argument missing\n");
+				          s->tag = aa; // string string
+
 				       } else
 			      if ((aret = argcmp(next_a, "UserName")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -40705,6 +40982,229 @@ int main(int ac, char **av)
 		     }
 		     cret = osc_read_user_groups(&e, &r, &a);
             	     TRY(cret, "fail to call ReadUserGroups: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     }
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("ReadUserPolicies", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_read_user_policies_arg a = {0};
+		     struct osc_read_user_policies_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     read_user_policies_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS({CHK_BAD_RET(aa[0] == '-', "cascade need an argument"); })
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto read_user_policies_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				 	META_ARGS({ aa = 0; incr = 1; });
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "UserName")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserName argument missing\n");
+				          s->user_name = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'ReadUserPolicies'\n", next_a);
+			    }
+		            i += incr;
+			    goto read_user_policies_arg;
+		     }
+		     cret = osc_read_user_policies(&e, &r, &a);
+            	     TRY(cret, "fail to call ReadUserPolicies: %s\n", curl_easy_strerror(cret));
+		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT)
+		             puts(r.buf);
+		     else {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     }
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("ReadUserPolicy", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_read_user_policy_arg a = {0};
+		     struct osc_read_user_policy_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     read_user_policy_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS({CHK_BAD_RET(aa[0] == '-', "cascade need an argument"); })
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto read_user_policy_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				 	META_ARGS({ aa = 0; incr = 1; });
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "PolicyName")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "PolicyName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "PolicyName argument missing\n");
+				          s->policy_name = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "UserName")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserName argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "UserName argument missing\n");
+				          s->user_name = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valide argument for 'ReadUserPolicy'\n", next_a);
+			    }
+		            i += incr;
+			    goto read_user_policy_arg;
+		     }
+		     cret = osc_read_user_policy(&e, &r, &a);
+            	     TRY(cret, "fail to call ReadUserPolicy: %s\n", curl_easy_strerror(cret));
 		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
 		     if (program_flag & OAPI_RAW_OUTPUT)

@@ -165,6 +165,7 @@ static const char *calls_name[] = {
 	"DeleteTags",
 	"DeleteUserGroupPolicy",
 	"DeleteUserGroup",
+	"DeleteUserPolicy",
 	"DeleteUser",
 	"DeleteVirtualGateway",
 	"DeleteVmGroup",
@@ -186,6 +187,7 @@ static const char *calls_name[] = {
 	"LinkVirtualGateway",
 	"LinkVolume",
 	"PutUserGroupPolicy",
+	"PutUserPolicy",
 	"ReadAccessKeys",
 	"ReadAccounts",
 	"ReadAdminPassword",
@@ -245,6 +247,8 @@ static const char *calls_name[] = {
 	"ReadUserGroup",
 	"ReadUserGroupsPerUser",
 	"ReadUserGroups",
+	"ReadUserPolicies",
+	"ReadUserPolicy",
 	"ReadUsers",
 	"ReadVirtualGateways",
 	"ReadVmGroups",
@@ -478,6 +482,8 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli DeleteUserGroup --UserGroupName=usergroupname [OPTIONS]\n" "Deletes a specified user group.\n\n**[WARNING]**\nThe user group must be empty \n" "of any user and must not have any linked policy. Otherwise, you need to force \n" "the deletion.\nIf you force the deletion, all inline policies will be deleted \n" "with the user group.\n" "\nRequired Argument: UserGroupName \n"
 ,
+	"Usage: oapi-cli DeleteUserPolicy --UserName=username --PolicyName=policyname [OPTIONS]\n" "Deletes a specified inline policy from a specific user.\n" "\nRequired Argument: UserName PolicyName \n"
+,
 	"Usage: oapi-cli DeleteUser --UserName=username [OPTIONS]\n" "Deletes a specified EIM user. The EIM user must not belong to any group, nor \n" "have any key or linked policy.\n" "\nRequired Argument: UserName \n"
 ,
 	"Usage: oapi-cli DeleteVirtualGateway --VirtualGatewayId=virtualgatewayid [OPTIONS]\n" "Deletes a specified virtual gateway.\nBefore deleting a virtual gateway, we \n" "recommend to detach it from the Net and delete the VPN connection.\n" "\nRequired Argument: VirtualGatewayId \n"
@@ -494,7 +500,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli DeleteVpnConnectionRoute --DestinationIpRange=destinationiprange --VpnConnectionId=vpnconnectionid [OPTIONS]\n" "Deletes a static route to a VPN connection previously created using the \n" "CreateVpnConnectionRoute method.\n" "\nRequired Argument: DestinationIpRange VpnConnectionId \n"
 ,
-	"Usage: oapi-cli DeregisterVmsInLoadBalancer --BackendVmIds=backendvmids --LoadBalancerName=loadbalancername [OPTIONS]\n" "Deregisters a specified virtual machine (VM) from a load balancer.\n" "\nRequired Argument: BackendVmIds LoadBalancerName \n"
+	"Usage: oapi-cli DeregisterVmsInLoadBalancer --BackendVmIds=backendvmids --LoadBalancerName=loadbalancername [OPTIONS]\n" "> [WARNING]\n> Deprecated: This call is deprecated and will be \n" "removed.\n\nDeregisters a specified virtual machine (VM) from a load balancer.\n" "\nRequired Argument: BackendVmIds LoadBalancerName \n"
 ,
 	"Usage: oapi-cli LinkFlexibleGpu --FlexibleGpuId=flexiblegpuid --VmId=vmid [OPTIONS]\n" "Attaches one of your allocated flexible GPUs (fGPUs) to one of your virtual \n" "machines (VMs).\nTo complete the linking of the fGPU, you need to do a \n" "stop/start of the VM. A simple restart is not sufficient, as the linking of the \n" "fGPU is done when the VM goes through the `stopped` state. For the difference \n" "between stop/start and restart, see [About VM \n" "Lifecycle](https://docs.outscale.com/en/userguide/About-VM-Lifecycle.html).\n\n*\n" "*[NOTE]**\nYou can attach fGPUs only to VMs with the `highest` (1) performance \n" "flag. For more information see [About Flexible \n" "GPUs](https://docs.outscale.com/en/userguide/About-Flexible-GPUs.html) and [VM \n" "Types](https://docs.outscale.com/en/userguide/VM-Types.html).\n" "\nRequired Argument: FlexibleGpuId VmId \n"
 ,
@@ -519,6 +525,8 @@ static const char *calls_descriptions[] = {
 	"Usage: oapi-cli LinkVolume --DeviceName=devicename --VmId=vmid --VolumeId=volumeid [OPTIONS]\n" "Attaches a Block Storage Unit (BSU) volume to a virtual machine (VM).\nThe \n" "volume and the VM must be in the same Subregion. The VM can be running or \n" "stopped. The volume is attached to the specified VM device.\n" "\nRequired Argument: DeviceName VmId VolumeId \n"
 ,
 	"Usage: oapi-cli PutUserGroupPolicy --PolicyName=policyname --PolicyDocument=policydocument --UserGroupName=usergroupname [OPTIONS]\n" "Creates or updates an inline policy included in a specified group.\nThe policy \n" "is automatically applied to all the users of the group after its creation.\n" "\nRequired Argument: PolicyName PolicyDocument UserGroupName \n"
+,
+	"Usage: oapi-cli PutUserPolicy --PolicyName=policyname --PolicyDocument=policydocument --UserName=username [OPTIONS]\n" "Creates or updates an inline policy included in a specified user.\nThe policy \n" "is automatically applied to the user after its creation.\n" "\nRequired Argument: PolicyName PolicyDocument UserName \n"
 ,
 	"Usage: oapi-cli ReadAccessKeys [OPTIONS]\n" "Lists the access key IDs of either your root account or an EIM user.\n" "\nRequired Argument: null \n"
 ,
@@ -638,6 +646,10 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli ReadUserGroups [OPTIONS]\n" "Lists all the user groups of the account.\nThe response can be filtered using \n" "either the PathPrefix or the UserGroupIds.\n" "\nRequired Argument: null \n"
 ,
+	"Usage: oapi-cli ReadUserPolicies --UserName=username [OPTIONS]\n" "Lists the names of inline policies included in a specified user.\n" "\nRequired Argument: UserName \n"
+,
+	"Usage: oapi-cli ReadUserPolicy --UserName=username --PolicyName=policyname [OPTIONS]\n" "Returns information about an inline policy included in a specified user.\n" "\nRequired Argument: UserName PolicyName \n"
+,
 	"Usage: oapi-cli ReadUsers [OPTIONS]\n" "Lists all EIM users in the account.\nThe response can be filtered using the \n" "UserIds.\n" "\nRequired Argument: null \n"
 ,
 	"Usage: oapi-cli ReadVirtualGateways [OPTIONS]\n" "Lists one or more virtual gateways.\n" "\nRequired Argument: null \n"
@@ -660,7 +672,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli RebootVms --VmIds=vmids [OPTIONS]\n" "Reboots one or more virtual machines (VMs).\nThis operation sends a reboot \n" "request to one or more specified VMs. This is an asynchronous action that \n" "queues this reboot request. This action only reboots VMs that are valid and \n" "that belong to you.\n" "\nRequired Argument: VmIds \n"
 ,
-	"Usage: oapi-cli RegisterVmsInLoadBalancer --BackendVmIds=backendvmids --LoadBalancerName=loadbalancername [OPTIONS]\n" "Registers one or more virtual machines (VMs) with a specified load \n" "balancer.\nThe VMs can be in different Subnets and different Subregions than \n" "the load balancer, as long as the VMs and load balancers are all in the public \n" "Cloud or all in the same Net. It may take a little time for a VM to be \n" "registered with the load balancer. Once the VM is registered with a load \n" "balancer, it receives traffic and requests from this load balancer and is \n" "called a backend VM.\n" "\nRequired Argument: BackendVmIds LoadBalancerName \n"
+	"Usage: oapi-cli RegisterVmsInLoadBalancer --BackendVmIds=backendvmids --LoadBalancerName=loadbalancername [OPTIONS]\n" "> [WARNING]\n> Deprecated: This call is deprecated and will be \n" "removed.\n\nRegisters one or more virtual machines (VMs) with a specified load \n" "balancer.\nThe VMs can be in different Subnets and different Subregions than \n" "the load balancer, as long as the VMs and load balancers are all in the public \n" "Cloud or all in the same Net. It may take a little time for a VM to be \n" "registered with the load balancer. Once the VM is registered with a load \n" "balancer, it receives traffic and requests from this load balancer and is \n" "called a backend VM.\n" "\nRequired Argument: BackendVmIds LoadBalancerName \n"
 ,
 	"Usage: oapi-cli RejectNetPeering --NetPeeringId=netpeeringid [OPTIONS]\n" "Rejects a Net peering request.\nThe Net peering must be in the \n" "`pending-acceptance` state to be rejected. The rejected Net peering is then in \n" "the `rejected` state.\n" "\nRequired Argument: NetPeeringId \n"
 ,
@@ -785,6 +797,8 @@ static const char *calls_args_descriptions[] = {
 	"  The date and time, or the date, at which you want the access key to expire, in ISO 8601 \n"
 	"  format (for example, `2020-06-14T00:00:00.000Z`, or `2020-06-14`). To remove an existing \n"
 	"  expiration date, use the method without specifying this parameter.\n"
+"--Tag: string\n"
+	"  A tag to add to the access key.\n"
 "--UserName: string\n"
 	"  The name of the EIM user that owns the key to be created. If you do not specify a user \n"
 	"  name, this action creates an access key for the user who sends the request (which can be \n"
@@ -891,8 +905,11 @@ static const char *calls_args_descriptions[] = {
 	"    Information about the DirectLink interface.\n"
 	"    --DirectLinkInterface.BgpAsn: long long int\n"
 	"      The BGP (Border Gateway Protocol) ASN (Autonomous System Number) on the \n"
-	"      customer's side of the DirectLink interface. This number must be between \n"
-	"      `64512` and `65534`.\n"
+	"      customer's side of the DirectLink interface. <br/>\nThis number must be \n"
+	"      between `1` and `4294967295`, except `50624`, `53306`, and `132418`. \n"
+	"      <br/>\nIf you do not have an ASN, you can choose one between `64512` and \n"
+	"      `65534` (both included), or between `4200000000` and `4294967295` (both \n"
+	"      included).\n"
 	"    --DirectLinkInterface.BgpKey: string\n"
 	"      The BGP authentication key.\n"
 	"    --DirectLinkInterface.ClientPrivateIp: string\n"
@@ -1182,12 +1199,12 @@ static const char *calls_args_descriptions[] = {
 	"  The name of the service (in the format `com.outscale.region.service`).\n"
 ,
 	"--AccepterNetId: string\n"
-	"  The ID of the Net you want to connect with. <br/ > <br/ > \nIf the Net does not belong to \n"
+	"  The ID of the Net you want to connect with. <br/ > <br/ >\nIf the Net does not belong to \n"
 	"  you, you must also specify the `AccepterOwnerId` parameter with the account ID owning the \n"
 	"  Net you want to connect with.\n"
 "--AccepterOwnerId: string\n"
 	"  The account ID of the owner of the Net you want to connect with. By default, the account ID \n"
-	"  of the owner of the Net from which the peering request is sent. <br/ > \nThis parameter is \n"
+	"  of the owner of the Net from which the peering request is sent. <br/ >\nThis parameter is \n"
 	"  required if the Net you want to connect with does not belong to you.\n"
 "--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -1984,6 +2001,13 @@ static const char *calls_args_descriptions[] = {
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
+"--PolicyName: string\n"
+	"  The name of the policy document you want to delete (between 1 and 128 characters).\n"
+"--UserName: string\n"
+	"  The name of the user you want to delete the policy from.\n"
+,
+	"--DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--UserName: string\n"
 	"  The name of the EIM user you want to delete.\n"
 ,
@@ -2157,12 +2181,26 @@ static const char *calls_args_descriptions[] = {
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
+"--PolicyDocument: string\n"
+	"  The policy document, corresponding to a JSON string that contains the policy. For more \n"
+	"  information, see [EIM Reference \n"
+	"  Information](https://docs.outscale.com/en/userguide/EIM-Reference-Information.html) and \n"
+	"  [EIM Policy Generator](https://docs.outscale.com/en/userguide/EIM-Policy-Generator.html).\n"
+"--PolicyName: string\n"
+	"  The name of the policy (between 1 and 128 characters).\n"
+"--UserName: string\n"
+	"  The name of the user.\n"
+,
+	"--DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersAccessKeys\n"
 	"    One or more filters.\n"
 	"    --Filters.AccessKeyIds: array string\n"
 	"      The IDs of the access keys.\n"
 	"    --Filters.States: array string\n"
 	"      The states of the access keys (`ACTIVE` \\| `INACTIVE`).\n"
+"--Tag: string\n"
+	"  The tag added to the access key.\n"
 "--UserName: string\n"
 	"  The name of the EIM user. By default, the user who sends the request (which can be the root \n"
 	"  account).\n"
@@ -3279,6 +3317,18 @@ static const char *calls_args_descriptions[] = {
 	"  The item starting the list of groups requested.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of items that can be returned in a single response (by default, `100`).\n"
+,
+	"--DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform the action.\n"
+"--UserName: string\n"
+	"  The name of the user.\n"
+,
+	"--DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform the action.\n"
+"--PolicyName: string\n"
+	"  The name of the policy.\n"
+"--UserName: string\n"
+	"  The name of the user.\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -4985,6 +5035,11 @@ static int access_key_setter(struct access_key *args, struct osc_str *data) {
 	        ARG_TO_JSON_STR("\"State\":", args->state);
 	   	ret += 1;
 	}
+	if (args->tag) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Tag\":", args->tag);
+	   	ret += 1;
+	}
 
 	return !!ret;
 }
@@ -5019,6 +5074,11 @@ static int access_key_secret_key_setter(struct access_key_secret_key *args, stru
 	if (args->state) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"State\":", args->state);
+	   	ret += 1;
+	}
+	if (args->tag) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Tag\":", args->tag);
 	   	ret += 1;
 	}
 
@@ -16660,6 +16720,11 @@ static  int create_access_key_data(struct osc_env *e, struct osc_create_access_k
 	        ARG_TO_JSON_STR("\"ExpirationDate\":", args->expiration_date);
 	   	ret += 1;
 	}
+	if (args->tag) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Tag\":", args->tag);
+	   	ret += 1;
+	}
 	if (args->user_name) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"UserName\":", args->user_name);
@@ -22248,6 +22313,63 @@ out:
 	osc_deinit_str(&data);
 	return res;
 }
+static  int delete_user_policy_data(struct osc_env *e, struct osc_delete_user_policy_arg *args, struct osc_str *data)
+{
+	struct osc_str end_call;
+	int ret = 0;
+	int count_args = 0;
+
+	(void)count_args; /* if use only query/header and path, this is unused */
+	osc_init_str(&end_call);
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	if (!args)
+		goto no_data;
+
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	if (args->policy_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PolicyName\":", args->policy_name);
+	   	ret += 1;
+	}
+	if (args->user_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserName\":", args->user_name);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+
+no_data:
+	osc_str_append_string(&end_call, "/api/v1/DeleteUserPolicy");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	osc_deinit_str(&end_call);
+	return !!ret;
+}
+
+int osc_delete_user_policy(struct osc_env *e, struct osc_str *out, struct osc_delete_user_policy_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	int r;
+
+	osc_init_str(&data);
+	r = delete_user_policy_data(e, args, &data);
+	if (r < 0)
+		goto out;
+
+        curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&data);
+	return res;
+}
 static  int delete_user_data(struct osc_env *e, struct osc_delete_user_arg *args, struct osc_str *data)
 {
 	struct osc_str end_call;
@@ -23516,6 +23638,68 @@ out:
 	osc_deinit_str(&data);
 	return res;
 }
+static  int put_user_policy_data(struct osc_env *e, struct osc_put_user_policy_arg *args, struct osc_str *data)
+{
+	struct osc_str end_call;
+	int ret = 0;
+	int count_args = 0;
+
+	(void)count_args; /* if use only query/header and path, this is unused */
+	osc_init_str(&end_call);
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	if (!args)
+		goto no_data;
+
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	if (args->policy_document) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PolicyDocument\":", args->policy_document);
+	   	ret += 1;
+	}
+	if (args->policy_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PolicyName\":", args->policy_name);
+	   	ret += 1;
+	}
+	if (args->user_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserName\":", args->user_name);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+
+no_data:
+	osc_str_append_string(&end_call, "/api/v1/PutUserPolicy");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	osc_deinit_str(&end_call);
+	return !!ret;
+}
+
+int osc_put_user_policy(struct osc_env *e, struct osc_str *out, struct osc_put_user_policy_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	int r;
+
+	osc_init_str(&data);
+	r = put_user_policy_data(e, args, &data);
+	if (r < 0)
+		goto out;
+
+        curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&data);
+	return res;
+}
 static  int read_access_keys_data(struct osc_env *e, struct osc_read_access_keys_arg *args, struct osc_str *data)
 {
 	struct osc_str end_call;
@@ -23542,6 +23726,11 @@ static  int read_access_keys_data(struct osc_env *e, struct osc_read_access_keys
 	       STRY(filters_access_keys_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
+	}
+	if (args->tag) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Tag\":", args->tag);
+	   	ret += 1;
 	}
 	if (args->user_name) {
 		TRY_APPEND_COL(count_args, data);
@@ -27105,6 +27294,115 @@ int osc_read_user_groups(struct osc_env *e, struct osc_str *out, struct osc_read
 
 	osc_init_str(&data);
 	r = read_user_groups_data(e, args, &data);
+	if (r < 0)
+		goto out;
+
+        curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&data);
+	return res;
+}
+static  int read_user_policies_data(struct osc_env *e, struct osc_read_user_policies_arg *args, struct osc_str *data)
+{
+	struct osc_str end_call;
+	int ret = 0;
+	int count_args = 0;
+
+	(void)count_args; /* if use only query/header and path, this is unused */
+	osc_init_str(&end_call);
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	if (!args)
+		goto no_data;
+
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	if (args->user_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserName\":", args->user_name);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+
+no_data:
+	osc_str_append_string(&end_call, "/api/v1/ReadUserPolicies");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	osc_deinit_str(&end_call);
+	return !!ret;
+}
+
+int osc_read_user_policies(struct osc_env *e, struct osc_str *out, struct osc_read_user_policies_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	int r;
+
+	osc_init_str(&data);
+	r = read_user_policies_data(e, args, &data);
+	if (r < 0)
+		goto out;
+
+        curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = curl_easy_perform(e->c);
+out:
+	osc_deinit_str(&data);
+	return res;
+}
+static  int read_user_policy_data(struct osc_env *e, struct osc_read_user_policy_arg *args, struct osc_str *data)
+{
+	struct osc_str end_call;
+	int ret = 0;
+	int count_args = 0;
+
+	(void)count_args; /* if use only query/header and path, this is unused */
+	osc_init_str(&end_call);
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	if (!args)
+		goto no_data;
+
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	if (args->policy_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PolicyName\":", args->policy_name);
+	   	ret += 1;
+	}
+	if (args->user_name) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"UserName\":", args->user_name);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+
+no_data:
+	osc_str_append_string(&end_call, "/api/v1/ReadUserPolicy");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	osc_deinit_str(&end_call);
+	return !!ret;
+}
+
+int osc_read_user_policy(struct osc_env *e, struct osc_str *out, struct osc_read_user_policy_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	int r;
+
+	osc_init_str(&data);
+	r = read_user_policy_data(e, args, &data);
 	if (r < 0)
 		goto out;
 
