@@ -77,8 +77,8 @@ struct osc_str {
 
 #define OSC_ENV_FREE_AK_SK (OSC_ENV_FREE_AK | OSC_ENV_FREE_SK)
 
-#define OSC_API_VERSION "1.34.0"
-#define OSC_SDK_VERSION 0X001300
+#define OSC_API_VERSION "1.34.3"
+#define OSC_SDK_VERSION 0X001400
 
 enum osc_auth_method {
 	OSC_AKSK_METHOD,
@@ -170,6 +170,10 @@ struct access_key {
          * calls, or `INACTIVE` if not).
          */
 	char *state;
+        /*
+         * The tag added to the access key.
+         */
+	char *tag;
 };
 
 struct access_key_secret_key {
@@ -198,6 +202,10 @@ struct access_key_secret_key {
          * calls, or `INACTIVE` if not).
          */
 	char *state;
+        /*
+         * A tag added to the access key.
+         */
+	char *tag;
 };
 
 struct access_log {
@@ -968,8 +976,11 @@ struct direct_link {
 struct direct_link_interface {
         /*
          * The BGP (Border Gateway Protocol) ASN (Autonomous System Number) on 
-         * the customer's side of the DirectLink interface. This number must be 
-         * between `64512` and `65534`.
+         * the customer's side of the DirectLink interface. <br/>\nThis number 
+         * must be between `1` and `4294967295`, except `50624`, `53306`, and 
+         * `132418`. <br/>\nIf you do not have an ASN, you can choose one 
+         * between `64512` and `65534` (both included), or between `4200000000` 
+         * and `4294967295` (both included).
          */
         int is_set_bgp_asn;
 	long long int bgp_asn;
@@ -7313,6 +7324,10 @@ struct osc_create_access_key_arg  {
          */
 	char *expiration_date;
         /*
+         * A tag to add to the access key.
+         */
+	char *tag;
+        /*
          * The name of the EIM user that owns the key to be created. If you do 
          * not specify a user name, this action creates an access key for the 
          * user who sends the request (which can be the root account).
@@ -7552,9 +7567,15 @@ struct osc_create_direct_link_interface_arg  {
          *   --DirectLinkInterface.BgpAsn: long long int
          *     The BGP (Border Gateway Protocol) ASN (Autonomous System Number) 
          * on the 
-         *     customer's side of the DirectLink interface. This number must be 
-         * between 
-         *     `64512` and `65534`.
+         *     customer's side of the DirectLink interface. <br/>\nThis number 
+         * must be 
+         *     between `1` and `4294967295`, except `50624`, `53306`, and 
+         * `132418`. 
+         *     <br/>\nIf you do not have an ASN, you can choose one between 
+         * `64512` and 
+         *     `65534` (both included), or between `4200000000` and `4294967295` 
+         * (both 
+         *     included).
          *   --DirectLinkInterface.BgpKey: string
          *     The BGP authentication key.
          *   --DirectLinkInterface.ClientPrivateIp: string
@@ -8133,16 +8154,15 @@ struct osc_create_net_peering_arg  {
         /* Required: AccepterNetId SourceNetId
  */
         /*
-         * The ID of the Net you want to connect with. <br/ > <br/ > \nIf the 
-         * Net does not belong to you, you must also specify the 
-         * `AccepterOwnerId` parameter with the account ID owning the Net you 
-         * want to connect with.
+         * The ID of the Net you want to connect with. <br/ > <br/ >\nIf the Net 
+         * does not belong to you, you must also specify the `AccepterOwnerId` 
+         * parameter with the account ID owning the Net you want to connect with.
          */
 	char *accepter_net_id;
         /*
          * The account ID of the owner of the Net you want to connect with. By 
          * default, the account ID of the owner of the Net from which the 
-         * peering request is sent. <br /><br/ > \nThis parameter is required if 
+         * peering request is sent. <br /><br/ >\nThis parameter is required if 
          * the Net you want to connect with does not belong to you.
          */
 	char *accepter_owner_id;
@@ -9928,6 +9948,26 @@ struct osc_delete_user_group_arg  {
 	char *user_group_name;
 };
 
+struct osc_delete_user_policy_arg  {
+        /* Required: UserName PolicyName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The name of the policy document you want to delete (between 1 and 128 
+         * characters).
+         */
+	char *policy_name;
+        /*
+         * The name of the user you want to delete the policy from.
+         */
+	char *user_name;
+};
+
 struct osc_delete_user_arg  {
         /* Required: UserName
  */
@@ -10384,6 +10424,34 @@ struct osc_put_user_group_policy_arg  {
 	char *user_group_path;
 };
 
+struct osc_put_user_policy_arg  {
+        /* Required: PolicyName PolicyDocument UserName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The policy document, corresponding to a JSON string that contains the 
+         * policy. For more information, see [EIM Reference 
+         * Information](https://docs.outscale.com/en/userguide/EIM-Reference-Info
+         * rmation.html) and [EIM Policy 
+         * Generator](https://docs.outscale.com/en/userguide/EIM-Policy-Generator
+         * .html).
+         */
+	char *policy_document;
+        /*
+         * The name of the policy (between 1 and 128 characters).
+         */
+	char *policy_name;
+        /*
+         * The name of the user.
+         */
+	char *user_name;
+};
+
 struct osc_read_access_keys_arg  {
         /* Required: null
  */
@@ -10403,6 +10471,10 @@ struct osc_read_access_keys_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_access_keys filters;
+        /*
+         * The tag added to the access key.
+         */
+	char *tag;
         /*
          * The name of the EIM user. By default, the user who sends the request 
          * (which can be the root account).
@@ -12506,6 +12578,40 @@ struct osc_read_user_groups_arg  {
          */
         int is_set_results_per_page;
 	long long int results_per_page;
+};
+
+struct osc_read_user_policies_arg  {
+        /* Required: UserName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The name of the user.
+         */
+	char *user_name;
+};
+
+struct osc_read_user_policy_arg  {
+        /* Required: UserName PolicyName
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The name of the policy.
+         */
+	char *policy_name;
+        /*
+         * The name of the user.
+         */
+	char *user_name;
 };
 
 struct osc_read_users_arg  {
@@ -14762,6 +14868,7 @@ int osc_delete_subnet(struct osc_env *e, struct osc_str *out, struct osc_delete_
 int osc_delete_tags(struct osc_env *e, struct osc_str *out, struct osc_delete_tags_arg *args);
 int osc_delete_user_group_policy(struct osc_env *e, struct osc_str *out, struct osc_delete_user_group_policy_arg *args);
 int osc_delete_user_group(struct osc_env *e, struct osc_str *out, struct osc_delete_user_group_arg *args);
+int osc_delete_user_policy(struct osc_env *e, struct osc_str *out, struct osc_delete_user_policy_arg *args);
 int osc_delete_user(struct osc_env *e, struct osc_str *out, struct osc_delete_user_arg *args);
 int osc_delete_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_delete_virtual_gateway_arg *args);
 int osc_delete_vm_group(struct osc_env *e, struct osc_str *out, struct osc_delete_vm_group_arg *args);
@@ -14783,6 +14890,7 @@ int osc_link_route_table(struct osc_env *e, struct osc_str *out, struct osc_link
 int osc_link_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_link_virtual_gateway_arg *args);
 int osc_link_volume(struct osc_env *e, struct osc_str *out, struct osc_link_volume_arg *args);
 int osc_put_user_group_policy(struct osc_env *e, struct osc_str *out, struct osc_put_user_group_policy_arg *args);
+int osc_put_user_policy(struct osc_env *e, struct osc_str *out, struct osc_put_user_policy_arg *args);
 int osc_read_access_keys(struct osc_env *e, struct osc_str *out, struct osc_read_access_keys_arg *args);
 int osc_read_accounts(struct osc_env *e, struct osc_str *out, struct osc_read_accounts_arg *args);
 int osc_read_admin_password(struct osc_env *e, struct osc_str *out, struct osc_read_admin_password_arg *args);
@@ -14842,6 +14950,8 @@ int osc_read_user_group_policy(struct osc_env *e, struct osc_str *out, struct os
 int osc_read_user_group(struct osc_env *e, struct osc_str *out, struct osc_read_user_group_arg *args);
 int osc_read_user_groups_per_user(struct osc_env *e, struct osc_str *out, struct osc_read_user_groups_per_user_arg *args);
 int osc_read_user_groups(struct osc_env *e, struct osc_str *out, struct osc_read_user_groups_arg *args);
+int osc_read_user_policies(struct osc_env *e, struct osc_str *out, struct osc_read_user_policies_arg *args);
+int osc_read_user_policy(struct osc_env *e, struct osc_str *out, struct osc_read_user_policy_arg *args);
 int osc_read_users(struct osc_env *e, struct osc_str *out, struct osc_read_users_arg *args);
 int osc_read_virtual_gateways(struct osc_env *e, struct osc_str *out, struct osc_read_virtual_gateways_arg *args);
 int osc_read_vm_groups(struct osc_env *e, struct osc_str *out, struct osc_read_vm_groups_arg *args);
