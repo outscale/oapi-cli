@@ -1,0 +1,95 @@
+name: Build packages
+on:
+    pull_request:
+        branches: [master]
+    push:
+        branches: [master]
+        tags:
+            - "v*.*.*"
+
+permissions:
+    contents: write
+
+jobs:
+    build-linux:
+        environment: auto-build
+        runs-on: ubuntu-22.04
+        steps:
+            - name: ⬆️ Checkout repository
+              uses: actions/checkout@v4
+            - name: ⬆️ Initialize submodules
+              uses: snickerbockers/submodules-init@v4
+            - name: 📦️ Build Linux package
+              run: |
+                  sudo apt-get update --fix-missing
+                  sudo apt-get install -y -f -o Acquire::Retries=3 cargo libfuse2
+                  docker build  -t oapi-build ./docker
+                  docker run --device /dev/fuse --cap-add SYS_ADMIN --privileged=True -v $PWD:/oapi-cli oapi-build /oapi-cli/docker/make.sh cp
+                  sudo chown $(whoami) -R ./docker-package/
+                  ./docker-package/oapi-cli-x86_64.AppImage --appimage-extract-and-run --help
+                  ./docker-package/oapi-cli-x86_64.AppImage --help
+                  cp docker-package/oapi-cli-x86_64.AppImage ./oapi-cli-x86_64.AppImage
+                  make tests-appimage
+            - name: 🚀 Upload artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: linux-artifacts
+                  path: |
+                      oapi-cli-x86_64.AppImage
+    build-windows:
+        runs-on: windows-latest
+        steps:
+            - name: ⬆️ Checkout repository
+              uses: actions/checkout@v4
+            - name: ⬆️ Initialize submodules
+              uses: snickerbockers/submodules-init@v4
+            - name: 🔧 Setup Windows environment
+              uses: msys2/setup-msys2@v2
+              with:
+                  msystem: MINGW64
+                  install: >-
+                      git
+                      base-devel
+                      zip
+                  pacboy: gcc
+                      cmake
+                      openssl
+                      json-c
+                      curl
+            - name: 📦️ Build Windows package
+              shell: msys2 {0}
+              run: |
+                  git submodule update --init
+                  .github/scripts/build-win.sh
+                  mkdir oapi-pkg
+                  LD_LIBRARY_PATH="$PWD" ./cp-lib.sh oapi-cli oapi-pkg/
+                  cp oapi-cli.exe oapi-pkg/
+                  zip -r oapi-cli-x86_64.zip oapi-pkg/
+                  ./oapi-pkg/oapi-cli.exe --insecure ReadRegions | grep api.eu-west-2.outscale.com
+              env:
+                  OSC_ACCESS_KEY: ${{secrets.OSC_ACCESS_KEY}}
+                  OSC_SECRET_KEY: ${{secrets.OSC_SECRET_KEY}}
+                  OSC_REGION: ${{secrets.OSC_REGION}}
+            - name: 🚀 Upload artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: windows-artifacts
+                  path: |
+                      oapi-cli-x86_64.zip
+    release:
+        runs-on: ubuntu-22.04
+        needs: [build-linux, build-windows]
+        if: github.ref_type == 'tag'
+        steps:
+            - name: ⬇️ Retrieve packages
+              uses: actions/download-artifact@v4
+              with:
+                  path: ./pkgs
+            - name: 🚀 Draft GitHub release
+              uses: softprops/action-gh-release@v2
+              with:
+                  draft: true
+                  generate_release_notes: true
+                  files: |
+                      ./pkgs/**/oapi-cli-x86_64.zip
+                      ./pkgs/**/oapi-cli-x86_64.AppImage
