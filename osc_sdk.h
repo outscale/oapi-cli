@@ -77,8 +77,8 @@ struct osc_str {
 
 #define OSC_ENV_FREE_AK_SK (OSC_ENV_FREE_AK | OSC_ENV_FREE_SK)
 
-#define OSC_API_VERSION "1.34.3"
-#define OSC_SDK_VERSION 0X001400
+#define OSC_API_VERSION "1.35.3"
+#define OSC_SDK_VERSION 0X001500
 
 enum osc_auth_method {
 	OSC_AKSK_METHOD,
@@ -298,6 +298,15 @@ struct account {
          * The ZIP code of the city.
          */
 	char *zip_code;
+};
+
+struct actions_on_next_boot {
+        /*
+         *   One action to perform on the next boot of the VM (`enable` | 
+         * `disable` | 
+         *   `setup-mode` |`none`).
+         */
+	char *secure_boot;
 };
 
 struct api_access_policy {
@@ -1466,6 +1475,11 @@ struct filters_image {
         char *block_device_mapping_volume_types_str;
 	char **block_device_mapping_volume_types;
         /*
+         * The boot modes compatible with the OMIs (`legacy` and/or `uefi`).
+         */
+        char *boot_modes_str;
+	char **boot_modes;
+        /*
          * The descriptions of the OMIs, provided when they were created.
          */
         char *descriptions_str;
@@ -1520,6 +1534,11 @@ struct filters_image {
          */
         char *root_device_types_str;
 	char **root_device_types;
+        /*
+         * Whether secure boot is activated or not.
+         */
+        int is_set_secure_boot;
+	int secure_boot;
         /*
          * The states of the OMIs (`pending` \\| `available` \\| `failed`).
          */
@@ -2340,6 +2359,11 @@ struct filters_snapshot {
         char *account_ids_str;
 	char **account_ids;
         /*
+         * The idempotency tokens provided when creating the snapshots.
+         */
+        char *client_tokens_str;
+	char **client_tokens;
+        /*
          * The descriptions of the snapshots.
          */
         char *descriptions_str;
@@ -2617,6 +2641,11 @@ struct filters_vm {
          */
         char *block_device_mapping_volume_ids_str;
 	char **block_device_mapping_volume_ids;
+        /*
+         * The boot modes of the VMs (`legacy` \\| `uefi`).
+         */
+        char *boot_modes_str;
+	char **boot_modes;
         /*
          * The idempotency tokens provided when launching the VMs.
          */
@@ -3140,6 +3169,11 @@ struct filters_vms_state {
 
 struct filters_volume {
         /*
+         * The idempotency tokens provided when creating the volumes.
+         */
+        char *client_tokens_str;
+	char **client_tokens;
+        /*
          * The dates and times at which the volumes were created, in ISO 8601 
          * date-time format (for example, `2020-06-30T00:00:00.000Z`).
          */
@@ -3364,7 +3398,8 @@ struct health_check {
         int is_set_healthy_threshold;
 	long long int healthy_threshold;
         /*
-         * If you use the HTTP or HTTPS protocols, the request URL path.
+         * If you use the HTTP or HTTPS protocols, the request URL path. Always 
+         * starts with a slash (`/`).
          */
 	char *path;
         /*
@@ -3487,6 +3522,11 @@ struct image {
         int nb_block_device_mappings;
 	struct block_device_mapping_image *block_device_mappings;
         /*
+         * The boot modes compatible with the OMI (`legacy` and/or `uefi`).
+         */
+        char *boot_modes_str;
+	char **boot_modes;
+        /*
          * The date and time (UTC) at which the OMI was created.
          */
 	char *creation_date;
@@ -3540,6 +3580,11 @@ struct image {
          * The type of root device used by the OMI (always `bsu`).
          */
 	char *root_device_type;
+        /*
+         * Whether secure boot is activated or not.
+         */
+        int is_set_secure_boot;
+	int secure_boot;
         /*
          * The state of the OMI (`pending` \\| `available` \\| `failed`).
          */
@@ -4151,7 +4196,9 @@ struct load_balancer {
          * the VM 
          *     as healthy (between `2` and `10` both included).
          *   --HealthCheck.Path: string
-         *     If you use the HTTP or HTTPS protocols, the request URL path.
+         *     If you use the HTTP or HTTPS protocols, the request URL path. 
+         * Always 
+         *     starts with a slash (`/`).
          *   --HealthCheck.Port: long long int
          *     The port number (between `1` and `65535`, both included).
          *   --HealthCheck.Protocol: string
@@ -5562,7 +5609,7 @@ struct region {
 
 struct resource_load_balancer_tag {
         /*
-         * The key of the tag, with a minimum of 1 character.
+         * The key of the tag, between 1 and 128 characters.
          */
 	char *key;
 };
@@ -6014,6 +6061,10 @@ struct snapshot {
          */
 	char *account_id;
         /*
+         * The idempotency token provided when creating the snapshot.
+         */
+	char *client_token;
+        /*
          * The date and time (UTC) at which the snapshot was created.
          */
 	char *creation_date;
@@ -6371,6 +6422,16 @@ struct virtual_gateway {
 
 struct vm {
         /*
+         *   The action to perform on the next boot of the VM.
+         *   --ActionsOnNextBoot.SecureBoot: string
+         *       One action to perform on the next boot of the VM (`enable` | 
+         * `disable` | 
+         *       `setup-mode` |`none`).
+         */
+        char *actions_on_next_boot_str;
+        int is_set_actions_on_next_boot;
+	struct actions_on_next_boot actions_on_next_boot;
+        /*
          * The architecture of the VM (`i386` \\| `x86_64`).
          */
 	char *architecture;
@@ -6397,6 +6458,9 @@ struct vm {
         char *block_device_mappings_str;
         int nb_block_device_mappings;
 	struct block_device_mapping_created *block_device_mappings;
+        /*
+         */
+	char *boot_mode;
         /*
          * This parameter is not available. It is present in our API for the 
          * sake of historical compatibility with AWS.
@@ -6862,6 +6926,10 @@ struct vm_type {
 };
 
 struct volume {
+        /*
+         * The idempotency token provided when creating the volume.
+         */
+	char *client_token;
         /*
          * The date and time (UTC) at which the volume was created.
          */
@@ -7761,6 +7829,11 @@ struct osc_create_image_arg  {
         int nb_block_device_mappings;
 	struct block_device_mapping_image *block_device_mappings;
         /*
+         * The boot modes compatible with the OMI (`legacy` and/or `uefi`).
+         */
+        char *boot_modes_str;
+	char **boot_modes;
+        /*
          * A description for the new OMI.
          */
 	char *description;
@@ -8607,6 +8680,10 @@ struct osc_create_snapshot_arg  {
         /* Required: null
  */
         /*
+         * A unique identifier which enables you to manage the idempotency.
+         */
+	char *client_token;
+        /*
          * A description for the snapshot.
          */
 	char *description;
@@ -8884,6 +8961,16 @@ struct osc_create_vms_arg  {
         /* Required: ImageId
  */
         /*
+         *   The action to perform on the next boot of the VM.
+         *   --ActionsOnNextBoot.SecureBoot: string
+         *       One action to perform on the next boot of the VM (`enable` | 
+         * `disable` | 
+         *       `setup-mode` |`none`).
+         */
+        char *actions_on_next_boot_str;
+        int is_set_actions_on_next_boot;
+	struct actions_on_next_boot actions_on_next_boot;
+        /*
          * One or more block device mappings.
          *   Information about the block device mapping.
          *   --BlockDeviceMappings.INDEX.Bsu: ref BsuToCreate
@@ -8939,6 +9026,10 @@ struct osc_create_vms_arg  {
         char *block_device_mappings_str;
         int nb_block_device_mappings;
 	struct block_device_mapping_vm_creation *block_device_mappings;
+        /*
+         *   Information about the boot mode of the OMI (`legacy` and/or `uefi`).
+         */
+	char *boot_mode;
         /*
          * By default or if true, the VM is started on creation. If false, the 
          * VM is stopped on creation.
@@ -9121,6 +9212,10 @@ struct osc_create_vms_arg  {
 struct osc_create_volume_arg  {
         /* Required: SubregionName
  */
+        /*
+         * A unique identifier which enables you to manage the idempotency.
+         */
+	char *client_token;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -9512,7 +9607,7 @@ struct osc_delete_load_balancer_tags_arg  {
          * One or more tags to delete from the load balancers.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 128 characters.
          */
         char *tags_str;
         int nb_tags;
@@ -11123,6 +11218,8 @@ struct osc_read_images_arg  {
          *     The sizes of the volumes, in gibibytes (GiB).
          *   --Filters.BlockDeviceMappingVolumeTypes: array string
          *     The types of volumes (`standard` \\| `gp2` \\| `io1`).
+         *   --Filters.BootModes: array string
+         *     The boot modes compatible with the OMIs (`legacy` and/or `uefi`).
          *   --Filters.Descriptions: array string
          *     The descriptions of the OMIs, provided when they were created.
          *   --Filters.FileLocations: array string
@@ -11145,6 +11242,8 @@ struct osc_read_images_arg  {
          *     The name of the root device. This value must be /dev/sda1.
          *   --Filters.RootDeviceTypes: array string
          *     The types of root device used by the OMIs (`bsu` or `ebs`).
+         *   --Filters.SecureBoot: bool
+         *     Whether secure boot is activated or not.
          *   --Filters.States: array string
          *     The states of the OMIs (`pending` \\| `available` \\| `failed`).
          *   --Filters.TagKeys: array string
@@ -11753,6 +11852,17 @@ struct osc_read_nics_arg  {
         char *filters_str;
         int is_set_filters;
 	struct filters_nic filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
 };
 
 struct osc_read_policies_arg  {
@@ -12238,6 +12348,8 @@ struct osc_read_snapshots_arg  {
          *     The account aliases of the owners of the snapshots.
          *   --Filters.AccountIds: array string
          *     The account IDs of the owners of the snapshots.
+         *   --Filters.ClientTokens: array string
+         *     The idempotency tokens provided when creating the snapshots.
          *   --Filters.Descriptions: array string
          *     The descriptions of the snapshots.
          *   --Filters.FromCreationDate: string
@@ -12877,6 +12989,8 @@ struct osc_read_vms_arg  {
          *     `detaching` \\| `detached`).
          *   --Filters.BlockDeviceMappingVolumeIds: array string
          *     The volume IDs of the BSU volumes.
+         *   --Filters.BootModes: array string
+         *     The boot modes of the VMs (`legacy` \\| `uefi`).
          *   --Filters.ClientTokens: array string
          *     The idempotency tokens provided when launching the VMs.
          *   --Filters.CreationDates: array string
@@ -13111,6 +13225,8 @@ struct osc_read_volumes_arg  {
 	int dry_run;
         /*
          *   One or more filters.
+         *   --Filters.ClientTokens: array string
+         *     The idempotency tokens provided when creating the volumes.
          *   --Filters.CreationDates: array string
          *     The dates and times at which the volumes were created, in ISO 
          * 8601 
@@ -13923,6 +14039,13 @@ struct osc_update_image_arg  {
         char *permissions_to_launch_str;
         int is_set_permissions_to_launch;
 	struct permissions_on_resource_creation permissions_to_launch;
+        /*
+         * The product codes associated with the OMI. Any previously set value 
+         * is deleted. Make sure to specify all product codes you want to 
+         * associate with the OMI.
+         */
+        char *product_codes_str;
+	char **product_codes;
 };
 
 struct osc_update_listener_rule_arg  {
@@ -13994,7 +14117,9 @@ struct osc_update_load_balancer_arg  {
          * the VM 
          *     as healthy (between `2` and `10` both included).
          *   --HealthCheck.Path: string
-         *     If you use the HTTP or HTTPS protocols, the request URL path.
+         *     If you use the HTTP or HTTPS protocols, the request URL path. 
+         * Always 
+         *     starts with a slash (`/`).
          *   --HealthCheck.Port: long long int
          *     The port number (between `1` and `65535`, both included).
          *   --HealthCheck.Protocol: string
@@ -14424,6 +14549,16 @@ struct osc_update_vm_group_arg  {
 struct osc_update_vm_arg  {
         /* Required: VmId
  */
+        /*
+         *   The action to perform on the next boot of the VM.
+         *   --ActionsOnNextBoot.SecureBoot: string
+         *       One action to perform on the next boot of the VM (`enable` | 
+         * `disable` | 
+         *       `setup-mode` |`none`).
+         */
+        char *actions_on_next_boot_str;
+        int is_set_actions_on_next_boot;
+	struct actions_on_next_boot actions_on_next_boot;
         /*
          * One or more block device mappings of the VM.
          *   Information about the block device mapping.

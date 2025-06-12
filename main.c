@@ -47,7 +47,7 @@
 
 #define OAPI_RAW_OUTPUT 1
 
-#define OAPI_CLI_VERSION "0.8.0"
+#define OAPI_CLI_VERSION "0.9.0"
 
 #define OAPI_CLI_UAGENT "oapi-cli/"OAPI_CLI_VERSION"; osc-sdk-c/"
 
@@ -259,6 +259,7 @@ int access_key_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int access_key_secret_key_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int access_log_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int account_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int actions_on_next_boot_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int api_access_policy_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int api_access_rule_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int application_sticky_cookie_policy_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -670,6 +671,21 @@ int account_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' not an argumemt of 'Account'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
+int actions_on_next_boot_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct actions_on_next_boot *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "SecureBoot")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "SecureBoot argument missing\n");
+            s->secure_boot = aa; // string string
+
+         } else
+	{
+		fprintf(stderr, "'%s' not an argumemt of 'ActionsOnNextBoot'\n", str);
 		return -1;
 	}
 	return 0;
@@ -3522,6 +3538,34 @@ int filters_image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                TRY(!aa, "BlockDeviceMappingVolumeTypes[] argument missing\n");
                SET_NEXT(s->block_device_mapping_volume_types, (aa), pa);
          } else
+	if ((aret = argcmp(str, "BootModes")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "BootModes argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "BootModes require an index\n");
+                      if (s->boot_modes) {
+                              for (; s->boot_modes[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->boot_modes[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->boot_modes, "", pa);
+                              SET_NEXT(s->boot_modes, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "BootModes argument missing\n");
+                     s->boot_modes_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "BootModes[]")) || aret == '=') {
+               TRY(!aa, "BootModes[] argument missing\n");
+               SET_NEXT(s->boot_modes, (aa), pa);
+         } else
 	if ((aret = argcmp(str, "Descriptions")) == 0 || aret == '=' || aret == '.') {
                  if (aret == '.') {
                       int pos;
@@ -3812,6 +3856,16 @@ int filters_image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                TRY(!aa, "RootDeviceTypes[] argument missing\n");
                SET_NEXT(s->root_device_types, (aa), pa);
          } else
+	if ((aret = argcmp(str, "SecureBoot")) == 0 || aret == '=' || aret == '.') {
+            s->is_set_secure_boot = 1;
+            if (!aa || !strcasecmp(aa, "true")) {
+            		s->secure_boot = 1;
+             } else if (!strcasecmp(aa, "false")) {
+            		s->secure_boot = 0;
+             } else {
+            		BAD_RET("SecureBoot require true/false\n");
+             }
+        } else
 	if ((aret = argcmp(str, "States")) == 0 || aret == '=' || aret == '.') {
                  if (aret == '.') {
                       int pos;
@@ -7924,6 +7978,34 @@ int filters_snapshot_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
                TRY(!aa, "AccountIds[] argument missing\n");
                SET_NEXT(s->account_ids, (aa), pa);
          } else
+	if ((aret = argcmp(str, "ClientTokens")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "ClientTokens argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "ClientTokens require an index\n");
+                      if (s->client_tokens) {
+                              for (; s->client_tokens[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->client_tokens[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->client_tokens, "", pa);
+                              SET_NEXT(s->client_tokens, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "ClientTokens argument missing\n");
+                     s->client_tokens_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "ClientTokens[]")) || aret == '=') {
+               TRY(!aa, "ClientTokens[] argument missing\n");
+               SET_NEXT(s->client_tokens, (aa), pa);
+         } else
 	if ((aret = argcmp(str, "Descriptions")) == 0 || aret == '=' || aret == '.') {
                  if (aret == '.') {
                       int pos;
@@ -9176,6 +9258,34 @@ int filters_vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else if (!(aret = argcmp(str, "BlockDeviceMappingVolumeIds[]")) || aret == '=') {
                TRY(!aa, "BlockDeviceMappingVolumeIds[] argument missing\n");
                SET_NEXT(s->block_device_mapping_volume_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "BootModes")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "BootModes argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "BootModes require an index\n");
+                      if (s->boot_modes) {
+                              for (; s->boot_modes[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->boot_modes[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->boot_modes, "", pa);
+                              SET_NEXT(s->boot_modes, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "BootModes argument missing\n");
+                     s->boot_modes_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "BootModes[]")) || aret == '=') {
+               TRY(!aa, "BootModes[] argument missing\n");
+               SET_NEXT(s->boot_modes, (aa), pa);
          } else
 	if ((aret = argcmp(str, "ClientTokens")) == 0 || aret == '=' || aret == '.') {
                  if (aret == '.') {
@@ -11825,6 +11935,34 @@ int filters_vms_state_parser(void *v_s, char *str, char *aa, struct ptr_array *p
 int filters_volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_volume *s = v_s;
 	    int aret = 0;
+	if ((aret = argcmp(str, "ClientTokens")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "ClientTokens argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "ClientTokens require an index\n");
+                      if (s->client_tokens) {
+                              for (; s->client_tokens[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->client_tokens[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->client_tokens, "", pa);
+                              SET_NEXT(s->client_tokens, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "ClientTokens argument missing\n");
+                     s->client_tokens_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "ClientTokens[]")) || aret == '=') {
+               TRY(!aa, "ClientTokens[] argument missing\n");
+               SET_NEXT(s->client_tokens, (aa), pa);
+         } else
 	if ((aret = argcmp(str, "CreationDates")) == 0 || aret == '=' || aret == '.') {
                  if (aret == '.') {
                       int pos;
@@ -12730,6 +12868,34 @@ int image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->block_device_mappings_str = aa; // array ref BlockDeviceMappingImage ref
             }
          } else
+	if ((aret = argcmp(str, "BootModes")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "BootModes argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "BootModes require an index\n");
+                      if (s->boot_modes) {
+                              for (; s->boot_modes[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->boot_modes[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->boot_modes, "", pa);
+                              SET_NEXT(s->boot_modes, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "BootModes argument missing\n");
+                     s->boot_modes_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "BootModes[]")) || aret == '=') {
+               TRY(!aa, "BootModes[] argument missing\n");
+               SET_NEXT(s->boot_modes, (aa), pa);
+         } else
 	if ((aret = argcmp(str, "CreationDate")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "CreationDate argument missing\n");
             s->creation_date = aa; // string string
@@ -12815,6 +12981,16 @@ int image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             s->root_device_type = aa; // string string
 
          } else
+	if ((aret = argcmp(str, "SecureBoot")) == 0 || aret == '=' || aret == '.') {
+            s->is_set_secure_boot = 1;
+            if (!aa || !strcasecmp(aa, "true")) {
+            		s->secure_boot = 1;
+             } else if (!strcasecmp(aa, "false")) {
+            		s->secure_boot = 0;
+             } else {
+            		BAD_RET("SecureBoot require true/false\n");
+             }
+        } else
 	if ((aret = argcmp(str, "State")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "State argument missing\n");
             s->state = aa; // string string
@@ -16669,6 +16845,11 @@ int snapshot_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             s->account_id = aa; // string string
 
          } else
+	if ((aret = argcmp(str, "ClientToken")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "ClientToken argument missing\n");
+            s->client_token = aa; // string string
+
+         } else
 	if ((aret = argcmp(str, "CreationDate")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "CreationDate argument missing\n");
             s->creation_date = aa; // string string
@@ -17263,6 +17444,23 @@ int virtual_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
 int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct vm *s = v_s;
 	    int aret = 0;
+	if ((aret = argcmp(str, "ActionsOnNextBoot")) == 0 || aret == '=' || aret == '.') {
+            char *dot_pos;
+
+            TRY(!aa, "ActionsOnNextBoot argument missing\n");
+            dot_pos = strchr(str, '.');
+            if (dot_pos++) {
+            	    cascade_struct = &s->actions_on_next_boot;
+            	    cascade_parser = actions_on_next_boot_parser;
+            	    if (*dot_pos == '.') {
+            		++dot_pos;
+            	    }
+            	    STRY(actions_on_next_boot_parser(&s->actions_on_next_boot, dot_pos, aa, pa));
+            	    s->is_set_actions_on_next_boot = 1;
+             } else {
+                   s->actions_on_next_boot_str = aa;
+             }
+         } else
 	if ((aret = argcmp(str, "Architecture")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "Architecture argument missing\n");
             s->architecture = aa; // string string
@@ -17292,6 +17490,11 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	TRY(!aa, "BlockDeviceMappings argument missing\n");
             	s->block_device_mappings_str = aa; // array ref BlockDeviceMappingCreated ref
             }
+         } else
+	if ((aret = argcmp(str, "BootMode")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "BootMode argument missing\n");
+            s->boot_mode = aa; // string string
+
          } else
 	if ((aret = argcmp(str, "BsuOptimized")) == 0 || aret == '=' || aret == '.') {
             s->is_set_bsu_optimized = 1;
@@ -17939,6 +18142,11 @@ int vm_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 int volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct volume *s = v_s;
 	    int aret = 0;
+	if ((aret = argcmp(str, "ClientToken")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "ClientToken argument missing\n");
+            s->client_token = aa; // string string
+
+         } else
 	if ((aret = argcmp(str, "CreationDate")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "CreationDate argument missing\n");
             s->creation_date = aa; // string string
@@ -20794,6 +21002,40 @@ int main(int ac, char **av)
 				          	TRY(!aa, "BlockDeviceMappings argument missing\n");
 				          	s->block_device_mappings_str = aa; // array ref BlockDeviceMappingImage ref
 				          }
+				       } else
+			      if ((aret = argcmp(next_a, "BootModes")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "BootModes argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				               if (aret == '.') {
+				                    int pos;
+				                    char *endptr;
+				                    int last = 0;
+				                    char *dot_pos = strchr(str, '.');
+
+				                    TRY(!(dot_pos++), "BootModes argument missing\n");
+				                    pos = strtoul(dot_pos, &endptr, 0);
+				                    TRY(endptr == dot_pos, "BootModes require an index\n");
+				                    if (s->boot_modes) {
+				                            for (; s->boot_modes[last]; ++last);
+				                    }
+				                    if (pos < last) {
+				                            s->boot_modes[pos] = (aa);
+				                    } else {
+				                            for (int i = last; i < pos; ++i)
+				                                    SET_NEXT(s->boot_modes, "", pa);
+				                            SET_NEXT(s->boot_modes, (aa), pa);
+				                    }
+				               } else {
+				          	       TRY(!aa, "BootModes argument missing\n");
+				                   s->boot_modes_str = aa;
+				               }
+				       } else if (!(aret = argcmp(str, "BootModes[]")) || aret == '=') {
+				             TRY(!aa, "BootModes[] argument missing\n");
+				             SET_NEXT(s->boot_modes, (aa), pa);
 				       } else
 			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -24216,6 +24458,17 @@ int main(int ac, char **av)
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				 	META_ARGS({ aa = 0; incr = 1; });
 			     }
+			      if ((aret = argcmp(next_a, "ClientToken")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ClientToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ClientToken argument missing\n");
+				          s->client_token = aa; // string string
+
+				       } else
 			      if ((aret = argcmp(next_a, "Description")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
 			      	 if (eq_ptr) {
@@ -25456,6 +25709,29 @@ int main(int ac, char **av)
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				 	META_ARGS({ aa = 0; incr = 1; });
 			     }
+			      if ((aret = argcmp(next_a, "ActionsOnNextBoot")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ActionsOnNextBoot argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          char *dot_pos;
+
+				          TRY(!aa, "ActionsOnNextBoot argument missing\n");
+				          dot_pos = strchr(str, '.');
+				          if (dot_pos++) {
+				          	    cascade_struct = &s->actions_on_next_boot;
+				          	    cascade_parser = actions_on_next_boot_parser;
+				          	    if (*dot_pos == '.') {
+				          		++dot_pos;
+				          	    }
+				          	    STRY(actions_on_next_boot_parser(&s->actions_on_next_boot, dot_pos, aa, pa));
+				          	    s->is_set_actions_on_next_boot = 1;
+				           } else {
+				                 s->actions_on_next_boot_str = aa;
+				           }
+				       } else
 			      if ((aret = argcmp(next_a, "BlockDeviceMappings")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
 			      	 if (eq_ptr) {
@@ -25486,6 +25762,17 @@ int main(int ac, char **av)
 				          	TRY(!aa, "BlockDeviceMappings argument missing\n");
 				          	s->block_device_mappings_str = aa; // array ref BlockDeviceMappingVmCreation ref
 				          }
+				       } else
+			      if ((aret = argcmp(next_a, "BootMode")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "BootMode argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "BootMode argument missing\n");
+				          s->boot_mode = aa; // string string
+
 				       } else
 			      if ((aret = argcmp(next_a, "BootOnCreation")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
@@ -25912,6 +26199,17 @@ int main(int ac, char **av)
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				 	META_ARGS({ aa = 0; incr = 1; });
 			     }
+			      if ((aret = argcmp(next_a, "ClientToken")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ClientToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ClientToken argument missing\n");
+				          s->client_token = aa; // string string
+
+				       } else
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
 			      	 if (eq_ptr) {
@@ -37953,6 +38251,28 @@ int main(int ac, char **av)
 				                 s->filters_str = aa;
 				           }
 				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoll(aa);
+				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'ReadNics'\n", next_a);
 			    }
@@ -46385,6 +46705,40 @@ int main(int ac, char **av)
 				                 s->permissions_to_launch_str = aa;
 				           }
 				       } else
+			      if ((aret = argcmp(next_a, "ProductCodes")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ProductCodes argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				               if (aret == '.') {
+				                    int pos;
+				                    char *endptr;
+				                    int last = 0;
+				                    char *dot_pos = strchr(str, '.');
+
+				                    TRY(!(dot_pos++), "ProductCodes argument missing\n");
+				                    pos = strtoul(dot_pos, &endptr, 0);
+				                    TRY(endptr == dot_pos, "ProductCodes require an index\n");
+				                    if (s->product_codes) {
+				                            for (; s->product_codes[last]; ++last);
+				                    }
+				                    if (pos < last) {
+				                            s->product_codes[pos] = (aa);
+				                    } else {
+				                            for (int i = last; i < pos; ++i)
+				                                    SET_NEXT(s->product_codes, "", pa);
+				                            SET_NEXT(s->product_codes, (aa), pa);
+				                    }
+				               } else {
+				          	       TRY(!aa, "ProductCodes argument missing\n");
+				                   s->product_codes_str = aa;
+				               }
+				       } else if (!(aret = argcmp(str, "ProductCodes[]")) || aret == '=') {
+				             TRY(!aa, "ProductCodes[] argument missing\n");
+				             SET_NEXT(s->product_codes, (aa), pa);
+				       } else
 			    {
 				BAD_RET("'%s' is not a valide argument for 'UpdateImage'\n", next_a);
 			    }
@@ -48575,6 +48929,29 @@ int main(int ac, char **av)
 			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
 				 	META_ARGS({ aa = 0; incr = 1; });
 			     }
+			      if ((aret = argcmp(next_a, "ActionsOnNextBoot")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ActionsOnNextBoot argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          char *dot_pos;
+
+				          TRY(!aa, "ActionsOnNextBoot argument missing\n");
+				          dot_pos = strchr(str, '.');
+				          if (dot_pos++) {
+				          	    cascade_struct = &s->actions_on_next_boot;
+				          	    cascade_parser = actions_on_next_boot_parser;
+				          	    if (*dot_pos == '.') {
+				          		++dot_pos;
+				          	    }
+				          	    STRY(actions_on_next_boot_parser(&s->actions_on_next_boot, dot_pos, aa, pa));
+				          	    s->is_set_actions_on_next_boot = 1;
+				           } else {
+				                 s->actions_on_next_boot_str = aa;
+				           }
+				       } else
 			      if ((aret = argcmp(next_a, "BlockDeviceMappings")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
 			      	 if (eq_ptr) {
