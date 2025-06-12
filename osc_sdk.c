@@ -756,7 +756,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli UpdateVmGroup --VmGroupId=vmgroupid [OPTIONS]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nModifies the specified attributes of a group of virtual machines \n" "(VMs).\n" "\nRequired Argument: VmGroupId \n"
 ,
-	"Usage: oapi-cli UpdateVm --VmId=vmid [OPTIONS]\n" "Modifies the specified attributes of a virtual machine (VM).\nYou must stop the \n" "VM before modifying the following attributes:\n* `NestedVirtualization`\n* \n" "`Performance`\n* `UserData`\n* `VmType`\n" "\nRequired Argument: VmId \n"
+	"Usage: oapi-cli UpdateVm --VmId=vmid [OPTIONS]\n" "Modifies the specified attributes of a virtual machine (VM).\nYou must stop the \n" "VM before modifying the following attributes:\n* `NestedVirtualization`\n* \n" "`Performance`\n* `UserData`\n* `VmType`\n\nTo complete the update of secure \n" "boot, you need to do a stop/start of the VM. A simple restart is not \n" "sufficient, as the update is done when the VM goes through the stopped state. \n" "For the difference between stop/start and restart, see [About VM \n" "Lifecycle](https://docs.outscale.com/en/userguide/About-VM-Lifecycle.html).\n" "\nRequired Argument: VmId \n"
 ,
 	"Usage: oapi-cli UpdateVmTemplate --VmTemplateId=vmtemplateid [OPTIONS]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nModifies the specified attributes of a template of virtual \n" "machines (VMs).\n" "\nRequired Argument: VmTemplateId \n"
 ,
@@ -1007,6 +1007,8 @@ static const char *calls_args_descriptions[] = {
 	"      and `z`, and the second `X` is a letter between `a` and `z`).\n"
 	"    --BlockDeviceMappings.INDEX.VirtualDeviceName: string\n"
 	"      The name of the virtual device (`ephemeralN`).\n"
+"--BootModes: array string\n"
+	"  The boot modes compatible with the OMI (`legacy` and/or `uefi`).\n"
 "--Description: string\n"
 	"  A description for the new OMI.\n"
 "--DryRun: bool\n"
@@ -1415,7 +1417,9 @@ static const char *calls_args_descriptions[] = {
 "--SnapshotId: string\n"
 	"  The ID of the snapshot to export.\n"
 ,
-	"--Description: string\n"
+	"--ClientToken: string\n"
+	"  A unique identifier which enables you to manage the idempotency.\n"
+"--Description: string\n"
 	"  A description for the snapshot.\n"
 "--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -1539,7 +1543,12 @@ static const char *calls_args_descriptions[] = {
 "--VmTemplateName: string\n"
 	"  The name of the VM template.\n"
 ,
-	"--BlockDeviceMappings: array ref BlockDeviceMappingVmCreation\n"
+	"--ActionsOnNextBoot: ref ActionsOnNextBoot\n"
+	"    The action to perform on the next boot of the VM.\n"
+	"    --ActionsOnNextBoot.SecureBoot: string\n"
+	"        One action to perform on the next boot of the VM (`enable` | `disable` | \n"
+	"        `setup-mode` |`none`).\n"
+"--BlockDeviceMappings: array ref BlockDeviceMappingVmCreation\n"
 	"  One or more block device mappings.\n"
 	"    Information about the block device mapping.\n"
 	"    --BlockDeviceMappings.INDEX.Bsu: ref BsuToCreate\n"
@@ -1575,6 +1584,8 @@ static const char *calls_args_descriptions[] = {
 	"      OMI.\n"
 	"    --BlockDeviceMappings.INDEX.VirtualDeviceName: string\n"
 	"      The name of the virtual device (`ephemeralN`).\n"
+"--BootMode: string\n"
+	"    Information about the boot mode of the OMI (`legacy` and/or `uefi`).\n"
 "--BootOnCreation: bool\n"
 	"  By default or if true, the VM is started on creation. If false, the VM is stopped on \n"
 	"  creation.\n"
@@ -1677,7 +1688,9 @@ static const char *calls_args_descriptions[] = {
 	"  provided in the `Performance` parameter. For more information, see [VM \n"
 	"  Types](https://docs.outscale.com/en/userguide/VM-Types.html).\n"
 ,
-	"--DryRun: bool\n"
+	"--ClientToken: string\n"
+	"  A unique identifier which enables you to manage the idempotency.\n"
+"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Iops: long long int\n"
 	"  The number of I/O operations per second (IOPS). This parameter must be specified only if \n"
@@ -1823,7 +1836,7 @@ static const char *calls_args_descriptions[] = {
 	"  One or more tags to delete from the load balancers.\n"
 	"    Information about the tag.\n"
 	"    --Tags.INDEX.Key: string\n"
-	"      The key of the tag, with a minimum of 1 character.\n"
+	"      The key of the tag, between 1 and 128 characters.\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -2538,6 +2551,8 @@ static const char *calls_args_descriptions[] = {
 	"      The sizes of the volumes, in gibibytes (GiB).\n"
 	"    --Filters.BlockDeviceMappingVolumeTypes: array string\n"
 	"      The types of volumes (`standard` \\| `gp2` \\| `io1`).\n"
+	"    --Filters.BootModes: array string\n"
+	"      The boot modes compatible with the OMIs (`legacy` and/or `uefi`).\n"
 	"    --Filters.Descriptions: array string\n"
 	"      The descriptions of the OMIs, provided when they were created.\n"
 	"    --Filters.FileLocations: array string\n"
@@ -2560,6 +2575,8 @@ static const char *calls_args_descriptions[] = {
 	"      The name of the root device. This value must be /dev/sda1.\n"
 	"    --Filters.RootDeviceTypes: array string\n"
 	"      The types of root device used by the OMIs (`bsu` or `ebs`).\n"
+	"    --Filters.SecureBoot: bool\n"
+	"      Whether secure boot is activated or not.\n"
 	"    --Filters.States: array string\n"
 	"      The states of the OMIs (`pending` \\| `available` \\| `failed`).\n"
 	"    --Filters.TagKeys: array string\n"
@@ -2899,6 +2916,11 @@ static const char *calls_args_descriptions[] = {
 	"      The key/value combination of the tags associated with the NICs, in the \n"
 	"      following format: \n"
 	"      \"Filters\":{\"Tags\":[\"TAGKEY=TAGVALUE\"]}.\n"
+"--NextPageToken: string\n"
+	"  The token to request the next page of results. Each token refers to a specific page.\n"
+"--ResultsPerPage: long long int\n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
+	"  included). By default, `100`.\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -3150,6 +3172,8 @@ static const char *calls_args_descriptions[] = {
 	"      The account aliases of the owners of the snapshots.\n"
 	"    --Filters.AccountIds: array string\n"
 	"      The account IDs of the owners of the snapshots.\n"
+	"    --Filters.ClientTokens: array string\n"
+	"      The idempotency tokens provided when creating the snapshots.\n"
 	"    --Filters.Descriptions: array string\n"
 	"      The descriptions of the snapshots.\n"
 	"    --Filters.FromCreationDate: string\n"
@@ -3485,6 +3509,8 @@ static const char *calls_args_descriptions[] = {
 	"      `detaching` \\| `detached`).\n"
 	"    --Filters.BlockDeviceMappingVolumeIds: array string\n"
 	"      The volume IDs of the BSU volumes.\n"
+	"    --Filters.BootModes: array string\n"
+	"      The boot modes of the VMs (`legacy` \\| `uefi`).\n"
 	"    --Filters.ClientTokens: array string\n"
 	"      The idempotency tokens provided when launching the VMs.\n"
 	"    --Filters.CreationDates: array string\n"
@@ -3658,6 +3684,8 @@ static const char *calls_args_descriptions[] = {
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersVolume\n"
 	"    One or more filters.\n"
+	"    --Filters.ClientTokens: array string\n"
+	"      The idempotency tokens provided when creating the volumes.\n"
 	"    --Filters.CreationDates: array string\n"
 	"      The dates and times at which the volumes were created, in ISO 8601 \n"
 	"      date-time format (for example, `2020-06-30T00:00:00.000Z`).\n"
@@ -4014,6 +4042,9 @@ static const char *calls_args_descriptions[] = {
 	"          `Additions`) or to make the resource private (if the parent parameter is \n"
 	"          `Removals`).\n(Response) If true, the resource is public. If false, \n"
 	"          the resource is private.\n"
+"--ProductCodes: array string\n"
+	"  The product codes associated with the OMI. Any previously set value is deleted. Make sure \n"
+	"  to specify all product codes you want to associate with the OMI.\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -4053,7 +4084,8 @@ static const char *calls_args_descriptions[] = {
 	"      The number of consecutive successful requests before considering the VM \n"
 	"      as healthy (between `2` and `10` both included).\n"
 	"    --HealthCheck.Path: string\n"
-	"      If you use the HTTP or HTTPS protocols, the request URL path.\n"
+	"      If you use the HTTP or HTTPS protocols, the request URL path. Always \n"
+	"      starts with a slash (`/`).\n"
 	"    --HealthCheck.Port: long long int\n"
 	"      The port number (between `1` and `65535`, both included).\n"
 	"    --HealthCheck.Protocol: string\n"
@@ -4245,7 +4277,12 @@ static const char *calls_args_descriptions[] = {
 "--VmTemplateId: string\n"
 	"  A new VM template ID for your VM group.\n"
 ,
-	"--BlockDeviceMappings: array ref BlockDeviceMappingVmUpdate\n"
+	"--ActionsOnNextBoot: ref ActionsOnNextBoot\n"
+	"    The action to perform on the next boot of the VM.\n"
+	"    --ActionsOnNextBoot.SecureBoot: string\n"
+	"        One action to perform on the next boot of the VM (`enable` | `disable` | \n"
+	"        `setup-mode` |`none`).\n"
+"--BlockDeviceMappings: array ref BlockDeviceMappingVmUpdate\n"
 	"  One or more block device mappings of the VM.\n"
 	"    Information about the block device mapping.\n"
 	"    --BlockDeviceMappings.INDEX.Bsu: ref BsuToUpdateVm\n"
@@ -4824,6 +4861,7 @@ static int access_key_setter(struct access_key *args, struct osc_str *data);
 static int access_key_secret_key_setter(struct access_key_secret_key *args, struct osc_str *data);
 static int access_log_setter(struct access_log *args, struct osc_str *data);
 static int account_setter(struct account *args, struct osc_str *data);
+static int actions_on_next_boot_setter(struct actions_on_next_boot *args, struct osc_str *data);
 static int api_access_policy_setter(struct api_access_policy *args, struct osc_str *data);
 static int api_access_rule_setter(struct api_access_rule *args, struct osc_str *data);
 static int application_sticky_cookie_policy_setter(struct application_sticky_cookie_policy *args, struct osc_str *data);
@@ -5195,6 +5233,17 @@ static int account_setter(struct account *args, struct osc_str *data) {
 	if (args->zip_code) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"ZipCode\":", args->zip_code);
+	   	ret += 1;
+	}
+
+	return !!ret;
+}
+static int actions_on_next_boot_setter(struct actions_on_next_boot *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->secure_boot) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SecureBoot\":", args->secure_boot);
 	   	ret += 1;
 	}
 
@@ -7039,6 +7088,22 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 		ARG_TO_JSON(BlockDeviceMappingVolumeTypes, string, args->block_device_mapping_volume_types_str);
 		ret += 1;
 	}
+	if (args->boot_modes) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"BootModes\":[" ));
+		for (as = args->boot_modes; *as; ++as) {
+			if (as != args->boot_modes)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->boot_modes_str) {
+		ARG_TO_JSON(BootModes, string, args->boot_modes_str);
+		ret += 1;
+	}
 	if (args->descriptions) {
 		char **as;
 
@@ -7202,6 +7267,10 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 	} else if (args->root_device_types_str) {
 		ARG_TO_JSON(RootDeviceTypes, string, args->root_device_types_str);
 		ret += 1;
+	}
+	if (args->is_set_secure_boot) {
+		ARG_TO_JSON(SecureBoot, bool, args->secure_boot);
+	   	ret += 1;
 	}
 	if (args->states) {
 		char **as;
@@ -9549,6 +9618,22 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 		ARG_TO_JSON(AccountIds, string, args->account_ids_str);
 		ret += 1;
 	}
+	if (args->client_tokens) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"ClientTokens\":[" ));
+		for (as = args->client_tokens; *as; ++as) {
+			if (as != args->client_tokens)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->client_tokens_str) {
+		ARG_TO_JSON(ClientTokens, string, args->client_tokens_str);
+		ret += 1;
+	}
 	if (args->descriptions) {
 		char **as;
 
@@ -10268,6 +10353,22 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 		ret += 1;
 	} else if (args->block_device_mapping_volume_ids_str) {
 		ARG_TO_JSON(BlockDeviceMappingVolumeIds, string, args->block_device_mapping_volume_ids_str);
+		ret += 1;
+	}
+	if (args->boot_modes) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"BootModes\":[" ));
+		for (as = args->boot_modes; *as; ++as) {
+			if (as != args->boot_modes)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->boot_modes_str) {
+		ARG_TO_JSON(BootModes, string, args->boot_modes_str);
 		ret += 1;
 	}
 	if (args->client_tokens) {
@@ -11776,6 +11877,22 @@ static int filters_vms_state_setter(struct filters_vms_state *args, struct osc_s
 static int filters_volume_setter(struct filters_volume *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
+	if (args->client_tokens) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"ClientTokens\":[" ));
+		for (as = args->client_tokens; *as; ++as) {
+			if (as != args->client_tokens)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->client_tokens_str) {
+		ARG_TO_JSON(ClientTokens, string, args->client_tokens_str);
+		ret += 1;
+	}
 	if (args->creation_dates) {
 		char **as;
 
@@ -12328,6 +12445,22 @@ static int image_setter(struct image *args, struct osc_str *data) {
 		ARG_TO_JSON(BlockDeviceMappings, string, args->block_device_mappings_str);
 		ret += 1;
 	}
+	if (args->boot_modes) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"BootModes\":[" ));
+		for (as = args->boot_modes; *as; ++as) {
+			if (as != args->boot_modes)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->boot_modes_str) {
+		ARG_TO_JSON(BootModes, string, args->boot_modes_str);
+		ret += 1;
+	}
 	if (args->creation_date) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"CreationDate\":", args->creation_date);
@@ -12392,6 +12525,10 @@ static int image_setter(struct image *args, struct osc_str *data) {
 	if (args->root_device_type) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"RootDeviceType\":", args->root_device_type);
+	   	ret += 1;
+	}
+	if (args->is_set_secure_boot) {
+		ARG_TO_JSON(SecureBoot, bool, args->secure_boot);
 	   	ret += 1;
 	}
 	if (args->state) {
@@ -15239,6 +15376,11 @@ static int snapshot_setter(struct snapshot *args, struct osc_str *data) {
 	        ARG_TO_JSON_STR("\"AccountId\":", args->account_id);
 	   	ret += 1;
 	}
+	if (args->client_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ClientToken\":", args->client_token);
+	   	ret += 1;
+	}
 	if (args->creation_date) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"CreationDate\":", args->creation_date);
@@ -15720,6 +15862,16 @@ static int virtual_gateway_setter(struct virtual_gateway *args, struct osc_str *
 static int vm_setter(struct vm *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
+	if (args->actions_on_next_boot_str) {
+		ARG_TO_JSON(ActionsOnNextBoot, string, args->actions_on_next_boot_str);
+		ret += 1;
+	} else if (args->is_set_actions_on_next_boot) {
+	       TRY_APPEND_COL(count_args, data);
+	       STRY(osc_str_append_string(data, "\"ActionsOnNextBoot\": { " ));
+	       STRY(actions_on_next_boot_setter(&args->actions_on_next_boot, data) < 0);
+	       STRY(osc_str_append_string(data, "}" ));
+	       ret += 1;
+	}
 	if (args->architecture) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"Architecture\":", args->architecture);
@@ -15742,6 +15894,11 @@ static int vm_setter(struct vm *args, struct osc_str *data) {
 	if (args->block_device_mappings_str) {
 		ARG_TO_JSON(BlockDeviceMappings, string, args->block_device_mappings_str);
 		ret += 1;
+	}
+	if (args->boot_mode) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"BootMode\":", args->boot_mode);
+	   	ret += 1;
 	}
 	if (args->is_set_bsu_optimized) {
 		ARG_TO_JSON(BsuOptimized, bool, args->bsu_optimized);
@@ -16239,6 +16396,11 @@ static int vm_type_setter(struct vm_type *args, struct osc_str *data) {
 static int volume_setter(struct volume *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
+	if (args->client_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ClientToken\":", args->client_token);
+	   	ret += 1;
+	}
 	if (args->creation_date) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"CreationDate\":", args->creation_date);
@@ -17553,6 +17715,22 @@ static  int create_image_data(struct osc_env *e, struct osc_create_image_arg *ar
 	} else
 	if (args->block_device_mappings_str) {
 		ARG_TO_JSON(BlockDeviceMappings, string, args->block_device_mappings_str);
+		ret += 1;
+	}
+	if (args->boot_modes) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"BootModes\":[" ));
+		for (as = args->boot_modes; *as; ++as) {
+			if (as != args->boot_modes)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->boot_modes_str) {
+		ARG_TO_JSON(BootModes, string, args->boot_modes_str);
 		ret += 1;
 	}
 	if (args->description) {
@@ -19218,6 +19396,11 @@ static  int create_snapshot_data(struct osc_env *e, struct osc_create_snapshot_a
 		goto no_data;
 
 	osc_str_append_string(data, "{");
+	if (args->client_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ClientToken\":", args->client_token);
+	   	ret += 1;
+	}
 	if (args->description) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"Description\":", args->description);
@@ -19821,6 +20004,16 @@ static  int create_vms_data(struct osc_env *e, struct osc_create_vms_arg *args, 
 		goto no_data;
 
 	osc_str_append_string(data, "{");
+	if (args->actions_on_next_boot_str) {
+		ARG_TO_JSON(ActionsOnNextBoot, string, args->actions_on_next_boot_str);
+		ret += 1;
+	} else if (args->is_set_actions_on_next_boot) {
+	       TRY_APPEND_COL(count_args, data);
+	       STRY(osc_str_append_string(data, "\"ActionsOnNextBoot\": { " ));
+	       STRY(actions_on_next_boot_setter(&args->actions_on_next_boot, data) < 0);
+	       STRY(osc_str_append_string(data, "}" ));
+	       ret += 1;
+	}
         if (args->block_device_mappings) {
 	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappings\":[" ));
@@ -19838,6 +20031,11 @@ static  int create_vms_data(struct osc_env *e, struct osc_create_vms_arg *args, 
 	if (args->block_device_mappings_str) {
 		ARG_TO_JSON(BlockDeviceMappings, string, args->block_device_mappings_str);
 		ret += 1;
+	}
+	if (args->boot_mode) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"BootMode\":", args->boot_mode);
+	   	ret += 1;
 	}
 	if (args->is_set_boot_on_creation) {
 		ARG_TO_JSON(BootOnCreation, bool, args->boot_on_creation);
@@ -20026,6 +20224,11 @@ static  int create_volume_data(struct osc_env *e, struct osc_create_volume_arg *
 		goto no_data;
 
 	osc_str_append_string(data, "{");
+	if (args->client_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ClientToken\":", args->client_token);
+	   	ret += 1;
+	}
 	if (args->is_set_dry_run) {
 		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
@@ -25824,6 +26027,15 @@ static  int read_nics_data(struct osc_env *e, struct osc_read_nics_arg *args, st
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
+	if (args->next_page_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NextPageToken\":", args->next_page_token);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
+	}
 	osc_str_append_string(data, "}");
 
 no_data:
@@ -29870,6 +30082,22 @@ static  int update_image_data(struct osc_env *e, struct osc_update_image_arg *ar
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
+	if (args->product_codes) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"ProductCodes\":[" ));
+		for (as = args->product_codes; *as; ++as) {
+			if (as != args->product_codes)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->product_codes_str) {
+		ARG_TO_JSON(ProductCodes, string, args->product_codes_str);
+		ret += 1;
+	}
 	osc_str_append_string(data, "}");
 
 no_data:
@@ -30920,6 +31148,16 @@ static  int update_vm_data(struct osc_env *e, struct osc_update_vm_arg *args, st
 		goto no_data;
 
 	osc_str_append_string(data, "{");
+	if (args->actions_on_next_boot_str) {
+		ARG_TO_JSON(ActionsOnNextBoot, string, args->actions_on_next_boot_str);
+		ret += 1;
+	} else if (args->is_set_actions_on_next_boot) {
+	       TRY_APPEND_COL(count_args, data);
+	       STRY(osc_str_append_string(data, "\"ActionsOnNextBoot\": { " ));
+	       STRY(actions_on_next_boot_setter(&args->actions_on_next_boot, data) < 0);
+	       STRY(osc_str_append_string(data, "}" ));
+	       ret += 1;
+	}
         if (args->block_device_mappings) {
 	        TRY_APPEND_COL(count_args, data);
 		STRY(osc_str_append_string(data, "\"BlockDeviceMappings\":[" ));
