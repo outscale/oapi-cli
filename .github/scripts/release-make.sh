@@ -12,13 +12,10 @@ osc_api_last_release=$(curl -s -H "Authorization: token $GH_TOKEN" $github_url |
 echo "$osc_api_last_release" > $root/api_version
 
 set -x
-cd $root/osc-sdk-C
-pwd
-ls
-git fetch origin
-git checkout origin/master
-cd -
-git add $root/osc-sdk-C/
+git -C "$root" submodule update --init --recursive
+git -C "$root" submodule foreach 'git fetch origin && git checkout origin/master'
+git add "$root/COGNAC" "$root/osc-sdk-C/"
+
 cp $root/osc-sdk-C/osc_sdk.c $root/
 cp $root/osc-sdk-C/osc_sdk.h $root/
 git add $root/osc_sdk.h $root/osc_sdk.c
