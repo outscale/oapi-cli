@@ -1,0 +1,43 @@
+name: Feature Request
+description: Suggest a new feature or enhancement
+labels: [enhancement]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a feature in mind? Let us know how it would help!
+
+  - type: input
+    id: title
+    attributes:
+      label: Feature Summary
+      description: A short and clear title for your feature
+      placeholder: e.g., Add support for `--dry-run` flag in deploy command
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to Solve
+      description: What problem does this feature solve?
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: How do you imagine this feature would work?
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you tried another approach or workaround?
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Add any other context or related links.
