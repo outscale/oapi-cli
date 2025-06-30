@@ -47,7 +47,7 @@
 
 #define OAPI_RAW_OUTPUT 1
 
-#define OAPI_CLI_VERSION "0.9.0"
+#define OAPI_CLI_VERSION "DEV-VERSION"
 
 #define OAPI_CLI_UAGENT "oapi-cli/"OAPI_CLI_VERSION"; osc-sdk-c/"
 
@@ -18914,17 +18914,22 @@ int main(int ac, char **av)
 			    goto accept_net_peering_arg;
 		     }
 		     cret = osc_accept_net_peering(&e, &r, &a);
-            	     TRY(cret, "fail to call AcceptNetPeering: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call AcceptNetPeering: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called AcceptNetPeering (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -19053,17 +19058,22 @@ int main(int ac, char **av)
 			    goto add_user_to_user_group_arg;
 		     }
 		     cret = osc_add_user_to_user_group(&e, &r, &a);
-            	     TRY(cret, "fail to call AddUserToUserGroup: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call AddUserToUserGroup: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called AddUserToUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -19170,17 +19180,22 @@ int main(int ac, char **av)
 			    goto check_authentication_arg;
 		     }
 		     cret = osc_check_authentication(&e, &r, &a);
-            	     TRY(cret, "fail to call CheckAuthentication: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CheckAuthentication: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CheckAuthentication (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -19298,17 +19313,22 @@ int main(int ac, char **av)
 			    goto create_access_key_arg;
 		     }
 		     cret = osc_create_access_key(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateAccessKey: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateAccessKey: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateAccessKey (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -19570,17 +19590,22 @@ int main(int ac, char **av)
 			    goto create_account_arg;
 		     }
 		     cret = osc_create_account(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateAccount: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateAccount: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateAccount (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -19778,17 +19803,22 @@ int main(int ac, char **av)
 			    goto create_api_access_rule_arg;
 		     }
 		     cret = osc_create_api_access_rule(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateApiAccessRule: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateApiAccessRule: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateApiAccessRule (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -19895,17 +19925,22 @@ int main(int ac, char **av)
 			    goto create_ca_arg;
 		     }
 		     cret = osc_create_ca(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateCa: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateCa: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateCa (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -20023,17 +20058,22 @@ int main(int ac, char **av)
 			    goto create_client_gateway_arg;
 		     }
 		     cret = osc_create_client_gateway(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateClientGateway: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateClientGateway: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateClientGateway (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -20151,17 +20191,22 @@ int main(int ac, char **av)
 			    goto create_dedicated_group_arg;
 		     }
 		     cret = osc_create_dedicated_group(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateDedicatedGroup: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateDedicatedGroup: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateDedicatedGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -20359,17 +20404,22 @@ int main(int ac, char **av)
 			    goto create_dhcp_options_arg;
 		     }
 		     cret = osc_create_dhcp_options(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateDhcpOptions: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateDhcpOptions: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateDhcpOptions (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -20488,17 +20538,22 @@ int main(int ac, char **av)
 			    goto create_direct_link_interface_arg;
 		     }
 		     cret = osc_create_direct_link_interface(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateDirectLinkInterface: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateDirectLinkInterface: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateDirectLinkInterface (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -20616,17 +20671,22 @@ int main(int ac, char **av)
 			    goto create_direct_link_arg;
 		     }
 		     cret = osc_create_direct_link(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateDirectLink: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateDirectLink: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateDirectLink (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -20760,17 +20820,22 @@ int main(int ac, char **av)
 			    goto create_flexible_gpu_arg;
 		     }
 		     cret = osc_create_flexible_gpu(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateFlexibleGpu: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateFlexibleGpu: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateFlexibleGpu (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -20889,17 +20954,22 @@ int main(int ac, char **av)
 			    goto create_image_export_task_arg;
 		     }
 		     cret = osc_create_image_export_task(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateImageExportTask: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateImageExportTask: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateImageExportTask (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -21187,17 +21257,22 @@ int main(int ac, char **av)
 			    goto create_image_arg;
 		     }
 		     cret = osc_create_image(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateImage: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateImage: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateImage (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -21282,17 +21357,22 @@ int main(int ac, char **av)
 			    goto create_internet_service_arg;
 		     }
 		     cret = osc_create_internet_service(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateInternetService: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateInternetService: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateInternetService (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -21399,17 +21479,22 @@ int main(int ac, char **av)
 			    goto create_keypair_arg;
 		     }
 		     cret = osc_create_keypair(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateKeypair: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateKeypair: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateKeypair (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -21574,17 +21659,22 @@ int main(int ac, char **av)
 			    goto create_listener_rule_arg;
 		     }
 		     cret = osc_create_listener_rule(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateListenerRule: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateListenerRule: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateListenerRule (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -21711,17 +21801,22 @@ int main(int ac, char **av)
 			    goto create_load_balancer_listeners_arg;
 		     }
 		     cret = osc_create_load_balancer_listeners(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateLoadBalancerListeners: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateLoadBalancerListeners: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateLoadBalancerListeners (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -21861,17 +21956,22 @@ int main(int ac, char **av)
 			    goto create_load_balancer_policy_arg;
 		     }
 		     cret = osc_create_load_balancer_policy(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateLoadBalancerPolicy: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateLoadBalancerPolicy: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateLoadBalancerPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -22153,17 +22253,22 @@ int main(int ac, char **av)
 			    goto create_load_balancer_arg;
 		     }
 		     cret = osc_create_load_balancer(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateLoadBalancer: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateLoadBalancer: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateLoadBalancer (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -22313,17 +22418,22 @@ int main(int ac, char **av)
 			    goto create_load_balancer_tags_arg;
 		     }
 		     cret = osc_create_load_balancer_tags(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateLoadBalancerTags: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateLoadBalancerTags: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateLoadBalancerTags (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -22441,17 +22551,22 @@ int main(int ac, char **av)
 			    goto create_nat_service_arg;
 		     }
 		     cret = osc_create_nat_service(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateNatService: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateNatService: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateNatService (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -22592,17 +22707,22 @@ int main(int ac, char **av)
 			    goto create_net_access_point_arg;
 		     }
 		     cret = osc_create_net_access_point(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateNetAccessPoint: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateNetAccessPoint: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateNetAccessPoint (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -22720,17 +22840,22 @@ int main(int ac, char **av)
 			    goto create_net_peering_arg;
 		     }
 		     cret = osc_create_net_peering(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateNetPeering: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateNetPeering: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateNetPeering (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -22837,17 +22962,22 @@ int main(int ac, char **av)
 			    goto create_net_arg;
 		     }
 		     cret = osc_create_net(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateNet: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateNet: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateNet (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -23019,17 +23149,22 @@ int main(int ac, char **av)
 			    goto create_nic_arg;
 		     }
 		     cret = osc_create_nic(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateNic: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateNic: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateNic (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -23158,17 +23293,22 @@ int main(int ac, char **av)
 			    goto create_policy_arg;
 		     }
 		     cret = osc_create_policy(&e, &r, &a);
-            	     TRY(cret, "fail to call CreatePolicy: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreatePolicy: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreatePolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -23275,17 +23415,22 @@ int main(int ac, char **av)
 			    goto create_policy_version_arg;
 		     }
 		     cret = osc_create_policy_version(&e, &r, &a);
-            	     TRY(cret, "fail to call CreatePolicyVersion: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreatePolicyVersion: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreatePolicyVersion (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -23392,17 +23537,22 @@ int main(int ac, char **av)
 			    goto create_product_type_arg;
 		     }
 		     cret = osc_create_product_type(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateProductType: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateProductType: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateProductType (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -23487,17 +23637,22 @@ int main(int ac, char **av)
 			    goto create_public_ip_arg;
 		     }
 		     cret = osc_create_public_ip(&e, &r, &a);
-            	     TRY(cret, "fail to call CreatePublicIp: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreatePublicIp: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreatePublicIp (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -23659,17 +23814,22 @@ int main(int ac, char **av)
 			    goto create_route_arg;
 		     }
 		     cret = osc_create_route(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateRoute: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateRoute: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateRoute (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -23765,17 +23925,22 @@ int main(int ac, char **av)
 			    goto create_route_table_arg;
 		     }
 		     cret = osc_create_route_table(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateRouteTable: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateRouteTable: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateRouteTable (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -23893,17 +24058,22 @@ int main(int ac, char **av)
 			    goto create_security_group_arg;
 		     }
 		     cret = osc_create_security_group(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateSecurityGroup: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateSecurityGroup: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateSecurityGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -24107,17 +24277,22 @@ int main(int ac, char **av)
 			    goto create_security_group_rule_arg;
 		     }
 		     cret = osc_create_security_group_rule(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateSecurityGroupRule: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateSecurityGroupRule: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateSecurityGroupRule (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -24257,17 +24432,22 @@ int main(int ac, char **av)
 			    goto create_server_certificate_arg;
 		     }
 		     cret = osc_create_server_certificate(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateServerCertificate: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateServerCertificate: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateServerCertificate (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -24386,17 +24566,22 @@ int main(int ac, char **av)
 			    goto create_snapshot_export_task_arg;
 		     }
 		     cret = osc_create_snapshot_export_task(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateSnapshotExportTask: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateSnapshotExportTask: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateSnapshotExportTask (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -24558,17 +24743,22 @@ int main(int ac, char **av)
 			    goto create_snapshot_arg;
 		     }
 		     cret = osc_create_snapshot(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateSnapshot: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateSnapshot: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateSnapshot (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -24686,17 +24876,22 @@ int main(int ac, char **av)
 			    goto create_subnet_arg;
 		     }
 		     cret = osc_create_subnet(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateSubnet: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateSubnet: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateSubnet (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -24846,17 +25041,22 @@ int main(int ac, char **av)
 			    goto create_tags_arg;
 		     }
 		     cret = osc_create_tags(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateTags: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateTags: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateTags (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -24963,17 +25163,22 @@ int main(int ac, char **av)
 			    goto create_user_group_arg;
 		     }
 		     cret = osc_create_user_group(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateUserGroup: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateUserGroup: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -25091,17 +25296,22 @@ int main(int ac, char **av)
 			    goto create_user_arg;
 		     }
 		     cret = osc_create_user(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateUser: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateUser: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateUser (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -25197,17 +25407,22 @@ int main(int ac, char **av)
 			    goto create_virtual_gateway_arg;
 		     }
 		     cret = osc_create_virtual_gateway(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateVirtualGateway: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateVirtualGateway: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateVirtualGateway (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -25423,17 +25638,22 @@ int main(int ac, char **av)
 			    goto create_vm_group_arg;
 		     }
 		     cret = osc_create_vm_group(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateVmGroup: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateVmGroup: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateVmGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -25637,17 +25857,22 @@ int main(int ac, char **av)
 			    goto create_vm_template_arg;
 		     }
 		     cret = osc_create_vm_template(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateVmTemplate: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateVmTemplate: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateVmTemplate (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -26127,17 +26352,22 @@ int main(int ac, char **av)
 			    goto create_vms_arg;
 		     }
 		     cret = osc_create_vms(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateVms: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateVms: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateVms (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -26288,17 +26518,22 @@ int main(int ac, char **av)
 			    goto create_volume_arg;
 		     }
 		     cret = osc_create_volume(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateVolume: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateVolume: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateVolume (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -26432,17 +26667,22 @@ int main(int ac, char **av)
 			    goto create_vpn_connection_arg;
 		     }
 		     cret = osc_create_vpn_connection(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateVpnConnection: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateVpnConnection: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateVpnConnection (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -26549,17 +26789,22 @@ int main(int ac, char **av)
 			    goto create_vpn_connection_route_arg;
 		     }
 		     cret = osc_create_vpn_connection_route(&e, &r, &a);
-            	     TRY(cret, "fail to call CreateVpnConnectionRoute: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call CreateVpnConnectionRoute: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called CreateVpnConnectionRoute (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -26666,17 +26911,22 @@ int main(int ac, char **av)
 			    goto delete_access_key_arg;
 		     }
 		     cret = osc_delete_access_key(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteAccessKey: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteAccessKey: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteAccessKey (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -26772,17 +27022,22 @@ int main(int ac, char **av)
 			    goto delete_api_access_rule_arg;
 		     }
 		     cret = osc_delete_api_access_rule(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteApiAccessRule: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteApiAccessRule: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteApiAccessRule (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -26878,17 +27133,22 @@ int main(int ac, char **av)
 			    goto delete_ca_arg;
 		     }
 		     cret = osc_delete_ca(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteCa: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteCa: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteCa (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -26984,17 +27244,22 @@ int main(int ac, char **av)
 			    goto delete_client_gateway_arg;
 		     }
 		     cret = osc_delete_client_gateway(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteClientGateway: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteClientGateway: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteClientGateway (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -27106,17 +27371,22 @@ int main(int ac, char **av)
 			    goto delete_dedicated_group_arg;
 		     }
 		     cret = osc_delete_dedicated_group(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteDedicatedGroup: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteDedicatedGroup: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteDedicatedGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -27212,17 +27482,22 @@ int main(int ac, char **av)
 			    goto delete_dhcp_options_arg;
 		     }
 		     cret = osc_delete_dhcp_options(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteDhcpOptions: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteDhcpOptions: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteDhcpOptions (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -27318,17 +27593,22 @@ int main(int ac, char **av)
 			    goto delete_direct_link_interface_arg;
 		     }
 		     cret = osc_delete_direct_link_interface(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteDirectLinkInterface: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteDirectLinkInterface: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteDirectLinkInterface (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -27424,17 +27704,22 @@ int main(int ac, char **av)
 			    goto delete_direct_link_arg;
 		     }
 		     cret = osc_delete_direct_link(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteDirectLink: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteDirectLink: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteDirectLink (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -27530,17 +27815,22 @@ int main(int ac, char **av)
 			    goto delete_export_task_arg;
 		     }
 		     cret = osc_delete_export_task(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteExportTask: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteExportTask: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteExportTask (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -27636,17 +27926,22 @@ int main(int ac, char **av)
 			    goto delete_flexible_gpu_arg;
 		     }
 		     cret = osc_delete_flexible_gpu(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteFlexibleGpu: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteFlexibleGpu: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteFlexibleGpu (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -27742,17 +28037,22 @@ int main(int ac, char **av)
 			    goto delete_image_arg;
 		     }
 		     cret = osc_delete_image(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteImage: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteImage: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteImage (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -27848,17 +28148,22 @@ int main(int ac, char **av)
 			    goto delete_internet_service_arg;
 		     }
 		     cret = osc_delete_internet_service(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteInternetService: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteInternetService: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteInternetService (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -27965,17 +28270,22 @@ int main(int ac, char **av)
 			    goto delete_keypair_arg;
 		     }
 		     cret = osc_delete_keypair(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteKeypair: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteKeypair: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteKeypair (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -28071,17 +28381,22 @@ int main(int ac, char **av)
 			    goto delete_listener_rule_arg;
 		     }
 		     cret = osc_delete_listener_rule(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteListenerRule: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteListenerRule: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteListenerRule (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -28211,17 +28526,22 @@ int main(int ac, char **av)
 			    goto delete_load_balancer_listeners_arg;
 		     }
 		     cret = osc_delete_load_balancer_listeners(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteLoadBalancerListeners: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteLoadBalancerListeners: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteLoadBalancerListeners (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -28328,17 +28648,22 @@ int main(int ac, char **av)
 			    goto delete_load_balancer_policy_arg;
 		     }
 		     cret = osc_delete_load_balancer_policy(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteLoadBalancerPolicy: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteLoadBalancerPolicy: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteLoadBalancerPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -28434,17 +28759,22 @@ int main(int ac, char **av)
 			    goto delete_load_balancer_arg;
 		     }
 		     cret = osc_delete_load_balancer(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteLoadBalancer: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteLoadBalancer: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteLoadBalancer (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -28594,17 +28924,22 @@ int main(int ac, char **av)
 			    goto delete_load_balancer_tags_arg;
 		     }
 		     cret = osc_delete_load_balancer_tags(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteLoadBalancerTags: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteLoadBalancerTags: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteLoadBalancerTags (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -28700,17 +29035,22 @@ int main(int ac, char **av)
 			    goto delete_nat_service_arg;
 		     }
 		     cret = osc_delete_nat_service(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteNatService: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteNatService: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteNatService (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -28806,17 +29146,22 @@ int main(int ac, char **av)
 			    goto delete_net_access_point_arg;
 		     }
 		     cret = osc_delete_net_access_point(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteNetAccessPoint: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteNetAccessPoint: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteNetAccessPoint (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -28912,17 +29257,22 @@ int main(int ac, char **av)
 			    goto delete_net_peering_arg;
 		     }
 		     cret = osc_delete_net_peering(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteNetPeering: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteNetPeering: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteNetPeering (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -29018,17 +29368,22 @@ int main(int ac, char **av)
 			    goto delete_net_arg;
 		     }
 		     cret = osc_delete_net(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteNet: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteNet: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteNet (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -29124,17 +29479,22 @@ int main(int ac, char **av)
 			    goto delete_nic_arg;
 		     }
 		     cret = osc_delete_nic(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteNic: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteNic: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteNic (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -29230,17 +29590,22 @@ int main(int ac, char **av)
 			    goto delete_policy_arg;
 		     }
 		     cret = osc_delete_policy(&e, &r, &a);
-            	     TRY(cret, "fail to call DeletePolicy: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeletePolicy: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeletePolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -29331,17 +29696,22 @@ int main(int ac, char **av)
 			    goto delete_policy_version_arg;
 		     }
 		     cret = osc_delete_policy_version(&e, &r, &a);
-            	     TRY(cret, "fail to call DeletePolicyVersion: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeletePolicyVersion: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeletePolicyVersion (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -29453,17 +29823,22 @@ int main(int ac, char **av)
 			    goto delete_product_type_arg;
 		     }
 		     cret = osc_delete_product_type(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteProductType: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteProductType: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteProductType (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -29570,17 +29945,22 @@ int main(int ac, char **av)
 			    goto delete_public_ip_arg;
 		     }
 		     cret = osc_delete_public_ip(&e, &r, &a);
-            	     TRY(cret, "fail to call DeletePublicIp: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeletePublicIp: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeletePublicIp (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -29687,17 +30067,22 @@ int main(int ac, char **av)
 			    goto delete_route_arg;
 		     }
 		     cret = osc_delete_route(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteRoute: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteRoute: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteRoute (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -29793,17 +30178,22 @@ int main(int ac, char **av)
 			    goto delete_route_table_arg;
 		     }
 		     cret = osc_delete_route_table(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteRouteTable: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteRouteTable: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteRouteTable (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -29910,17 +30300,22 @@ int main(int ac, char **av)
 			    goto delete_security_group_arg;
 		     }
 		     cret = osc_delete_security_group(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteSecurityGroup: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteSecurityGroup: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteSecurityGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -30124,17 +30519,22 @@ int main(int ac, char **av)
 			    goto delete_security_group_rule_arg;
 		     }
 		     cret = osc_delete_security_group_rule(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteSecurityGroupRule: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteSecurityGroupRule: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteSecurityGroupRule (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -30230,17 +30630,22 @@ int main(int ac, char **av)
 			    goto delete_server_certificate_arg;
 		     }
 		     cret = osc_delete_server_certificate(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteServerCertificate: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteServerCertificate: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteServerCertificate (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -30336,17 +30741,22 @@ int main(int ac, char **av)
 			    goto delete_snapshot_arg;
 		     }
 		     cret = osc_delete_snapshot(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteSnapshot: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteSnapshot: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteSnapshot (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -30442,17 +30852,22 @@ int main(int ac, char **av)
 			    goto delete_subnet_arg;
 		     }
 		     cret = osc_delete_subnet(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteSubnet: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteSubnet: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteSubnet (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -30602,17 +31017,22 @@ int main(int ac, char **av)
 			    goto delete_tags_arg;
 		     }
 		     cret = osc_delete_tags(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteTags: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteTags: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteTags (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -30730,17 +31150,22 @@ int main(int ac, char **av)
 			    goto delete_user_group_policy_arg;
 		     }
 		     cret = osc_delete_user_group_policy(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteUserGroupPolicy: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteUserGroupPolicy: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteUserGroupPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -30863,17 +31288,22 @@ int main(int ac, char **av)
 			    goto delete_user_group_arg;
 		     }
 		     cret = osc_delete_user_group(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteUserGroup: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteUserGroup: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -30980,17 +31410,22 @@ int main(int ac, char **av)
 			    goto delete_user_policy_arg;
 		     }
 		     cret = osc_delete_user_policy(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteUserPolicy: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteUserPolicy: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteUserPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -31086,17 +31521,22 @@ int main(int ac, char **av)
 			    goto delete_user_arg;
 		     }
 		     cret = osc_delete_user(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteUser: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteUser: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteUser (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -31192,17 +31632,22 @@ int main(int ac, char **av)
 			    goto delete_virtual_gateway_arg;
 		     }
 		     cret = osc_delete_virtual_gateway(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteVirtualGateway: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteVirtualGateway: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteVirtualGateway (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -31298,17 +31743,22 @@ int main(int ac, char **av)
 			    goto delete_vm_group_arg;
 		     }
 		     cret = osc_delete_vm_group(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteVmGroup: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteVmGroup: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteVmGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -31404,17 +31854,22 @@ int main(int ac, char **av)
 			    goto delete_vm_template_arg;
 		     }
 		     cret = osc_delete_vm_template(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteVmTemplate: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteVmTemplate: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteVmTemplate (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -31533,17 +31988,22 @@ int main(int ac, char **av)
 			    goto delete_vms_arg;
 		     }
 		     cret = osc_delete_vms(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteVms: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteVms: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteVms (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -31639,17 +32099,22 @@ int main(int ac, char **av)
 			    goto delete_volume_arg;
 		     }
 		     cret = osc_delete_volume(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteVolume: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteVolume: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteVolume (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -31745,17 +32210,22 @@ int main(int ac, char **av)
 			    goto delete_vpn_connection_arg;
 		     }
 		     cret = osc_delete_vpn_connection(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteVpnConnection: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteVpnConnection: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteVpnConnection (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -31862,17 +32332,22 @@ int main(int ac, char **av)
 			    goto delete_vpn_connection_route_arg;
 		     }
 		     cret = osc_delete_vpn_connection_route(&e, &r, &a);
-            	     TRY(cret, "fail to call DeleteVpnConnectionRoute: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeleteVpnConnectionRoute: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeleteVpnConnectionRoute (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -32002,17 +32477,22 @@ int main(int ac, char **av)
 			    goto deregister_vms_in_load_balancer_arg;
 		     }
 		     cret = osc_deregister_vms_in_load_balancer(&e, &r, &a);
-            	     TRY(cret, "fail to call DeregisterVmsInLoadBalancer: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DeregisterVmsInLoadBalancer: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called DeregisterVmsInLoadBalancer (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -32119,17 +32599,22 @@ int main(int ac, char **av)
 			    goto link_flexible_gpu_arg;
 		     }
 		     cret = osc_link_flexible_gpu(&e, &r, &a);
-            	     TRY(cret, "fail to call LinkFlexibleGpu: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call LinkFlexibleGpu: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called LinkFlexibleGpu (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -32236,17 +32721,22 @@ int main(int ac, char **av)
 			    goto link_internet_service_arg;
 		     }
 		     cret = osc_link_internet_service(&e, &r, &a);
-            	     TRY(cret, "fail to call LinkInternetService: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call LinkInternetService: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called LinkInternetService (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -32410,17 +32900,22 @@ int main(int ac, char **av)
 			    goto link_load_balancer_backend_machines_arg;
 		     }
 		     cret = osc_link_load_balancer_backend_machines(&e, &r, &a);
-            	     TRY(cret, "fail to call LinkLoadBalancerBackendMachines: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call LinkLoadBalancerBackendMachines: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called LinkLoadBalancerBackendMachines (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -32527,17 +33022,22 @@ int main(int ac, char **av)
 			    goto link_managed_policy_to_user_group_arg;
 		     }
 		     cret = osc_link_managed_policy_to_user_group(&e, &r, &a);
-            	     TRY(cret, "fail to call LinkManagedPolicyToUserGroup: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call LinkManagedPolicyToUserGroup: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called LinkManagedPolicyToUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -32655,17 +33155,22 @@ int main(int ac, char **av)
 			    goto link_nic_arg;
 		     }
 		     cret = osc_link_nic(&e, &r, &a);
-            	     TRY(cret, "fail to call LinkNic: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call LinkNic: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called LinkNic (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -32772,17 +33277,22 @@ int main(int ac, char **av)
 			    goto link_policy_arg;
 		     }
 		     cret = osc_link_policy(&e, &r, &a);
-            	     TRY(cret, "fail to call LinkPolicy: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call LinkPolicy: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called LinkPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -32939,17 +33449,22 @@ int main(int ac, char **av)
 			    goto link_private_ips_arg;
 		     }
 		     cret = osc_link_private_ips(&e, &r, &a);
-            	     TRY(cret, "fail to call LinkPrivateIps: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call LinkPrivateIps: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called LinkPrivateIps (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -33105,17 +33620,22 @@ int main(int ac, char **av)
 			    goto link_public_ip_arg;
 		     }
 		     cret = osc_link_public_ip(&e, &r, &a);
-            	     TRY(cret, "fail to call LinkPublicIp: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call LinkPublicIp: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called LinkPublicIp (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -33222,17 +33742,22 @@ int main(int ac, char **av)
 			    goto link_route_table_arg;
 		     }
 		     cret = osc_link_route_table(&e, &r, &a);
-            	     TRY(cret, "fail to call LinkRouteTable: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call LinkRouteTable: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called LinkRouteTable (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -33339,17 +33864,22 @@ int main(int ac, char **av)
 			    goto link_virtual_gateway_arg;
 		     }
 		     cret = osc_link_virtual_gateway(&e, &r, &a);
-            	     TRY(cret, "fail to call LinkVirtualGateway: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call LinkVirtualGateway: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called LinkVirtualGateway (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -33467,17 +33997,22 @@ int main(int ac, char **av)
 			    goto link_volume_arg;
 		     }
 		     cret = osc_link_volume(&e, &r, &a);
-            	     TRY(cret, "fail to call LinkVolume: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call LinkVolume: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called LinkVolume (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -33606,17 +34141,22 @@ int main(int ac, char **av)
 			    goto put_user_group_policy_arg;
 		     }
 		     cret = osc_put_user_group_policy(&e, &r, &a);
-            	     TRY(cret, "fail to call PutUserGroupPolicy: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call PutUserGroupPolicy: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called PutUserGroupPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -33734,17 +34274,22 @@ int main(int ac, char **av)
 			    goto put_user_policy_arg;
 		     }
 		     cret = osc_put_user_policy(&e, &r, &a);
-            	     TRY(cret, "fail to call PutUserPolicy: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call PutUserPolicy: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called PutUserPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -33874,17 +34419,22 @@ int main(int ac, char **av)
 			    goto read_access_keys_arg;
 		     }
 		     cret = osc_read_access_keys(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadAccessKeys: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadAccessKeys: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadAccessKeys (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -33969,17 +34519,22 @@ int main(int ac, char **av)
 			    goto read_accounts_arg;
 		     }
 		     cret = osc_read_accounts(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadAccounts: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadAccounts: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadAccounts (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -34075,17 +34630,22 @@ int main(int ac, char **av)
 			    goto read_admin_password_arg;
 		     }
 		     cret = osc_read_admin_password(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadAdminPassword: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadAdminPassword: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadAdminPassword (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -34170,17 +34730,22 @@ int main(int ac, char **av)
 			    goto read_api_access_policy_arg;
 		     }
 		     cret = osc_read_api_access_policy(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadApiAccessPolicy: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadApiAccessPolicy: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadApiAccessPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -34288,17 +34853,22 @@ int main(int ac, char **av)
 			    goto read_api_access_rules_arg;
 		     }
 		     cret = osc_read_api_access_rules(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadApiAccessRules: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadApiAccessRules: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadApiAccessRules (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -34451,17 +35021,22 @@ int main(int ac, char **av)
 			    goto read_api_logs_arg;
 		     }
 		     cret = osc_read_api_logs(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadApiLogs: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadApiLogs: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadApiLogs (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -34569,17 +35144,22 @@ int main(int ac, char **av)
 			    goto read_cas_arg;
 		     }
 		     cret = osc_read_cas(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadCas: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadCas: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadCas (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -34664,17 +35244,22 @@ int main(int ac, char **av)
 			    goto read_catalog_arg;
 		     }
 		     cret = osc_read_catalog(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadCatalog: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadCatalog: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadCatalog (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -34782,17 +35367,22 @@ int main(int ac, char **av)
 			    goto read_catalogs_arg;
 		     }
 		     cret = osc_read_catalogs(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadCatalogs: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadCatalogs: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadCatalogs (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -34922,17 +35512,22 @@ int main(int ac, char **av)
 			    goto read_client_gateways_arg;
 		     }
 		     cret = osc_read_client_gateways(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadClientGateways: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadClientGateways: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadClientGateways (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -35028,17 +35623,22 @@ int main(int ac, char **av)
 			    goto read_console_output_arg;
 		     }
 		     cret = osc_read_console_output(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadConsoleOutput: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadConsoleOutput: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadConsoleOutput (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -35177,17 +35777,22 @@ int main(int ac, char **av)
 			    goto read_consumption_account_arg;
 		     }
 		     cret = osc_read_consumption_account(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadConsumptionAccount: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadConsumptionAccount: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadConsumptionAccount (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -35317,17 +35922,22 @@ int main(int ac, char **av)
 			    goto read_dedicated_groups_arg;
 		     }
 		     cret = osc_read_dedicated_groups(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadDedicatedGroups: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadDedicatedGroups: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadDedicatedGroups (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -35457,17 +36067,22 @@ int main(int ac, char **av)
 			    goto read_dhcp_options_arg;
 		     }
 		     cret = osc_read_dhcp_options(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadDhcpOptions: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadDhcpOptions: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadDhcpOptions (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -35597,17 +36212,22 @@ int main(int ac, char **av)
 			    goto read_direct_link_interfaces_arg;
 		     }
 		     cret = osc_read_direct_link_interfaces(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadDirectLinkInterfaces: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadDirectLinkInterfaces: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadDirectLinkInterfaces (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -35737,17 +36357,22 @@ int main(int ac, char **av)
 			    goto read_direct_links_arg;
 		     }
 		     cret = osc_read_direct_links(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadDirectLinks: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadDirectLinks: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadDirectLinks (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -35883,17 +36508,22 @@ int main(int ac, char **av)
 			    goto read_entities_linked_to_policy_arg;
 		     }
 		     cret = osc_read_entities_linked_to_policy(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadEntitiesLinkedToPolicy: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadEntitiesLinkedToPolicy: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadEntitiesLinkedToPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -35978,17 +36608,22 @@ int main(int ac, char **av)
 			    goto read_flexible_gpu_catalog_arg;
 		     }
 		     cret = osc_read_flexible_gpu_catalog(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadFlexibleGpuCatalog: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadFlexibleGpuCatalog: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadFlexibleGpuCatalog (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -36096,17 +36731,22 @@ int main(int ac, char **av)
 			    goto read_flexible_gpus_arg;
 		     }
 		     cret = osc_read_flexible_gpus(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadFlexibleGpus: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadFlexibleGpus: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadFlexibleGpus (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -36236,17 +36876,22 @@ int main(int ac, char **av)
 			    goto read_image_export_tasks_arg;
 		     }
 		     cret = osc_read_image_export_tasks(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadImageExportTasks: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadImageExportTasks: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadImageExportTasks (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -36376,17 +37021,22 @@ int main(int ac, char **av)
 			    goto read_images_arg;
 		     }
 		     cret = osc_read_images(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadImages: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadImages: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadImages (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -36516,17 +37166,22 @@ int main(int ac, char **av)
 			    goto read_internet_services_arg;
 		     }
 		     cret = osc_read_internet_services(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadInternetServices: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadInternetServices: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadInternetServices (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -36656,17 +37311,22 @@ int main(int ac, char **av)
 			    goto read_keypairs_arg;
 		     }
 		     cret = osc_read_keypairs(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadKeypairs: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadKeypairs: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadKeypairs (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -36807,17 +37467,22 @@ int main(int ac, char **av)
 			    goto read_linked_policies_arg;
 		     }
 		     cret = osc_read_linked_policies(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadLinkedPolicies: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadLinkedPolicies: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadLinkedPolicies (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -36925,17 +37590,22 @@ int main(int ac, char **av)
 			    goto read_listener_rules_arg;
 		     }
 		     cret = osc_read_listener_rules(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadListenerRules: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadListenerRules: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadListenerRules (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -37054,17 +37724,22 @@ int main(int ac, char **av)
 			    goto read_load_balancer_tags_arg;
 		     }
 		     cret = osc_read_load_balancer_tags(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadLoadBalancerTags: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadLoadBalancerTags: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadLoadBalancerTags (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -37172,17 +37847,22 @@ int main(int ac, char **av)
 			    goto read_load_balancers_arg;
 		     }
 		     cret = osc_read_load_balancers(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadLoadBalancers: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadLoadBalancers: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadLoadBalancers (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -37289,17 +37969,22 @@ int main(int ac, char **av)
 			    goto read_locations_arg;
 		     }
 		     cret = osc_read_locations(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadLocations: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadLocations: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadLocations (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -37440,17 +38125,22 @@ int main(int ac, char **av)
 			    goto read_managed_policies_linked_to_user_group_arg;
 		     }
 		     cret = osc_read_managed_policies_linked_to_user_group(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadManagedPoliciesLinkedToUserGroup: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadManagedPoliciesLinkedToUserGroup: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadManagedPoliciesLinkedToUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -37580,17 +38270,22 @@ int main(int ac, char **av)
 			    goto read_nat_services_arg;
 		     }
 		     cret = osc_read_nat_services(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadNatServices: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadNatServices: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadNatServices (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -37720,17 +38415,22 @@ int main(int ac, char **av)
 			    goto read_net_access_point_services_arg;
 		     }
 		     cret = osc_read_net_access_point_services(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadNetAccessPointServices: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadNetAccessPointServices: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadNetAccessPointServices (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -37860,17 +38560,22 @@ int main(int ac, char **av)
 			    goto read_net_access_points_arg;
 		     }
 		     cret = osc_read_net_access_points(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadNetAccessPoints: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadNetAccessPoints: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadNetAccessPoints (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -38000,17 +38705,22 @@ int main(int ac, char **av)
 			    goto read_net_peerings_arg;
 		     }
 		     cret = osc_read_net_peerings(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadNetPeerings: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadNetPeerings: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadNetPeerings (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -38140,17 +38850,22 @@ int main(int ac, char **av)
 			    goto read_nets_arg;
 		     }
 		     cret = osc_read_nets(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadNets: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadNets: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadNets (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -38280,17 +38995,22 @@ int main(int ac, char **av)
 			    goto read_nics_arg;
 		     }
 		     cret = osc_read_nics(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadNics: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadNics: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadNics (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -38420,17 +39140,22 @@ int main(int ac, char **av)
 			    goto read_policies_arg;
 		     }
 		     cret = osc_read_policies(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadPolicies: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadPolicies: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadPolicies (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -38510,17 +39235,22 @@ int main(int ac, char **av)
 			    goto read_policy_arg;
 		     }
 		     cret = osc_read_policy(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadPolicy: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadPolicy: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -38611,17 +39341,22 @@ int main(int ac, char **av)
 			    goto read_policy_version_arg;
 		     }
 		     cret = osc_read_policy_version(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadPolicyVersion: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadPolicyVersion: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadPolicyVersion (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -38723,17 +39458,22 @@ int main(int ac, char **av)
 			    goto read_policy_versions_arg;
 		     }
 		     cret = osc_read_policy_versions(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadPolicyVersions: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadPolicyVersions: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadPolicyVersions (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -38863,17 +39603,22 @@ int main(int ac, char **av)
 			    goto read_product_types_arg;
 		     }
 		     cret = osc_read_product_types(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadProductTypes: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadProductTypes: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadProductTypes (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -38958,17 +39703,22 @@ int main(int ac, char **av)
 			    goto read_public_catalog_arg;
 		     }
 		     cret = osc_read_public_catalog(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadPublicCatalog: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadPublicCatalog: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadPublicCatalog (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -39075,17 +39825,22 @@ int main(int ac, char **av)
 			    goto read_public_ip_ranges_arg;
 		     }
 		     cret = osc_read_public_ip_ranges(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadPublicIpRanges: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadPublicIpRanges: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadPublicIpRanges (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -39215,17 +39970,22 @@ int main(int ac, char **av)
 			    goto read_public_ips_arg;
 		     }
 		     cret = osc_read_public_ips(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadPublicIps: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadPublicIps: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadPublicIps (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -39355,17 +40115,22 @@ int main(int ac, char **av)
 			    goto read_quotas_arg;
 		     }
 		     cret = osc_read_quotas(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadQuotas: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadQuotas: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadQuotas (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -39450,17 +40215,22 @@ int main(int ac, char **av)
 			    goto read_regions_arg;
 		     }
 		     cret = osc_read_regions(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadRegions: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadRegions: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadRegions (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -39590,17 +40360,22 @@ int main(int ac, char **av)
 			    goto read_route_tables_arg;
 		     }
 		     cret = osc_read_route_tables(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadRouteTables: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadRouteTables: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadRouteTables (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -39730,17 +40505,22 @@ int main(int ac, char **av)
 			    goto read_security_groups_arg;
 		     }
 		     cret = osc_read_security_groups(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadSecurityGroups: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadSecurityGroups: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadSecurityGroups (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -39848,17 +40628,22 @@ int main(int ac, char **av)
 			    goto read_server_certificates_arg;
 		     }
 		     cret = osc_read_server_certificates(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadServerCertificates: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadServerCertificates: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadServerCertificates (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -39988,17 +40773,22 @@ int main(int ac, char **av)
 			    goto read_snapshot_export_tasks_arg;
 		     }
 		     cret = osc_read_snapshot_export_tasks(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadSnapshotExportTasks: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadSnapshotExportTasks: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadSnapshotExportTasks (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -40128,17 +40918,22 @@ int main(int ac, char **av)
 			    goto read_snapshots_arg;
 		     }
 		     cret = osc_read_snapshots(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadSnapshots: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadSnapshots: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadSnapshots (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -40268,17 +41063,22 @@ int main(int ac, char **av)
 			    goto read_subnets_arg;
 		     }
 		     cret = osc_read_subnets(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadSubnets: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadSubnets: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadSubnets (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -40408,17 +41208,22 @@ int main(int ac, char **av)
 			    goto read_subregions_arg;
 		     }
 		     cret = osc_read_subregions(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadSubregions: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadSubregions: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadSubregions (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -40548,17 +41353,22 @@ int main(int ac, char **av)
 			    goto read_tags_arg;
 		     }
 		     cret = osc_read_tags(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadTags: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadTags: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadTags (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -40660,17 +41470,22 @@ int main(int ac, char **av)
 			    goto read_unit_price_arg;
 		     }
 		     cret = osc_read_unit_price(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadUnitPrice: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadUnitPrice: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadUnitPrice (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -40799,17 +41614,22 @@ int main(int ac, char **av)
 			    goto read_user_group_policies_arg;
 		     }
 		     cret = osc_read_user_group_policies(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadUserGroupPolicies: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadUserGroupPolicies: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadUserGroupPolicies (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -40927,17 +41747,22 @@ int main(int ac, char **av)
 			    goto read_user_group_policy_arg;
 		     }
 		     cret = osc_read_user_group_policy(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadUserGroupPolicy: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadUserGroupPolicy: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadUserGroupPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -41044,17 +41869,22 @@ int main(int ac, char **av)
 			    goto read_user_group_arg;
 		     }
 		     cret = osc_read_user_group(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadUserGroup: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadUserGroup: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -41161,17 +41991,22 @@ int main(int ac, char **av)
 			    goto read_user_groups_per_user_arg;
 		     }
 		     cret = osc_read_user_groups_per_user(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadUserGroupsPerUser: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadUserGroupsPerUser: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadUserGroupsPerUser (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -41301,17 +42136,22 @@ int main(int ac, char **av)
 			    goto read_user_groups_arg;
 		     }
 		     cret = osc_read_user_groups(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadUserGroups: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadUserGroups: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadUserGroups (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -41407,17 +42247,22 @@ int main(int ac, char **av)
 			    goto read_user_policies_arg;
 		     }
 		     cret = osc_read_user_policies(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadUserPolicies: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadUserPolicies: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadUserPolicies (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -41524,17 +42369,22 @@ int main(int ac, char **av)
 			    goto read_user_policy_arg;
 		     }
 		     cret = osc_read_user_policy(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadUserPolicy: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadUserPolicy: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadUserPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -41664,17 +42514,22 @@ int main(int ac, char **av)
 			    goto read_users_arg;
 		     }
 		     cret = osc_read_users(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadUsers: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadUsers: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadUsers (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -41804,17 +42659,22 @@ int main(int ac, char **av)
 			    goto read_virtual_gateways_arg;
 		     }
 		     cret = osc_read_virtual_gateways(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadVirtualGateways: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadVirtualGateways: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadVirtualGateways (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -41922,17 +42782,22 @@ int main(int ac, char **av)
 			    goto read_vm_groups_arg;
 		     }
 		     cret = osc_read_vm_groups(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadVmGroups: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadVmGroups: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadVmGroups (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -42040,17 +42905,22 @@ int main(int ac, char **av)
 			    goto read_vm_templates_arg;
 		     }
 		     cret = osc_read_vm_templates(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadVmTemplates: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadVmTemplates: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadVmTemplates (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -42180,17 +43050,22 @@ int main(int ac, char **av)
 			    goto read_vm_types_arg;
 		     }
 		     cret = osc_read_vm_types(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadVmTypes: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadVmTypes: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadVmTypes (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -42320,17 +43195,22 @@ int main(int ac, char **av)
 			    goto read_vms_health_arg;
 		     }
 		     cret = osc_read_vms_health(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadVmsHealth: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadVmsHealth: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadVmsHealth (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -42460,17 +43340,22 @@ int main(int ac, char **av)
 			    goto read_vms_arg;
 		     }
 		     cret = osc_read_vms(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadVms: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadVms: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadVms (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -42616,17 +43501,22 @@ int main(int ac, char **av)
 			    goto read_vms_state_arg;
 		     }
 		     cret = osc_read_vms_state(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadVmsState: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadVmsState: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadVmsState (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -42756,17 +43646,22 @@ int main(int ac, char **av)
 			    goto read_volumes_arg;
 		     }
 		     cret = osc_read_volumes(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadVolumes: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadVolumes: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadVolumes (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -42896,17 +43791,22 @@ int main(int ac, char **av)
 			    goto read_vpn_connections_arg;
 		     }
 		     cret = osc_read_vpn_connections(&e, &r, &a);
-            	     TRY(cret, "fail to call ReadVpnConnections: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadVpnConnections: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ReadVpnConnections (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -43025,17 +43925,22 @@ int main(int ac, char **av)
 			    goto reboot_vms_arg;
 		     }
 		     cret = osc_reboot_vms(&e, &r, &a);
-            	     TRY(cret, "fail to call RebootVms: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call RebootVms: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called RebootVms (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -43165,17 +44070,22 @@ int main(int ac, char **av)
 			    goto register_vms_in_load_balancer_arg;
 		     }
 		     cret = osc_register_vms_in_load_balancer(&e, &r, &a);
-            	     TRY(cret, "fail to call RegisterVmsInLoadBalancer: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call RegisterVmsInLoadBalancer: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called RegisterVmsInLoadBalancer (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -43271,17 +44181,22 @@ int main(int ac, char **av)
 			    goto reject_net_peering_arg;
 		     }
 		     cret = osc_reject_net_peering(&e, &r, &a);
-            	     TRY(cret, "fail to call RejectNetPeering: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call RejectNetPeering: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called RejectNetPeering (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -43410,17 +44325,22 @@ int main(int ac, char **av)
 			    goto remove_user_from_user_group_arg;
 		     }
 		     cret = osc_remove_user_from_user_group(&e, &r, &a);
-            	     TRY(cret, "fail to call RemoveUserFromUserGroup: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call RemoveUserFromUserGroup: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called RemoveUserFromUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -43527,17 +44447,22 @@ int main(int ac, char **av)
 			    goto scale_down_vm_group_arg;
 		     }
 		     cret = osc_scale_down_vm_group(&e, &r, &a);
-            	     TRY(cret, "fail to call ScaleDownVmGroup: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ScaleDownVmGroup: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ScaleDownVmGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -43644,17 +44569,22 @@ int main(int ac, char **av)
 			    goto scale_up_vm_group_arg;
 		     }
 		     cret = osc_scale_up_vm_group(&e, &r, &a);
-            	     TRY(cret, "fail to call ScaleUpVmGroup: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ScaleUpVmGroup: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called ScaleUpVmGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -43745,17 +44675,22 @@ int main(int ac, char **av)
 			    goto set_default_policy_version_arg;
 		     }
 		     cret = osc_set_default_policy_version(&e, &r, &a);
-            	     TRY(cret, "fail to call SetDefaultPolicyVersion: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call SetDefaultPolicyVersion: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called SetDefaultPolicyVersion (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -43874,17 +44809,22 @@ int main(int ac, char **av)
 			    goto start_vms_arg;
 		     }
 		     cret = osc_start_vms(&e, &r, &a);
-            	     TRY(cret, "fail to call StartVms: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call StartVms: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called StartVms (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -44019,17 +44959,22 @@ int main(int ac, char **av)
 			    goto stop_vms_arg;
 		     }
 		     cret = osc_stop_vms(&e, &r, &a);
-            	     TRY(cret, "fail to call StopVms: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call StopVms: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called StopVms (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -44125,17 +45070,22 @@ int main(int ac, char **av)
 			    goto unlink_flexible_gpu_arg;
 		     }
 		     cret = osc_unlink_flexible_gpu(&e, &r, &a);
-            	     TRY(cret, "fail to call UnlinkFlexibleGpu: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UnlinkFlexibleGpu: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UnlinkFlexibleGpu (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -44242,17 +45192,22 @@ int main(int ac, char **av)
 			    goto unlink_internet_service_arg;
 		     }
 		     cret = osc_unlink_internet_service(&e, &r, &a);
-            	     TRY(cret, "fail to call UnlinkInternetService: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UnlinkInternetService: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UnlinkInternetService (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -44416,17 +45371,22 @@ int main(int ac, char **av)
 			    goto unlink_load_balancer_backend_machines_arg;
 		     }
 		     cret = osc_unlink_load_balancer_backend_machines(&e, &r, &a);
-            	     TRY(cret, "fail to call UnlinkLoadBalancerBackendMachines: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UnlinkLoadBalancerBackendMachines: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UnlinkLoadBalancerBackendMachines (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -44533,17 +45493,22 @@ int main(int ac, char **av)
 			    goto unlink_managed_policy_from_user_group_arg;
 		     }
 		     cret = osc_unlink_managed_policy_from_user_group(&e, &r, &a);
-            	     TRY(cret, "fail to call UnlinkManagedPolicyFromUserGroup: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UnlinkManagedPolicyFromUserGroup: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UnlinkManagedPolicyFromUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -44639,17 +45604,22 @@ int main(int ac, char **av)
 			    goto unlink_nic_arg;
 		     }
 		     cret = osc_unlink_nic(&e, &r, &a);
-            	     TRY(cret, "fail to call UnlinkNic: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UnlinkNic: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UnlinkNic (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -44756,17 +45726,22 @@ int main(int ac, char **av)
 			    goto unlink_policy_arg;
 		     }
 		     cret = osc_unlink_policy(&e, &r, &a);
-            	     TRY(cret, "fail to call UnlinkPolicy: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UnlinkPolicy: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UnlinkPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -44896,17 +45871,22 @@ int main(int ac, char **av)
 			    goto unlink_private_ips_arg;
 		     }
 		     cret = osc_unlink_private_ips(&e, &r, &a);
-            	     TRY(cret, "fail to call UnlinkPrivateIps: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UnlinkPrivateIps: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UnlinkPrivateIps (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -45013,17 +45993,22 @@ int main(int ac, char **av)
 			    goto unlink_public_ip_arg;
 		     }
 		     cret = osc_unlink_public_ip(&e, &r, &a);
-            	     TRY(cret, "fail to call UnlinkPublicIp: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UnlinkPublicIp: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UnlinkPublicIp (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -45119,17 +46104,22 @@ int main(int ac, char **av)
 			    goto unlink_route_table_arg;
 		     }
 		     cret = osc_unlink_route_table(&e, &r, &a);
-            	     TRY(cret, "fail to call UnlinkRouteTable: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UnlinkRouteTable: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UnlinkRouteTable (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -45236,17 +46226,22 @@ int main(int ac, char **av)
 			    goto unlink_virtual_gateway_arg;
 		     }
 		     cret = osc_unlink_virtual_gateway(&e, &r, &a);
-            	     TRY(cret, "fail to call UnlinkVirtualGateway: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UnlinkVirtualGateway: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UnlinkVirtualGateway (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -45358,17 +46353,22 @@ int main(int ac, char **av)
 			    goto unlink_volume_arg;
 		     }
 		     cret = osc_unlink_volume(&e, &r, &a);
-            	     TRY(cret, "fail to call UnlinkVolume: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UnlinkVolume: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UnlinkVolume (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -45497,17 +46497,22 @@ int main(int ac, char **av)
 			    goto update_access_key_arg;
 		     }
 		     cret = osc_update_access_key(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateAccessKey: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateAccessKey: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateAccessKey (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -45758,17 +46763,22 @@ int main(int ac, char **av)
 			    goto update_account_arg;
 		     }
 		     cret = osc_update_account(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateAccount: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateAccount: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateAccount (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -45880,17 +46890,22 @@ int main(int ac, char **av)
 			    goto update_api_access_policy_arg;
 		     }
 		     cret = osc_update_api_access_policy(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateApiAccessPolicy: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateApiAccessPolicy: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateApiAccessPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -46099,17 +47114,22 @@ int main(int ac, char **av)
 			    goto update_api_access_rule_arg;
 		     }
 		     cret = osc_update_api_access_rule(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateApiAccessRule: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateApiAccessRule: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateApiAccessRule (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -46216,17 +47236,22 @@ int main(int ac, char **av)
 			    goto update_ca_arg;
 		     }
 		     cret = osc_update_ca(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateCa: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateCa: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateCa (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -46333,17 +47358,22 @@ int main(int ac, char **av)
 			    goto update_dedicated_group_arg;
 		     }
 		     cret = osc_update_dedicated_group(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateDedicatedGroup: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateDedicatedGroup: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateDedicatedGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -46450,17 +47480,22 @@ int main(int ac, char **av)
 			    goto update_direct_link_interface_arg;
 		     }
 		     cret = osc_update_direct_link_interface(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateDirectLinkInterface: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateDirectLinkInterface: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateDirectLinkInterface (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -46572,17 +47607,22 @@ int main(int ac, char **av)
 			    goto update_flexible_gpu_arg;
 		     }
 		     cret = osc_update_flexible_gpu(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateFlexibleGpu: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateFlexibleGpu: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateFlexibleGpu (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -46746,17 +47786,22 @@ int main(int ac, char **av)
 			    goto update_image_arg;
 		     }
 		     cret = osc_update_image(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateImage: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateImage: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateImage (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -46874,17 +47919,22 @@ int main(int ac, char **av)
 			    goto update_listener_rule_arg;
 		     }
 		     cret = osc_update_listener_rule(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateListenerRule: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateListenerRule: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateListenerRule (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -47143,17 +48193,22 @@ int main(int ac, char **av)
 			    goto update_load_balancer_arg;
 		     }
 		     cret = osc_update_load_balancer(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateLoadBalancer: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateLoadBalancer: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateLoadBalancer (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -47317,17 +48372,22 @@ int main(int ac, char **av)
 			    goto update_net_access_point_arg;
 		     }
 		     cret = osc_update_net_access_point(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateNetAccessPoint: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateNetAccessPoint: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateNetAccessPoint (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -47434,17 +48494,22 @@ int main(int ac, char **av)
 			    goto update_net_arg;
 		     }
 		     cret = osc_update_net(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateNet: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateNet: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateNet (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -47608,17 +48673,22 @@ int main(int ac, char **av)
 			    goto update_nic_arg;
 		     }
 		     cret = osc_update_nic(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateNic: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateNic: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateNic (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -47741,17 +48811,22 @@ int main(int ac, char **av)
 			    goto update_route_propagation_arg;
 		     }
 		     cret = osc_update_route_propagation(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateRoutePropagation: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateRoutePropagation: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateRoutePropagation (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -47913,17 +48988,22 @@ int main(int ac, char **av)
 			    goto update_route_arg;
 		     }
 		     cret = osc_update_route(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateRoute: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateRoute: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateRoute (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -48030,17 +49110,22 @@ int main(int ac, char **av)
 			    goto update_route_table_link_arg;
 		     }
 		     cret = osc_update_route_table_link(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateRouteTableLink: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateRouteTableLink: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateRouteTableLink (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -48158,17 +49243,22 @@ int main(int ac, char **av)
 			    goto update_server_certificate_arg;
 		     }
 		     cret = osc_update_server_certificate(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateServerCertificate: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateServerCertificate: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateServerCertificate (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -48287,17 +49377,22 @@ int main(int ac, char **av)
 			    goto update_snapshot_arg;
 		     }
 		     cret = osc_update_snapshot(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateSnapshot: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateSnapshot: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateSnapshot (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -48409,17 +49504,22 @@ int main(int ac, char **av)
 			    goto update_subnet_arg;
 		     }
 		     cret = osc_update_subnet(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateSubnet: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateSubnet: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateSubnet (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -48548,17 +49648,22 @@ int main(int ac, char **av)
 			    goto update_user_group_arg;
 		     }
 		     cret = osc_update_user_group(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateUserGroup: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateUserGroup: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -48687,17 +49792,22 @@ int main(int ac, char **av)
 			    goto update_user_arg;
 		     }
 		     cret = osc_update_user(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateUser: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateUser: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateUser (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -48857,17 +49967,22 @@ int main(int ac, char **av)
 			    goto update_vm_group_arg;
 		     }
 		     cret = osc_update_vm_group(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateVmGroup: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateVmGroup: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateVmGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -49170,17 +50285,22 @@ int main(int ac, char **av)
 			    goto update_vm_arg;
 		     }
 		     cret = osc_update_vm(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateVm: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateVm: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateVm (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -49329,17 +50449,22 @@ int main(int ac, char **av)
 			    goto update_vm_template_arg;
 		     }
 		     cret = osc_update_vm_template(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateVmTemplate: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateVmTemplate: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateVmTemplate (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -49468,17 +50593,22 @@ int main(int ac, char **av)
 			    goto update_volume_arg;
 		     }
 		     cret = osc_update_volume(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateVolume: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateVolume: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateVolume (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");
@@ -49619,17 +50749,22 @@ int main(int ac, char **av)
 			    goto update_vpn_connection_arg;
 		     }
 		     cret = osc_update_vpn_connection(&e, &r, &a);
-            	     TRY(cret, "fail to call UpdateVpnConnection: %s\n", curl_easy_strerror(cret));
-		     CHK_BAD_RET(!r.buf, "connection sucessful, but empty responce\n");
 		     jobj = NULL;
-		     if (program_flag & OAPI_RAW_OUTPUT)
-		             puts(r.buf);
-		     else {
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call UpdateVpnConnection: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
 			     jobj = json_tokener_parse(r.buf);
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     }
+		     } else fprintf(stderr, "Called UpdateVpnConnection (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
 		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
 		     	     ++i;
 			     TRY(i + 1 >= ac, "--set-var require an argument");

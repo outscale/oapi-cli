@@ -1585,7 +1585,6 @@ static const char *calls_args_descriptions[] = {
 	"    --BlockDeviceMappings.INDEX.VirtualDeviceName: string\n"
 	"      The name of the virtual device (`ephemeralN`).\n"
 "--BootMode: string\n"
-	"    Information about the boot mode of the OMI (`legacy` and/or `uefi`).\n"
 "--BootOnCreation: bool\n"
 	"  By default or if true, the VM is started on creation. If false, the VM is stopped on \n"
 	"  creation.\n"
@@ -16732,6 +16731,16 @@ int osc_accept_net_peering(struct osc_env *e, struct osc_str *out, struct osc_ac
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -16799,6 +16808,16 @@ int osc_add_user_to_user_group(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -16856,6 +16875,16 @@ int osc_check_authentication(struct osc_env *e, struct osc_str *out, struct osc_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -16918,6 +16947,16 @@ int osc_create_access_key(struct osc_env *e, struct osc_str *out, struct osc_cre
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -17046,6 +17085,16 @@ int osc_create_account(struct osc_env *e, struct osc_str *out, struct osc_create
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -17146,6 +17195,16 @@ int osc_create_api_access_rule(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -17203,6 +17262,16 @@ int osc_create_ca(struct osc_env *e, struct osc_str *out, struct osc_create_ca_a
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -17264,6 +17333,16 @@ int osc_create_client_gateway(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -17325,6 +17404,16 @@ int osc_create_dedicated_group(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -17425,6 +17514,16 @@ int osc_create_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_c
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -17487,6 +17586,16 @@ int osc_create_direct_link_interface(struct osc_env *e, struct osc_str *out, str
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -17549,6 +17658,16 @@ int osc_create_direct_link(struct osc_env *e, struct osc_str *out, struct osc_cr
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -17615,6 +17734,16 @@ int osc_create_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_c
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -17677,6 +17806,16 @@ int osc_create_image_export_task(struct osc_env *e, struct osc_str *out, struct 
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -17818,6 +17957,16 @@ int osc_create_image(struct osc_env *e, struct osc_str *out, struct osc_create_i
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -17865,6 +18014,16 @@ int osc_create_internet_service(struct osc_env *e, struct osc_str *out, struct o
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -17922,6 +18081,16 @@ int osc_create_keypair(struct osc_env *e, struct osc_str *out, struct osc_create
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -18005,6 +18174,16 @@ int osc_create_listener_rule(struct osc_env *e, struct osc_str *out, struct osc_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -18075,6 +18254,16 @@ int osc_create_load_balancer_listeners(struct osc_env *e, struct osc_str *out, s
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -18146,6 +18335,16 @@ int osc_create_load_balancer_policy(struct osc_env *e, struct osc_str *out, stru
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -18292,6 +18491,16 @@ int osc_create_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -18373,6 +18582,16 @@ int osc_create_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -18435,6 +18654,16 @@ int osc_create_nat_service(struct osc_env *e, struct osc_str *out, struct osc_cr
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -18508,6 +18737,16 @@ int osc_create_net_access_point(struct osc_env *e, struct osc_str *out, struct o
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -18570,6 +18809,16 @@ int osc_create_net_peering(struct osc_env *e, struct osc_str *out, struct osc_cr
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -18627,6 +18876,16 @@ int osc_create_net(struct osc_env *e, struct osc_str *out, struct osc_create_net
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -18718,6 +18977,16 @@ int osc_create_nic(struct osc_env *e, struct osc_str *out, struct osc_create_nic
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -18785,6 +19054,16 @@ int osc_create_policy(struct osc_env *e, struct osc_str *out, struct osc_create_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -18842,6 +19121,16 @@ int osc_create_policy_version(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -18899,6 +19188,16 @@ int osc_create_product_type(struct osc_env *e, struct osc_str *out, struct osc_c
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -18946,6 +19245,16 @@ int osc_create_public_ip(struct osc_env *e, struct osc_str *out, struct osc_crea
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -19028,6 +19337,16 @@ int osc_create_route(struct osc_env *e, struct osc_str *out, struct osc_create_r
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -19080,6 +19399,16 @@ int osc_create_route_table(struct osc_env *e, struct osc_str *out, struct osc_cr
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -19142,6 +19471,16 @@ int osc_create_security_group(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -19245,6 +19584,16 @@ int osc_create_security_group_rule(struct osc_env *e, struct osc_str *out, struc
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -19317,6 +19666,16 @@ int osc_create_server_certificate(struct osc_env *e, struct osc_str *out, struct
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -19379,6 +19738,16 @@ int osc_create_snapshot_export_task(struct osc_env *e, struct osc_str *out, stru
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -19460,6 +19829,16 @@ int osc_create_snapshot(struct osc_env *e, struct osc_str *out, struct osc_creat
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -19522,6 +19901,16 @@ int osc_create_subnet(struct osc_env *e, struct osc_str *out, struct osc_create_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -19603,6 +19992,16 @@ int osc_create_tags(struct osc_env *e, struct osc_str *out, struct osc_create_ta
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -19660,6 +20059,16 @@ int osc_create_user_group(struct osc_env *e, struct osc_str *out, struct osc_cre
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -19722,6 +20131,16 @@ int osc_create_user(struct osc_env *e, struct osc_str *out, struct osc_create_us
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -19774,6 +20193,16 @@ int osc_create_virtual_gateway(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -19884,6 +20313,16 @@ int osc_create_vm_group(struct osc_env *e, struct osc_str *out, struct osc_creat
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -19987,6 +20426,16 @@ int osc_create_vm_template(struct osc_env *e, struct osc_str *out, struct osc_cr
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -20207,6 +20656,16 @@ int osc_create_vms(struct osc_env *e, struct osc_str *out, struct osc_create_vms
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -20282,6 +20741,16 @@ int osc_create_volume(struct osc_env *e, struct osc_str *out, struct osc_create_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -20348,6 +20817,16 @@ int osc_create_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -20405,6 +20884,16 @@ int osc_create_vpn_connection_route(struct osc_env *e, struct osc_str *out, stru
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -20462,6 +20951,16 @@ int osc_delete_access_key(struct osc_env *e, struct osc_str *out, struct osc_del
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -20514,6 +21013,16 @@ int osc_delete_api_access_rule(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -20566,6 +21075,16 @@ int osc_delete_ca(struct osc_env *e, struct osc_str *out, struct osc_delete_ca_a
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -20618,6 +21137,16 @@ int osc_delete_client_gateway(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -20674,6 +21203,16 @@ int osc_delete_dedicated_group(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -20726,6 +21265,16 @@ int osc_delete_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_d
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -20778,6 +21327,16 @@ int osc_delete_direct_link_interface(struct osc_env *e, struct osc_str *out, str
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -20830,6 +21389,16 @@ int osc_delete_direct_link(struct osc_env *e, struct osc_str *out, struct osc_de
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -20882,6 +21451,16 @@ int osc_delete_export_task(struct osc_env *e, struct osc_str *out, struct osc_de
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -20934,6 +21513,16 @@ int osc_delete_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_d
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -20986,6 +21575,16 @@ int osc_delete_image(struct osc_env *e, struct osc_str *out, struct osc_delete_i
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -21038,6 +21637,16 @@ int osc_delete_internet_service(struct osc_env *e, struct osc_str *out, struct o
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -21095,6 +21704,16 @@ int osc_delete_keypair(struct osc_env *e, struct osc_str *out, struct osc_delete
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -21147,6 +21766,16 @@ int osc_delete_listener_rule(struct osc_env *e, struct osc_str *out, struct osc_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -21215,6 +21844,16 @@ int osc_delete_load_balancer_listeners(struct osc_env *e, struct osc_str *out, s
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -21272,6 +21911,16 @@ int osc_delete_load_balancer_policy(struct osc_env *e, struct osc_str *out, stru
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -21324,6 +21973,16 @@ int osc_delete_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -21405,6 +22064,16 @@ int osc_delete_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -21457,6 +22126,16 @@ int osc_delete_nat_service(struct osc_env *e, struct osc_str *out, struct osc_de
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -21509,6 +22188,16 @@ int osc_delete_net_access_point(struct osc_env *e, struct osc_str *out, struct o
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -21561,6 +22250,16 @@ int osc_delete_net_peering(struct osc_env *e, struct osc_str *out, struct osc_de
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -21613,6 +22312,16 @@ int osc_delete_net(struct osc_env *e, struct osc_str *out, struct osc_delete_net
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -21665,6 +22374,16 @@ int osc_delete_nic(struct osc_env *e, struct osc_str *out, struct osc_delete_nic
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -21717,6 +22436,16 @@ int osc_delete_policy(struct osc_env *e, struct osc_str *out, struct osc_delete_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -21770,6 +22499,16 @@ int osc_delete_policy_version(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -21826,6 +22565,16 @@ int osc_delete_product_type(struct osc_env *e, struct osc_str *out, struct osc_d
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -21883,6 +22632,16 @@ int osc_delete_public_ip(struct osc_env *e, struct osc_str *out, struct osc_dele
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -21940,6 +22699,16 @@ int osc_delete_route(struct osc_env *e, struct osc_str *out, struct osc_delete_r
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -21992,6 +22761,16 @@ int osc_delete_route_table(struct osc_env *e, struct osc_str *out, struct osc_de
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -22049,6 +22828,16 @@ int osc_delete_security_group(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -22152,6 +22941,16 @@ int osc_delete_security_group_rule(struct osc_env *e, struct osc_str *out, struc
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -22204,6 +23003,16 @@ int osc_delete_server_certificate(struct osc_env *e, struct osc_str *out, struct
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -22256,6 +23065,16 @@ int osc_delete_snapshot(struct osc_env *e, struct osc_str *out, struct osc_delet
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -22308,6 +23127,16 @@ int osc_delete_subnet(struct osc_env *e, struct osc_str *out, struct osc_delete_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -22389,6 +23218,16 @@ int osc_delete_tags(struct osc_env *e, struct osc_str *out, struct osc_delete_ta
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -22451,6 +23290,16 @@ int osc_delete_user_group_policy(struct osc_env *e, struct osc_str *out, struct 
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -22512,6 +23361,16 @@ int osc_delete_user_group(struct osc_env *e, struct osc_str *out, struct osc_del
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -22569,6 +23428,16 @@ int osc_delete_user_policy(struct osc_env *e, struct osc_str *out, struct osc_de
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -22621,6 +23490,16 @@ int osc_delete_user(struct osc_env *e, struct osc_str *out, struct osc_delete_us
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -22673,6 +23552,16 @@ int osc_delete_virtual_gateway(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -22725,6 +23614,16 @@ int osc_delete_vm_group(struct osc_env *e, struct osc_str *out, struct osc_delet
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -22777,6 +23676,16 @@ int osc_delete_vm_template(struct osc_env *e, struct osc_str *out, struct osc_de
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -22840,6 +23749,16 @@ int osc_delete_vms(struct osc_env *e, struct osc_str *out, struct osc_delete_vms
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -22892,6 +23811,16 @@ int osc_delete_volume(struct osc_env *e, struct osc_str *out, struct osc_delete_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -22944,6 +23873,16 @@ int osc_delete_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -23001,6 +23940,16 @@ int osc_delete_vpn_connection_route(struct osc_env *e, struct osc_str *out, stru
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -23069,6 +24018,16 @@ int osc_deregister_vms_in_load_balancer(struct osc_env *e, struct osc_str *out, 
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -23126,6 +24085,16 @@ int osc_link_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_lin
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -23183,6 +24152,16 @@ int osc_link_internet_service(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -23267,6 +24246,16 @@ int osc_link_load_balancer_backend_machines(struct osc_env *e, struct osc_str *o
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -23324,6 +24313,16 @@ int osc_link_managed_policy_to_user_group(struct osc_env *e, struct osc_str *out
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -23385,6 +24384,16 @@ int osc_link_nic(struct osc_env *e, struct osc_str *out, struct osc_link_nic_arg
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -23442,6 +24451,16 @@ int osc_link_policy(struct osc_env *e, struct osc_str *out, struct osc_link_poli
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -23518,6 +24537,16 @@ int osc_link_private_ips(struct osc_env *e, struct osc_str *out, struct osc_link
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -23594,6 +24623,16 @@ int osc_link_public_ip(struct osc_env *e, struct osc_str *out, struct osc_link_p
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -23651,6 +24690,16 @@ int osc_link_route_table(struct osc_env *e, struct osc_str *out, struct osc_link
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -23708,6 +24757,16 @@ int osc_link_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -23770,6 +24829,16 @@ int osc_link_volume(struct osc_env *e, struct osc_str *out, struct osc_link_volu
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -23837,6 +24906,16 @@ int osc_put_user_group_policy(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -23899,6 +24978,16 @@ int osc_put_user_policy(struct osc_env *e, struct osc_str *out, struct osc_put_u
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -23966,6 +25055,16 @@ int osc_read_access_keys(struct osc_env *e, struct osc_str *out, struct osc_read
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -24013,6 +25112,16 @@ int osc_read_accounts(struct osc_env *e, struct osc_str *out, struct osc_read_ac
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -24065,6 +25174,16 @@ int osc_read_admin_password(struct osc_env *e, struct osc_str *out, struct osc_r
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -24112,6 +25231,16 @@ int osc_read_api_access_policy(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -24169,6 +25298,16 @@ int osc_read_api_access_rules(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -24245,6 +25384,16 @@ int osc_read_api_logs(struct osc_env *e, struct osc_str *out, struct osc_read_ap
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -24302,6 +25451,16 @@ int osc_read_cas(struct osc_env *e, struct osc_str *out, struct osc_read_cas_arg
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -24349,6 +25508,16 @@ int osc_read_catalog(struct osc_env *e, struct osc_str *out, struct osc_read_cat
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -24406,6 +25575,16 @@ int osc_read_catalogs(struct osc_env *e, struct osc_str *out, struct osc_read_ca
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -24472,6 +25651,16 @@ int osc_read_client_gateways(struct osc_env *e, struct osc_str *out, struct osc_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -24524,6 +25713,16 @@ int osc_read_console_output(struct osc_env *e, struct osc_str *out, struct osc_r
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -24589,6 +25788,16 @@ int osc_read_consumption_account(struct osc_env *e, struct osc_str *out, struct 
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -24655,6 +25864,16 @@ int osc_read_dedicated_groups(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -24721,6 +25940,16 @@ int osc_read_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_rea
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -24787,6 +26016,16 @@ int osc_read_direct_link_interfaces(struct osc_env *e, struct osc_str *out, stru
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -24853,6 +26092,16 @@ int osc_read_direct_links(struct osc_env *e, struct osc_str *out, struct osc_rea
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -24925,6 +26174,16 @@ int osc_read_entities_linked_to_policy(struct osc_env *e, struct osc_str *out, s
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -24972,6 +26231,16 @@ int osc_read_flexible_gpu_catalog(struct osc_env *e, struct osc_str *out, struct
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -25029,6 +26298,16 @@ int osc_read_flexible_gpus(struct osc_env *e, struct osc_str *out, struct osc_re
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -25095,6 +26374,16 @@ int osc_read_image_export_tasks(struct osc_env *e, struct osc_str *out, struct o
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -25161,6 +26450,16 @@ int osc_read_images(struct osc_env *e, struct osc_str *out, struct osc_read_imag
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -25227,6 +26526,16 @@ int osc_read_internet_services(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -25293,6 +26602,16 @@ int osc_read_keypairs(struct osc_env *e, struct osc_str *out, struct osc_read_ke
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -25363,6 +26682,16 @@ int osc_read_linked_policies(struct osc_env *e, struct osc_str *out, struct osc_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -25420,6 +26749,16 @@ int osc_read_listener_rules(struct osc_env *e, struct osc_str *out, struct osc_r
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -25483,6 +26822,16 @@ int osc_read_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct o
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -25540,6 +26889,16 @@ int osc_read_load_balancers(struct osc_env *e, struct osc_str *out, struct osc_r
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -25596,6 +26955,16 @@ int osc_read_locations(struct osc_env *e, struct osc_str *out, struct osc_read_l
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -25666,6 +27035,16 @@ int osc_read_managed_policies_linked_to_user_group(struct osc_env *e, struct osc
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -25732,6 +27111,16 @@ int osc_read_nat_services(struct osc_env *e, struct osc_str *out, struct osc_rea
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -25798,6 +27187,16 @@ int osc_read_net_access_point_services(struct osc_env *e, struct osc_str *out, s
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -25864,6 +27263,16 @@ int osc_read_net_access_points(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -25930,6 +27339,16 @@ int osc_read_net_peerings(struct osc_env *e, struct osc_str *out, struct osc_rea
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -25996,6 +27415,16 @@ int osc_read_nets(struct osc_env *e, struct osc_str *out, struct osc_read_nets_a
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -26062,6 +27491,16 @@ int osc_read_nics(struct osc_env *e, struct osc_str *out, struct osc_read_nics_a
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -26127,6 +27566,16 @@ int osc_read_policies(struct osc_env *e, struct osc_str *out, struct osc_read_po
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -26175,6 +27624,16 @@ int osc_read_policy(struct osc_env *e, struct osc_str *out, struct osc_read_poli
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -26228,6 +27687,16 @@ int osc_read_policy_version(struct osc_env *e, struct osc_str *out, struct osc_r
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -26284,6 +27753,16 @@ int osc_read_policy_versions(struct osc_env *e, struct osc_str *out, struct osc_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -26350,6 +27829,16 @@ int osc_read_product_types(struct osc_env *e, struct osc_str *out, struct osc_re
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -26397,6 +27886,16 @@ int osc_read_public_catalog(struct osc_env *e, struct osc_str *out, struct osc_r
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -26453,6 +27952,16 @@ int osc_read_public_ip_ranges(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -26519,6 +28028,16 @@ int osc_read_public_ips(struct osc_env *e, struct osc_str *out, struct osc_read_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -26585,6 +28104,16 @@ int osc_read_quotas(struct osc_env *e, struct osc_str *out, struct osc_read_quot
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -26632,6 +28161,16 @@ int osc_read_regions(struct osc_env *e, struct osc_str *out, struct osc_read_reg
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -26698,6 +28237,16 @@ int osc_read_route_tables(struct osc_env *e, struct osc_str *out, struct osc_rea
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -26764,6 +28313,16 @@ int osc_read_security_groups(struct osc_env *e, struct osc_str *out, struct osc_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -26821,6 +28380,16 @@ int osc_read_server_certificates(struct osc_env *e, struct osc_str *out, struct 
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -26887,6 +28456,16 @@ int osc_read_snapshot_export_tasks(struct osc_env *e, struct osc_str *out, struc
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -26953,6 +28532,16 @@ int osc_read_snapshots(struct osc_env *e, struct osc_str *out, struct osc_read_s
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -27019,6 +28608,16 @@ int osc_read_subnets(struct osc_env *e, struct osc_str *out, struct osc_read_sub
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -27085,6 +28684,16 @@ int osc_read_subregions(struct osc_env *e, struct osc_str *out, struct osc_read_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -27151,6 +28760,16 @@ int osc_read_tags(struct osc_env *e, struct osc_str *out, struct osc_read_tags_a
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -27209,6 +28828,16 @@ int osc_read_unit_price(struct osc_env *e, struct osc_str *out, struct osc_read_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -27274,6 +28903,16 @@ int osc_read_user_group_policies(struct osc_env *e, struct osc_str *out, struct 
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -27336,6 +28975,16 @@ int osc_read_user_group_policy(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -27393,6 +29042,16 @@ int osc_read_user_group(struct osc_env *e, struct osc_str *out, struct osc_read_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -27450,6 +29109,16 @@ int osc_read_user_groups_per_user(struct osc_env *e, struct osc_str *out, struct
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -27515,6 +29184,16 @@ int osc_read_user_groups(struct osc_env *e, struct osc_str *out, struct osc_read
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -27567,6 +29246,16 @@ int osc_read_user_policies(struct osc_env *e, struct osc_str *out, struct osc_re
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -27624,6 +29313,16 @@ int osc_read_user_policy(struct osc_env *e, struct osc_str *out, struct osc_read
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -27689,6 +29388,16 @@ int osc_read_users(struct osc_env *e, struct osc_str *out, struct osc_read_users
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -27755,6 +29464,16 @@ int osc_read_virtual_gateways(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -27812,6 +29531,16 @@ int osc_read_vm_groups(struct osc_env *e, struct osc_str *out, struct osc_read_v
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -27869,6 +29598,16 @@ int osc_read_vm_templates(struct osc_env *e, struct osc_str *out, struct osc_rea
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -27935,6 +29674,16 @@ int osc_read_vm_types(struct osc_env *e, struct osc_str *out, struct osc_read_vm
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -28003,6 +29752,16 @@ int osc_read_vms_health(struct osc_env *e, struct osc_str *out, struct osc_read_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -28069,6 +29828,16 @@ int osc_read_vms(struct osc_env *e, struct osc_str *out, struct osc_read_vms_arg
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -28139,6 +29908,16 @@ int osc_read_vms_state(struct osc_env *e, struct osc_str *out, struct osc_read_v
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -28205,6 +29984,16 @@ int osc_read_volumes(struct osc_env *e, struct osc_str *out, struct osc_read_vol
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -28271,6 +30060,16 @@ int osc_read_vpn_connections(struct osc_env *e, struct osc_str *out, struct osc_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -28334,6 +30133,16 @@ int osc_reboot_vms(struct osc_env *e, struct osc_str *out, struct osc_reboot_vms
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -28402,6 +30211,16 @@ int osc_register_vms_in_load_balancer(struct osc_env *e, struct osc_str *out, st
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -28454,6 +30273,16 @@ int osc_reject_net_peering(struct osc_env *e, struct osc_str *out, struct osc_re
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -28521,6 +30350,16 @@ int osc_remove_user_from_user_group(struct osc_env *e, struct osc_str *out, stru
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -28577,6 +30416,16 @@ int osc_scale_down_vm_group(struct osc_env *e, struct osc_str *out, struct osc_s
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -28633,6 +30482,16 @@ int osc_scale_up_vm_group(struct osc_env *e, struct osc_str *out, struct osc_sca
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -28686,6 +30545,16 @@ int osc_set_default_policy_version(struct osc_env *e, struct osc_str *out, struc
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -28749,6 +30618,16 @@ int osc_start_vms(struct osc_env *e, struct osc_str *out, struct osc_start_vms_a
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -28816,6 +30695,16 @@ int osc_stop_vms(struct osc_env *e, struct osc_str *out, struct osc_stop_vms_arg
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -28868,6 +30757,16 @@ int osc_unlink_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_u
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -28925,6 +30824,16 @@ int osc_unlink_internet_service(struct osc_env *e, struct osc_str *out, struct o
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -29009,6 +30918,16 @@ int osc_unlink_load_balancer_backend_machines(struct osc_env *e, struct osc_str 
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -29066,6 +30985,16 @@ int osc_unlink_managed_policy_from_user_group(struct osc_env *e, struct osc_str 
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -29118,6 +31047,16 @@ int osc_unlink_nic(struct osc_env *e, struct osc_str *out, struct osc_unlink_nic
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -29175,6 +31114,16 @@ int osc_unlink_policy(struct osc_env *e, struct osc_str *out, struct osc_unlink_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -29243,6 +31192,16 @@ int osc_unlink_private_ips(struct osc_env *e, struct osc_str *out, struct osc_un
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -29300,6 +31259,16 @@ int osc_unlink_public_ip(struct osc_env *e, struct osc_str *out, struct osc_unli
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -29352,6 +31321,16 @@ int osc_unlink_route_table(struct osc_env *e, struct osc_str *out, struct osc_un
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -29409,6 +31388,16 @@ int osc_unlink_virtual_gateway(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -29465,6 +31454,16 @@ int osc_unlink_volume(struct osc_env *e, struct osc_str *out, struct osc_unlink_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -29532,6 +31531,16 @@ int osc_update_access_key(struct osc_env *e, struct osc_str *out, struct osc_upd
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -29655,6 +31664,16 @@ int osc_update_account(struct osc_env *e, struct osc_str *out, struct osc_update
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -29710,6 +31729,16 @@ int osc_update_api_access_policy(struct osc_env *e, struct osc_str *out, struct 
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -29815,6 +31844,16 @@ int osc_update_api_access_rule(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -29872,6 +31911,16 @@ int osc_update_ca(struct osc_env *e, struct osc_str *out, struct osc_update_ca_a
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -29929,6 +31978,16 @@ int osc_update_dedicated_group(struct osc_env *e, struct osc_str *out, struct os
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -29985,6 +32044,16 @@ int osc_update_direct_link_interface(struct osc_env *e, struct osc_str *out, str
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -30041,6 +32110,16 @@ int osc_update_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_u
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -30124,6 +32203,16 @@ int osc_update_image(struct osc_env *e, struct osc_str *out, struct osc_update_i
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -30186,6 +32275,16 @@ int osc_update_listener_rule(struct osc_env *e, struct osc_str *out, struct osc_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -30308,6 +32407,16 @@ int osc_update_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -30392,6 +32501,16 @@ int osc_update_net_access_point(struct osc_env *e, struct osc_str *out, struct o
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -30449,6 +32568,16 @@ int osc_update_net(struct osc_env *e, struct osc_str *out, struct osc_update_net
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -30532,6 +32661,16 @@ int osc_update_nic(struct osc_env *e, struct osc_str *out, struct osc_update_nic
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -30593,6 +32732,16 @@ int osc_update_route_propagation(struct osc_env *e, struct osc_str *out, struct 
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -30675,6 +32824,16 @@ int osc_update_route(struct osc_env *e, struct osc_str *out, struct osc_update_r
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -30732,6 +32891,16 @@ int osc_update_route_table_link(struct osc_env *e, struct osc_str *out, struct o
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -30794,6 +32963,16 @@ int osc_update_server_certificate(struct osc_env *e, struct osc_str *out, struct
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -30856,6 +33035,16 @@ int osc_update_snapshot(struct osc_env *e, struct osc_str *out, struct osc_updat
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -30912,6 +33101,16 @@ int osc_update_subnet(struct osc_env *e, struct osc_str *out, struct osc_update_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -30979,6 +33178,16 @@ int osc_update_user_group(struct osc_env *e, struct osc_str *out, struct osc_upd
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -31046,6 +33255,16 @@ int osc_update_user(struct osc_env *e, struct osc_str *out, struct osc_update_us
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -31131,6 +33350,16 @@ int osc_update_vm_group(struct osc_env *e, struct osc_str *out, struct osc_updat
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -31268,6 +33497,16 @@ int osc_update_vm(struct osc_env *e, struct osc_str *out, struct osc_update_vm_a
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -31348,6 +33587,16 @@ int osc_update_vm_template(struct osc_env *e, struct osc_str *out, struct osc_up
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -31413,6 +33662,16 @@ int osc_update_volume(struct osc_env *e, struct osc_str *out, struct osc_update_
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
@@ -31485,6 +33744,16 @@ int osc_update_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
 	res = curl_easy_perform(e->c);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
 out:
 	osc_deinit_str(&data);
 	return res;
