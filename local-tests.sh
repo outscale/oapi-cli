@@ -43,28 +43,28 @@ oapi-cli   --password=useless --login=non-existant CreateVms ReadVms  ReadVms --
 echo "[Test unknown user is unknown OK]"
 
 trap "echo [Test Create vms and read with user 0 FAIL]" ERR
-oapi-cli  --password='ashita wa dochida' --login='joe' CreateVms --ImageId ami-ffffff00 ReadVms  ReadVms --Filters.VmIds[] i-00000003 | jq .Vms  > /dev/null
+oapi-cli  --password='ashita wa dochida' --login='joe' CreateVms --ImageId ami-ffffff00 ReadVms  ReadVms --Filters.VmIds[] i-00000001 | jq .Vms  > /dev/null
 echo '[Test Create vms and read with user 0 OK]'
 
 trap "echo [Test read vm with user and --raw-print 0 FAIL]" ERR
-oapi-cli --raw-print  --password='ashita wa dochida' --login='joe' ReadVms --Filters.VmIds[] i-00000003 | jq .Vms  > /dev/null
+oapi-cli --raw-print  --password='ashita wa dochida' --login='joe' ReadVms --Filters.VmIds[] i-00000001 | jq .Vms  > /dev/null
 echo "[Test read vm with user and --raw-print 0 OK]"
 
 trap "echo [Test Read vms with user 1  FAIL]" ERR
 export OSC_LOGIN=titi
-oapi-cli   --password='toto' ReadVms --Filters.VmIds[] i-00000003 | jq .Vms | grep '\[]' > /dev/null
+oapi-cli   --password='toto' ReadVms --Filters.VmIds[] i-00000001 | jq .Vms | grep '\[]' > /dev/null
 echo "[Test Read vms with user 1 is empty OK]"
 
 trap "echo '[Test Read vms with user 1 (default) is not empty, with conf FAIL]'" ERR
-OSC_PASSWORD=toto oapi-cli  --config="./local-tests-cfg.json" --authentication_method=password ReadVms --Filters.VmIds[] i-00000003 | jq .Vms | grep '\[]' > /dev/null
+OSC_PASSWORD=toto oapi-cli  --config="./local-tests-cfg.json" --authentication_method=password ReadVms --Filters.VmIds[] i-00000001 | jq .Vms | grep '\[]' > /dev/null
 echo "[Test Read vms with user 1 (default) is not empty, with conf Ok]"
 
 trap "echo '[Test Read vms with user 0 (my) is not empty, with conf FAIL]'" ERR
-oapi-cli  --config="./local-tests-cfg.json" --auth-method=password --profile=my ReadVms --Filters.VmIds[] i-00000003 | jq .Vms | grep 'i-00000003' > /dev/null
+oapi-cli  --config="./local-tests-cfg.json" --auth-method=password --profile=my ReadVms --Filters.VmIds[] i-00000001 | jq .Vms | grep 'i-00000001' > /dev/null
 echo "[Test Read vms with user 0 (my) is not empty, with conf Ok]"
 
 trap "echo '[Test Read vms with user 0 (my) is not empty, with conf (separate argument) FAIL]'" ERR
-oapi-cli  --config="./local-tests-cfg.json" --authentication_method password --profile my ReadVms --Filters.VmIds[] i-00000003 | jq .Vms | grep 'i-00000003' > /dev/null
+oapi-cli  --config="./local-tests-cfg.json" --authentication_method password --profile my ReadVms --Filters.VmIds[] i-00000001 | jq .Vms | grep 'i-00000001' > /dev/null
 echo "[Test Read vms with user 0 (my) is not empty, with conf (separate argument) Ok]"
 
 trap "echo '[Test CreateVms with Tags using oapi-cli variable FAIL]'" ERR
