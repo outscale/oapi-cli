@@ -12,7 +12,7 @@ To create a VM named "foo" using `osc-cli`, you'd need to extract the `VmId` man
 
 ```sh
 vm_id=$(osc-cli api CreateVms --ImageId $id | jq .Vms[0].VmId)
-osc-cli api CreateTags --ResourceIds "[$vm_id]" --Tags '[{ "Key": "Name", "Value": "foo" }]'
+oapi-cli CreateTags --ResourceIds "[$vm_id]" --Tags '[ { "Key": "Name", "Value": "foo" } ]'
 ```
 
 If you also want to retrieve the `ImageId` dynamically:
@@ -20,7 +20,7 @@ If you also want to retrieve the `ImageId` dynamically:
 ```sh
 image_id=$(osc-cli api ReadImages --Filters '{"ImageNames": ["RockyLinux*"]}' | jq .Images[0].ImageId)
 vm_id=$(osc-cli api CreateVms --ImageId $image_id | jq .Vms[0].VmId)
-osc-cli api CreateTags --ResourceIds "[$vm_id]" --Tags '[{ "Key": "Name", "Value": "foo" }]'
+oapi-cli CreateTags --ResourceIds "[$vm_id]" --Tags '[ { "Key": "Name", "Value": "foo" } ]'
 ```
 
 ---
@@ -30,7 +30,7 @@ osc-cli api CreateTags --ResourceIds "[$vm_id]" --Tags '[{ "Key": "Name", "Value
 ```sh
 oapi-cli ReadImages --Filter.ImageNames[] "RockyLinux*" --set-var img_id=Images.0.ImageId \
   CreateVms --ImageId --var img_id --set-var vm_id=Vms.0.VmId \
-  CreateTags --ResourceIds[] --var vm_id --Tags.0.Key Name ..Value "foo"
+  CreateTags --ResourceIds[] --var vm_id --Tags.0.Key Name ..Value "my vm"
 ```
 
 ✅ No need for intermediate shell variables or `jq`
@@ -44,14 +44,14 @@ oapi-cli ReadImages --Filter.ImageNames[] "RockyLinux*" --set-var img_id=Images.
 ### 🧱 Traditional approach (osc-cli + jq)
 
 ```sh
-net=$(osc-cli api CreateNet --IpRange "10.0.0.0/16" | jq .Net.NetId)
+net=$(osc-cli --endpoint "http://127.0.0.1:3000" api CreateNet --IpRange "10.0.0.0/16" | jq .Net.NetId)
 
-sg=$(osc-cli api CreateSecurityGroup \
+sg=$(osc-cli --endpoint "http://127.0.0.1:3000" api CreateSecurityGroup \
   --NetId $net \
   --SecurityGroupName "security-group-example" \
   --Description "Security group example" | jq .SecurityGroup.SecurityGroupId)
 
-osc-cli api CreateSecurityGroupRule \
+osc-cli --endpoint "http://127.0.0.1:3000" api CreateSecurityGroupRule \
   --Flow "Inbound" \
   --SecurityGroupId $sg \
   --Rules '[
@@ -75,7 +75,7 @@ oapi-cli CreateNet --IpRange "10.0.0.0/16" --set-var net=Net.NetId \
   CreateSecurityGroup --NetId --var net \
     --SecurityGroupName "security-group-example" \
     --Description "Security group example" --set-var sg=SecurityGroup.SecurityGroupId \
-  CreateSecurityGroupRule --Flow Inbound --SecurityGroupId --var sg \
+  CreateSecurityGroupRule --Flow "Inbound" --SecurityGroupId --var sg \
     --Rules.0.FromPortRange 22 ..ToPortRange 22 ..IpProtocol tcp \
     ..SecurityGroupsMembers.0.AccountId 123456789012 \
     ..SecurityGroupName another-security-group
