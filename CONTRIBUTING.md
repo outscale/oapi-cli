@@ -50,7 +50,6 @@ The SDK used in this project is **generated automatically** using [Outscale's CO
 This means:
 
 - **Pull requests that change the generated SDK code will be overwritten** the next time we regenerate from `osc-api`.
-- If you want to improve the underlying SDK, consider opening an issue or PR directly in [osc-sdk-c](https://github.com/outscale/osc-sdk-c) instead.
 
 We **do** welcome contributions such as:
 
