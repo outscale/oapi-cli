@@ -9027,7 +9027,6 @@ struct osc_create_vms_arg  {
         int nb_block_device_mappings;
 	struct block_device_mapping_vm_creation *block_device_mappings;
         /*
-         *   Information about the boot mode of the OMI (`legacy` and/or `uefi`).
          */
 	char *boot_mode;
         /*
