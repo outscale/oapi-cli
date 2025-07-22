@@ -42,6 +42,7 @@
 #include <unistd.h>
 #include "osc_sdk.h"
 #include "json.h"
+#include <math.h>
 
 #define AK_SIZE 20
 #define SK_SIZE 40
@@ -175,6 +176,12 @@ static const char *calls_name[] = {
 	"DeleteVpnConnection",
 	"DeleteVpnConnectionRoute",
 	"DeregisterVmsInLoadBalancer",
+	"DisableOutscaleLoginForUsers",
+	"DisableOutscaleLoginPerUsers",
+	"DisableOutscaleLogin",
+	"EnableOutscaleLoginForUsers",
+	"EnableOutscaleLoginPerUsers",
+	"EnableOutscaleLogin",
 	"LinkFlexibleGpu",
 	"LinkInternetService",
 	"LinkLoadBalancerBackendMachines",
@@ -310,459 +317,471 @@ static const char *calls_name[] = {
 };
 
 static const char *calls_descriptions[] = {
-	"Usage: oapi-cli AcceptNetPeering --NetPeeringId=netpeeringid [OPTIONS]\n" "Accepts a Net peering request.\nTo accept this request, you must be the owner \n" "of the peer Net. If you do not accept the request within 7 days, the state of \n" "the Net peering becomes `expired`.\n\n**[NOTE]**\nA peering connection between \n" "two Nets works both ways. Therefore, when an A-to-B peering connection is \n" "accepted, any pending B-to-A peering connection is automatically rejected as \n" "redundant.\n" "\nRequired Argument: NetPeeringId \n"
+	"Usage: oapi-cli AcceptNetPeering --NetPeeringId=netpeeringid [OPTIONS]\n" "null\n" "\nRequired Argument: NetPeeringId \n"
 ,
-	"Usage: oapi-cli AddUserToUserGroup --UserGroupName=usergroupname --UserName=username [OPTIONS]\n" "Adds a user to a specified group.\n" "\nRequired Argument: UserGroupName UserName \n"
+	"Usage: oapi-cli AddUserToUserGroup --UserGroupName=usergroupname --UserName=username [OPTIONS]\n" "null\n" "\nRequired Argument: UserGroupName UserName \n"
 ,
-	"Usage: oapi-cli CheckAuthentication --Login=login --Password=password [OPTIONS]\n" "Validates the authenticity of the account.\n" "\nRequired Argument: Login Password \n"
+	"Usage: oapi-cli CheckAuthentication --Login=login --Password=password [OPTIONS]\n" "null\n" "\nRequired Argument: Login Password \n"
 ,
-	"Usage: oapi-cli CreateAccessKey [OPTIONS]\n" "Creates an access key for either your root account or an EIM user. The new key \n" "is automatically set to `ACTIVE`.\nFor more information, see [About Access \n" "Keys](https://docs.outscale.com/en/userguide/About-Access-Keys.html).\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli CreateAccessKey [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli CreateAccount --City=city --CompanyName=companyname --Country=country --CustomerId=customerid --Email=email --FirstName=firstname --LastName=lastname --ZipCode=zipcode [OPTIONS]\n" "Creates an OUTSCALE account.\n\n**[IMPORTANT]**\n* You need OUTSCALE \n" "credentials and the appropriate quotas to create an account via API. To get \n" "quotas, you can send an email to sales@outscale.com.\n* If you want to pass a \n" "numeral value as a string instead of an integer, you must wrap your string in \n" "additional quotes (for example, `'&quot;92000&quot;'`).\n\nFor more \n" "information, see [About Your \n" "Account](https://docs.outscale.com/en/userguide/About-Your-Account.html).\n" "\nRequired Argument: City CompanyName Country CustomerId Email FirstName LastName ZipCode \n"
+	"Usage: oapi-cli CreateAccount --City=city --CompanyName=companyname --Country=country --CustomerId=customerid --Email=email --FirstName=firstname --LastName=lastname --ZipCode=zipcode [OPTIONS]\n" "null\n" "\nRequired Argument: City CompanyName Country CustomerId Email FirstName LastName ZipCode \n"
 ,
-	"Usage: oapi-cli CreateApiAccessRule [OPTIONS]\n" "Creates a rule to allow access to the API from your account.\nYou need to \n" "specify at least the `CaIds` or the `IpRanges` parameter.\n\n**[NOTE]**\nBy \n" "default, your account has a set of rules allowing global access, that you can \n" "delete.\nFor more information, see [About API Access \n" "Rules](https://docs.outscale.com/en/userguide/About-API-Access-Rules.html).\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli CreateApiAccessRule [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli CreateCa --CaPem=capem [OPTIONS]\n" "Creates a Client Certificate Authority (CA).\nFor more information, see [About \n" "API Access \n" "Rules](https://docs.outscale.com/en/userguide/About-API-Access-Rules.html).\n" "\nRequired Argument: CaPem \n"
+	"Usage: oapi-cli CreateCa --CaPem=capem [OPTIONS]\n" "null\n" "\nRequired Argument: CaPem \n"
 ,
-	"Usage: oapi-cli CreateClientGateway --BgpAsn=bgpasn --PublicIp=publicip --ConnectionType=connectiontype [OPTIONS]\n" "Provides information about your client gateway.\nThis action registers \n" "information to identify the client gateway that you deployed in your \n" "network.\nTo open a tunnel to the client gateway, you must provide the \n" "communication protocol type, the fixed public IP of the gateway, and an \n" "Autonomous System Number (ASN).\nFor more information, see [About Client \n" "Gateways](https://docs.outscale.com/en/userguide/About-Client-Gateways.html).\n" "\nRequired Argument: BgpAsn PublicIp ConnectionType \n"
+	"Usage: oapi-cli CreateClientGateway --BgpAsn=bgpasn --PublicIp=publicip --ConnectionType=connectiontype [OPTIONS]\n" "null\n" "\nRequired Argument: BgpAsn PublicIp ConnectionType \n"
 ,
-	"Usage: oapi-cli CreateDedicatedGroup --CpuGeneration=cpugeneration --Name=name --SubregionName=subregionname [OPTIONS]\n" "> [WARNING]\n> This feature is currently in beta.\n\nCreates a dedicated group \n" "for virtual machines (VMs).\nFor more information, see [About Dedicated \n" "Groups](https://docs.outscale.com/en/userguide/About-Dedicated-Groups.html).\n" "\nRequired Argument: CpuGeneration Name SubregionName \n"
+	"Usage: oapi-cli CreateDedicatedGroup --CpuGeneration=cpugeneration --Name=name --SubregionName=subregionname [OPTIONS]\n" "null\n" "\nRequired Argument: CpuGeneration Name SubregionName \n"
 ,
-	"Usage: oapi-cli CreateDhcpOptions [OPTIONS]\n" "Creates a set of DHCP options, that you can then associate with a Net using the \n" "[UpdateNet](#updatenet) method.\nFor more information, see [About DHCP \n" "Options](https://docs.outscale.com/en/userguide/About-DHCP-Options.html).\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli CreateDhcpOptions [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli CreateDirectLinkInterface --DirectLinkId=directlinkid --DirectLinkInterface=directlinkinterface [OPTIONS]\n" "Creates a DirectLink interface.\nDirectLink interfaces enable you to reach one \n" "of your Nets through a virtual gateway.\nFor more information, see [About \n" "DirectLink](https://docs.outscale.com/en/userguide/About-DirectLink.html).\n" "\nRequired Argument: DirectLinkId DirectLinkInterface \n"
+	"Usage: oapi-cli CreateDirectLinkInterface --DirectLinkId=directlinkid --DirectLinkInterface=directlinkinterface [OPTIONS]\n" "null\n" "\nRequired Argument: DirectLinkId DirectLinkInterface \n"
 ,
-	"Usage: oapi-cli CreateDirectLink --Bandwidth=bandwidth --DirectLinkName=directlinkname --Location=location [OPTIONS]\n" "Creates a DirectLink between a customer network and a specified DirectLink \n" "location.\nFor more information, see [About \n" "DirectLink](https://docs.outscale.com/en/userguide/About-DirectLink.html).\n" "\nRequired Argument: Bandwidth DirectLinkName Location \n"
+	"Usage: oapi-cli CreateDirectLink --Bandwidth=bandwidth --DirectLinkName=directlinkname --Location=location [OPTIONS]\n" "null\n" "\nRequired Argument: Bandwidth DirectLinkName Location \n"
 ,
-	"Usage: oapi-cli CreateFlexibleGpu --ModelName=modelname --SubregionName=subregionname [OPTIONS]\n" "Allocates a flexible GPU (fGPU) to your account.\nYou can then attach this fGPU \n" "to a virtual machine (VM).\nFor more information, see [About Flexible \n" "GPUs](https://docs.outscale.com/en/userguide/About-Flexible-GPUs.html).\n" "\nRequired Argument: ModelName SubregionName \n"
+	"Usage: oapi-cli CreateFlexibleGpu --ModelName=modelname --SubregionName=subregionname [OPTIONS]\n" "null\n" "\nRequired Argument: ModelName SubregionName \n"
 ,
-	"Usage: oapi-cli CreateImageExportTask --OsuExport=osuexport --ImageId=imageid [OPTIONS]\n" "Exports an OUTSCALE machine image (OMI) to an OUTSCALE Object Storage (OOS) \n" "bucket.\nThis enables you to copy an OMI between accounts in different \n" "Regions.\nThis action creates the necessary snapshots and manifest file in the \n" "bucket. The OMI can then be imported to another account using a pre-signed URL \n" "of its manifest file. For more information, see [Creating a Pre-Signed \n" "URL](https://docs.outscale.com/en/userguide/Creating-a-Pre-Signed-URL.html).\nTo\n" " copy an OMI in the same Region, you can also use the \n" "[CreateImage](#createimage) method.\n\n**[IMPORTANT]**\nYou cannot export a \n" "shared or public OMI, as they do not belong to you. To do so, you must first \n" "copy it to your account. The copy then belongs to you and you can export \n" "it.\nFor more information, see [About \n" "OMIs](https://docs.outscale.com/en/userguide/About-OMIs.html).\n" "\nRequired Argument: OsuExport ImageId \n"
+	"Usage: oapi-cli CreateImageExportTask --OsuExport=osuexport --ImageId=imageid [OPTIONS]\n" "null\n" "\nRequired Argument: OsuExport ImageId \n"
 ,
-	"Usage: oapi-cli CreateImage [OPTIONS]\n" "Creates an OUTSCALE machine image (OMI).\nYou can use this method for different \n" "use cases:\n* **Creating from a VM**: You create an OMI from one of your \n" "virtual machines (VMs).<br>\n* **Copying an OMI**: You copy an existing OMI. \n" "The source OMI can be one of your own OMIs, or an OMI owned by another account \n" "that has granted you permission via the [UpdateImage](#updateimage) \n" "method.<br>\n* **Registering from a snapshot**: You register an OMI from an \n" "existing snapshot. The source snapshot can be one of your own snapshots, or a \n" "snapshot owned by another account that has granted you permission via the \n" "[UpdateSnapshot](#updatesnapshot) method.<br>\n* **Registering from a bucket by \n" "using a manifest file**: You register an OMI from the manifest file of an OMI \n" "that was exported to an OUTSCALE Object Storage (OOS) bucket. First, the owner \n" "of the source OMI must export it to the bucket by using the \n" "[CreateImageExportTask](#createimageexporttask) method. Then, they must grant \n" "you permission to read the manifest file via a pre-signed URL. For more \n" "information, see [Creating a Pre-Signed \n" "URL](https://docs.outscale.com/en/userguide/Creating-a-Pre-Signed-URL.html).\n\n\n" "**[TIP]**\nRegistering from a bucket enables you to copy an OMI across \n" "Regions.\n\nFor more information, see [About \n" "OMIs](https://docs.outscale.com/en/userguide/About-OMIs.html).\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli CreateImage [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli CreateInternetService [OPTIONS]\n" "Creates an internet service you can use with a Net.\nAn internet service \n" "enables virtual machines (VMs) launched in a Net to connect to the Internet. It \n" "allows routing of incoming and outgoing Internet traffic and management of \n" "public IP addresses.\nFor more information, see [About Internet \n" "Services](https://docs.outscale.com/en/userguide/About-Internet-Services.html).\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli CreateInternetService [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli CreateKeypair --KeypairName=keypairname [OPTIONS]\n" "Creates a keypair to use with your virtual machines (VMs).\nYou can use this \n" "method in two different ways:\n* **Creating a keypair**: In that case, 3DS \n" "OUTSCALE creates a 2048-bit RSA keypair, stores its public key in your account, \n" "and returns its private key in the response of the call so that you can save it \n" "in a file.\nWhen you save the returned private key, make sure you replace the \n" "`\\n` escape sequences with real line breaks.\n* **Importing a keypair created \n" "locally**: If you already have a keypair that you have created locally with a \n" "third-party tool, you can import its public key in your account. The following \n" "types of key can be imported: RSA (2048 bits or preferably 4096 bits), Ed25519, \n" "and ECDSA (256 bits, 384 bits, or 521 bits). The following formats can be used: \n" "PEM, PKCS8, RFC4716, and OpenSSH.\n\nFor more information, see [About \n" "Keypairs](https://docs.outscale.com/en/userguide/About-Keypairs.html).\n" "\nRequired Argument: KeypairName \n"
+	"Usage: oapi-cli CreateKeypair --KeypairName=keypairname [OPTIONS]\n" "null\n" "\nRequired Argument: KeypairName \n"
 ,
-	"Usage: oapi-cli CreateListenerRule --VmIds=vmids --Listener=listener --ListenerRule=listenerrule [OPTIONS]\n" "Creates a rule for traffic redirection for the specified listener. Each rule \n" "must have either the `HostNamePattern` or `PathPattern` parameter specified. \n" "Rules are treated in priority order, from the highest value to the lowest \n" "value.\nOnce the rule is created, you need to register backend VMs with it. For \n" "more information, see the \n" "[RegisterVmsInLoadBalancer](#registervmsinloadbalancer) method.\nFor more \n" "information, see [About Load \n" "Balancers](https://docs.outscale.com/en/userguide/About-Load-Balancers.html).\n" "\nRequired Argument: VmIds Listener ListenerRule \n"
+	"Usage: oapi-cli CreateListenerRule --VmIds=vmids --Listener=listener --ListenerRule=listenerrule [OPTIONS]\n" "null\n" "\nRequired Argument: VmIds Listener ListenerRule \n"
 ,
-	"Usage: oapi-cli CreateLoadBalancerListeners --Listeners=listeners --LoadBalancerName=loadbalancername [OPTIONS]\n" "Creates one or more listeners for a specified load balancer.\nFor more \n" "information, see [About Load \n" "Balancers](https://docs.outscale.com/en/userguide/About-Load-Balancers.html).\n" "\nRequired Argument: Listeners LoadBalancerName \n"
+	"Usage: oapi-cli CreateLoadBalancerListeners --Listeners=listeners --LoadBalancerName=loadbalancername [OPTIONS]\n" "null\n" "\nRequired Argument: Listeners LoadBalancerName \n"
 ,
-	"Usage: oapi-cli CreateLoadBalancerPolicy --PolicyType=policytype --LoadBalancerName=loadbalancername --PolicyName=policyname [OPTIONS]\n" "Creates a stickiness policy with sticky session lifetimes defined by the \n" "browser lifetime.\nThe created policy can be used with HTTP or HTTPS listeners \n" "only.\nIf this policy is implemented by a load balancer, this load balancer \n" "uses this cookie in all incoming requests to direct them to the specified \n" "backend server virtual machine (VM). If this cookie is not present, the load \n" "balancer sends the request to any other server according to its load-balancing \n" "algorithm.\n\nYou can also create a stickiness policy with sticky session \n" "lifetimes following the lifetime of an application-generated cookie.\nUnlike \n" "the other type of stickiness policy, the lifetime of the special Load Balancer \n" "Unit (LBU) cookie follows the lifetime of the application-generated cookie \n" "specified in the policy configuration. The load balancer inserts a new \n" "stickiness cookie only when the application response includes a new application \n" "cookie.\nThe session stops being sticky if the application cookie is removed or \n" "expires, until a new application cookie is issued.\nFor more information, see \n" "[About Load \n" "Balancers](https://docs.outscale.com/en/userguide/About-Load-Balancers.html).\n" "\nRequired Argument: PolicyType LoadBalancerName PolicyName \n"
+	"Usage: oapi-cli CreateLoadBalancerPolicy --PolicyType=policytype --LoadBalancerName=loadbalancername --PolicyName=policyname [OPTIONS]\n" "null\n" "\nRequired Argument: PolicyType LoadBalancerName PolicyName \n"
 ,
-	"Usage: oapi-cli CreateLoadBalancer --Listeners=listeners --LoadBalancerName=loadbalancername [OPTIONS]\n" "Creates a load balancer.\nThe load balancer is created with a unique Domain \n" "Name Service (DNS) name. It receives the incoming traffic and routes it to its \n" "registered virtual machines (VMs).\nBy default, this action creates an \n" "Internet-facing load balancer, resolving to public IPs. To create an internal \n" "load balancer in a Net, resolving to private IPs, use the `LoadBalancerType` \n" "parameter.\nYou must specify either the `Subnets` or the `SubregionNames` \n" "parameters.\nFor more information, see [About Load \n" "Balancers](https://docs.outscale.com/en/userguide/About-Load-Balancers.html).\n" "\nRequired Argument: Listeners LoadBalancerName \n"
+	"Usage: oapi-cli CreateLoadBalancer --Listeners=listeners --LoadBalancerName=loadbalancername [OPTIONS]\n" "null\n" "\nRequired Argument: Listeners LoadBalancerName \n"
 ,
-	"Usage: oapi-cli CreateLoadBalancerTags --LoadBalancerNames=loadbalancernames --Tags=tags [OPTIONS]\n" "Adds one or more tags to the specified load balancers.\nIf a tag with the same \n" "key already exists for the load balancer, the tag value is replaced.\nFor more \n" "information, see [About \n" "Tags](https://docs.outscale.com/en/userguide/About-Tags.html).\n" "\nRequired Argument: LoadBalancerNames Tags \n"
+	"Usage: oapi-cli CreateLoadBalancerTags --LoadBalancerNames=loadbalancernames --Tags=tags [OPTIONS]\n" "null\n" "\nRequired Argument: LoadBalancerNames Tags \n"
 ,
-	"Usage: oapi-cli CreateNatService --PublicIpId=publicipid --SubnetId=subnetid [OPTIONS]\n" "Creates a network address translation (NAT) service in the specified public \n" "Subnet of a Net.\nA NAT service enables virtual machines (VMs) placed in the \n" "private Subnet of this Net to connect to the Internet, without being accessible \n" "from the Internet.\nWhen creating a NAT service, you specify the allocation ID \n" "of the public IP you want to use as public IP for the NAT service. Once the NAT \n" "service is created, you need to create a route in the route table of the \n" "private Subnet, with 0.0.0.0/0 as destination and the ID of the NAT service as \n" "target. For more information, see [LinkPublicIP](#linkpublicip) and \n" "[CreateRoute](#createroute).\nThis action also enables you to create multiple \n" "NAT services in the same Net (one per public Subnet).\n\n**[IMPORTANT]**\nYou \n" "cannot modify the public IP associated with a NAT service after its creation. \n" "To do so, you need to delete the NAT service and create a new one with another \n" "public IP.\nFor more information, see [About NAT \n" "Services](https://docs.outscale.com/en/userguide/About-NAT-Services.html).\n" "\nRequired Argument: PublicIpId SubnetId \n"
+	"Usage: oapi-cli CreateNatService --PublicIpId=publicipid --SubnetId=subnetid [OPTIONS]\n" "null\n" "\nRequired Argument: PublicIpId SubnetId \n"
 ,
-	"Usage: oapi-cli CreateNetAccessPoint --ServiceName=servicename --NetId=netid [OPTIONS]\n" "Creates a Net access point to access an OUTSCALE service from this Net without \n" "using the Internet and public IPs.\nYou specify the service using its name. For \n" "more information about the available services, see \n" "[ReadNetAccessPointServices](#readnetaccesspointservices). \nTo control the \n" "routing of traffic between the Net and the specified service, you can specify \n" "one or more route tables. Virtual machines placed in Subnets associated with \n" "the specified route table thus use the Net access point to access the service. \n" "When you specify a route table, a route is automatically added to it with the \n" "destination set to the prefix list ID of the service, and the target set to the \n" "ID of the access point.\nWhen a Net access point is created, a public IP is \n" "automatically allocated to your account and used for the Net access point. This \n" "public IP is not connected to the Internet. It is counted in your quota, but it \n" "is not billed. \nFor more information, see [About Net Access \n" "Points](https://docs.outscale.com/en/userguide/About-Net-Access-Points.html).\n" "\nRequired Argument: ServiceName NetId \n"
+	"Usage: oapi-cli CreateNetAccessPoint --ServiceName=servicename --NetId=netid [OPTIONS]\n" "null\n" "\nRequired Argument: ServiceName NetId \n"
 ,
-	"Usage: oapi-cli CreateNetPeering --AccepterNetId=accepternetid --SourceNetId=sourcenetid [OPTIONS]\n" "Requests a Net peering between a Net you own and a peer Net that belongs to you \n" "or another account.\nThis action creates a Net peering that remains in the \n" "`pending-acceptance` state until it is accepted by the owner of the peer Net. \n" "If the owner of the peer Net does not accept the request within 7 days, the \n" "state of the Net peering becomes `expired`. For more information, see \n" "[AcceptNetPeering](#acceptnetpeering).\n\n**[IMPORTANT]**\n* Peered Nets must \n" "contain at least one virtual machine (VM) each before the creation of the Net \n" "peering.\n* The two Nets must not have overlapping IP ranges. Otherwise, the \n" "Net peering is in the `failed` state.\n* A peering connection between two Nets \n" "works both ways. If an A-to-B connection is already created and accepted, \n" "creating a B-to-A connection is not necessary and would be automatically \n" "rejected.\n\nFor more information, see [About Net \n" "Peerings](https://docs.outscale.com/en/userguide/About-Net-Peerings.html).\n" "\nRequired Argument: AccepterNetId SourceNetId \n"
+	"Usage: oapi-cli CreateNetPeering --AccepterNetId=accepternetid --SourceNetId=sourcenetid [OPTIONS]\n" "null\n" "\nRequired Argument: AccepterNetId SourceNetId \n"
 ,
-	"Usage: oapi-cli CreateNet --IpRange=iprange [OPTIONS]\n" "Creates a Net with a specified IP range.\nThe IP range (network range) of your \n" "Net must be between a /28 netmask (16 IPs) and a /16 netmask (65536 IPs).\nFor \n" "more information, see [About \n" "Nets](https://docs.outscale.com/en/userguide/About-Nets.html).\n" "\nRequired Argument: IpRange \n"
+	"Usage: oapi-cli CreateNet --IpRange=iprange [OPTIONS]\n" "null\n" "\nRequired Argument: IpRange \n"
 ,
-	"Usage: oapi-cli CreateNic --SubnetId=subnetid [OPTIONS]\n" "Creates a network interface card (NIC) in the specified Subnet.\nFor more \n" "information, see [About \n" "NICs](https://docs.outscale.com/en/userguide/About-NICs.html).\n" "\nRequired Argument: SubnetId \n"
+	"Usage: oapi-cli CreateNic --SubnetId=subnetid [OPTIONS]\n" "null\n" "\nRequired Argument: SubnetId \n"
 ,
-	"Usage: oapi-cli CreatePolicy --Document=document --PolicyName=policyname [OPTIONS]\n" "Creates a managed policy to apply to a user.\nThis action creates a policy \n" "version and sets v1 as the default one.\n" "\nRequired Argument: Document PolicyName \n"
+	"Usage: oapi-cli CreatePolicy --Document=document --PolicyName=policyname [OPTIONS]\n" "null\n" "\nRequired Argument: Document PolicyName \n"
 ,
-	"Usage: oapi-cli CreatePolicyVersion --Document=document --PolicyOrn=policyorn [OPTIONS]\n" "Creates a version of a specified managed policy.\nA managed policy can have up \n" "to five versions.\n" "\nRequired Argument: Document PolicyOrn \n"
+	"Usage: oapi-cli CreatePolicyVersion --Document=document --PolicyOrn=policyorn [OPTIONS]\n" "null\n" "\nRequired Argument: Document PolicyOrn \n"
 ,
-	"Usage: oapi-cli CreateProductType --Description=description [OPTIONS]\n" "Creates a product type you can associate with an OMI for consumption monitoring \n" "and billing purposes.\n" "\nRequired Argument: Description \n"
+	"Usage: oapi-cli CreateProductType --Description=description [OPTIONS]\n" "null\n" "\nRequired Argument: Description \n"
 ,
-	"Usage: oapi-cli CreatePublicIp [OPTIONS]\n" "Acquires a public IP for your account.\nA public IP is a static IP designed for \n" "dynamic Cloud computing. It can be associated with a virtual machine (VM) in \n" "the public Cloud or in a Net, a network interface card (NIC), a NAT \n" "service.\nFor more information, see [About Public \n" "IPs](https://docs.outscale.com/en/userguide/About-Public-IPs.html).\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli CreatePublicIp [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli CreateRoute --DestinationIpRange=destinationiprange --RouteTableId=routetableid [OPTIONS]\n" "Creates a route in a specified route table within a specified Net.\nYou must \n" "specify one of the following elements as the target:\n\n* Net peering\n* NAT \n" "VM\n* Internet service\n* Virtual gateway\n* NAT service\n* Network interface \n" "card (NIC)\n\nThe routing algorithm is based on the most specific match.\nFor \n" "more information, see [About Route \n" "Tables](https://docs.outscale.com/en/userguide/About-Route-Tables.html).\n" "\nRequired Argument: DestinationIpRange RouteTableId \n"
+	"Usage: oapi-cli CreateRoute --DestinationIpRange=destinationiprange --RouteTableId=routetableid [OPTIONS]\n" "null\n" "\nRequired Argument: DestinationIpRange RouteTableId \n"
 ,
-	"Usage: oapi-cli CreateRouteTable --NetId=netid [OPTIONS]\n" "Creates a route table for a specified Net.\nYou can then add routes and \n" "associate this route table with a Subnet.\nFor more information, see [About \n" "Route Tables](https://docs.outscale.com/en/userguide/About-Route-Tables.html).\n" "\nRequired Argument: NetId \n"
+	"Usage: oapi-cli CreateRouteTable --NetId=netid [OPTIONS]\n" "null\n" "\nRequired Argument: NetId \n"
 ,
-	"Usage: oapi-cli CreateSecurityGroup --Description=description --SecurityGroupName=securitygroupname [OPTIONS]\n" "Creates a security group.\nThis action creates a security group either in the \n" "public Cloud or in a specified Net. By default, a default security group for \n" "use in the public Cloud and a default security group for use in a Net are \n" "created.\nWhen launching a virtual machine (VM), if no security group is \n" "explicitly specified, the appropriate default security group is assigned to the \n" "VM. Default security groups include a default rule granting VMs network access \n" "to each other.\nWhen creating a security group, you specify a name. Two \n" "security groups for use in the public Cloud or for use in a Net cannot have the \n" "same name.\nYou can have up to 500 security groups in the public Cloud. You can \n" "create up to 500 security groups per Net.\nTo add or remove rules, use the \n" "[CreateSecurityGroupRule](#createsecuritygrouprule) method.\nFor more \n" "information, see [About Security \n" "Groups](https://docs.outscale.com/en/userguide/About-Security-Groups.html).\n" "\nRequired Argument: Description SecurityGroupName \n"
+	"Usage: oapi-cli CreateSecurityGroup --Description=description --SecurityGroupName=securitygroupname [OPTIONS]\n" "null\n" "\nRequired Argument: Description SecurityGroupName \n"
 ,
-	"Usage: oapi-cli CreateSecurityGroupRule --SecurityGroupId=securitygroupid --Flow=flow [OPTIONS]\n" "Adds one or more rules to a security group.\nUse the `SecurityGroupId` \n" "parameter to specify the security group for which you want to create a \n" "rule.\nUse the `Flow` parameter to specify if you want an inbound rule or an \n" "outbound rule.\nAn inbound rule allows the security group to receive \n" "traffic:\n* Either from a specific IP range (`IpRange` parameter) on a specific \n" "port range (`FromPortRange` and `ToPortRange` parameters) and specific protocol \n" "(`IpProtocol` parameter).\n* Or from another specific security group \n" "(`SecurityGroupAccountIdToLink` and `SecurityGroupNameToLink` \n" "parameters).\n\n(Net only) An outbound rule works similarly but allows the \n" "security group to send traffic rather than receive traffic.\n\nAlternatively, \n" "you can use the `Rules` parameter to add several rules at the same \n" "time.\n\n**[NOTE]**\n* The modifications are effective as quickly as possible, \n" "but a small delay may occur.\n* By default, traffic between two security groups \n" "is allowed through both public and private IPs. To restrict traffic to private \n" "IPs only, contact our Support team at support@outscale.com.\n\nFor more \n" "information, see [About Security Group \n" "Rules](https://docs.outscale.com/en/userguide/About-Security-Group-Rules.html).\n" "\nRequired Argument: SecurityGroupId Flow \n"
+	"Usage: oapi-cli CreateSecurityGroupRule --SecurityGroupId=securitygroupid --Flow=flow [OPTIONS]\n" "null\n" "\nRequired Argument: SecurityGroupId Flow \n"
 ,
-	"Usage: oapi-cli CreateServerCertificate --Body=body --PrivateKey=privatekey --Name=name [OPTIONS]\n" "Creates a server certificate and its matching private key.\nThese elements can \n" "be used with other services (for example, to configure SSL termination on load \n" "balancers).\nYou can also specify the chain of intermediate certification \n" "authorities if your certificate is not directly signed by a root one. You can \n" "specify multiple intermediate certification authorities in the \n" "`CertificateChain` parameter. To do so, concatenate all certificates in the \n" "correct order (the first certificate must be the authority of your certificate, \n" "the second must be the authority of the first one, and so on).\nThe private key \n" "must be a RSA key in PKCS1 form. To check this, open the PEM file and ensure \n" "its header reads as follows: BEGIN RSA PRIVATE KEY.\n[IMPORTANT]\nThis private \n" "key must not be protected by a password or a passphrase.\nFor more information, \n" "see [About Server Certificates in \n" "EIM](https://docs.outscale.com/en/userguide/About-Server-Certificates-in-EIM.htm\n" "l).\n" "\nRequired Argument: Body PrivateKey Name \n"
+	"Usage: oapi-cli CreateServerCertificate --Body=body --PrivateKey=privatekey --Name=name [OPTIONS]\n" "null\n" "\nRequired Argument: Body PrivateKey Name \n"
 ,
-	"Usage: oapi-cli CreateSnapshotExportTask --OsuExport=osuexport --SnapshotId=snapshotid [OPTIONS]\n" "Exports a snapshot to an OUTSCALE Object Storage (OOS) bucket that belongs to \n" "you. This action enables you to create a backup of your snapshot.\nYou can \n" "share this snapshot with others accounts by granting permission to read it via \n" "pre-signed URLs. For more information, see [Creating a Pre-Signed \n" "URL](https://docs.outscale.com/en/userguide/Creating-a-Pre-Signed-URL.html).\nFo\n" "r more information, see [About \n" "Snapshots](https://docs.outscale.com/en/userguide/About-Snapshots.html).\n" "\nRequired Argument: OsuExport SnapshotId \n"
+	"Usage: oapi-cli CreateSnapshotExportTask --OsuExport=osuexport --SnapshotId=snapshotid [OPTIONS]\n" "null\n" "\nRequired Argument: OsuExport SnapshotId \n"
 ,
-	"Usage: oapi-cli CreateSnapshot [OPTIONS]\n" "Creates a snapshot. Snapshots are point-in-time images of a volume that you can \n" "use to back up your data or to create replicas of this volume.\nYou can use \n" "this method in three different ways:\n* **Creating from a volume**: You create \n" "a snapshot from one of your volumes.\n* **Copying a snapshot**: You copy an \n" "existing snapshot. The source snapshot can be one of your own snapshots, or a \n" "snapshot owned by another account that has granted you permission via the \n" "[UpdateSnapshot](#updatesnapshot) method.\n* **Importing from a bucket**: You \n" "import a snapshot located in an OUTSCALE Object Storage (OOS) bucket. First, \n" "the owner of the source snapshot must export it to a bucket by using the \n" "[CreateSnapshotExportTask](#createsnapshotexporttask) method. Then, they must \n" "grant you permission to read the snapshot via a pre-signed URL. For more \n" "information, see [Creating a Pre-Signed \n" "URL](https://docs.outscale.com/en/userguide/Creating-a-Pre-Signed-URL.html).\n\n\n" "**[NOTE]**\nIn case of excessive use of the snapshot creation feature on the \n" "same volume over a short period of time, 3DS OUTSCALE reserves the right to \n" "temporarily block the feature.\n\nFor more information, see [About \n" "Snapshots](https://docs.outscale.com/en/userguide/About-Snapshots.html).\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli CreateSnapshot [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli CreateSubnet --IpRange=iprange --NetId=netid [OPTIONS]\n" "Creates a Subnet in an existing Net.\nTo create a Subnet in a Net, you have to \n" "provide the ID of the Net and the IP range for the Subnet (its network range). \n" "Once the Subnet is created, you cannot modify its IP range.\nFor more \n" "information, see [About \n" "Nets](https://docs.outscale.com/en/userguide/About-Nets.html).\n" "\nRequired Argument: IpRange NetId \n"
+	"Usage: oapi-cli CreateSubnet --IpRange=iprange --NetId=netid [OPTIONS]\n" "null\n" "\nRequired Argument: IpRange NetId \n"
 ,
-	"Usage: oapi-cli CreateTags --ResourceIds=resourceids --Tags=tags [OPTIONS]\n" "Adds one or more tags to the specified resources.\nIf a tag with the same key \n" "already exists for the resource, the tag value is replaced.\nYou can tag the \n" "following resources using their IDs:\n\n* Client gateways (cgw-xxxxxxxx)\n* \n" "DHCP options (dopt-xxxxxxxx)\n* Images (ami-xxxxxxxx)\n* Internet services \n" "(igw-xxxxxxxx)\n* Keypairs (key-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx)\n* NAT \n" "services (nat-xxxxxxxx)\n* Net endpoints (vpce-xxxxxxxx)\n* Net peerings \n" "(vpcx-xxxxxxxx)\n* Nets (vpc-xxxxxxxx)\n* Network interface cards (NIC) \n" "(eni-xxxxxxxx)\n* OMI export tasks (image-export-xxxxxxxx)\n* OMIs \n" "(ami-xxxxxxxx)\n* Public IPs (eipalloc-xxxxxxxx)\n* Route tables \n" "(rtb-xxxxxxxx)\n* Security groups (sg-xxxxxxxx)\n* Snapshot export tasks \n" "(snap-export-xxxxxxxx)\n* Snapshots (snap-xxxxxxxx)\n* Subnets \n" "(subnet-xxxxxxxx)\n* Virtual gateways (vgw-xxxxxxxx)\n* Virtual machines (VMs) \n" "(i-xxxxxxxx)\n* Volumes (vol-xxxxxxxx)\n* VPN connections (vpn-xxxxxxxx)\n\nFor \n" "more information, see [About \n" "Tags](https://docs.outscale.com/en/userguide/About-Tags.html).\n" "\nRequired Argument: ResourceIds Tags \n"
+	"Usage: oapi-cli CreateTags --ResourceIds=resourceids --Tags=tags [OPTIONS]\n" "null\n" "\nRequired Argument: ResourceIds Tags \n"
 ,
-	"Usage: oapi-cli CreateUserGroup --UserGroupName=usergroupname [OPTIONS]\n" "Creates a group to which you can add users.\nYou can also add an inline policy \n" "or link a managed policy to the group, which is applied to all its users.\n" "\nRequired Argument: UserGroupName \n"
+	"Usage: oapi-cli CreateUserGroup --UserGroupName=usergroupname [OPTIONS]\n" "null\n" "\nRequired Argument: UserGroupName \n"
 ,
-	"Usage: oapi-cli CreateUser --UserName=username [OPTIONS]\n" "Creates an EIM user for your account.\nFor more information, see [About EIM \n" "Users](https://docs.outscale.com/en/userguide/About-EIM-Users.html).\n" "\nRequired Argument: UserName \n"
+	"Usage: oapi-cli CreateUser --UserName=username [OPTIONS]\n" "null\n" "\nRequired Argument: UserName \n"
 ,
-	"Usage: oapi-cli CreateVirtualGateway --ConnectionType=connectiontype [OPTIONS]\n" "Creates a virtual gateway.\nA virtual gateway is the access point on the Net \n" "side of a VPN connection.\nFor more information, see [About Virtual \n" "Gateways](https://docs.outscale.com/en/userguide/About-Virtual-Gateways.html).\n" "\nRequired Argument: ConnectionType \n"
+	"Usage: oapi-cli CreateVirtualGateway --ConnectionType=connectiontype [OPTIONS]\n" "null\n" "\nRequired Argument: ConnectionType \n"
 ,
-	"Usage: oapi-cli CreateVmGroup --SecurityGroupIds=securitygroupids --SubnetId=subnetid --VmGroupName=vmgroupname --VmTemplateId=vmtemplateid --VmCount=vmcount [OPTIONS]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nCreates a group of virtual machines (VMs) containing the same \n" "characteristics as a specified VM template, and then launches them.\nYou can \n" "create up to 100 VM groups in your account.\n" "\nRequired Argument: SecurityGroupIds SubnetId VmGroupName VmTemplateId VmCount \n"
+	"Usage: oapi-cli CreateVmGroup --SecurityGroupIds=securitygroupids --SubnetId=subnetid --VmGroupName=vmgroupname --VmTemplateId=vmtemplateid --VmCount=vmcount [OPTIONS]\n" "null\n" "\nRequired Argument: SecurityGroupIds SubnetId VmGroupName VmTemplateId VmCount \n"
 ,
-	"Usage: oapi-cli CreateVmTemplate --CpuCores=cpucores --CpuGeneration=cpugeneration --ImageId=imageid --Ram=ram --VmTemplateName=vmtemplatename [OPTIONS]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nCreates a virtual machine (VM) template. You can then use the VM \n" "template to create VM groups.\nYou can create up to 50 VM templates in your \n" "account.\n" "\nRequired Argument: CpuCores CpuGeneration ImageId Ram VmTemplateName \n"
+	"Usage: oapi-cli CreateVmTemplate --CpuCores=cpucores --CpuGeneration=cpugeneration --ImageId=imageid --Ram=ram --VmTemplateName=vmtemplatename [OPTIONS]\n" "null\n" "\nRequired Argument: CpuCores CpuGeneration ImageId Ram VmTemplateName \n"
 ,
-	"Usage: oapi-cli CreateVms --ImageId=imageid [OPTIONS]\n" "Creates virtual machines (VMs), and then launches them.\nThis action enables \n" "you to create a specified number of VMs using an OUTSCALE machine image (OMI) \n" "that you are allowed to use, and then to automatically launch them.\nThe VMs \n" "remain in the `pending` state until they are created and ready to be used. Once \n" "automatically launched, they are in the `running` state.\nTo check the state of \n" "your VMs, call the [ReadVms](#readvms) method.\nIf not specified, the security \n" "group used by the service is the default one.\nThe metadata server enables you \n" "to get the public key provided when the VM is launched. Official OMIs contain a \n" "script to get this public key and put it inside the VM to provide secure access \n" "without password.\nFor more information, see [About \n" "VMs](https://docs.outscale.com/en/userguide/About-VMs.html).\n" "\nRequired Argument: ImageId \n"
+	"Usage: oapi-cli CreateVms --ImageId=imageid [OPTIONS]\n" "null\n" "\nRequired Argument: ImageId \n"
 ,
-	"Usage: oapi-cli CreateVolume --SubregionName=subregionname [OPTIONS]\n" "Creates a Block Storage Unit (BSU) volume in a specified Region.\nBSU volumes \n" "can be attached to a virtual machine (VM) in the same Subregion. You can create \n" "an empty volume or restore a volume from an existing snapshot.\nYou can create \n" "the following volume types: Enterprise (`io1`) for provisioned IOPS SSD \n" "volumes, Performance (`gp2`) for general purpose SSD volumes, or Magnetic \n" "(`standard`) volumes.\nFor more information, see [About \n" "Volumes](https://docs.outscale.com/en/userguide/About-Volumes.html).\n" "\nRequired Argument: SubregionName \n"
+	"Usage: oapi-cli CreateVolume --SubregionName=subregionname [OPTIONS]\n" "null\n" "\nRequired Argument: SubregionName \n"
 ,
-	"Usage: oapi-cli CreateVpnConnection --ClientGatewayId=clientgatewayid --ConnectionType=connectiontype --VirtualGatewayId=virtualgatewayid [OPTIONS]\n" "Creates a VPN connection between a specified virtual gateway and a specified \n" "client gateway.\nYou can create only one VPN connection between a virtual \n" "gateway and a client gateway.\n\n**[IMPORTANT]**\nThis action can be done only \n" "if the virtual gateway is in the `available` state.\nFor more information, see \n" "[About VPN \n" "Connections](https://docs.outscale.com/en/userguide/About-VPN-Connections.html).\n" "\nRequired Argument: ClientGatewayId ConnectionType VirtualGatewayId \n"
+	"Usage: oapi-cli CreateVpnConnection --ClientGatewayId=clientgatewayid --ConnectionType=connectiontype --VirtualGatewayId=virtualgatewayid [OPTIONS]\n" "null\n" "\nRequired Argument: ClientGatewayId ConnectionType VirtualGatewayId \n"
 ,
-	"Usage: oapi-cli CreateVpnConnectionRoute --DestinationIpRange=destinationiprange --VpnConnectionId=vpnconnectionid [OPTIONS]\n" "Creates a static route to a VPN connection.\nThis enables you to select the \n" "network flows sent by the virtual gateway to the target VPN connection.\nFor \n" "more information, see [About Routing Configuration for VPN \n" "Connections](https://docs.outscale.com/en/userguide/About-Routing-Configuration-\n" "for-VPN-Connections.html).\n" "\nRequired Argument: DestinationIpRange VpnConnectionId \n"
+	"Usage: oapi-cli CreateVpnConnectionRoute --DestinationIpRange=destinationiprange --VpnConnectionId=vpnconnectionid [OPTIONS]\n" "null\n" "\nRequired Argument: DestinationIpRange VpnConnectionId \n"
 ,
-	"Usage: oapi-cli DeleteAccessKey --AccessKeyId=accesskeyid [OPTIONS]\n" "Deletes the specified access key of either your root account or an EIM \n" "user.\nThe access key of an EIM user must be in the `INACTIVE` state to be \n" "deleted.\n" "\nRequired Argument: AccessKeyId \n"
+	"Usage: oapi-cli DeleteAccessKey --AccessKeyId=accesskeyid [OPTIONS]\n" "null\n" "\nRequired Argument: AccessKeyId \n"
 ,
-	"Usage: oapi-cli DeleteApiAccessRule --ApiAccessRuleId=apiaccessruleid [OPTIONS]\n" "Deletes a specified API access rule.\n\n**[IMPORTANT]**\nYou cannot delete the \n" "last remaining API access rule. However, if you delete all the API access rules \n" "that allow you to access the APIs, you need to contact the Support team to \n" "regain access. For more information, see [Technical \n" "Support](https://docs.outscale.com/en/userguide/Technical-Support.html).\n" "\nRequired Argument: ApiAccessRuleId \n"
+	"Usage: oapi-cli DeleteApiAccessRule --ApiAccessRuleId=apiaccessruleid [OPTIONS]\n" "null\n" "\nRequired Argument: ApiAccessRuleId \n"
 ,
-	"Usage: oapi-cli DeleteCa --CaId=caid [OPTIONS]\n" "Deletes a specified Client Certificate Authority (CA).\n" "\nRequired Argument: CaId \n"
+	"Usage: oapi-cli DeleteCa --CaId=caid [OPTIONS]\n" "null\n" "\nRequired Argument: CaId \n"
 ,
-	"Usage: oapi-cli DeleteClientGateway --ClientGatewayId=clientgatewayid [OPTIONS]\n" "Deletes a client gateway.\nYou must delete the VPN connection before deleting \n" "the client gateway.\n" "\nRequired Argument: ClientGatewayId \n"
+	"Usage: oapi-cli DeleteClientGateway --ClientGatewayId=clientgatewayid [OPTIONS]\n" "null\n" "\nRequired Argument: ClientGatewayId \n"
 ,
-	"Usage: oapi-cli DeleteDedicatedGroup --DedicatedGroupId=dedicatedgroupid [OPTIONS]\n" "> [WARNING]\n> This feature is currently in beta.\n\nDeletes a specified \n" "dedicated group of virtual machines (VMs).\n\n**[WARNING]**\nA dedicated group \n" "can be deleted only if no VM or Net is in the dedicated group. Otherwise, you \n" "need to force the deletion.\nIf you force the deletion:\n- all VMs are \n" "terminated.\n- all Nets are deleted, and all resources associated with Nets are \n" "detached.\n" "\nRequired Argument: DedicatedGroupId \n"
+	"Usage: oapi-cli DeleteDedicatedGroup --DedicatedGroupId=dedicatedgroupid [OPTIONS]\n" "null\n" "\nRequired Argument: DedicatedGroupId \n"
 ,
-	"Usage: oapi-cli DeleteDhcpOptions --DhcpOptionsSetId=dhcpoptionssetid [OPTIONS]\n" "Deletes a specified DHCP options set.\nBefore deleting a DHCP options set, you \n" "must disassociate it from the Nets you associated it with. To do so, you need \n" "to associate with each Net a new set of DHCP options, or the `default` one if \n" "you do not want to associate any DHCP options with the \n" "Net.\n\n**[IMPORTANT]**\nYou cannot delete the `default` set.\n" "\nRequired Argument: DhcpOptionsSetId \n"
+	"Usage: oapi-cli DeleteDhcpOptions --DhcpOptionsSetId=dhcpoptionssetid [OPTIONS]\n" "null\n" "\nRequired Argument: DhcpOptionsSetId \n"
 ,
-	"Usage: oapi-cli DeleteDirectLinkInterface --DirectLinkInterfaceId=directlinkinterfaceid [OPTIONS]\n" "Deletes a specified DirectLink interface.\n" "\nRequired Argument: DirectLinkInterfaceId \n"
+	"Usage: oapi-cli DeleteDirectLinkInterface --DirectLinkInterfaceId=directlinkinterfaceid [OPTIONS]\n" "null\n" "\nRequired Argument: DirectLinkInterfaceId \n"
 ,
-	"Usage: oapi-cli DeleteDirectLink --DirectLinkId=directlinkid [OPTIONS]\n" "Deletes a specified DirectLink.\nBefore deleting a DirectLink, ensure that all \n" "your DirectLink interfaces related to this DirectLink are deleted.\n" "\nRequired Argument: DirectLinkId \n"
+	"Usage: oapi-cli DeleteDirectLink --DirectLinkId=directlinkid [OPTIONS]\n" "null\n" "\nRequired Argument: DirectLinkId \n"
 ,
-	"Usage: oapi-cli DeleteExportTask --ExportTaskId=exporttaskid [OPTIONS]\n" "Deletes an export task.\nIf the export task is not running, the command fails \n" "and an error is returned.\n" "\nRequired Argument: ExportTaskId \n"
+	"Usage: oapi-cli DeleteExportTask --ExportTaskId=exporttaskid [OPTIONS]\n" "null\n" "\nRequired Argument: ExportTaskId \n"
 ,
-	"Usage: oapi-cli DeleteFlexibleGpu --FlexibleGpuId=flexiblegpuid [OPTIONS]\n" "Releases a flexible GPU (fGPU) from your account.\nThe fGPU becomes free to be \n" "used by someone else.\n" "\nRequired Argument: FlexibleGpuId \n"
+	"Usage: oapi-cli DeleteFlexibleGpu --FlexibleGpuId=flexiblegpuid [OPTIONS]\n" "null\n" "\nRequired Argument: FlexibleGpuId \n"
 ,
-	"Usage: oapi-cli DeleteImage --ImageId=imageid [OPTIONS]\n" "Deletes an OUTSCALE machine image (OMI) so that you cannot use it anymore to \n" "launch virtual machines (VMs). However, you can still use VMs already launched \n" "from this OMI.\n" "\nRequired Argument: ImageId \n"
+	"Usage: oapi-cli DeleteImage --ImageId=imageid [OPTIONS]\n" "null\n" "\nRequired Argument: ImageId \n"
 ,
-	"Usage: oapi-cli DeleteInternetService --InternetServiceId=internetserviceid [OPTIONS]\n" "Deletes an internet service.\nBefore deleting an internet service, you must \n" "detach it from any Net it is attached to.\n" "\nRequired Argument: InternetServiceId \n"
+	"Usage: oapi-cli DeleteInternetService --InternetServiceId=internetserviceid [OPTIONS]\n" "null\n" "\nRequired Argument: InternetServiceId \n"
 ,
-	"Usage: oapi-cli DeleteKeypair [OPTIONS]\n" "Deletes the specified keypair.\nThis action deletes the public key stored by \n" "3DS OUTSCALE, thus deleting the keypair.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli DeleteKeypair [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli DeleteListenerRule --ListenerRuleName=listenerrulename [OPTIONS]\n" "Deletes a listener rule.\nThe previously active rule is disabled after deletion.\n" "\nRequired Argument: ListenerRuleName \n"
+	"Usage: oapi-cli DeleteListenerRule --ListenerRuleName=listenerrulename [OPTIONS]\n" "null\n" "\nRequired Argument: ListenerRuleName \n"
 ,
-	"Usage: oapi-cli DeleteLoadBalancerListeners --LoadBalancerName=loadbalancername --LoadBalancerPorts=loadbalancerports [OPTIONS]\n" "Deletes listeners of a specified load balancer.\n" "\nRequired Argument: LoadBalancerName LoadBalancerPorts \n"
+	"Usage: oapi-cli DeleteLoadBalancerListeners --LoadBalancerName=loadbalancername --LoadBalancerPorts=loadbalancerports [OPTIONS]\n" "null\n" "\nRequired Argument: LoadBalancerName LoadBalancerPorts \n"
 ,
-	"Usage: oapi-cli DeleteLoadBalancerPolicy --LoadBalancerName=loadbalancername --PolicyName=policyname [OPTIONS]\n" "Deletes a specified policy from a load balancer.\nIn order to be deleted, the \n" "policy must not be enabled for any listener.\n" "\nRequired Argument: LoadBalancerName PolicyName \n"
+	"Usage: oapi-cli DeleteLoadBalancerPolicy --LoadBalancerName=loadbalancername --PolicyName=policyname [OPTIONS]\n" "null\n" "\nRequired Argument: LoadBalancerName PolicyName \n"
 ,
-	"Usage: oapi-cli DeleteLoadBalancer --LoadBalancerName=loadbalancername [OPTIONS]\n" "Deletes a specified load balancer.\n" "\nRequired Argument: LoadBalancerName \n"
+	"Usage: oapi-cli DeleteLoadBalancer --LoadBalancerName=loadbalancername [OPTIONS]\n" "null\n" "\nRequired Argument: LoadBalancerName \n"
 ,
-	"Usage: oapi-cli DeleteLoadBalancerTags --LoadBalancerNames=loadbalancernames --Tags=tags [OPTIONS]\n" "Deletes one or more tags from the specified load balancers.\n" "\nRequired Argument: LoadBalancerNames Tags \n"
+	"Usage: oapi-cli DeleteLoadBalancerTags --LoadBalancerNames=loadbalancernames --Tags=tags [OPTIONS]\n" "null\n" "\nRequired Argument: LoadBalancerNames Tags \n"
 ,
-	"Usage: oapi-cli DeleteNatService --NatServiceId=natserviceid [OPTIONS]\n" "Deletes a specified network address translation (NAT) service.\nThis action \n" "disassociates the public IP from the NAT service, but does not release this \n" "public IP from your account. However, it does not delete any NAT service routes \n" "in your route tables.\n" "\nRequired Argument: NatServiceId \n"
+	"Usage: oapi-cli DeleteNatService --NatServiceId=natserviceid [OPTIONS]\n" "null\n" "\nRequired Argument: NatServiceId \n"
 ,
-	"Usage: oapi-cli DeleteNetAccessPoint --NetAccessPointId=netaccesspointid [OPTIONS]\n" "Deletes a specified Net access point.\nThis action also deletes the \n" "corresponding routes added to the route tables you specified for the Net access \n" "point.\n" "\nRequired Argument: NetAccessPointId \n"
+	"Usage: oapi-cli DeleteNetAccessPoint --NetAccessPointId=netaccesspointid [OPTIONS]\n" "null\n" "\nRequired Argument: NetAccessPointId \n"
 ,
-	"Usage: oapi-cli DeleteNetPeering --NetPeeringId=netpeeringid [OPTIONS]\n" "Deletes a Net peering.\nIf the Net peering is in the `active` state, it can be \n" "deleted either by the owner of the requester Net or the owner of the peer \n" "Net.\nIf it is in the `pending-acceptance` state, it can be deleted only by the \n" "owner of the requester Net.\nIf it is in the `rejected`, `failed`, or `expired` \n" "states, it cannot be deleted.\n" "\nRequired Argument: NetPeeringId \n"
+	"Usage: oapi-cli DeleteNetPeering --NetPeeringId=netpeeringid [OPTIONS]\n" "null\n" "\nRequired Argument: NetPeeringId \n"
 ,
-	"Usage: oapi-cli DeleteNet --NetId=netid [OPTIONS]\n" "Deletes a specified Net.\nBefore deleting the Net, you need to delete or detach \n" "all the resources associated with the Net:\n\n* Virtual machines (VMs)\n* Net \n" "peerings\n* Custom route tables\n* Public IPs allocated to resources in the \n" "Net\n* Network Interface Cards (NICs) created in the Subnets\n* Virtual \n" "gateways, internet services and NAT services\n* Load balancers\n* Security \n" "groups\n* Subnets\n" "\nRequired Argument: NetId \n"
+	"Usage: oapi-cli DeleteNet --NetId=netid [OPTIONS]\n" "null\n" "\nRequired Argument: NetId \n"
 ,
-	"Usage: oapi-cli DeleteNic --NicId=nicid [OPTIONS]\n" "Deletes the specified network interface card (NIC).\nThe network interface must \n" "not be attached to any virtual machine (VM).\n" "\nRequired Argument: NicId \n"
+	"Usage: oapi-cli DeleteNic --NicId=nicid [OPTIONS]\n" "null\n" "\nRequired Argument: NicId \n"
 ,
-	"Usage: oapi-cli DeletePolicy --PolicyOrn=policyorn [OPTIONS]\n" "Deletes a managed policy.\nBefore deleting a managed policy, you must unlink \n" "all users linked to it and delete all the versions of the policy, except the \n" "default one, using the `DeletePolicyVersion` method.\n" "\nRequired Argument: PolicyOrn \n"
+	"Usage: oapi-cli DeletePolicy --PolicyOrn=policyorn [OPTIONS]\n" "null\n" "\nRequired Argument: PolicyOrn \n"
 ,
-	"Usage: oapi-cli DeletePolicyVersion --PolicyOrn=policyorn --VersionId=versionid [OPTIONS]\n" "Deletes a specified version of a managed policy, if it is not set as the \n" "default one.\n" "\nRequired Argument: PolicyOrn VersionId \n"
+	"Usage: oapi-cli DeletePolicyVersion --PolicyOrn=policyorn --VersionId=versionid [OPTIONS]\n" "null\n" "\nRequired Argument: PolicyOrn VersionId \n"
 ,
-	"Usage: oapi-cli DeleteProductType --ProductTypeId=producttypeid [OPTIONS]\n" "Deletes a specified product type that belongs to you.\n\n**[WARNING]**\nThe \n" "product type must not be associated with one or more OMIs to be deleted. \n" "Otherwise, you need to force the deletion.\nIf you force the deletion, the \n" "product type is deleted and remains associated with the OMIs.\n" "\nRequired Argument: ProductTypeId \n"
+	"Usage: oapi-cli DeleteProductType --ProductTypeId=producttypeid [OPTIONS]\n" "null\n" "\nRequired Argument: ProductTypeId \n"
 ,
-	"Usage: oapi-cli DeletePublicIp [OPTIONS]\n" "Releases a public IP.\nYou can release a public IP associated with your \n" "account. This address is released in the public IP pool and can be used by \n" "someone else. Before releasing a public IP, ensure you updated all your \n" "resources communicating with this address.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli DeletePublicIp [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli DeleteRoute --RouteTableId=routetableid --DestinationIpRange=destinationiprange [OPTIONS]\n" "Deletes a route from a specified route table.\n" "\nRequired Argument: RouteTableId DestinationIpRange \n"
+	"Usage: oapi-cli DeleteRoute --RouteTableId=routetableid --DestinationIpRange=destinationiprange [OPTIONS]\n" "null\n" "\nRequired Argument: RouteTableId DestinationIpRange \n"
 ,
-	"Usage: oapi-cli DeleteRouteTable --RouteTableId=routetableid [OPTIONS]\n" "Deletes a specified route table.\nBefore deleting a route table, you must \n" "disassociate it from any Subnet. You cannot delete the main route table.\n" "\nRequired Argument: RouteTableId \n"
+	"Usage: oapi-cli DeleteRouteTable --RouteTableId=routetableid [OPTIONS]\n" "null\n" "\nRequired Argument: RouteTableId \n"
 ,
-	"Usage: oapi-cli DeleteSecurityGroup [OPTIONS]\n" "Deletes a specified security group.\nYou can specify either the name of the \n" "security group or its ID.\nThis action fails if the specified group is \n" "associated with a virtual machine (VM) or referenced by another security group.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli DeleteSecurityGroup [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli DeleteSecurityGroupRule --SecurityGroupId=securitygroupid --Flow=flow [OPTIONS]\n" "Deletes one or more inbound or outbound rules from a security group. For the \n" "rule to be deleted, the values specified in the deletion request must exactly \n" "match the value of the existing rule.\nIn case of TCP and UDP protocols, you \n" "have to indicate the destination port or range of ports. In case of ICMP \n" "protocol, you have to specify the ICMP type and code numbers.\nRules (IP \n" "permissions) consist of the protocol, IP range or source security group.\nTo \n" "remove outbound access to a destination security group, we recommend to use a \n" "set of IP permissions. We also recommend to specify the protocol in a set of IP \n" "permissions.\n" "\nRequired Argument: SecurityGroupId Flow \n"
+	"Usage: oapi-cli DeleteSecurityGroupRule --SecurityGroupId=securitygroupid --Flow=flow [OPTIONS]\n" "null\n" "\nRequired Argument: SecurityGroupId Flow \n"
 ,
-	"Usage: oapi-cli DeleteServerCertificate --Name=name [OPTIONS]\n" "Deletes a specified server certificate.\n" "\nRequired Argument: Name \n"
+	"Usage: oapi-cli DeleteServerCertificate --Name=name [OPTIONS]\n" "null\n" "\nRequired Argument: Name \n"
 ,
-	"Usage: oapi-cli DeleteSnapshot --SnapshotId=snapshotid [OPTIONS]\n" "Deletes a specified snapshot.\nYou cannot delete a snapshot that is currently \n" "used by an OUTSCALE machine image (OMI). To do so, you first need to delete the \n" "corresponding OMI. For more information, see the [DeleteImage](#deleteimage) \n" "method.\n" "\nRequired Argument: SnapshotId \n"
+	"Usage: oapi-cli DeleteSnapshot --SnapshotId=snapshotid [OPTIONS]\n" "null\n" "\nRequired Argument: SnapshotId \n"
 ,
-	"Usage: oapi-cli DeleteSubnet --SubnetId=subnetid [OPTIONS]\n" "Deletes a specified Subnet.\nBefore deleting the Subnet, you need to delete all \n" "resources associated with the Subnet:\n\n* Virtual machines (VMs)\n* Network \n" "Interface Cards (NICs)\n* NAT services\n* Load balancers\n" "\nRequired Argument: SubnetId \n"
+	"Usage: oapi-cli DeleteSubnet --SubnetId=subnetid [OPTIONS]\n" "null\n" "\nRequired Argument: SubnetId \n"
 ,
-	"Usage: oapi-cli DeleteTags --ResourceIds=resourceids --Tags=tags [OPTIONS]\n" "Deletes one or more tags from the specified resources.\n" "\nRequired Argument: ResourceIds Tags \n"
+	"Usage: oapi-cli DeleteTags --ResourceIds=resourceids --Tags=tags [OPTIONS]\n" "null\n" "\nRequired Argument: ResourceIds Tags \n"
 ,
-	"Usage: oapi-cli DeleteUserGroupPolicy --UserGroupName=usergroupname --PolicyName=policyname [OPTIONS]\n" "Deletes a specified inline policy from a specific group.\n" "\nRequired Argument: UserGroupName PolicyName \n"
+	"Usage: oapi-cli DeleteUserGroupPolicy --UserGroupName=usergroupname --PolicyName=policyname [OPTIONS]\n" "null\n" "\nRequired Argument: UserGroupName PolicyName \n"
 ,
-	"Usage: oapi-cli DeleteUserGroup --UserGroupName=usergroupname [OPTIONS]\n" "Deletes a specified user group.\n\n**[WARNING]**\nThe user group must be empty \n" "of any user and must not have any linked policy. Otherwise, you need to force \n" "the deletion.\nIf you force the deletion, all inline policies will be deleted \n" "with the user group.\n" "\nRequired Argument: UserGroupName \n"
+	"Usage: oapi-cli DeleteUserGroup --UserGroupName=usergroupname [OPTIONS]\n" "null\n" "\nRequired Argument: UserGroupName \n"
 ,
-	"Usage: oapi-cli DeleteUserPolicy --UserName=username --PolicyName=policyname [OPTIONS]\n" "Deletes a specified inline policy from a specific user.\n" "\nRequired Argument: UserName PolicyName \n"
+	"Usage: oapi-cli DeleteUserPolicy --UserName=username --PolicyName=policyname [OPTIONS]\n" "null\n" "\nRequired Argument: UserName PolicyName \n"
 ,
-	"Usage: oapi-cli DeleteUser --UserName=username [OPTIONS]\n" "Deletes a specified EIM user. The EIM user must not belong to any group, nor \n" "have any key or linked policy.\n" "\nRequired Argument: UserName \n"
+	"Usage: oapi-cli DeleteUser --UserName=username [OPTIONS]\n" "null\n" "\nRequired Argument: UserName \n"
 ,
-	"Usage: oapi-cli DeleteVirtualGateway --VirtualGatewayId=virtualgatewayid [OPTIONS]\n" "Deletes a specified virtual gateway.\nBefore deleting a virtual gateway, we \n" "recommend to detach it from the Net and delete the VPN connection.\n" "\nRequired Argument: VirtualGatewayId \n"
+	"Usage: oapi-cli DeleteVirtualGateway --VirtualGatewayId=virtualgatewayid [OPTIONS]\n" "null\n" "\nRequired Argument: VirtualGatewayId \n"
 ,
-	"Usage: oapi-cli DeleteVmGroup --VmGroupId=vmgroupid [OPTIONS]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nDeletes a specified VM group.\n" "\nRequired Argument: VmGroupId \n"
+	"Usage: oapi-cli DeleteVmGroup --VmGroupId=vmgroupid [OPTIONS]\n" "null\n" "\nRequired Argument: VmGroupId \n"
 ,
-	"Usage: oapi-cli DeleteVmTemplate --VmTemplateId=vmtemplateid [OPTIONS]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nDeletes a virtual machine (VM) template.\nYou cannot delete a \n" "template currently used by a VM group.\n" "\nRequired Argument: VmTemplateId \n"
+	"Usage: oapi-cli DeleteVmTemplate --VmTemplateId=vmtemplateid [OPTIONS]\n" "null\n" "\nRequired Argument: VmTemplateId \n"
 ,
-	"Usage: oapi-cli DeleteVms --VmIds=vmids [OPTIONS]\n" "Terminates one or more virtual machines (VMs).\nThis operation is idempotent, \n" "that means that all calls succeed if you terminate a VM more than once.\n" "\nRequired Argument: VmIds \n"
+	"Usage: oapi-cli DeleteVms --VmIds=vmids [OPTIONS]\n" "null\n" "\nRequired Argument: VmIds \n"
 ,
-	"Usage: oapi-cli DeleteVolume --VolumeId=volumeid [OPTIONS]\n" "Deletes a specified Block Storage Unit (BSU) volume.\nYou can delete available \n" "volumes only, that is, volumes that are not attached to a virtual machine (VM).\n" "\nRequired Argument: VolumeId \n"
+	"Usage: oapi-cli DeleteVolume --VolumeId=volumeid [OPTIONS]\n" "null\n" "\nRequired Argument: VolumeId \n"
 ,
-	"Usage: oapi-cli DeleteVpnConnection --VpnConnectionId=vpnconnectionid [OPTIONS]\n" "Deletes a specified VPN connection.\nIf you want to delete a Net and all its \n" "dependencies, we recommend to detach the virtual gateway from the Net and \n" "delete the Net before deleting the VPN connection. This enables you to delete \n" "the Net without waiting for the VPN connection to be deleted.\n" "\nRequired Argument: VpnConnectionId \n"
+	"Usage: oapi-cli DeleteVpnConnection --VpnConnectionId=vpnconnectionid [OPTIONS]\n" "null\n" "\nRequired Argument: VpnConnectionId \n"
 ,
-	"Usage: oapi-cli DeleteVpnConnectionRoute --DestinationIpRange=destinationiprange --VpnConnectionId=vpnconnectionid [OPTIONS]\n" "Deletes a static route to a VPN connection previously created using the \n" "CreateVpnConnectionRoute method.\n" "\nRequired Argument: DestinationIpRange VpnConnectionId \n"
+	"Usage: oapi-cli DeleteVpnConnectionRoute --DestinationIpRange=destinationiprange --VpnConnectionId=vpnconnectionid [OPTIONS]\n" "null\n" "\nRequired Argument: DestinationIpRange VpnConnectionId \n"
 ,
-	"Usage: oapi-cli DeregisterVmsInLoadBalancer --BackendVmIds=backendvmids --LoadBalancerName=loadbalancername [OPTIONS]\n" "> [WARNING]\n> Deprecated: This call is deprecated and will be \n" "removed.\n\nDeregisters a specified virtual machine (VM) from a load balancer.\n" "\nRequired Argument: BackendVmIds LoadBalancerName \n"
+	"Usage: oapi-cli DeregisterVmsInLoadBalancer --BackendVmIds=backendvmids --LoadBalancerName=loadbalancername [OPTIONS]\n" "null\n" "\nRequired Argument: BackendVmIds LoadBalancerName \n"
 ,
-	"Usage: oapi-cli LinkFlexibleGpu --FlexibleGpuId=flexiblegpuid --VmId=vmid [OPTIONS]\n" "Attaches one of your allocated flexible GPUs (fGPUs) to one of your virtual \n" "machines (VMs).\nTo complete the linking of the fGPU, you need to do a \n" "stop/start of the VM. A simple restart is not sufficient, as the linking of the \n" "fGPU is done when the VM goes through the `stopped` state. For the difference \n" "between stop/start and restart, see [About VM \n" "Lifecycle](https://docs.outscale.com/en/userguide/About-VM-Lifecycle.html).\n\n*\n" "*[NOTE]**\nYou can attach fGPUs only to VMs with the `highest` (1) performance \n" "flag. For more information see [About Flexible \n" "GPUs](https://docs.outscale.com/en/userguide/About-Flexible-GPUs.html) and [VM \n" "Types](https://docs.outscale.com/en/userguide/VM-Types.html).\n" "\nRequired Argument: FlexibleGpuId VmId \n"
+	"Usage: oapi-cli DisableOutscaleLoginForUsers [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli LinkInternetService --InternetServiceId=internetserviceid --NetId=netid [OPTIONS]\n" "Attaches an internet service to a Net.\nTo enable the connection between the \n" "Internet and a Net, you must attach an internet service to this Net.\n" "\nRequired Argument: InternetServiceId NetId \n"
+	"Usage: oapi-cli DisableOutscaleLoginPerUsers [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli LinkLoadBalancerBackendMachines --LoadBalancerName=loadbalancername [OPTIONS]\n" "Attaches one or more virtual machines (VMs) to a specified load balancer. You \n" "need to specify at least the `BackendIps` or the `BackendVmIds` parameter.\nThe \n" "VMs can be in different Subnets and different Subregions than the load \n" "balancer, as long as the VMs and load balancers are all in the public Cloud or \n" "all in the same Net. It may take a little time for a VM to be registered with \n" "the load balancer. Once the VM is registered with a load balancer, it receives \n" "traffic and requests from this load balancer and is called a backend VM.\n" "\nRequired Argument: LoadBalancerName \n"
+	"Usage: oapi-cli DisableOutscaleLogin [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli LinkManagedPolicyToUserGroup --PolicyOrn=policyorn --UserGroupName=usergroupname [OPTIONS]\n" "Links a managed policy to a specific group. This policy applies to all the \n" "users contained in this group.\n" "\nRequired Argument: PolicyOrn UserGroupName \n"
+	"Usage: oapi-cli EnableOutscaleLoginForUsers [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli LinkNic --DeviceNumber=devicenumber --VmId=vmid --NicId=nicid [OPTIONS]\n" "Attaches a network interface card (NIC) to a virtual machine (VM).\nThe \n" "interface and the VM must be in the same Subregion. The VM can be either \n" "`running` or `stopped`. The NIC must be in the `available` state. For more \n" "information, see [Attaching a NIC to a \n" "VM](https://docs.outscale.com/en/userguide/Attaching-a-NIC-to-a-VM.html).\n" "\nRequired Argument: DeviceNumber VmId NicId \n"
+	"Usage: oapi-cli EnableOutscaleLoginPerUsers [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli LinkPolicy --PolicyOrn=policyorn --UserName=username [OPTIONS]\n" "Links a managed policy to a specific user.\n" "\nRequired Argument: PolicyOrn UserName \n"
+	"Usage: oapi-cli EnableOutscaleLogin [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli LinkPrivateIps --NicId=nicid [OPTIONS]\n" "Assigns one or more secondary private IPs to a specified network interface card \n" "(NIC). This action is only available in a Net. The private IPs to be assigned \n" "can be added individually using the `PrivateIps` parameter, or you can specify \n" "the number of private IPs to be automatically chosen within the Subnet range \n" "using the `SecondaryPrivateIpCount` parameter. You can specify only one of \n" "these two parameters. If none of these parameters are specified, a private IP \n" "is chosen within the Subnet range.\n" "\nRequired Argument: NicId \n"
+	"Usage: oapi-cli LinkFlexibleGpu --FlexibleGpuId=flexiblegpuid --VmId=vmid [OPTIONS]\n" "null\n" "\nRequired Argument: FlexibleGpuId VmId \n"
 ,
-	"Usage: oapi-cli LinkPublicIp [OPTIONS]\n" "Associates a public IP with a virtual machine (VM) or a network interface card \n" "(NIC), in the public Cloud or in a Net. You can associate a public IP with only \n" "one VM or network interface at a time.\nTo associate a public IP in a Net, \n" "ensure that the Net has an internet service attached. For more information, see \n" "the [LinkInternetService](#linkinternetservice) method.\nBy default, the public \n" "IP is disassociated every time you stop and start the VM. For a persistent \n" "association, you can add the `osc.fcu.eip.auto-attach` tag to the VM with the \n" "public IP as value. For more information, see the [CreateTags](#createtags) \n" "method.\n\n**[IMPORTANT]**\nYou can associate a public IP with a network \n" "address translation (NAT) service only when creating the NAT service. To modify \n" "its public IP, you need to delete the NAT service and re-create it with the new \n" "public IP. For more information, see the [CreateNatService](#createnatservice) \n" "method.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli LinkInternetService --InternetServiceId=internetserviceid --NetId=netid [OPTIONS]\n" "null\n" "\nRequired Argument: InternetServiceId NetId \n"
 ,
-	"Usage: oapi-cli LinkRouteTable --RouteTableId=routetableid --SubnetId=subnetid [OPTIONS]\n" "Associates a Subnet with a route table.\nThe Subnet and the route table must be \n" "in the same Net. The traffic is routed according to the route table defined \n" "within this Net. You can associate a route table with several Subnets.\n" "\nRequired Argument: RouteTableId SubnetId \n"
+	"Usage: oapi-cli LinkLoadBalancerBackendMachines --LoadBalancerName=loadbalancername [OPTIONS]\n" "null\n" "\nRequired Argument: LoadBalancerName \n"
 ,
-	"Usage: oapi-cli LinkVirtualGateway --NetId=netid --VirtualGatewayId=virtualgatewayid [OPTIONS]\n" "Attaches a virtual gateway to a Net.\n\n**[IMPORTANT]**\nThis action can be \n" "done only if the virtual gateway is in the `available` state.\n" "\nRequired Argument: NetId VirtualGatewayId \n"
+	"Usage: oapi-cli LinkManagedPolicyToUserGroup --PolicyOrn=policyorn --UserGroupName=usergroupname [OPTIONS]\n" "null\n" "\nRequired Argument: PolicyOrn UserGroupName \n"
 ,
-	"Usage: oapi-cli LinkVolume --DeviceName=devicename --VmId=vmid --VolumeId=volumeid [OPTIONS]\n" "Attaches a Block Storage Unit (BSU) volume to a virtual machine (VM).\nThe \n" "volume and the VM must be in the same Subregion. The VM can be running or \n" "stopped. The volume is attached to the specified VM device.\n" "\nRequired Argument: DeviceName VmId VolumeId \n"
+	"Usage: oapi-cli LinkNic --DeviceNumber=devicenumber --VmId=vmid --NicId=nicid [OPTIONS]\n" "null\n" "\nRequired Argument: DeviceNumber VmId NicId \n"
 ,
-	"Usage: oapi-cli PutUserGroupPolicy --PolicyName=policyname --PolicyDocument=policydocument --UserGroupName=usergroupname [OPTIONS]\n" "Creates or updates an inline policy included in a specified group.\nThe policy \n" "is automatically applied to all the users of the group after its creation.\n" "\nRequired Argument: PolicyName PolicyDocument UserGroupName \n"
+	"Usage: oapi-cli LinkPolicy --PolicyOrn=policyorn --UserName=username [OPTIONS]\n" "null\n" "\nRequired Argument: PolicyOrn UserName \n"
 ,
-	"Usage: oapi-cli PutUserPolicy --PolicyName=policyname --PolicyDocument=policydocument --UserName=username [OPTIONS]\n" "Creates or updates an inline policy included in a specified user.\nThe policy \n" "is automatically applied to the user after its creation.\n" "\nRequired Argument: PolicyName PolicyDocument UserName \n"
+	"Usage: oapi-cli LinkPrivateIps --NicId=nicid [OPTIONS]\n" "null\n" "\nRequired Argument: NicId \n"
 ,
-	"Usage: oapi-cli ReadAccessKeys [OPTIONS]\n" "Lists the access key IDs of either your root account or an EIM user.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli LinkPublicIp [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadAccounts [OPTIONS]\n" "Gets information about the account that sent the request.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli LinkRouteTable --RouteTableId=routetableid --SubnetId=subnetid [OPTIONS]\n" "null\n" "\nRequired Argument: RouteTableId SubnetId \n"
 ,
-	"Usage: oapi-cli ReadAdminPassword --VmId=vmid [OPTIONS]\n" "Gets the administrator password for a Windows running virtual machine \n" "(VM).\nThe administrator password is encrypted using the keypair you specified \n" "when launching the VM.\n\n**[IMPORTANT]**\n* Only RSA keypairs can decrypt the \n" "password of a Windows VM.\n* The administrator password is generated only on \n" "the first boot of the Windows VM. It is not returned after the first boot.\n" "\nRequired Argument: VmId \n"
+	"Usage: oapi-cli LinkVirtualGateway --NetId=netid --VirtualGatewayId=virtualgatewayid [OPTIONS]\n" "null\n" "\nRequired Argument: NetId VirtualGatewayId \n"
 ,
-	"Usage: oapi-cli ReadApiAccessPolicy [OPTIONS]\n" "Gets information about the API access policy of your account.\nFor more \n" "information, see [About Your API Access \n" "Policy](https://docs.outscale.com/en/userguide/About-Your-API-Access-Policy.html\n" ").\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli LinkVolume --DeviceName=devicename --VmId=vmid --VolumeId=volumeid [OPTIONS]\n" "null\n" "\nRequired Argument: DeviceName VmId VolumeId \n"
 ,
-	"Usage: oapi-cli ReadApiAccessRules [OPTIONS]\n" "Lists one or more API access rules.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli PutUserGroupPolicy --PolicyName=policyname --PolicyDocument=policydocument --UserGroupName=usergroupname [OPTIONS]\n" "null\n" "\nRequired Argument: PolicyName PolicyDocument UserGroupName \n"
 ,
-	"Usage: oapi-cli ReadApiLogs [OPTIONS]\n" "Lists the logs of the API calls you have performed with this \n" "account.\n\n**[IMPORTANT]**\nPast logs are accessible for up to 32 days.\nBy \n" "default, the retrieved interval is 48 hours. If neither of the \n" "`QueryDateBefore` nor `QueryDateAfter` parameters are specified, logs from the \n" "past 48 hours are retrieved. If you only specify one of two, logs are retrieved \n" "from a 2-day interval based on the date you provided. To retrieve logs beyond a \n" "2-day interval, specify both parameters.\nFor more information, see [About \n" "OMS](https://docs.outscale.com/en/userguide/About-OMS.html).\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli PutUserPolicy --PolicyName=policyname --PolicyDocument=policydocument --UserName=username [OPTIONS]\n" "null\n" "\nRequired Argument: PolicyName PolicyDocument UserName \n"
 ,
-	"Usage: oapi-cli ReadCas [OPTIONS]\n" "Gets information about one or more of your Client Certificate Authorities (CAs).\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadAccessKeys [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadCatalog [OPTIONS]\n" "Returns the price list of OUTSCALE services for the current Region.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadAccounts [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadCatalogs [OPTIONS]\n" "Returns the price list of OUTSCALE services for the current Region within a \n" "specific time period.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadAdminPassword --VmId=vmid [OPTIONS]\n" "null\n" "\nRequired Argument: VmId \n"
 ,
-	"Usage: oapi-cli ReadClientGateways [OPTIONS]\n" "Lists one or more of your client gateways.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadApiAccessPolicy [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadConsoleOutput --VmId=vmid [OPTIONS]\n" "Gets the console output for a virtual machine (VM). This console is not in \n" "real-time. It is refreshed every two seconds and provides the most recent 64 \n" "KiB output.\n\n**[IMPORTANT]**\nOn Windows VMs, the console is handled only on \n" "the first boot. It returns no output after the first boot.\n" "\nRequired Argument: VmId \n"
+	"Usage: oapi-cli ReadApiAccessRules [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadConsumptionAccount --FromDate=fromdate --ToDate=todate [OPTIONS]\n" "Gets information about the consumption of your account for each billable \n" "resource within the specified time period.\n" "\nRequired Argument: FromDate ToDate \n"
+	"Usage: oapi-cli ReadApiLogs [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadDedicatedGroups [OPTIONS]\n" "> [WARNING]\n> This feature is currently in beta.\n\nList one or more dedicated \n" "groups of virtual machines (VMs).\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadCas [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadDhcpOptions [OPTIONS]\n" "Gets information about the content of one or more DHCP options sets.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadCatalog [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadDirectLinkInterfaces [OPTIONS]\n" "Lists one or more of your DirectLink interfaces.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadCatalogs [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadDirectLinks [OPTIONS]\n" "Lists all DirectLinks in the Region.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadClientGateways [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadEntitiesLinkedToPolicy [OPTIONS]\n" "Lists all entities (account, users, or user groups) linked to a specific \n" "managed policy.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadConsoleOutput --VmId=vmid [OPTIONS]\n" "null\n" "\nRequired Argument: VmId \n"
 ,
-	"Usage: oapi-cli ReadFlexibleGpuCatalog [OPTIONS]\n" "Lists all flexible GPUs available in the public catalog.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadConsumptionAccount --FromDate=fromdate --ToDate=todate [OPTIONS]\n" "null\n" "\nRequired Argument: FromDate ToDate \n"
 ,
-	"Usage: oapi-cli ReadFlexibleGpus [OPTIONS]\n" "Lists one or more flexible GPUs (fGPUs) allocated to your account.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadDedicatedGroups [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadImageExportTasks [OPTIONS]\n" "Lists one or more image export tasks.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadDhcpOptions [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadImages [OPTIONS]\n" "Lists one or more OUTSCALE machine images (OMIs) you can use.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadDirectLinkInterfaces [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadInternetServices [OPTIONS]\n" "Lists one or more of your internet services.\nAn internet service enables \n" "virtual machines (VMs) launched in a Net to connect to the Internet. It allows \n" "routing of incoming and outgoing Internet traffic and management of public IP \n" "addresses.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadDirectLinks [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadKeypairs [OPTIONS]\n" "Lists one or more of your keypairs.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadEntitiesLinkedToPolicy [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadLinkedPolicies --UserName=username [OPTIONS]\n" "Lists the managed policies linked to a specified user.\n" "\nRequired Argument: UserName \n"
+	"Usage: oapi-cli ReadFlexibleGpuCatalog [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadListenerRules [OPTIONS]\n" "Lists one or more listener rules. By default, this action returns the full list \n" "of listener rules for the account.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadFlexibleGpus [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadLoadBalancerTags --LoadBalancerNames=loadbalancernames [OPTIONS]\n" "Lists the tags associated with one or more specified load balancers.\n" "\nRequired Argument: LoadBalancerNames \n"
+	"Usage: oapi-cli ReadImageExportTasks [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadLoadBalancers [OPTIONS]\n" "Lists one or more load balancers and their attributes.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadImages [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadLocations [OPTIONS]\n" "Lists the locations, corresponding to datacenters, where you can set up a \n" "DirectLink.\nFor more information, see [About \n" "DirectLink](https://docs.outscale.com/en/userguide/About-DirectLink.html).\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadInternetServices [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadManagedPoliciesLinkedToUserGroup --UserGroupName=usergroupname [OPTIONS]\n" "Lists the managed policies linked to a specified group.\n" "\nRequired Argument: UserGroupName \n"
+	"Usage: oapi-cli ReadKeypairs [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadNatServices [OPTIONS]\n" "Lists one or more network address translation (NAT) services.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadLinkedPolicies --UserName=username [OPTIONS]\n" "null\n" "\nRequired Argument: UserName \n"
 ,
-	"Usage: oapi-cli ReadNetAccessPointServices [OPTIONS]\n" "Lists OUTSCALE services available to create Net access points.\nFor more \n" "information, see [CreateNetAccessPoint](#createnetaccesspoint).\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadListenerRules [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadNetAccessPoints [OPTIONS]\n" "Lists one or more Net access points.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadLoadBalancerTags --LoadBalancerNames=loadbalancernames [OPTIONS]\n" "null\n" "\nRequired Argument: LoadBalancerNames \n"
 ,
-	"Usage: oapi-cli ReadNetPeerings [OPTIONS]\n" "Lists one or more peering connections between two Nets.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadLoadBalancers [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadNets [OPTIONS]\n" "Lists one or more Nets.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadLocations [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadNics [OPTIONS]\n" "Lists one or more network interface cards (NICs).\nA NIC is a virtual network \n" "interface that you can attach to a virtual machine (VM) in a Net.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadManagedPoliciesLinkedToUserGroup --UserGroupName=usergroupname [OPTIONS]\n" "null\n" "\nRequired Argument: UserGroupName \n"
 ,
-	"Usage: oapi-cli ReadPolicies [OPTIONS]\n" "Lists all the managed policies available for your account.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadNatServices [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadPolicy --PolicyOrn=policyorn [OPTIONS]\n" "Lists information about a specified managed policy.\n" "\nRequired Argument: PolicyOrn \n"
+	"Usage: oapi-cli ReadNetAccessPointServices [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadPolicyVersion --PolicyOrn=policyorn --VersionId=versionid [OPTIONS]\n" "Lists information about a specified version of a managed policy.\n" "\nRequired Argument: PolicyOrn VersionId \n"
+	"Usage: oapi-cli ReadNetAccessPoints [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadPolicyVersions --PolicyOrn=policyorn [OPTIONS]\n" "Lists information about all the policy versions of a specified managed policy.\n" "\nRequired Argument: PolicyOrn \n"
+	"Usage: oapi-cli ReadNetPeerings [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadProductTypes [OPTIONS]\n" "Lists one or more product types.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadNets [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadPublicCatalog [OPTIONS]\n" "Returns the price list of OUTSCALE products and services for the Region \n" "specified in the endpoint of the request. For more information, see [About \n" "Regions and \n" "Subregions](https://docs.outscale.com/en/userguide/About-Regions-and-Subregions.\n" "html).\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadNics [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadPublicIpRanges [OPTIONS]\n" "Gets the public IPv4 addresses in CIDR notation for the Region specified in the \n" "endpoint of the request. For more information, see [About Regions and \n" "Subregions](https://docs.outscale.com/en/userguide/About-Regions-and-Subregions.\n" "html).\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadPolicies [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadPublicIps [OPTIONS]\n" "Lists one or more public IPs allocated to your account.\nBy default, this \n" "action returns information about all your public IPs: available or associated \n" "with a virtual machine (VM), a network interface card (NIC) or a NAT service.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadPolicy --PolicyOrn=policyorn [OPTIONS]\n" "null\n" "\nRequired Argument: PolicyOrn \n"
 ,
-	"Usage: oapi-cli ReadQuotas [OPTIONS]\n" "Lists one or more of your quotas.\nFor more information, see [About Your \n" "Account](https://docs.outscale.com/en/userguide/About-Your-Account.html).\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadPolicyVersion --PolicyOrn=policyorn --VersionId=versionid [OPTIONS]\n" "null\n" "\nRequired Argument: PolicyOrn VersionId \n"
 ,
-	"Usage: oapi-cli ReadRegions [OPTIONS]\n" "Lists one or more Regions of the OUTSCALE Cloud.\nFor more information, see \n" "[About Regions and \n" "Subregions](https://docs.outscale.com/en/userguide/About-Regions-and-Subregions.\n" "html).\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadPolicyVersions --PolicyOrn=policyorn [OPTIONS]\n" "null\n" "\nRequired Argument: PolicyOrn \n"
 ,
-	"Usage: oapi-cli ReadRouteTables [OPTIONS]\n" "Lists one or more of your route tables.\nIn your Net, each Subnet must be \n" "associated with a route table. If a Subnet is not explicitly associated with a \n" "route table, it is implicitly associated with the main route table of the Net.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadProductTypes [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadSecurityGroups [OPTIONS]\n" "Lists one or more security groups.\nYou can specify either the name of the \n" "security groups or their IDs.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadPublicCatalog [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadServerCertificates [OPTIONS]\n" "Lists your server certificates.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadPublicIpRanges [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadSnapshotExportTasks [OPTIONS]\n" "Lists one or more snapshot export tasks.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadPublicIps [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadSnapshots [OPTIONS]\n" "Lists one or more snapshots that are available to you and the permissions to \n" "create volumes from them.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadQuotas [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadSubnets [OPTIONS]\n" "Lists one or more of your Subnets.\nIf you do not specify any Subnet ID, this \n" "action describes all of your Subnets.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadRegions [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadSubregions [OPTIONS]\n" "Lists one or more of the enabled Subregions that you can access in the current \n" "Region.\n\nFor more information, see [About Regions and \n" "Subregions](https://docs.outscale.com/en/userguide/About-Regions-and-Subregions.\n" "html).\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadRouteTables [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadTags [OPTIONS]\n" "Lists one or more tags for your resources.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadSecurityGroups [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadUnitPrice --Operation=operation --Service=service --Type=type [OPTIONS]\n" "Gets unit price information for the specified parameters.\n" "\nRequired Argument: Operation Service Type \n"
+	"Usage: oapi-cli ReadServerCertificates [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadUserGroupPolicies --UserGroupName=usergroupname [OPTIONS]\n" "Lists the names of the inline policies embedded in a specific group.\n" "\nRequired Argument: UserGroupName \n"
+	"Usage: oapi-cli ReadSnapshotExportTasks [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadUserGroupPolicy --PolicyName=policyname --UserGroupName=usergroupname [OPTIONS]\n" "Returns information about an inline policy included in a specified group.\n" "\nRequired Argument: PolicyName UserGroupName \n"
+	"Usage: oapi-cli ReadSnapshots [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadUserGroup --UserGroupName=usergroupname [OPTIONS]\n" "Lists information about a specified user group, including its users.\n" "\nRequired Argument: UserGroupName \n"
+	"Usage: oapi-cli ReadSubnets [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadUserGroupsPerUser --UserName=username [OPTIONS]\n" "Lists the groups a specified user belongs to.\n" "\nRequired Argument: UserName \n"
+	"Usage: oapi-cli ReadSubregions [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadUserGroups [OPTIONS]\n" "Lists all the user groups of the account.\nThe response can be filtered using \n" "either the PathPrefix or the UserGroupIds.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadTags [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadUserPolicies --UserName=username [OPTIONS]\n" "Lists the names of inline policies included in a specified user.\n" "\nRequired Argument: UserName \n"
+	"Usage: oapi-cli ReadUnitPrice --Operation=operation --Service=service --Type=type [OPTIONS]\n" "null\n" "\nRequired Argument: Operation Service Type \n"
 ,
-	"Usage: oapi-cli ReadUserPolicy --UserName=username --PolicyName=policyname [OPTIONS]\n" "Returns information about an inline policy included in a specified user.\n" "\nRequired Argument: UserName PolicyName \n"
+	"Usage: oapi-cli ReadUserGroupPolicies --UserGroupName=usergroupname [OPTIONS]\n" "null\n" "\nRequired Argument: UserGroupName \n"
 ,
-	"Usage: oapi-cli ReadUsers [OPTIONS]\n" "Lists all EIM users in the account.\nThe response can be filtered using the \n" "UserIds.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadUserGroupPolicy --PolicyName=policyname --UserGroupName=usergroupname [OPTIONS]\n" "null\n" "\nRequired Argument: PolicyName UserGroupName \n"
 ,
-	"Usage: oapi-cli ReadVirtualGateways [OPTIONS]\n" "Lists one or more virtual gateways.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadUserGroup --UserGroupName=usergroupname [OPTIONS]\n" "null\n" "\nRequired Argument: UserGroupName \n"
 ,
-	"Usage: oapi-cli ReadVmGroups [OPTIONS]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nLists one or more group of virtual machines (VMs).\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadUserGroupsPerUser --UserName=username [OPTIONS]\n" "null\n" "\nRequired Argument: UserName \n"
 ,
-	"Usage: oapi-cli ReadVmTemplates [OPTIONS]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nLists one or more virtual machine (VM) templates.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadUserGroups [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadVmTypes [OPTIONS]\n" "Lists one or more predefined VM types.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadUserPolicies --UserName=username [OPTIONS]\n" "null\n" "\nRequired Argument: UserName \n"
 ,
-	"Usage: oapi-cli ReadVmsHealth --LoadBalancerName=loadbalancername [OPTIONS]\n" "Lists the state of one or more backend virtual machines (VMs) registered with a \n" "specified load balancer.\n" "\nRequired Argument: LoadBalancerName \n"
+	"Usage: oapi-cli ReadUserPolicy --UserName=username --PolicyName=policyname [OPTIONS]\n" "null\n" "\nRequired Argument: UserName PolicyName \n"
 ,
-	"Usage: oapi-cli ReadVms [OPTIONS]\n" "Lists one or more of your virtual machines (VMs).\nIf you provide one or more \n" "VM IDs, this action returns a description for all of these VMs. If you do not \n" "provide any VM ID, this action returns a description for all of the VMs that \n" "belong to you. If you provide an invalid VM ID, an error is returned. If you \n" "provide the ID of a VM that does not belong to you, the description of this VM \n" "is not included in the response. The refresh interval for data returned by this \n" "action is one hour, meaning that a terminated VM may appear in the response.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadUsers [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadVmsState [OPTIONS]\n" "Lists the status of one or more virtual machines (VMs).\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadVirtualGateways [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadVolumes [OPTIONS]\n" "Lists one or more specified Block Storage Unit (BSU) volumes.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadVmGroups [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadVpnConnections [OPTIONS]\n" "Lists one or more VPN connections.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadVmTemplates [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli RebootVms --VmIds=vmids [OPTIONS]\n" "Reboots one or more virtual machines (VMs).\nThis operation sends a reboot \n" "request to one or more specified VMs. This is an asynchronous action that \n" "queues this reboot request. This action only reboots VMs that are valid and \n" "that belong to you.\n" "\nRequired Argument: VmIds \n"
+	"Usage: oapi-cli ReadVmTypes [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli RegisterVmsInLoadBalancer --BackendVmIds=backendvmids --LoadBalancerName=loadbalancername [OPTIONS]\n" "> [WARNING]\n> Deprecated: This call is deprecated and will be \n" "removed.\n\nRegisters one or more virtual machines (VMs) with a specified load \n" "balancer.\nThe VMs can be in different Subnets and different Subregions than \n" "the load balancer, as long as the VMs and load balancers are all in the public \n" "Cloud or all in the same Net. It may take a little time for a VM to be \n" "registered with the load balancer. Once the VM is registered with a load \n" "balancer, it receives traffic and requests from this load balancer and is \n" "called a backend VM.\n" "\nRequired Argument: BackendVmIds LoadBalancerName \n"
+	"Usage: oapi-cli ReadVmsHealth --LoadBalancerName=loadbalancername [OPTIONS]\n" "null\n" "\nRequired Argument: LoadBalancerName \n"
 ,
-	"Usage: oapi-cli RejectNetPeering --NetPeeringId=netpeeringid [OPTIONS]\n" "Rejects a Net peering request.\nThe Net peering must be in the \n" "`pending-acceptance` state to be rejected. The rejected Net peering is then in \n" "the `rejected` state.\n" "\nRequired Argument: NetPeeringId \n"
+	"Usage: oapi-cli ReadVms [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli RemoveUserFromUserGroup --UserGroupName=usergroupname --UserName=username [OPTIONS]\n" "Removes a specified user from a specified group.\n" "\nRequired Argument: UserGroupName UserName \n"
+	"Usage: oapi-cli ReadVmsState [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ScaleDownVmGroup --VmGroupId=vmgroupid --VmSubtraction=vmsubtraction [OPTIONS]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nDeletes virtual machines (VMs) from a VM group.\nThe oldest VMs \n" "are the first to be deleted.\n" "\nRequired Argument: VmGroupId VmSubtraction \n"
+	"Usage: oapi-cli ReadVolumes [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ScaleUpVmGroup --VmGroupId=vmgroupid --VmAddition=vmaddition [OPTIONS]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nCreates additional virtual machines (VMs) in a VM group.\nThe new \n" "VMs use the current version of the VM template.\n" "\nRequired Argument: VmGroupId VmAddition \n"
+	"Usage: oapi-cli ReadVpnConnections [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli SetDefaultPolicyVersion --PolicyOrn=policyorn --VersionId=versionid [OPTIONS]\n" "Sets a specified version of a managed policy as the default (operative) \n" "one.\nYou can modify the default version of a policy at any time.\n" "\nRequired Argument: PolicyOrn VersionId \n"
+	"Usage: oapi-cli RebootVms --VmIds=vmids [OPTIONS]\n" "null\n" "\nRequired Argument: VmIds \n"
 ,
-	"Usage: oapi-cli StartVms --VmIds=vmids [OPTIONS]\n" "Start one or more virtual machines (VMs).\nYou can start only VMs that are \n" "valid and that belong to you.\n" "\nRequired Argument: VmIds \n"
+	"Usage: oapi-cli RegisterVmsInLoadBalancer --BackendVmIds=backendvmids --LoadBalancerName=loadbalancername [OPTIONS]\n" "null\n" "\nRequired Argument: BackendVmIds LoadBalancerName \n"
 ,
-	"Usage: oapi-cli StopVms --VmIds=vmids [OPTIONS]\n" "Stops one or more running virtual machines (VMs).\nYou can stop only VMs that \n" "are valid and that belong to you. Data stored in the VM RAM is lost.\n" "\nRequired Argument: VmIds \n"
+	"Usage: oapi-cli RejectNetPeering --NetPeeringId=netpeeringid [OPTIONS]\n" "null\n" "\nRequired Argument: NetPeeringId \n"
 ,
-	"Usage: oapi-cli UnlinkFlexibleGpu --FlexibleGpuId=flexiblegpuid [OPTIONS]\n" "Detaches a flexible GPU (fGPU) from a virtual machine (VM).\nThe fGPU is in the \n" "`detaching` state until the VM is stopped, after which it becomes `allocated`. \n" "It is then available again for attachment to a VM.\n" "\nRequired Argument: FlexibleGpuId \n"
+	"Usage: oapi-cli RemoveUserFromUserGroup --UserGroupName=usergroupname --UserName=username [OPTIONS]\n" "null\n" "\nRequired Argument: UserGroupName UserName \n"
 ,
-	"Usage: oapi-cli UnlinkInternetService --InternetServiceId=internetserviceid --NetId=netid [OPTIONS]\n" "Detaches an internet service from a Net.\nThis action disables and detaches an \n" "internet service from a Net. The Net must not contain virtual machines (VMs) \n" "using public IPs nor internet-facing load balancers.\n" "\nRequired Argument: InternetServiceId NetId \n"
+	"Usage: oapi-cli ScaleDownVmGroup --VmGroupId=vmgroupid --VmSubtraction=vmsubtraction [OPTIONS]\n" "null\n" "\nRequired Argument: VmGroupId VmSubtraction \n"
 ,
-	"Usage: oapi-cli UnlinkLoadBalancerBackendMachines --LoadBalancerName=loadbalancername [OPTIONS]\n" "Detaches one or more backend virtual machines (VMs) from a load balancer. You \n" "need to specify at least the `BackendIps` or the `BackendVmIds` parameter.\n" "\nRequired Argument: LoadBalancerName \n"
+	"Usage: oapi-cli ScaleUpVmGroup --VmGroupId=vmgroupid --VmAddition=vmaddition [OPTIONS]\n" "null\n" "\nRequired Argument: VmGroupId VmAddition \n"
 ,
-	"Usage: oapi-cli UnlinkManagedPolicyFromUserGroup --PolicyOrn=policyorn --UserGroupName=usergroupname [OPTIONS]\n" "Unlinks a managed policy from a specific group.\n" "\nRequired Argument: PolicyOrn UserGroupName \n"
+	"Usage: oapi-cli SetDefaultPolicyVersion --PolicyOrn=policyorn --VersionId=versionid [OPTIONS]\n" "null\n" "\nRequired Argument: PolicyOrn VersionId \n"
 ,
-	"Usage: oapi-cli UnlinkNic --LinkNicId=linknicid [OPTIONS]\n" "Detaches a network interface card (NIC) from a virtual machine (VM).\nThe \n" "primary NIC cannot be detached.\n" "\nRequired Argument: LinkNicId \n"
+	"Usage: oapi-cli StartVms --VmIds=vmids [OPTIONS]\n" "null\n" "\nRequired Argument: VmIds \n"
 ,
-	"Usage: oapi-cli UnlinkPolicy --PolicyOrn=policyorn --UserName=username [OPTIONS]\n" "Removes a managed policy from a specific user.\n" "\nRequired Argument: PolicyOrn UserName \n"
+	"Usage: oapi-cli StopVms --VmIds=vmids [OPTIONS]\n" "null\n" "\nRequired Argument: VmIds \n"
 ,
-	"Usage: oapi-cli UnlinkPrivateIps --NicId=nicid --PrivateIps=privateips [OPTIONS]\n" "Unassigns one or more secondary private IPs from a network interface card (NIC).\n" "\nRequired Argument: NicId PrivateIps \n"
+	"Usage: oapi-cli UnlinkFlexibleGpu --FlexibleGpuId=flexiblegpuid [OPTIONS]\n" "null\n" "\nRequired Argument: FlexibleGpuId \n"
 ,
-	"Usage: oapi-cli UnlinkPublicIp [OPTIONS]\n" "Disassociates a public IP from the virtual machine (VM) or network interface \n" "card (NIC) it is associated with.\n\n**[IMPORTANT]**\nTo disassociate the \n" "public IP from a NAT service, you need to delete the NAT service. For more \n" "information, see the [DeleteNatService](#deletenatservice) method.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli UnlinkInternetService --InternetServiceId=internetserviceid --NetId=netid [OPTIONS]\n" "null\n" "\nRequired Argument: InternetServiceId NetId \n"
 ,
-	"Usage: oapi-cli UnlinkRouteTable --LinkRouteTableId=linkroutetableid [OPTIONS]\n" "Disassociates a Subnet from a route table.\nAfter disassociation, the Subnet \n" "can no longer use the routes in this route table, but uses the routes in the \n" "main route table of the Net instead.\n" "\nRequired Argument: LinkRouteTableId \n"
+	"Usage: oapi-cli UnlinkLoadBalancerBackendMachines --LoadBalancerName=loadbalancername [OPTIONS]\n" "null\n" "\nRequired Argument: LoadBalancerName \n"
 ,
-	"Usage: oapi-cli UnlinkVirtualGateway --NetId=netid --VirtualGatewayId=virtualgatewayid [OPTIONS]\n" "Detaches a virtual gateway from a Net.\nYou must wait until the virtual gateway \n" "is in the detached state before you can attach another Net to it or delete the \n" "Net it was previously attached to.\n" "\nRequired Argument: NetId VirtualGatewayId \n"
+	"Usage: oapi-cli UnlinkManagedPolicyFromUserGroup --PolicyOrn=policyorn --UserGroupName=usergroupname [OPTIONS]\n" "null\n" "\nRequired Argument: PolicyOrn UserGroupName \n"
 ,
-	"Usage: oapi-cli UnlinkVolume --VolumeId=volumeid [OPTIONS]\n" "Detaches a Block Storage Unit (BSU) volume from a virtual machine (VM).\nTo \n" "detach the root device of a VM, this VM must be stopped.\n" "\nRequired Argument: VolumeId \n"
+	"Usage: oapi-cli UnlinkNic --LinkNicId=linknicid [OPTIONS]\n" "null\n" "\nRequired Argument: LinkNicId \n"
 ,
-	"Usage: oapi-cli UpdateAccessKey --AccessKeyId=accesskeyid --State=state [OPTIONS]\n" "Modifies the attributes of the specified access key of either your root account \n" "or an EIM user.\nThe parameter `ExpirationDate` is not required when updating \n" "the state of your access key. However, if you do not specify the expiration \n" "date of an access key when updating its state, it is then set to not expire.\n" "\nRequired Argument: AccessKeyId State \n"
+	"Usage: oapi-cli UnlinkPolicy --PolicyOrn=policyorn --UserName=username [OPTIONS]\n" "null\n" "\nRequired Argument: PolicyOrn UserName \n"
 ,
-	"Usage: oapi-cli UpdateAccount [OPTIONS]\n" "Updates the account information for the account that sends the request.\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli UnlinkPrivateIps --NicId=nicid --PrivateIps=privateips [OPTIONS]\n" "null\n" "\nRequired Argument: NicId PrivateIps \n"
 ,
-	"Usage: oapi-cli UpdateApiAccessPolicy --MaxAccessKeyExpirationSeconds=maxaccesskeyexpirationseconds --RequireTrustedEnv=requiretrustedenv [OPTIONS]\n" "Updates the API access policy of your account.\n\n**[IMPORTANT]**\nOnly one API \n" "access policy can be associated with your account.\n" "\nRequired Argument: MaxAccessKeyExpirationSeconds RequireTrustedEnv \n"
+	"Usage: oapi-cli UnlinkPublicIp [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli UpdateApiAccessRule --ApiAccessRuleId=apiaccessruleid [OPTIONS]\n" "Modifies a specified API access rule.\n\n**[WARNING]**\n- The new rule you \n" "specify fully replaces the old rule. Therefore, for a parameter that is not \n" "specified, any previously set value is deleted.\n- If, as result of your \n" "modification, you no longer have access to the APIs, you will need to contact \n" "the Support team to regain access. For more information, see [Technical \n" "Support](https://docs.outscale.com/en/userguide/Technical-Support.html).\n" "\nRequired Argument: ApiAccessRuleId \n"
+	"Usage: oapi-cli UnlinkRouteTable --LinkRouteTableId=linkroutetableid [OPTIONS]\n" "null\n" "\nRequired Argument: LinkRouteTableId \n"
 ,
-	"Usage: oapi-cli UpdateCa --CaId=caid [OPTIONS]\n" "Modifies the specified attribute of a Client Certificate Authority (CA).\n" "\nRequired Argument: CaId \n"
+	"Usage: oapi-cli UnlinkVirtualGateway --NetId=netid --VirtualGatewayId=virtualgatewayid [OPTIONS]\n" "null\n" "\nRequired Argument: NetId VirtualGatewayId \n"
 ,
-	"Usage: oapi-cli UpdateDedicatedGroup --DedicatedGroupId=dedicatedgroupid --Name=name [OPTIONS]\n" "> [WARNING]\n> This feature is currently in beta.\n\nModifies the name of a \n" "specified dedicated group.\n" "\nRequired Argument: DedicatedGroupId Name \n"
+	"Usage: oapi-cli UnlinkVolume --VolumeId=volumeid [OPTIONS]\n" "null\n" "\nRequired Argument: VolumeId \n"
 ,
-	"Usage: oapi-cli UpdateDirectLinkInterface --DirectLinkInterfaceId=directlinkinterfaceid --Mtu=mtu [OPTIONS]\n" "Modifies the maximum transmission unit (MTU) of a DirectLink interface.\n" "\nRequired Argument: DirectLinkInterfaceId Mtu \n"
+	"Usage: oapi-cli UpdateAccessKey --AccessKeyId=accesskeyid --State=state [OPTIONS]\n" "null\n" "\nRequired Argument: AccessKeyId State \n"
 ,
-	"Usage: oapi-cli UpdateFlexibleGpu --FlexibleGpuId=flexiblegpuid [OPTIONS]\n" "Modifies a flexible GPU (fGPU) behavior.\n" "\nRequired Argument: FlexibleGpuId \n"
+	"Usage: oapi-cli UpdateAccount [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli UpdateImage --ImageId=imageid [OPTIONS]\n" "Modifies the access permissions for an OUTSCALE machine image (OMI).\nYou must \n" "specify either the `Additions` or the `Removals` parameter.\nAfter sharing an \n" "OMI with an account, the other account can create a copy of it that they own. \n" "For more information about copying OMIs, see [CreateImage](#createimage).\n" "\nRequired Argument: ImageId \n"
+	"Usage: oapi-cli UpdateApiAccessPolicy --MaxAccessKeyExpirationSeconds=maxaccesskeyexpirationseconds --RequireTrustedEnv=requiretrustedenv [OPTIONS]\n" "null\n" "\nRequired Argument: MaxAccessKeyExpirationSeconds RequireTrustedEnv \n"
 ,
-	"Usage: oapi-cli UpdateListenerRule --ListenerRuleName=listenerrulename [OPTIONS]\n" "Updates the pattern of the listener rule.\nThis call updates the pattern \n" "matching algorithm for incoming traffic.\n" "\nRequired Argument: ListenerRuleName \n"
+	"Usage: oapi-cli UpdateApiAccessRule --ApiAccessRuleId=apiaccessruleid [OPTIONS]\n" "null\n" "\nRequired Argument: ApiAccessRuleId \n"
 ,
-	"Usage: oapi-cli UpdateLoadBalancer --LoadBalancerName=loadbalancername [OPTIONS]\n" "Modifies the specified attribute of a load balancer. You can specify only one \n" "attribute at a time.\n\nYou can set a new SSL certificate to an SSL or HTTPS \n" "listener of a load balancer.\nThis certificate replaces any certificate used on \n" "the same load balancer and port.\n\nYou can also replace the currently enabled \n" "policy for the load balancer with another one.\nIf the `PolicyNames` parameter \n" "is empty, the currently enabled policy is disabled.\n" "\nRequired Argument: LoadBalancerName \n"
+	"Usage: oapi-cli UpdateCa --CaId=caid [OPTIONS]\n" "null\n" "\nRequired Argument: CaId \n"
 ,
-	"Usage: oapi-cli UpdateNetAccessPoint --NetAccessPointId=netaccesspointid [OPTIONS]\n" "Modifies the attributes of a Net access point.\nThis action enables you to add \n" "or remove route tables associated with the specified Net access point.\n" "\nRequired Argument: NetAccessPointId \n"
+	"Usage: oapi-cli UpdateDedicatedGroup --DedicatedGroupId=dedicatedgroupid --Name=name [OPTIONS]\n" "null\n" "\nRequired Argument: DedicatedGroupId Name \n"
 ,
-	"Usage: oapi-cli UpdateNet --DhcpOptionsSetId=dhcpoptionssetid --NetId=netid [OPTIONS]\n" "Associates a DHCP options set with a specified Net.\n" "\nRequired Argument: DhcpOptionsSetId NetId \n"
+	"Usage: oapi-cli UpdateDirectLinkInterface --DirectLinkInterfaceId=directlinkinterfaceid --Mtu=mtu [OPTIONS]\n" "null\n" "\nRequired Argument: DirectLinkInterfaceId Mtu \n"
 ,
-	"Usage: oapi-cli UpdateNic --NicId=nicid [OPTIONS]\n" "Modifies the specified network interface card (NIC). You can specify only one \n" "attribute at a time.\n" "\nRequired Argument: NicId \n"
+	"Usage: oapi-cli UpdateFlexibleGpu --FlexibleGpuId=flexiblegpuid [OPTIONS]\n" "null\n" "\nRequired Argument: FlexibleGpuId \n"
 ,
-	"Usage: oapi-cli UpdateRoutePropagation --Enable=enable --RouteTableId=routetableid --VirtualGatewayId=virtualgatewayid [OPTIONS]\n" "Configures the propagation of routes to a specified route table of a Net by a \n" "virtual gateway.\n" "\nRequired Argument: Enable RouteTableId VirtualGatewayId \n"
+	"Usage: oapi-cli UpdateImage --ImageId=imageid [OPTIONS]\n" "null\n" "\nRequired Argument: ImageId \n"
 ,
-	"Usage: oapi-cli UpdateRoute --RouteTableId=routetableid --DestinationIpRange=destinationiprange [OPTIONS]\n" "Replaces an existing route within a route table in a Net.\nYou must specify one \n" "of the following elements as the target:\n\n* Net peering\n* NAT virtual \n" "machine (VM)\n* Internet service\n* Virtual gateway\n* NAT service\n* Network \n" "interface card (NIC)\n\nThe routing algorithm is based on the most specific \n" "match.\n" "\nRequired Argument: RouteTableId DestinationIpRange \n"
+	"Usage: oapi-cli UpdateListenerRule --ListenerRuleName=listenerrulename [OPTIONS]\n" "null\n" "\nRequired Argument: ListenerRuleName \n"
 ,
-	"Usage: oapi-cli UpdateRouteTableLink --RouteTableId=routetableid --LinkRouteTableId=linkroutetableid [OPTIONS]\n" "Replaces the route table associated with a specific Subnet in a Net with \n" "another one.\nAfter the route table is replaced, the Subnet uses the routes in \n" "the new route table it is associated with.\n" "\nRequired Argument: RouteTableId LinkRouteTableId \n"
+	"Usage: oapi-cli UpdateLoadBalancer --LoadBalancerName=loadbalancername [OPTIONS]\n" "null\n" "\nRequired Argument: LoadBalancerName \n"
 ,
-	"Usage: oapi-cli UpdateServerCertificate --Name=name [OPTIONS]\n" "Modifies the name and/or the path of a specified server certificate.\n" "\nRequired Argument: Name \n"
+	"Usage: oapi-cli UpdateNetAccessPoint --NetAccessPointId=netaccesspointid [OPTIONS]\n" "null\n" "\nRequired Argument: NetAccessPointId \n"
 ,
-	"Usage: oapi-cli UpdateSnapshot --SnapshotId=snapshotid --PermissionsToCreateVolume=permissionstocreatevolume [OPTIONS]\n" "Modifies the permissions for a specified snapshot.\nYou must specify either the \n" "`Additions` or the `Removals` parameter.\nAfter sharing a snapshot with an \n" "account, the other account can create a copy of it that they own. For more \n" "information about copying snapshots, see [CreateSnapshot](#createsnapshot).\n" "\nRequired Argument: SnapshotId PermissionsToCreateVolume \n"
+	"Usage: oapi-cli UpdateNet --DhcpOptionsSetId=dhcpoptionssetid --NetId=netid [OPTIONS]\n" "null\n" "\nRequired Argument: DhcpOptionsSetId NetId \n"
 ,
-	"Usage: oapi-cli UpdateSubnet --SubnetId=subnetid --MapPublicIpOnLaunch=mappubliciponlaunch [OPTIONS]\n" "Modifies the specified attribute of a Subnet.\n" "\nRequired Argument: SubnetId MapPublicIpOnLaunch \n"
+	"Usage: oapi-cli UpdateNic --NicId=nicid [OPTIONS]\n" "null\n" "\nRequired Argument: NicId \n"
 ,
-	"Usage: oapi-cli UpdateUserGroup --UserGroupName=usergroupname [OPTIONS]\n" "Modifies the name and/or the path of a specified group.\n" "\nRequired Argument: UserGroupName \n"
+	"Usage: oapi-cli UpdateRoutePropagation --Enable=enable --RouteTableId=routetableid --VirtualGatewayId=virtualgatewayid [OPTIONS]\n" "null\n" "\nRequired Argument: Enable RouteTableId VirtualGatewayId \n"
 ,
-	"Usage: oapi-cli UpdateUser --UserName=username [OPTIONS]\n" "Modifies the name and/or the path of a specified EIM user.\n" "\nRequired Argument: UserName \n"
+	"Usage: oapi-cli UpdateRoute --RouteTableId=routetableid --DestinationIpRange=destinationiprange [OPTIONS]\n" "null\n" "\nRequired Argument: RouteTableId DestinationIpRange \n"
 ,
-	"Usage: oapi-cli UpdateVmGroup --VmGroupId=vmgroupid [OPTIONS]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nModifies the specified attributes of a group of virtual machines \n" "(VMs).\n" "\nRequired Argument: VmGroupId \n"
+	"Usage: oapi-cli UpdateRouteTableLink --RouteTableId=routetableid --LinkRouteTableId=linkroutetableid [OPTIONS]\n" "null\n" "\nRequired Argument: RouteTableId LinkRouteTableId \n"
 ,
-	"Usage: oapi-cli UpdateVm --VmId=vmid [OPTIONS]\n" "Modifies the specified attributes of a virtual machine (VM).\nYou must stop the \n" "VM before modifying the following attributes:\n* `NestedVirtualization`\n* \n" "`Performance`\n* `UserData`\n* `VmType`\n\nTo complete the update of secure \n" "boot, you need to do a stop/start of the VM. A simple restart is not \n" "sufficient, as the update is done when the VM goes through the stopped state. \n" "For the difference between stop/start and restart, see [About VM \n" "Lifecycle](https://docs.outscale.com/en/userguide/About-VM-Lifecycle.html).\n" "\nRequired Argument: VmId \n"
+	"Usage: oapi-cli UpdateServerCertificate --Name=name [OPTIONS]\n" "null\n" "\nRequired Argument: Name \n"
 ,
-	"Usage: oapi-cli UpdateVmTemplate --VmTemplateId=vmtemplateid [OPTIONS]\n" "> [WARNING]\n> This feature is currently under development and may not function \n" "properly.\n\nModifies the specified attributes of a template of virtual \n" "machines (VMs).\n" "\nRequired Argument: VmTemplateId \n"
+	"Usage: oapi-cli UpdateSnapshot --SnapshotId=snapshotid --PermissionsToCreateVolume=permissionstocreatevolume [OPTIONS]\n" "null\n" "\nRequired Argument: SnapshotId PermissionsToCreateVolume \n"
 ,
-	"Usage: oapi-cli UpdateVolume --VolumeId=volumeid [OPTIONS]\n" "Modifies the specified attributes of a volume.\nCold volumes are volumes that \n" "are attached to stopped or stopping VMs, or that are detached. Hot volumes are \n" "volumes that are attached to running VMs.\n\n**[NOTE]**\nWhen the modification \n" "is not instantaneous, the response displays the previous value. You can use the \n" "[ReadVolumes](#readvolumes) method to see the new value.\n" "\nRequired Argument: VolumeId \n"
+	"Usage: oapi-cli UpdateSubnet --SubnetId=subnetid --MapPublicIpOnLaunch=mappubliciponlaunch [OPTIONS]\n" "null\n" "\nRequired Argument: SubnetId MapPublicIpOnLaunch \n"
 ,
-	"Usage: oapi-cli UpdateVpnConnection --VpnConnectionId=vpnconnectionid [OPTIONS]\n" "Modifies the specified attributes of a VPN connection.\n" "\nRequired Argument: VpnConnectionId \n"
+	"Usage: oapi-cli UpdateUserGroup --UserGroupName=usergroupname [OPTIONS]\n" "null\n" "\nRequired Argument: UserGroupName \n"
+,
+	"Usage: oapi-cli UpdateUser --UserName=username [OPTIONS]\n" "null\n" "\nRequired Argument: UserName \n"
+,
+	"Usage: oapi-cli UpdateVmGroup --VmGroupId=vmgroupid [OPTIONS]\n" "null\n" "\nRequired Argument: VmGroupId \n"
+,
+	"Usage: oapi-cli UpdateVm --VmId=vmid [OPTIONS]\n" "null\n" "\nRequired Argument: VmId \n"
+,
+	"Usage: oapi-cli UpdateVmTemplate --VmTemplateId=vmtemplateid [OPTIONS]\n" "null\n" "\nRequired Argument: VmTemplateId \n"
+,
+	"Usage: oapi-cli UpdateVolume --VolumeId=volumeid [OPTIONS]\n" "null\n" "\nRequired Argument: VolumeId \n"
+,
+	"Usage: oapi-cli UpdateVpnConnection --VpnConnectionId=vpnconnectionid [OPTIONS]\n" "null\n" "\nRequired Argument: VpnConnectionId \n"
 ,
 	NULL
 };
@@ -980,8 +999,8 @@ static const char *calls_args_descriptions[] = {
 	"    --BlockDeviceMappings.INDEX.Bsu: ref BsuToCreate\n"
 	"        Information about the BSU volume to create.\n"
 	"        --BlockDeviceMappings.INDEX.Bsu.DeleteOnVmDeletion: bool\n"
-	"          By default or if set to true, the volume is deleted when terminating the \n"
-	"          VM. If false, the volume is not deleted when terminating the VM.\n"
+	"          If set to true, the volume is deleted when terminating the VM. If false, \n"
+	"          the volume is not deleted when terminating the VM.\n"
 	"        --BlockDeviceMappings.INDEX.Bsu.Iops: long long int\n"
 	"          The number of I/O operations per second (IOPS). This parameter must be \n"
 	"          specified only if you create an `io1` volume. The maximum number of IOPS \n"
@@ -1008,7 +1027,7 @@ static const char *calls_args_descriptions[] = {
 	"    --BlockDeviceMappings.INDEX.VirtualDeviceName: string\n"
 	"      The name of the virtual device (`ephemeralN`).\n"
 "--BootModes: array string\n"
-	"  The boot modes compatible with the OMI (`legacy` and/or `uefi`).\n"
+	"  The boot modes compatible with the OMI.\n"
 "--Description: string\n"
 	"  A description for the new OMI.\n"
 "--DryRun: bool\n"
@@ -1099,7 +1118,8 @@ static const char *calls_args_descriptions[] = {
 	"      The OUTSCALE Resource Name (ORN) of the server certificate. For more \n"
 	"      information, see [Resource Identifiers > OUTSCALE Resource Names \n"
 	"      (ORNs)](https://docs.outscale.com/en/userguide/Resource-Identifiers.html#_\n"
-	"      outscale_resource_names_orns).\n"
+	"      outscale_resource_names_orns).<br/>\nThis parameter is required for \n"
+	"      `HTTPS` and `SSL` protocols.\n"
 "--LoadBalancerName: string\n"
 	"  The name of the load balancer for which you want to create listeners.\n"
 ,
@@ -1140,7 +1160,8 @@ static const char *calls_args_descriptions[] = {
 	"      The OUTSCALE Resource Name (ORN) of the server certificate. For more \n"
 	"      information, see [Resource Identifiers > OUTSCALE Resource Names \n"
 	"      (ORNs)](https://docs.outscale.com/en/userguide/Resource-Identifiers.html#_\n"
-	"      outscale_resource_names_orns).\n"
+	"      outscale_resource_names_orns).<br/>\nThis parameter is required for \n"
+	"      `HTTPS` and `SSL` protocols.\n"
 "--LoadBalancerName: string\n"
 	"  The unique name of the load balancer, with a maximum length of 32 alphanumeric characters \n"
 	"  and dashes (`-`). This name must not start or end with a dash.\n"
@@ -1494,10 +1515,10 @@ static const char *calls_args_descriptions[] = {
 "--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--PositioningStrategy: string\n"
-	"  The positioning strategy of VMs on hypervisors. By default, or if set to `no-strategy` our \n"
-	"  orchestrator determines the most adequate position for your VMs. If set to `attract`, your \n"
-	"  VMs are deployed on the same hypervisor, which improves network performance. If set to \n"
-	"  `repulse`, your VMs are deployed on a different hypervisor, which improves fault tolerance.\n"
+	"  The positioning strategy of VMs on hypervisors. If set to `no-strategy`, our orchestrator \n"
+	"  determines the most adequate position for your VMs. If set to `attract`, your VMs are \n"
+	"  deployed on the same hypervisor, which improves network performance. If set to `repulse`, \n"
+	"  your VMs are deployed on a different hypervisor, which improves fault tolerance.\n"
 "--SecurityGroupIds: array string\n"
 	"  One or more IDs of security groups for the VM group.\n"
 "--SubnetId: string\n"
@@ -1521,7 +1542,7 @@ static const char *calls_args_descriptions[] = {
 "--CpuGeneration: string\n"
 	"  The processor generation to use for each VM (for example, `v4`).\n"
 "--CpuPerformance: string\n"
-	"  The performance of the VMs (`medium` \\| `high` \\| `highest`).\n"
+	"  The performance of the VMs.\n"
 "--Description: string\n"
 	"  A description for the VM template.\n"
 "--DryRun: bool\n"
@@ -1546,16 +1567,18 @@ static const char *calls_args_descriptions[] = {
 	"--ActionsOnNextBoot: ref ActionsOnNextBoot\n"
 	"    The action to perform on the next boot of the VM.\n"
 	"    --ActionsOnNextBoot.SecureBoot: string\n"
-	"        One action to perform on the next boot of the VM (`enable` | `disable` | \n"
-	"        `setup-mode` |`none`).\n"
+	"        One action to perform on the next boot of the VM. For more information, \n"
+	"        see [About Secure \n"
+	"        Boot](https://docs.outscale.com/en/userguide/About-Secure-Boot.html#_secur\n"
+	"        e_boot_actions).\n"
 "--BlockDeviceMappings: array ref BlockDeviceMappingVmCreation\n"
 	"  One or more block device mappings.\n"
 	"    Information about the block device mapping.\n"
 	"    --BlockDeviceMappings.INDEX.Bsu: ref BsuToCreate\n"
 	"        Information about the BSU volume to create.\n"
 	"        --BlockDeviceMappings.INDEX.Bsu.DeleteOnVmDeletion: bool\n"
-	"          By default or if set to true, the volume is deleted when terminating the \n"
-	"          VM. If false, the volume is not deleted when terminating the VM.\n"
+	"          If set to true, the volume is deleted when terminating the VM. If false, \n"
+	"          the volume is not deleted when terminating the VM.\n"
 	"        --BlockDeviceMappings.INDEX.Bsu.Iops: long long int\n"
 	"          The number of I/O operations per second (IOPS). This parameter must be \n"
 	"          specified only if you create an `io1` volume. The maximum number of IOPS \n"
@@ -1585,9 +1608,9 @@ static const char *calls_args_descriptions[] = {
 	"    --BlockDeviceMappings.INDEX.VirtualDeviceName: string\n"
 	"      The name of the virtual device (`ephemeralN`).\n"
 "--BootMode: string\n"
+	"    Information about the boot mode of the VM.\n"
 "--BootOnCreation: bool\n"
-	"  By default or if true, the VM is started on creation. If false, the VM is stopped on \n"
-	"  creation.\n"
+	"  If true, the VM is started on creation. If false, the VM is stopped on creation.\n"
 "--BsuOptimized: bool\n"
 	"  This parameter is not available. It is present in our API for the sake of historical \n"
 	"  compatibility with AWS.\n"
@@ -1650,8 +1673,8 @@ static const char *calls_args_descriptions[] = {
 	"      The ID of the Subnet for the NIC, if you create a NIC when creating a \n"
 	"      VM. This parameter is required if you create a NIC when creating the VM.\n"
 "--Performance: string\n"
-	"  The performance of the VM (`medium` \\| `high` \\| `highest`). By default, `high`. This \n"
-	"  parameter is ignored if you specify a performance flag directly in the `VmType` parameter.\n"
+	"  The performance of the VM. This parameter is ignored if you specify a performance flag \n"
+	"  directly in the `VmType` parameter.\n"
 "--Placement: ref Placement\n"
 	"    Information about the placement of the VM.\n"
 	"    --Placement.SubregionName: string\n"
@@ -1675,9 +1698,8 @@ static const char *calls_args_descriptions[] = {
 	"  Tags](https://docs.outscale.com/en/userguide/Configuring-a-VM-with-User-Data-and-OUTSCALE-Ta\n"
 	"  gs.html).\n"
 "--VmInitiatedShutdownBehavior: string\n"
-	"  The VM behavior when you stop it. By default or if set to `stop`, the VM stops. If set to \n"
-	"  `restart`, the VM stops then automatically restarts. If set to `terminate`, the VM stops \n"
-	"  and is terminated.\n"
+	"  The VM behavior when you stop it. If set to `stop`, the VM stops. If set to `restart`, the \n"
+	"  VM stops then automatically restarts. If set to `terminate`, the VM stops and is terminated.\n"
 "--VmType: string\n"
 	"  The type of VM. You can specify a TINA type (in the `tinavW.cXrYpZ` or `tinavW.cXrY` \n"
 	"  format), or an AWS type (for example, `t2.small`, which is the default value).\nIf you \n"
@@ -2069,6 +2091,28 @@ static const char *calls_args_descriptions[] = {
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
+,
+	"--DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform the action.\n"
+"--UserNames: array string\n"
+	"  The usernames of the EIM users you want to disable the Outscale login for.\n"
+,
+	"--DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform the action.\n"
+,
+	"--DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform the action.\n"
+,
+	"--DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform the action.\n"
+"--UserNames: array string\n"
+	"  The usernames of the EIM users you want to enable the Outscale login for.\n"
+,
+	"--DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform the action.\n"
+,
+	"--DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--FlexibleGpuId: string\n"
 	"  The ID of the fGPU you want to attach.\n"
 "--VmId: string\n"
@@ -2276,47 +2320,41 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 "--With: ref With\n"
 	"    The information to display in each returned log.\n"
 	"    --With.AccountId: bool\n"
-	"      By default or if set to true, the account ID is displayed.\n"
+	"      If true, the account ID is displayed.\n"
 	"    --With.CallDuration: bool\n"
-	"      By default or if set to true, the duration of the call is displayed.\n"
+	"      If true, the duration of the call is displayed.\n"
 	"    --With.QueryAccessKey: bool\n"
-	"      By default or if set to true, the access key is displayed.\n"
+	"      If true, the access key is displayed.\n"
 	"    --With.QueryApiName: bool\n"
-	"      By default or if set to true, the name of the API is displayed.\n"
+	"      If true, the name of the API is displayed.\n"
 	"    --With.QueryApiVersion: bool\n"
-	"      By default or if set to true, the version of the API is displayed.\n"
+	"      If true, the version of the API is displayed.\n"
 	"    --With.QueryCallName: bool\n"
-	"      By default or if set to true, the name of the call is displayed.\n"
+	"      If true, the name of the call is displayed.\n"
 	"    --With.QueryDate: bool\n"
-	"      By default or if set to true, the date of the call is displayed.\n"
+	"      If true, the date of the call is displayed.\n"
 	"    --With.QueryHeaderRaw: bool\n"
-	"      By default or if set to true, the raw header of the HTTP request is \n"
-	"      displayed.\n"
+	"      If true, the raw header of the HTTP request is displayed.\n"
 	"    --With.QueryHeaderSize: bool\n"
-	"      By default or if set to true, the size of the raw header of the HTTP \n"
-	"      request is displayed.\n"
+	"      If true, the size of the raw header of the HTTP request is displayed.\n"
 	"    --With.QueryIpAddress: bool\n"
-	"      By default or if set to true, the IP is displayed.\n"
+	"      If true, the IP is displayed.\n"
 	"    --With.QueryPayloadRaw: bool\n"
-	"      By default or if set to true, the raw payload of the HTTP request is \n"
-	"      displayed.\n"
+	"      If true, the raw payload of the HTTP request is displayed.\n"
 	"    --With.QueryPayloadSize: bool\n"
-	"      By default or if set to true, the size of the raw payload of the HTTP \n"
-	"      request is displayed.\n"
+	"      If true, the size of the raw payload of the HTTP request is displayed.\n"
 	"    --With.QueryUserAgent: bool\n"
-	"      By default or if set to true, the user agent of the HTTP request is \n"
-	"      displayed.\n"
+	"      If true, the user agent of the HTTP request is displayed.\n"
 	"    --With.RequestId: bool\n"
-	"      By default or if set to true, the request ID is displayed.\n"
+	"      If true, the request ID is displayed.\n"
 	"    --With.ResponseSize: bool\n"
-	"      By default or if set to true, the size of the response is displayed.\n"
+	"      If true, the size of the response is displayed.\n"
 	"    --With.ResponseStatusCode: bool\n"
-	"      By default or if set to true, the HTTP status code of the response is \n"
-	"      displayed.\n"
+	"      If true, the HTTP status code of the response is displayed.\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -2377,7 +2415,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -2391,10 +2429,10 @@ static const char *calls_args_descriptions[] = {
 	"  date-time format is also accepted, but only with a time set to midnight (for example, \n"
 	"  `2020-06-14T00:00:00.000Z`). This value is included in the time period.\n"
 "--Overall: bool\n"
-	"  By default or if false, returns only the consumption of the specific account that sends \n"
-	"  this request. If true, returns either the overall consumption of your paying account and \n"
-	"  all linked accounts (if the account that sends this request is a paying account) or returns \n"
-	"  nothing (if the account that sends this request is a linked account).\n"
+	"  If false, returns only the consumption of the specific account that sends this request. If \n"
+	"  true, returns either the overall consumption of your paying account and all linked accounts \n"
+	"  (if the account that sends this request is a paying account) or returns nothing (if the \n"
+	"  account that sends this request is a linked account).\n"
 "--ShowPrice: bool\n"
 	"  If true, the response also includes the unit price of the consumed resource (`UnitPrice`) \n"
 	"  and the total price of the consumed resource during the specified time period (`Price`), in \n"
@@ -2422,7 +2460,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -2454,7 +2492,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -2468,7 +2506,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -2480,11 +2518,10 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--EntitiesType: array string\n"
-	"  The type of entity linked to the policy (`ACCOUNT` \\| `USER` \\| `GROUP`) you want to get \n"
-	"  information about.\n"
+	"  The type of entity linked to the policy you want to get information about.\n"
 "--FirstItem: long long int\n"
 	"  The item starting the list of entities requested.\n"
 "--PolicyOrn: string\n"
@@ -2527,7 +2564,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -2551,7 +2588,7 @@ static const char *calls_args_descriptions[] = {
 	"    --Filters.BlockDeviceMappingVolumeTypes: array string\n"
 	"      The types of volumes (`standard` \\| `gp2` \\| `io1`).\n"
 	"    --Filters.BootModes: array string\n"
-	"      The boot modes compatible with the OMIs (`legacy` and/or `uefi`).\n"
+	"      The boot modes compatible with the OMIs.\n"
 	"    --Filters.Descriptions: array string\n"
 	"      The descriptions of the OMIs, provided when they were created.\n"
 	"    --Filters.FileLocations: array string\n"
@@ -2592,7 +2629,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -2618,7 +2655,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -2686,7 +2723,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -2731,7 +2768,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -2745,7 +2782,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -2773,7 +2810,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -2814,7 +2851,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -2843,7 +2880,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -2919,7 +2956,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -2967,7 +3004,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -2978,7 +3015,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -3012,7 +3049,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -3031,7 +3068,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -3080,7 +3117,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -3142,7 +3179,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -3161,7 +3198,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -3209,7 +3246,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -3240,7 +3277,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -3256,7 +3293,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -3282,7 +3319,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--Operation: string\n"
 	"  The operation associated with the catalog entry (for example, `RunInstances-OD` or \n"
@@ -3392,7 +3429,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -3480,7 +3517,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--BackendVmIds: array string\n"
 	"  One or more IDs of backend VMs.\n"
@@ -3509,7 +3546,7 @@ static const char *calls_args_descriptions[] = {
 	"    --Filters.BlockDeviceMappingVolumeIds: array string\n"
 	"      The volume IDs of the BSU volumes.\n"
 	"    --Filters.BootModes: array string\n"
-	"      The boot modes of the VMs (`legacy` \\| `uefi`).\n"
+	"      The boot modes of the VMs.\n"
 	"    --Filters.ClientTokens: array string\n"
 	"      The idempotency tokens provided when launching the VMs.\n"
 	"    --Filters.CreationDates: array string\n"
@@ -3648,11 +3685,10 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--AllVms: bool\n"
-	"  If true, includes the status of all VMs. By default or if set to false, only includes the \n"
-	"  status of running VMs.\n"
+	"  If true, includes the status of all VMs. If false, only includes the status of running VMs.\n"
 "--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersVmsState\n"
@@ -3677,7 +3713,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -3718,14 +3754,14 @@ static const char *calls_args_descriptions[] = {
 	"      The sizes of the volumes, in gibibytes (GiB).\n"
 	"    --Filters.VolumeStates: array string\n"
 	"      The states of the volumes (`creating` \\| `available` \\| `in-use` \\| \n"
-	"      `updating` \\| `deleting` \\| `error`).\n"
+	"      `deleting` \\| `error`).\n"
 	"    --Filters.VolumeTypes: array string\n"
 	"      The types of the volumes (`standard` \\| `gp2` \\| `io1`).\n"
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -3765,7 +3801,7 @@ static const char *calls_args_descriptions[] = {
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
-	"  included). By default, `100`.\n"
+	"  included).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -4003,7 +4039,7 @@ static const char *calls_args_descriptions[] = {
 "--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Mtu: long long int\n"
-	"  The maximum transmission unit (MTU) of the DirectLink interface, in bytes (always `1500`).\n"
+	"  The maximum transmission unit (MTU) of the DirectLink interface, in bytes.\n"
 ,
 	"--DeleteOnVmDeletion: bool\n"
 	"  If true, the fGPU is deleted when the VM is terminated.\n"
@@ -4279,8 +4315,10 @@ static const char *calls_args_descriptions[] = {
 	"--ActionsOnNextBoot: ref ActionsOnNextBoot\n"
 	"    The action to perform on the next boot of the VM.\n"
 	"    --ActionsOnNextBoot.SecureBoot: string\n"
-	"        One action to perform on the next boot of the VM (`enable` | `disable` | \n"
-	"        `setup-mode` |`none`).\n"
+	"        One action to perform on the next boot of the VM. For more information, \n"
+	"        see [About Secure \n"
+	"        Boot](https://docs.outscale.com/en/userguide/About-Secure-Boot.html#_secur\n"
+	"        e_boot_actions).\n"
 "--BlockDeviceMappings: array ref BlockDeviceMappingVmUpdate\n"
 	"  One or more block device mappings of the VM.\n"
 	"    Information about the block device mapping.\n"
@@ -4321,7 +4359,7 @@ static const char *calls_args_descriptions[] = {
 	"  (dedicated tenancy only) If true, nested virtualization is enabled. If false, it is \n"
 	"  disabled.\n"
 "--Performance: string\n"
-	"  The performance of the VM (`medium` \\| `high` \\| `highest`).\n"
+	"  The performance of the VM.\n"
 "--SecurityGroupIds: array string\n"
 	"  One or more IDs of security groups for the VM.\n"
 "--UserData: string\n"
@@ -4587,7 +4625,7 @@ static char *osc_strdup(const char *str) {
 		char *home = getenv("HOME");				\
 									\
 		TRY(strlen(home) + sizeof CFG_FILE > sizeof buf,	\
-		    "home path too big");				\
+		    "path of home directory is too long");				\
 		strcpy(stpcpy(buf, home), dest);			\
 	}
 #endif
@@ -5212,6 +5250,10 @@ static int account_setter(struct account *args, struct osc_str *data) {
 	if (args->mobile_number) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"MobileNumber\":", args->mobile_number);
+	   	ret += 1;
+	}
+	if (args->is_set_outscale_login_allowed) {
+		ARG_TO_JSON(OutscaleLoginAllowed, bool, args->outscale_login_allowed);
 	   	ret += 1;
 	}
 	if (args->phone_number) {
@@ -15712,6 +15754,10 @@ static int user_setter(struct user *args, struct osc_str *data) {
 	        ARG_TO_JSON_STR("\"LastModificationDate\":", args->last_modification_date);
 	   	ret += 1;
 	}
+	if (args->is_set_outscale_login_allowed) {
+		ARG_TO_JSON(OutscaleLoginAllowed, bool, args->outscale_login_allowed);
+	   	ret += 1;
+	}
 	if (args->path) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"Path\":", args->path);
@@ -16730,7 +16776,7 @@ int osc_accept_net_peering(struct osc_env *e, struct osc_str *out, struct osc_ac
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -16807,7 +16853,7 @@ int osc_add_user_to_user_group(struct osc_env *e, struct osc_str *out, struct os
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -16874,7 +16920,7 @@ int osc_check_authentication(struct osc_env *e, struct osc_str *out, struct osc_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -16946,7 +16992,7 @@ int osc_create_access_key(struct osc_env *e, struct osc_str *out, struct osc_cre
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -17084,7 +17130,7 @@ int osc_create_account(struct osc_env *e, struct osc_str *out, struct osc_create
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -17194,7 +17240,7 @@ int osc_create_api_access_rule(struct osc_env *e, struct osc_str *out, struct os
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -17261,7 +17307,7 @@ int osc_create_ca(struct osc_env *e, struct osc_str *out, struct osc_create_ca_a
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -17332,7 +17378,7 @@ int osc_create_client_gateway(struct osc_env *e, struct osc_str *out, struct osc
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -17403,7 +17449,7 @@ int osc_create_dedicated_group(struct osc_env *e, struct osc_str *out, struct os
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -17513,7 +17559,7 @@ int osc_create_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_c
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -17585,7 +17631,7 @@ int osc_create_direct_link_interface(struct osc_env *e, struct osc_str *out, str
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -17657,7 +17703,7 @@ int osc_create_direct_link(struct osc_env *e, struct osc_str *out, struct osc_cr
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -17733,7 +17779,7 @@ int osc_create_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_c
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -17805,7 +17851,7 @@ int osc_create_image_export_task(struct osc_env *e, struct osc_str *out, struct 
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -17956,7 +18002,7 @@ int osc_create_image(struct osc_env *e, struct osc_str *out, struct osc_create_i
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -18013,7 +18059,7 @@ int osc_create_internet_service(struct osc_env *e, struct osc_str *out, struct o
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -18080,7 +18126,7 @@ int osc_create_keypair(struct osc_env *e, struct osc_str *out, struct osc_create
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -18173,7 +18219,7 @@ int osc_create_listener_rule(struct osc_env *e, struct osc_str *out, struct osc_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -18253,7 +18299,7 @@ int osc_create_load_balancer_listeners(struct osc_env *e, struct osc_str *out, s
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -18334,7 +18380,7 @@ int osc_create_load_balancer_policy(struct osc_env *e, struct osc_str *out, stru
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -18490,7 +18536,7 @@ int osc_create_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -18581,7 +18627,7 @@ int osc_create_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -18653,7 +18699,7 @@ int osc_create_nat_service(struct osc_env *e, struct osc_str *out, struct osc_cr
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -18736,7 +18782,7 @@ int osc_create_net_access_point(struct osc_env *e, struct osc_str *out, struct o
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -18808,7 +18854,7 @@ int osc_create_net_peering(struct osc_env *e, struct osc_str *out, struct osc_cr
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -18875,7 +18921,7 @@ int osc_create_net(struct osc_env *e, struct osc_str *out, struct osc_create_net
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -18976,7 +19022,7 @@ int osc_create_nic(struct osc_env *e, struct osc_str *out, struct osc_create_nic
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -19053,7 +19099,7 @@ int osc_create_policy(struct osc_env *e, struct osc_str *out, struct osc_create_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -19120,7 +19166,7 @@ int osc_create_policy_version(struct osc_env *e, struct osc_str *out, struct osc
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -19187,7 +19233,7 @@ int osc_create_product_type(struct osc_env *e, struct osc_str *out, struct osc_c
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -19244,7 +19290,7 @@ int osc_create_public_ip(struct osc_env *e, struct osc_str *out, struct osc_crea
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -19336,7 +19382,7 @@ int osc_create_route(struct osc_env *e, struct osc_str *out, struct osc_create_r
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -19398,7 +19444,7 @@ int osc_create_route_table(struct osc_env *e, struct osc_str *out, struct osc_cr
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -19470,7 +19516,7 @@ int osc_create_security_group(struct osc_env *e, struct osc_str *out, struct osc
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -19583,7 +19629,7 @@ int osc_create_security_group_rule(struct osc_env *e, struct osc_str *out, struc
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -19665,7 +19711,7 @@ int osc_create_server_certificate(struct osc_env *e, struct osc_str *out, struct
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -19737,7 +19783,7 @@ int osc_create_snapshot_export_task(struct osc_env *e, struct osc_str *out, stru
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -19828,7 +19874,7 @@ int osc_create_snapshot(struct osc_env *e, struct osc_str *out, struct osc_creat
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -19900,7 +19946,7 @@ int osc_create_subnet(struct osc_env *e, struct osc_str *out, struct osc_create_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -19991,7 +20037,7 @@ int osc_create_tags(struct osc_env *e, struct osc_str *out, struct osc_create_ta
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -20058,7 +20104,7 @@ int osc_create_user_group(struct osc_env *e, struct osc_str *out, struct osc_cre
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -20130,7 +20176,7 @@ int osc_create_user(struct osc_env *e, struct osc_str *out, struct osc_create_us
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -20192,7 +20238,7 @@ int osc_create_virtual_gateway(struct osc_env *e, struct osc_str *out, struct os
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -20312,7 +20358,7 @@ int osc_create_vm_group(struct osc_env *e, struct osc_str *out, struct osc_creat
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -20425,7 +20471,7 @@ int osc_create_vm_template(struct osc_env *e, struct osc_str *out, struct osc_cr
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -20655,7 +20701,7 @@ int osc_create_vms(struct osc_env *e, struct osc_str *out, struct osc_create_vms
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -20740,7 +20786,7 @@ int osc_create_volume(struct osc_env *e, struct osc_str *out, struct osc_create_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -20816,7 +20862,7 @@ int osc_create_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -20883,7 +20929,7 @@ int osc_create_vpn_connection_route(struct osc_env *e, struct osc_str *out, stru
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -20950,7 +20996,7 @@ int osc_delete_access_key(struct osc_env *e, struct osc_str *out, struct osc_del
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -21012,7 +21058,7 @@ int osc_delete_api_access_rule(struct osc_env *e, struct osc_str *out, struct os
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -21074,7 +21120,7 @@ int osc_delete_ca(struct osc_env *e, struct osc_str *out, struct osc_delete_ca_a
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -21136,7 +21182,7 @@ int osc_delete_client_gateway(struct osc_env *e, struct osc_str *out, struct osc
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -21202,7 +21248,7 @@ int osc_delete_dedicated_group(struct osc_env *e, struct osc_str *out, struct os
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -21264,7 +21310,7 @@ int osc_delete_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_d
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -21326,7 +21372,7 @@ int osc_delete_direct_link_interface(struct osc_env *e, struct osc_str *out, str
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -21388,7 +21434,7 @@ int osc_delete_direct_link(struct osc_env *e, struct osc_str *out, struct osc_de
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -21450,7 +21496,7 @@ int osc_delete_export_task(struct osc_env *e, struct osc_str *out, struct osc_de
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -21512,7 +21558,7 @@ int osc_delete_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_d
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -21574,7 +21620,7 @@ int osc_delete_image(struct osc_env *e, struct osc_str *out, struct osc_delete_i
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -21636,7 +21682,7 @@ int osc_delete_internet_service(struct osc_env *e, struct osc_str *out, struct o
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -21703,7 +21749,7 @@ int osc_delete_keypair(struct osc_env *e, struct osc_str *out, struct osc_delete
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -21765,7 +21811,7 @@ int osc_delete_listener_rule(struct osc_env *e, struct osc_str *out, struct osc_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -21843,7 +21889,7 @@ int osc_delete_load_balancer_listeners(struct osc_env *e, struct osc_str *out, s
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -21910,7 +21956,7 @@ int osc_delete_load_balancer_policy(struct osc_env *e, struct osc_str *out, stru
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -21972,7 +22018,7 @@ int osc_delete_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -22063,7 +22109,7 @@ int osc_delete_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -22125,7 +22171,7 @@ int osc_delete_nat_service(struct osc_env *e, struct osc_str *out, struct osc_de
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -22187,7 +22233,7 @@ int osc_delete_net_access_point(struct osc_env *e, struct osc_str *out, struct o
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -22249,7 +22295,7 @@ int osc_delete_net_peering(struct osc_env *e, struct osc_str *out, struct osc_de
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -22311,7 +22357,7 @@ int osc_delete_net(struct osc_env *e, struct osc_str *out, struct osc_delete_net
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -22373,7 +22419,7 @@ int osc_delete_nic(struct osc_env *e, struct osc_str *out, struct osc_delete_nic
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -22435,7 +22481,7 @@ int osc_delete_policy(struct osc_env *e, struct osc_str *out, struct osc_delete_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -22498,7 +22544,7 @@ int osc_delete_policy_version(struct osc_env *e, struct osc_str *out, struct osc
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -22564,7 +22610,7 @@ int osc_delete_product_type(struct osc_env *e, struct osc_str *out, struct osc_d
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -22631,7 +22677,7 @@ int osc_delete_public_ip(struct osc_env *e, struct osc_str *out, struct osc_dele
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -22698,7 +22744,7 @@ int osc_delete_route(struct osc_env *e, struct osc_str *out, struct osc_delete_r
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -22760,7 +22806,7 @@ int osc_delete_route_table(struct osc_env *e, struct osc_str *out, struct osc_de
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -22827,7 +22873,7 @@ int osc_delete_security_group(struct osc_env *e, struct osc_str *out, struct osc
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -22940,7 +22986,7 @@ int osc_delete_security_group_rule(struct osc_env *e, struct osc_str *out, struc
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -23002,7 +23048,7 @@ int osc_delete_server_certificate(struct osc_env *e, struct osc_str *out, struct
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -23064,7 +23110,7 @@ int osc_delete_snapshot(struct osc_env *e, struct osc_str *out, struct osc_delet
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -23126,7 +23172,7 @@ int osc_delete_subnet(struct osc_env *e, struct osc_str *out, struct osc_delete_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -23217,7 +23263,7 @@ int osc_delete_tags(struct osc_env *e, struct osc_str *out, struct osc_delete_ta
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -23289,7 +23335,7 @@ int osc_delete_user_group_policy(struct osc_env *e, struct osc_str *out, struct 
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -23360,7 +23406,7 @@ int osc_delete_user_group(struct osc_env *e, struct osc_str *out, struct osc_del
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -23427,7 +23473,7 @@ int osc_delete_user_policy(struct osc_env *e, struct osc_str *out, struct osc_de
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -23489,7 +23535,7 @@ int osc_delete_user(struct osc_env *e, struct osc_str *out, struct osc_delete_us
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -23551,7 +23597,7 @@ int osc_delete_virtual_gateway(struct osc_env *e, struct osc_str *out, struct os
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -23613,7 +23659,7 @@ int osc_delete_vm_group(struct osc_env *e, struct osc_str *out, struct osc_delet
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -23675,7 +23721,7 @@ int osc_delete_vm_template(struct osc_env *e, struct osc_str *out, struct osc_de
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -23748,7 +23794,7 @@ int osc_delete_vms(struct osc_env *e, struct osc_str *out, struct osc_delete_vms
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -23810,7 +23856,7 @@ int osc_delete_volume(struct osc_env *e, struct osc_str *out, struct osc_delete_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -23872,7 +23918,7 @@ int osc_delete_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -23939,7 +23985,7 @@ int osc_delete_vpn_connection_route(struct osc_env *e, struct osc_str *out, stru
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -24017,7 +24063,381 @@ int osc_deregister_vms_in_load_balancer(struct osc_env *e, struct osc_str *out, 
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
+out:
+	osc_deinit_str(&data);
+	return res;
+}
+static  int disable_outscale_login_for_users_data(struct osc_env *e, struct osc_disable_outscale_login_for_users_arg *args, struct osc_str *data)
+{
+	struct osc_str end_call;
+	int ret = 0;
+	int count_args = 0;
+
+	(void)count_args; /* if use only query/header and path, this is unused */
+	osc_init_str(&end_call);
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	if (!args)
+		goto no_data;
+
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+
+no_data:
+	osc_str_append_string(&end_call, "/api/v1/DisableOutscaleLoginForUsers");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	osc_deinit_str(&end_call);
+	return !!ret;
+}
+
+int osc_disable_outscale_login_for_users(struct osc_env *e, struct osc_str *out, struct osc_disable_outscale_login_for_users_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	int r;
+
+	osc_init_str(&data);
+	r = disable_outscale_login_for_users_data(e, args, &data);
+	if (r < 0)
+		goto out;
+
+        curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = osc_easy_perform(e);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
+out:
+	osc_deinit_str(&data);
+	return res;
+}
+static  int disable_outscale_login_per_users_data(struct osc_env *e, struct osc_disable_outscale_login_per_users_arg *args, struct osc_str *data)
+{
+	struct osc_str end_call;
+	int ret = 0;
+	int count_args = 0;
+
+	(void)count_args; /* if use only query/header and path, this is unused */
+	osc_init_str(&end_call);
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	if (!args)
+		goto no_data;
+
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	if (args->user_names) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"UserNames\":[" ));
+		for (as = args->user_names; *as; ++as) {
+			if (as != args->user_names)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->user_names_str) {
+		ARG_TO_JSON(UserNames, string, args->user_names_str);
+		ret += 1;
+	}
+	osc_str_append_string(data, "}");
+
+no_data:
+	osc_str_append_string(&end_call, "/api/v1/DisableOutscaleLoginPerUsers");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	osc_deinit_str(&end_call);
+	return !!ret;
+}
+
+int osc_disable_outscale_login_per_users(struct osc_env *e, struct osc_str *out, struct osc_disable_outscale_login_per_users_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	int r;
+
+	osc_init_str(&data);
+	r = disable_outscale_login_per_users_data(e, args, &data);
+	if (r < 0)
+		goto out;
+
+        curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = osc_easy_perform(e);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
+out:
+	osc_deinit_str(&data);
+	return res;
+}
+static  int disable_outscale_login_data(struct osc_env *e, struct osc_disable_outscale_login_arg *args, struct osc_str *data)
+{
+	struct osc_str end_call;
+	int ret = 0;
+	int count_args = 0;
+
+	(void)count_args; /* if use only query/header and path, this is unused */
+	osc_init_str(&end_call);
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	if (!args)
+		goto no_data;
+
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+
+no_data:
+	osc_str_append_string(&end_call, "/api/v1/DisableOutscaleLogin");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	osc_deinit_str(&end_call);
+	return !!ret;
+}
+
+int osc_disable_outscale_login(struct osc_env *e, struct osc_str *out, struct osc_disable_outscale_login_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	int r;
+
+	osc_init_str(&data);
+	r = disable_outscale_login_data(e, args, &data);
+	if (r < 0)
+		goto out;
+
+        curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = osc_easy_perform(e);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
+out:
+	osc_deinit_str(&data);
+	return res;
+}
+static  int enable_outscale_login_for_users_data(struct osc_env *e, struct osc_enable_outscale_login_for_users_arg *args, struct osc_str *data)
+{
+	struct osc_str end_call;
+	int ret = 0;
+	int count_args = 0;
+
+	(void)count_args; /* if use only query/header and path, this is unused */
+	osc_init_str(&end_call);
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	if (!args)
+		goto no_data;
+
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+
+no_data:
+	osc_str_append_string(&end_call, "/api/v1/EnableOutscaleLoginForUsers");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	osc_deinit_str(&end_call);
+	return !!ret;
+}
+
+int osc_enable_outscale_login_for_users(struct osc_env *e, struct osc_str *out, struct osc_enable_outscale_login_for_users_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	int r;
+
+	osc_init_str(&data);
+	r = enable_outscale_login_for_users_data(e, args, &data);
+	if (r < 0)
+		goto out;
+
+        curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = osc_easy_perform(e);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
+out:
+	osc_deinit_str(&data);
+	return res;
+}
+static  int enable_outscale_login_per_users_data(struct osc_env *e, struct osc_enable_outscale_login_per_users_arg *args, struct osc_str *data)
+{
+	struct osc_str end_call;
+	int ret = 0;
+	int count_args = 0;
+
+	(void)count_args; /* if use only query/header and path, this is unused */
+	osc_init_str(&end_call);
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	if (!args)
+		goto no_data;
+
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	if (args->user_names) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"UserNames\":[" ));
+		for (as = args->user_names; *as; ++as) {
+			if (as != args->user_names)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->user_names_str) {
+		ARG_TO_JSON(UserNames, string, args->user_names_str);
+		ret += 1;
+	}
+	osc_str_append_string(data, "}");
+
+no_data:
+	osc_str_append_string(&end_call, "/api/v1/EnableOutscaleLoginPerUsers");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	osc_deinit_str(&end_call);
+	return !!ret;
+}
+
+int osc_enable_outscale_login_per_users(struct osc_env *e, struct osc_str *out, struct osc_enable_outscale_login_per_users_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	int r;
+
+	osc_init_str(&data);
+	r = enable_outscale_login_per_users_data(e, args, &data);
+	if (r < 0)
+		goto out;
+
+        curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = osc_easy_perform(e);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
+out:
+	osc_deinit_str(&data);
+	return res;
+}
+static  int enable_outscale_login_data(struct osc_env *e, struct osc_enable_outscale_login_arg *args, struct osc_str *data)
+{
+	struct osc_str end_call;
+	int ret = 0;
+	int count_args = 0;
+
+	(void)count_args; /* if use only query/header and path, this is unused */
+	osc_init_str(&end_call);
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	if (!args)
+		goto no_data;
+
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+
+no_data:
+	osc_str_append_string(&end_call, "/api/v1/EnableOutscaleLogin");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	osc_deinit_str(&end_call);
+	return !!ret;
+}
+
+int osc_enable_outscale_login(struct osc_env *e, struct osc_str *out, struct osc_enable_outscale_login_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	int r;
+
+	osc_init_str(&data);
+	r = enable_outscale_login_data(e, args, &data);
+	if (r < 0)
+		goto out;
+
+        curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -24084,7 +24504,7 @@ int osc_link_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_lin
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -24151,7 +24571,7 @@ int osc_link_internet_service(struct osc_env *e, struct osc_str *out, struct osc
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -24245,7 +24665,7 @@ int osc_link_load_balancer_backend_machines(struct osc_env *e, struct osc_str *o
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -24312,7 +24732,7 @@ int osc_link_managed_policy_to_user_group(struct osc_env *e, struct osc_str *out
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -24383,7 +24803,7 @@ int osc_link_nic(struct osc_env *e, struct osc_str *out, struct osc_link_nic_arg
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -24450,7 +24870,7 @@ int osc_link_policy(struct osc_env *e, struct osc_str *out, struct osc_link_poli
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -24536,7 +24956,7 @@ int osc_link_private_ips(struct osc_env *e, struct osc_str *out, struct osc_link
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -24622,7 +25042,7 @@ int osc_link_public_ip(struct osc_env *e, struct osc_str *out, struct osc_link_p
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -24689,7 +25109,7 @@ int osc_link_route_table(struct osc_env *e, struct osc_str *out, struct osc_link
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -24756,7 +25176,7 @@ int osc_link_virtual_gateway(struct osc_env *e, struct osc_str *out, struct osc_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -24828,7 +25248,7 @@ int osc_link_volume(struct osc_env *e, struct osc_str *out, struct osc_link_volu
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -24905,7 +25325,7 @@ int osc_put_user_group_policy(struct osc_env *e, struct osc_str *out, struct osc
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -24977,7 +25397,7 @@ int osc_put_user_policy(struct osc_env *e, struct osc_str *out, struct osc_put_u
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -25054,7 +25474,7 @@ int osc_read_access_keys(struct osc_env *e, struct osc_str *out, struct osc_read
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -25111,7 +25531,7 @@ int osc_read_accounts(struct osc_env *e, struct osc_str *out, struct osc_read_ac
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -25173,7 +25593,7 @@ int osc_read_admin_password(struct osc_env *e, struct osc_str *out, struct osc_r
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -25230,7 +25650,7 @@ int osc_read_api_access_policy(struct osc_env *e, struct osc_str *out, struct os
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -25297,7 +25717,7 @@ int osc_read_api_access_rules(struct osc_env *e, struct osc_str *out, struct osc
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -25383,7 +25803,7 @@ int osc_read_api_logs(struct osc_env *e, struct osc_str *out, struct osc_read_ap
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -25450,7 +25870,7 @@ int osc_read_cas(struct osc_env *e, struct osc_str *out, struct osc_read_cas_arg
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -25507,7 +25927,7 @@ int osc_read_catalog(struct osc_env *e, struct osc_str *out, struct osc_read_cat
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -25574,7 +25994,7 @@ int osc_read_catalogs(struct osc_env *e, struct osc_str *out, struct osc_read_ca
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -25650,7 +26070,7 @@ int osc_read_client_gateways(struct osc_env *e, struct osc_str *out, struct osc_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -25712,7 +26132,7 @@ int osc_read_console_output(struct osc_env *e, struct osc_str *out, struct osc_r
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -25787,7 +26207,7 @@ int osc_read_consumption_account(struct osc_env *e, struct osc_str *out, struct 
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -25863,7 +26283,7 @@ int osc_read_dedicated_groups(struct osc_env *e, struct osc_str *out, struct osc
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -25939,7 +26359,7 @@ int osc_read_dhcp_options(struct osc_env *e, struct osc_str *out, struct osc_rea
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -26015,7 +26435,7 @@ int osc_read_direct_link_interfaces(struct osc_env *e, struct osc_str *out, stru
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -26091,7 +26511,7 @@ int osc_read_direct_links(struct osc_env *e, struct osc_str *out, struct osc_rea
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -26173,7 +26593,7 @@ int osc_read_entities_linked_to_policy(struct osc_env *e, struct osc_str *out, s
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -26230,7 +26650,7 @@ int osc_read_flexible_gpu_catalog(struct osc_env *e, struct osc_str *out, struct
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -26297,7 +26717,7 @@ int osc_read_flexible_gpus(struct osc_env *e, struct osc_str *out, struct osc_re
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -26373,7 +26793,7 @@ int osc_read_image_export_tasks(struct osc_env *e, struct osc_str *out, struct o
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -26449,7 +26869,7 @@ int osc_read_images(struct osc_env *e, struct osc_str *out, struct osc_read_imag
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -26525,7 +26945,7 @@ int osc_read_internet_services(struct osc_env *e, struct osc_str *out, struct os
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -26601,7 +27021,7 @@ int osc_read_keypairs(struct osc_env *e, struct osc_str *out, struct osc_read_ke
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -26681,7 +27101,7 @@ int osc_read_linked_policies(struct osc_env *e, struct osc_str *out, struct osc_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -26748,7 +27168,7 @@ int osc_read_listener_rules(struct osc_env *e, struct osc_str *out, struct osc_r
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -26821,7 +27241,7 @@ int osc_read_load_balancer_tags(struct osc_env *e, struct osc_str *out, struct o
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -26888,7 +27308,7 @@ int osc_read_load_balancers(struct osc_env *e, struct osc_str *out, struct osc_r
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -26954,7 +27374,7 @@ int osc_read_locations(struct osc_env *e, struct osc_str *out, struct osc_read_l
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -27034,7 +27454,7 @@ int osc_read_managed_policies_linked_to_user_group(struct osc_env *e, struct osc
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -27110,7 +27530,7 @@ int osc_read_nat_services(struct osc_env *e, struct osc_str *out, struct osc_rea
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -27186,7 +27606,7 @@ int osc_read_net_access_point_services(struct osc_env *e, struct osc_str *out, s
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -27262,7 +27682,7 @@ int osc_read_net_access_points(struct osc_env *e, struct osc_str *out, struct os
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -27338,7 +27758,7 @@ int osc_read_net_peerings(struct osc_env *e, struct osc_str *out, struct osc_rea
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -27414,7 +27834,7 @@ int osc_read_nets(struct osc_env *e, struct osc_str *out, struct osc_read_nets_a
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -27490,7 +27910,7 @@ int osc_read_nics(struct osc_env *e, struct osc_str *out, struct osc_read_nics_a
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -27565,7 +27985,7 @@ int osc_read_policies(struct osc_env *e, struct osc_str *out, struct osc_read_po
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -27623,7 +28043,7 @@ int osc_read_policy(struct osc_env *e, struct osc_str *out, struct osc_read_poli
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -27686,7 +28106,7 @@ int osc_read_policy_version(struct osc_env *e, struct osc_str *out, struct osc_r
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -27752,7 +28172,7 @@ int osc_read_policy_versions(struct osc_env *e, struct osc_str *out, struct osc_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -27828,7 +28248,7 @@ int osc_read_product_types(struct osc_env *e, struct osc_str *out, struct osc_re
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -27885,7 +28305,7 @@ int osc_read_public_catalog(struct osc_env *e, struct osc_str *out, struct osc_r
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -27951,7 +28371,7 @@ int osc_read_public_ip_ranges(struct osc_env *e, struct osc_str *out, struct osc
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -28027,7 +28447,7 @@ int osc_read_public_ips(struct osc_env *e, struct osc_str *out, struct osc_read_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -28103,7 +28523,7 @@ int osc_read_quotas(struct osc_env *e, struct osc_str *out, struct osc_read_quot
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -28160,7 +28580,7 @@ int osc_read_regions(struct osc_env *e, struct osc_str *out, struct osc_read_reg
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -28236,7 +28656,7 @@ int osc_read_route_tables(struct osc_env *e, struct osc_str *out, struct osc_rea
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -28312,7 +28732,7 @@ int osc_read_security_groups(struct osc_env *e, struct osc_str *out, struct osc_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -28379,7 +28799,7 @@ int osc_read_server_certificates(struct osc_env *e, struct osc_str *out, struct 
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -28455,7 +28875,7 @@ int osc_read_snapshot_export_tasks(struct osc_env *e, struct osc_str *out, struc
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -28531,7 +28951,7 @@ int osc_read_snapshots(struct osc_env *e, struct osc_str *out, struct osc_read_s
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -28607,7 +29027,7 @@ int osc_read_subnets(struct osc_env *e, struct osc_str *out, struct osc_read_sub
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -28683,7 +29103,7 @@ int osc_read_subregions(struct osc_env *e, struct osc_str *out, struct osc_read_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -28759,7 +29179,7 @@ int osc_read_tags(struct osc_env *e, struct osc_str *out, struct osc_read_tags_a
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -28827,7 +29247,7 @@ int osc_read_unit_price(struct osc_env *e, struct osc_str *out, struct osc_read_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -28902,7 +29322,7 @@ int osc_read_user_group_policies(struct osc_env *e, struct osc_str *out, struct 
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -28974,7 +29394,7 @@ int osc_read_user_group_policy(struct osc_env *e, struct osc_str *out, struct os
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -29041,7 +29461,7 @@ int osc_read_user_group(struct osc_env *e, struct osc_str *out, struct osc_read_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -29108,7 +29528,7 @@ int osc_read_user_groups_per_user(struct osc_env *e, struct osc_str *out, struct
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -29183,7 +29603,7 @@ int osc_read_user_groups(struct osc_env *e, struct osc_str *out, struct osc_read
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -29245,7 +29665,7 @@ int osc_read_user_policies(struct osc_env *e, struct osc_str *out, struct osc_re
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -29312,7 +29732,7 @@ int osc_read_user_policy(struct osc_env *e, struct osc_str *out, struct osc_read
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -29387,7 +29807,7 @@ int osc_read_users(struct osc_env *e, struct osc_str *out, struct osc_read_users
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -29463,7 +29883,7 @@ int osc_read_virtual_gateways(struct osc_env *e, struct osc_str *out, struct osc
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -29530,7 +29950,7 @@ int osc_read_vm_groups(struct osc_env *e, struct osc_str *out, struct osc_read_v
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -29597,7 +30017,7 @@ int osc_read_vm_templates(struct osc_env *e, struct osc_str *out, struct osc_rea
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -29673,7 +30093,7 @@ int osc_read_vm_types(struct osc_env *e, struct osc_str *out, struct osc_read_vm
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -29751,7 +30171,7 @@ int osc_read_vms_health(struct osc_env *e, struct osc_str *out, struct osc_read_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -29827,7 +30247,7 @@ int osc_read_vms(struct osc_env *e, struct osc_str *out, struct osc_read_vms_arg
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -29907,7 +30327,7 @@ int osc_read_vms_state(struct osc_env *e, struct osc_str *out, struct osc_read_v
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -29983,7 +30403,7 @@ int osc_read_volumes(struct osc_env *e, struct osc_str *out, struct osc_read_vol
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -30059,7 +30479,7 @@ int osc_read_vpn_connections(struct osc_env *e, struct osc_str *out, struct osc_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -30132,7 +30552,7 @@ int osc_reboot_vms(struct osc_env *e, struct osc_str *out, struct osc_reboot_vms
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -30210,7 +30630,7 @@ int osc_register_vms_in_load_balancer(struct osc_env *e, struct osc_str *out, st
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -30272,7 +30692,7 @@ int osc_reject_net_peering(struct osc_env *e, struct osc_str *out, struct osc_re
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -30349,7 +30769,7 @@ int osc_remove_user_from_user_group(struct osc_env *e, struct osc_str *out, stru
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -30415,7 +30835,7 @@ int osc_scale_down_vm_group(struct osc_env *e, struct osc_str *out, struct osc_s
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -30481,7 +30901,7 @@ int osc_scale_up_vm_group(struct osc_env *e, struct osc_str *out, struct osc_sca
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -30544,7 +30964,7 @@ int osc_set_default_policy_version(struct osc_env *e, struct osc_str *out, struc
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -30617,7 +31037,7 @@ int osc_start_vms(struct osc_env *e, struct osc_str *out, struct osc_start_vms_a
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -30694,7 +31114,7 @@ int osc_stop_vms(struct osc_env *e, struct osc_str *out, struct osc_stop_vms_arg
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -30756,7 +31176,7 @@ int osc_unlink_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_u
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -30823,7 +31243,7 @@ int osc_unlink_internet_service(struct osc_env *e, struct osc_str *out, struct o
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -30917,7 +31337,7 @@ int osc_unlink_load_balancer_backend_machines(struct osc_env *e, struct osc_str 
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -30984,7 +31404,7 @@ int osc_unlink_managed_policy_from_user_group(struct osc_env *e, struct osc_str 
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -31046,7 +31466,7 @@ int osc_unlink_nic(struct osc_env *e, struct osc_str *out, struct osc_unlink_nic
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -31113,7 +31533,7 @@ int osc_unlink_policy(struct osc_env *e, struct osc_str *out, struct osc_unlink_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -31191,7 +31611,7 @@ int osc_unlink_private_ips(struct osc_env *e, struct osc_str *out, struct osc_un
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -31258,7 +31678,7 @@ int osc_unlink_public_ip(struct osc_env *e, struct osc_str *out, struct osc_unli
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -31320,7 +31740,7 @@ int osc_unlink_route_table(struct osc_env *e, struct osc_str *out, struct osc_un
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -31387,7 +31807,7 @@ int osc_unlink_virtual_gateway(struct osc_env *e, struct osc_str *out, struct os
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -31453,7 +31873,7 @@ int osc_unlink_volume(struct osc_env *e, struct osc_str *out, struct osc_unlink_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -31530,7 +31950,7 @@ int osc_update_access_key(struct osc_env *e, struct osc_str *out, struct osc_upd
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -31663,7 +32083,7 @@ int osc_update_account(struct osc_env *e, struct osc_str *out, struct osc_update
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -31728,7 +32148,7 @@ int osc_update_api_access_policy(struct osc_env *e, struct osc_str *out, struct 
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -31843,7 +32263,7 @@ int osc_update_api_access_rule(struct osc_env *e, struct osc_str *out, struct os
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -31910,7 +32330,7 @@ int osc_update_ca(struct osc_env *e, struct osc_str *out, struct osc_update_ca_a
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -31977,7 +32397,7 @@ int osc_update_dedicated_group(struct osc_env *e, struct osc_str *out, struct os
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -32043,7 +32463,7 @@ int osc_update_direct_link_interface(struct osc_env *e, struct osc_str *out, str
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -32109,7 +32529,7 @@ int osc_update_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_u
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -32202,7 +32622,7 @@ int osc_update_image(struct osc_env *e, struct osc_str *out, struct osc_update_i
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -32274,7 +32694,7 @@ int osc_update_listener_rule(struct osc_env *e, struct osc_str *out, struct osc_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -32406,7 +32826,7 @@ int osc_update_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -32500,7 +32920,7 @@ int osc_update_net_access_point(struct osc_env *e, struct osc_str *out, struct o
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -32567,7 +32987,7 @@ int osc_update_net(struct osc_env *e, struct osc_str *out, struct osc_update_net
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -32660,7 +33080,7 @@ int osc_update_nic(struct osc_env *e, struct osc_str *out, struct osc_update_nic
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -32731,7 +33151,7 @@ int osc_update_route_propagation(struct osc_env *e, struct osc_str *out, struct 
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -32823,7 +33243,7 @@ int osc_update_route(struct osc_env *e, struct osc_str *out, struct osc_update_r
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -32890,7 +33310,7 @@ int osc_update_route_table_link(struct osc_env *e, struct osc_str *out, struct o
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -32962,7 +33382,7 @@ int osc_update_server_certificate(struct osc_env *e, struct osc_str *out, struct
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -33034,7 +33454,7 @@ int osc_update_snapshot(struct osc_env *e, struct osc_str *out, struct osc_updat
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -33100,7 +33520,7 @@ int osc_update_subnet(struct osc_env *e, struct osc_str *out, struct osc_update_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -33177,7 +33597,7 @@ int osc_update_user_group(struct osc_env *e, struct osc_str *out, struct osc_upd
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -33254,7 +33674,7 @@ int osc_update_user(struct osc_env *e, struct osc_str *out, struct osc_update_us
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -33349,7 +33769,7 @@ int osc_update_vm_group(struct osc_env *e, struct osc_str *out, struct osc_updat
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -33496,7 +33916,7 @@ int osc_update_vm(struct osc_env *e, struct osc_str *out, struct osc_update_vm_a
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -33586,7 +34006,7 @@ int osc_update_vm_template(struct osc_env *e, struct osc_str *out, struct osc_up
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -33661,7 +34081,7 @@ int osc_update_volume(struct osc_env *e, struct osc_str *out, struct osc_update_
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -33743,7 +34163,7 @@ int osc_update_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc
 	if (e->flag & OSC_VERBOSE_MODE) {
 	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
 	}
-	res = curl_easy_perform(e->c);
+	res = osc_easy_perform(e);
 	if (res != CURLE_OK)
 		goto out;
 
@@ -33791,11 +34211,17 @@ int osc_init_sdk_ext(struct osc_env *e, const char *profile, unsigned int flag,
 	char *auth = getenv("OSC_AUTH_METHOD");
 	char *force_log = cfg_login(cfg);
 	char *force_pass = cfg_pass(cfg);
+	char *max_retries = getenv("OSC_MAX_RETRIES");
+	char *retry_backoff_jitter = getenv("OSC_RETRY_BACKOFF_JITTER");
+	char *retry_backoff_factor = getenv("OSC_RETRY_BACKOFF_FACTOR");
 
 	strcpy(stpcpy(user_agent, "osc-sdk-c/"), osc_sdk_version_str());
 	e->region = getenv("OSC_REGION");
 	e->flag = flag;
 	e->auth_method = cfg ? cfg->auth_method : OSC_AKSK_METHOD;
+	e->max_retries = 3;
+	e->retry_backoff_factor = 1.0;
+	e->retry_backoff_jitter = 3.0;
 	endpoint = getenv("OSC_ENDPOINT_API");
 	osc_init_str(&e->endpoint);
 
@@ -33807,6 +34233,13 @@ int osc_init_sdk_ext(struct osc_env *e, const char *profile, unsigned int flag,
 		fprintf(stderr, "'%s' invalid authentication method\n", auth);
 		return -1;
 	}
+
+	if (max_retries)
+		e->max_retries = (int)strtol(max_retries, NULL, 10);
+	if (retry_backoff_factor)
+		e->retry_backoff_factor = (float)strtod(retry_backoff_factor, NULL);
+	if (retry_backoff_jitter)
+		e->retry_backoff_jitter = (float)strtod(retry_backoff_jitter, NULL);
 
 	if (force_log)
 		e->ak = force_log;
@@ -33890,7 +34323,7 @@ int osc_init_sdk_ext(struct osc_env *e, const char *profile, unsigned int flag,
 		}
 
 		if (strlen(e->ak) != AK_SIZE || strlen(e->sk) != SK_SIZE) {
-			fprintf(stderr, "Wrong access key or secret key size\n");
+			fprintf(stderr, "wrong access key or secret key size\n");
 			return -1;
 		}
 	} else if (e->auth_method == OSC_PASSWORD_METHOD) {
@@ -33938,7 +34371,7 @@ int osc_init_sdk_ext(struct osc_env *e, const char *profile, unsigned int flag,
 
 		time(&clock);
 #if SAFE_C == 1
-		TRY(!gmtime_r(&clock, &tm), "gmtime_r fail\n");\
+		TRY(!gmtime_r(&clock, &tm), "failed to convert time\n");\
 		tmp = &tm;
 #else
 		(void)tm;
@@ -34000,4 +34433,68 @@ void osc_deinit_sdk(struct osc_env *e)
 
 	e->c = NULL;
 	e->flag = 0;
+}
+
+static int osc_msleep(int ms) {
+    struct timespec t = { .tv_sec = ms / 1000, .tv_nsec = (ms % 1000) * 1000 };
+    return nanosleep(&t, NULL);
+}
+
+CURLcode osc_easy_perform(struct osc_env *e) {
+    CURL *handle, *tmp;
+    CURLcode ret;
+    long response_code;
+    int backoff;
+
+    for (int a = 0; a < e->max_retries; a++) {
+        response_code = 200;
+        handle = curl_easy_duphandle(e->c);
+        if (!handle)
+            return -1;
+
+        ret = curl_easy_perform(handle);
+        switch (ret) {
+            case CURLE_OK:
+                break;
+            case CURLE_NOT_BUILT_IN:
+            case CURLE_WRITE_ERROR:
+            case CURLE_READ_ERROR:
+            case CURLE_OUT_OF_MEMORY:
+            case CURLE_BAD_FUNCTION_ARGUMENT:
+            case CURLE_SSL_ENGINE_NOTFOUND:
+            case CURLE_SSL_ENGINE_SETFAILED:
+            case CURLE_SSL_CIPHER:
+            case CURLE_SSL_ENGINE_INITFAILED:
+            case CURLE_SSL_CACERT_BADFILE:
+            case CURLE_SSL_CLIENTCERT:
+            case CURLE_AUTH_ERROR:
+                goto osc_easy_perform_return;
+            default:
+                goto osc_easy_perform_retry;
+        }
+
+        ret = curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &response_code);
+        if (ret !=  CURLE_OK)
+            goto osc_easy_perform_retry;
+
+        if (response_code == 429
+            || response_code == 409
+            || (response_code >= 500 && response_code < 600)) {
+osc_easy_perform_retry:
+            backoff = (int)(1000 * e->retry_backoff_factor * powf(2.0, (float)a));
+            backoff += (rand() * e->retry_backoff_jitter) / (RAND_MAX / 1000);
+            fprintf(stderr, "WARN: attempt %d failed. Retrying in %d ms.\n", a, backoff);
+            osc_msleep(backoff);
+            backoff *= e->retry_backoff_factor;
+            continue;
+        }
+
+osc_easy_perform_return:
+        break;
+    }
+
+    tmp = e->c;
+    e->c = handle;
+    curl_easy_cleanup(tmp);
+    return ret;
 }
