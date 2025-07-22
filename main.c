@@ -47,7 +47,7 @@
 
 #define OAPI_RAW_OUTPUT 1
 
-#define OAPI_CLI_VERSION "DEV-VERSION"
+#define OAPI_CLI_VERSION "0.10.0"
 
 #define OAPI_CLI_UAGENT "oapi-cli/"OAPI_CLI_VERSION"; osc-sdk-c/"
 
@@ -63,17 +63,17 @@
 
 #define META_ARGS(else_cnd)                                                     \
 	if (!strcmp(aa, "--file")) {                                        \
-		TRY(i + 3 >= ac, "file name require");                          \
+		TRY(i + 3 >= ac, "file name required");                          \
 		++incr;                                                         \
 		aa = read_file(files_cnt, av[i + 3], 0);                        \
 		STRY(!aa);                                                      \
 	} else if (!strcmp(aa, "--jsonstr-file")) {                         \
-		TRY(i + 3 >= ac, "file name require");                          \
+		TRY(i + 3 >= ac, "file name required");                          \
 		++incr;                                                         \
 		aa = read_file(files_cnt, av[i + 3], 1);                        \
 		STRY(!aa);                                                      \
 	} else if (!strcmp(aa, "--var")) {                                  \
-		TRY(i + 3 >= ac, "var name require");                           \
+		TRY(i + 3 >= ac, "variable name required");                           \
 		int var_found = 0;                                              \
 		for (int j = 0; j < nb_cli_vars; ++j) {                         \
 			if (!strcmp(cli_vars[j].name, av[i + 3])) {                 \
@@ -159,14 +159,14 @@ static int parse_variable(json_object *jobj, char **av, int ac, int i)
 {
 	const char *tmp = av[i + 1];
 	const char *tmp2;
-	TRY(nb_cli_vars >= VAR_ARRAY_SIZE, "variable asignement fail: too much variables");
+	TRY(nb_cli_vars >= VAR_ARRAY_SIZE, "variable asignement fail: too many variables");
 	struct cli_var *var = &cli_vars[nb_cli_vars++];
 	json_object *j = jobj;
 	char buf[512];
 
 	tmp2 = strchr(tmp, '=');
 	TRY(!tmp2, "variable asignement fail (missing '='))\n");
-	TRY((uintptr_t)(tmp2 - tmp) >= VAR_NAME_SIZE, "var name too long");
+	TRY((uintptr_t)(tmp2 - tmp) >= VAR_NAME_SIZE, "variable name is too long");
 	strncpy(var->name, tmp, tmp2 - tmp);
 	var->name[tmp2 - tmp] = 0;
 	tmp = tmp2 + 1;
@@ -184,7 +184,7 @@ static int parse_variable(json_object *jobj, char **av, int ac, int i)
 			buf[tmp2 - tmp] = 0;
 			j = json_object_object_get(j, buf);
 		}
-		TRY(!j, "variable asignement fail (not found)");
+		TRY(!j, "variable asignement fail (variable not found)");
 		tmp = tmp2 + 1;
 	}
 	tmp2 = tmp + strlen(tmp);
@@ -198,7 +198,7 @@ static int parse_variable(json_object *jobj, char **av, int ac, int i)
 	} else {
 		tmp = json_object_to_json_string_ext(j, JSON_C_TO_STRING_PLAIN);
 	}
-	TRY(strlen(tmp) >= VAR_VAL_SIZE, "variable asignement fail: value too big");
+	TRY(strlen(tmp) >= VAR_VAL_SIZE, "variable asignement fail: value is too long");
 	strcpy(var->val, tmp);
 	return 0;
 
@@ -216,12 +216,12 @@ char *read_file(char *files_cnt[static MAX_FILES_PER_CMD], char *file_name,
 		}
 	}
 	if (dest < 0) {
-		fprintf(stderr, "%s option used too much", call_name);
+		fprintf(stderr, "too many options %s", call_name);
 		return NULL;
 	}
 	FILE *f = fopen(file_name, "rb");
 	if (!f) {
-		fprintf(stderr, "%s fail to open %s", call_name, file_name);
+		fprintf(stderr, "%s failed to open %s", call_name, file_name);
 		return NULL;
 	}
 	if (fseek(f, 0, SEEK_END) < 0) {
@@ -442,7 +442,7 @@ int accepter_net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'AccepterNet'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'AccepterNet'\n", str);
 		return -1;
 	}
 	return 0;
@@ -482,7 +482,7 @@ int access_key_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'AccessKey'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'AccessKey'\n", str);
 		return -1;
 	}
 	return 0;
@@ -527,7 +527,7 @@ int access_key_secret_key_parser(void *v_s, char *str, char *aa, struct ptr_arra
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'AccessKeySecretKey'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'AccessKeySecretKey'\n", str);
 		return -1;
 	}
 	return 0;
@@ -562,7 +562,7 @@ int access_log_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             s->publication_interval = atoll(aa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'AccessLog'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'AccessLog'\n", str);
 		return -1;
 	}
 	return 0;
@@ -649,6 +649,16 @@ int account_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             s->mobile_number = aa; // string string
 
          } else
+	if ((aret = argcmp(str, "OutscaleLoginAllowed")) == 0 || aret == '=' || aret == '.') {
+            s->is_set_outscale_login_allowed = 1;
+            if (!aa || !strcasecmp(aa, "true")) {
+            		s->outscale_login_allowed = 1;
+             } else if (!strcasecmp(aa, "false")) {
+            		s->outscale_login_allowed = 0;
+             } else {
+            		BAD_RET("OutscaleLoginAllowed require true/false\n");
+             }
+        } else
 	if ((aret = argcmp(str, "PhoneNumber")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "PhoneNumber argument missing\n");
             s->phone_number = aa; // string string
@@ -670,7 +680,7 @@ int account_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Account'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Account'\n", str);
 		return -1;
 	}
 	return 0;
@@ -685,7 +695,7 @@ int actions_on_next_boot_parser(void *v_s, char *str, char *aa, struct ptr_array
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'ActionsOnNextBoot'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'ActionsOnNextBoot'\n", str);
 		return -1;
 	}
 	return 0;
@@ -710,7 +720,7 @@ int api_access_policy_parser(void *v_s, char *str, char *aa, struct ptr_array *p
              }
         } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'ApiAccessPolicy'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'ApiAccessPolicy'\n", str);
 		return -1;
 	}
 	return 0;
@@ -814,7 +824,7 @@ int api_access_rule_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
                SET_NEXT(s->ip_ranges, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'ApiAccessRule'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'ApiAccessRule'\n", str);
 		return -1;
 	}
 	return 0;
@@ -834,7 +844,7 @@ int application_sticky_cookie_policy_parser(void *v_s, char *str, char *aa, stru
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'ApplicationStickyCookiePolicy'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'ApplicationStickyCookiePolicy'\n", str);
 		return -1;
 	}
 	return 0;
@@ -864,7 +874,7 @@ int backend_vm_health_parser(void *v_s, char *str, char *aa, struct ptr_array *p
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'BackendVmHealth'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'BackendVmHealth'\n", str);
 		return -1;
 	}
 	return 0;
@@ -896,7 +906,7 @@ int block_device_mapping_created_parser(void *v_s, char *str, char *aa, struct p
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'BlockDeviceMappingCreated'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'BlockDeviceMappingCreated'\n", str);
 		return -1;
 	}
 	return 0;
@@ -933,7 +943,7 @@ int block_device_mapping_image_parser(void *v_s, char *str, char *aa, struct ptr
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'BlockDeviceMappingImage'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'BlockDeviceMappingImage'\n", str);
 		return -1;
 	}
 	return 0;
@@ -975,7 +985,7 @@ int block_device_mapping_vm_creation_parser(void *v_s, char *str, char *aa, stru
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'BlockDeviceMappingVmCreation'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'BlockDeviceMappingVmCreation'\n", str);
 		return -1;
 	}
 	return 0;
@@ -1017,7 +1027,7 @@ int block_device_mapping_vm_update_parser(void *v_s, char *str, char *aa, struct
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'BlockDeviceMappingVmUpdate'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'BlockDeviceMappingVmUpdate'\n", str);
 		return -1;
 	}
 	return 0;
@@ -1052,7 +1062,7 @@ int bsu_created_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'BsuCreated'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'BsuCreated'\n", str);
 		return -1;
 	}
 	return 0;
@@ -1092,7 +1102,7 @@ int bsu_to_create_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'BsuToCreate'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'BsuToCreate'\n", str);
 		return -1;
 	}
 	return 0;
@@ -1117,7 +1127,7 @@ int bsu_to_update_vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'BsuToUpdateVm'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'BsuToUpdateVm'\n", str);
 		return -1;
 	}
 	return 0;
@@ -1142,7 +1152,7 @@ int ca_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Ca'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Ca'\n", str);
 		return -1;
 	}
 	return 0;
@@ -1163,7 +1173,7 @@ int catalog_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'Entries' require an index (example array ref CatalogEntry.Entries.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Entries' require a .\n");
+            		      BAD_RET("'Entries' require a '.'\n");
             	      TRY_ALLOC_AT(s,entries, pa, pos, sizeof(*s->entries));
             	      cascade_struct = &s->entries[pos];
             	      cascade_parser = catalog_entry_parser;
@@ -1177,7 +1187,7 @@ int catalog_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             }
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Catalog'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Catalog'\n", str);
 		return -1;
 	}
 	return 0;
@@ -1227,7 +1237,7 @@ int catalog_entry_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             s->unit_price = atof(aa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'CatalogEntry'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'CatalogEntry'\n", str);
 		return -1;
 	}
 	return 0;
@@ -1248,7 +1258,7 @@ int catalogs_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'Entries' require an index (example array ref CatalogEntry.Entries.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Entries' require a .\n");
+            		      BAD_RET("'Entries' require a '.'\n");
             	      TRY_ALLOC_AT(s,entries, pa, pos, sizeof(*s->entries));
             	      cascade_struct = &s->entries[pos];
             	      cascade_parser = catalog_entry_parser;
@@ -1277,7 +1287,7 @@ int catalogs_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Catalogs'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Catalogs'\n", str);
 		return -1;
 	}
 	return 0;
@@ -1323,7 +1333,7 @@ int client_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -1337,7 +1347,7 @@ int client_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             }
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'ClientGateway'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'ClientGateway'\n", str);
 		return -1;
 	}
 	return 0;
@@ -1412,7 +1422,7 @@ int consumption_entry_parser(void *v_s, char *str, char *aa, struct ptr_array *p
             s->value = atof(aa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'ConsumptionEntry'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'ConsumptionEntry'\n", str);
 		return -1;
 	}
 	return 0;
@@ -1503,7 +1513,7 @@ int dedicated_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
                SET_NEXT(s->vm_ids, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'DedicatedGroup'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'DedicatedGroup'\n", str);
 		return -1;
 	}
 	return 0;
@@ -1628,7 +1638,7 @@ int dhcp_options_set_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -1642,7 +1652,7 @@ int dhcp_options_set_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
             }
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'DhcpOptionsSet'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'DhcpOptionsSet'\n", str);
 		return -1;
 	}
 	return 0;
@@ -1687,7 +1697,7 @@ int direct_link_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'DirectLink'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'DirectLink'\n", str);
 		return -1;
 	}
 	return 0;
@@ -1732,7 +1742,7 @@ int direct_link_interface_parser(void *v_s, char *str, char *aa, struct ptr_arra
             s->vlan = atoll(aa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'DirectLinkInterface'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'DirectLinkInterface'\n", str);
 		return -1;
 	}
 	return 0;
@@ -1812,7 +1822,7 @@ int direct_link_interfaces_parser(void *v_s, char *str, char *aa, struct ptr_arr
             s->vlan = atoll(aa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'DirectLinkInterfaces'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'DirectLinkInterfaces'\n", str);
 		return -1;
 	}
 	return 0;
@@ -1837,7 +1847,7 @@ int errors_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Errors'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Errors'\n", str);
 		return -1;
 	}
 	return 0;
@@ -1903,7 +1913,7 @@ int filters_access_keys_parser(void *v_s, char *str, char *aa, struct ptr_array 
                SET_NEXT(s->states, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersAccessKeys'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersAccessKeys'\n", str);
 		return -1;
 	}
 	return 0;
@@ -2053,7 +2063,7 @@ int filters_api_access_rule_parser(void *v_s, char *str, char *aa, struct ptr_ar
                SET_NEXT(s->ip_ranges, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersApiAccessRule'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersApiAccessRule'\n", str);
 		return -1;
 	}
 	return 0;
@@ -2269,7 +2279,7 @@ int filters_api_log_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
                SET_NEXT(s->response_status_codes, atoi(aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersApiLog'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersApiLog'\n", str);
 		return -1;
 	}
 	return 0;
@@ -2363,7 +2373,7 @@ int filters_ca_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                SET_NEXT(s->descriptions, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersCa'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersCa'\n", str);
 		return -1;
 	}
 	return 0;
@@ -2393,7 +2403,7 @@ int filters_catalogs_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersCatalogs'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersCatalogs'\n", str);
 		return -1;
 	}
 	return 0;
@@ -2627,7 +2637,7 @@ int filters_client_gateway_parser(void *v_s, char *str, char *aa, struct ptr_arr
                SET_NEXT(s->tags, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersClientGateway'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersClientGateway'\n", str);
 		return -1;
 	}
 	return 0;
@@ -2749,7 +2759,7 @@ int filters_dedicated_group_parser(void *v_s, char *str, char *aa, struct ptr_ar
                SET_NEXT(s->subregion_names, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersDedicatedGroup'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersDedicatedGroup'\n", str);
 		return -1;
 	}
 	return 0;
@@ -2993,7 +3003,7 @@ int filters_dhcp_options_parser(void *v_s, char *str, char *aa, struct ptr_array
                SET_NEXT(s->tags, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersDhcpOptions'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersDhcpOptions'\n", str);
 		return -1;
 	}
 	return 0;
@@ -3031,7 +3041,7 @@ int filters_direct_link_parser(void *v_s, char *str, char *aa, struct ptr_array 
                SET_NEXT(s->direct_link_ids, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersDirectLink'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersDirectLink'\n", str);
 		return -1;
 	}
 	return 0;
@@ -3097,7 +3107,7 @@ int filters_direct_link_interface_parser(void *v_s, char *str, char *aa, struct 
                SET_NEXT(s->direct_link_interface_ids, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersDirectLinkInterface'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersDirectLinkInterface'\n", str);
 		return -1;
 	}
 	return 0;
@@ -3135,7 +3145,7 @@ int filters_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array 
                SET_NEXT(s->task_ids, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersExportTask'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersExportTask'\n", str);
 		return -1;
 	}
 	return 0;
@@ -3323,7 +3333,7 @@ int filters_flexible_gpu_parser(void *v_s, char *str, char *aa, struct ptr_array
                SET_NEXT(s->vm_ids, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersFlexibleGpu'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersFlexibleGpu'\n", str);
 		return -1;
 	}
 	return 0;
@@ -4007,7 +4017,7 @@ int filters_image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                SET_NEXT(s->virtualization_types, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersImage'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersImage'\n", str);
 		return -1;
 	}
 	return 0;
@@ -4185,7 +4195,7 @@ int filters_internet_service_parser(void *v_s, char *str, char *aa, struct ptr_a
                SET_NEXT(s->tags, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersInternetService'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersInternetService'\n", str);
 		return -1;
 	}
 	return 0;
@@ -4391,7 +4401,7 @@ int filters_keypair_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
                SET_NEXT(s->tags, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersKeypair'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersKeypair'\n", str);
 		return -1;
 	}
 	return 0;
@@ -4429,7 +4439,7 @@ int filters_listener_rule_parser(void *v_s, char *str, char *aa, struct ptr_arra
                SET_NEXT(s->listener_rule_names, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersListenerRule'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersListenerRule'\n", str);
 		return -1;
 	}
 	return 0;
@@ -4467,7 +4477,7 @@ int filters_load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_arra
                SET_NEXT(s->load_balancer_names, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersLoadBalancer'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersLoadBalancer'\n", str);
 		return -1;
 	}
 	return 0;
@@ -4701,7 +4711,7 @@ int filters_nat_service_parser(void *v_s, char *str, char *aa, struct ptr_array 
                SET_NEXT(s->tags, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersNatService'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersNatService'\n", str);
 		return -1;
 	}
 	return 0;
@@ -4917,7 +4927,7 @@ int filters_net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                SET_NEXT(s->tags, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersNet'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersNet'\n", str);
 		return -1;
 	}
 	return 0;
@@ -5123,7 +5133,7 @@ int filters_net_access_point_parser(void *v_s, char *str, char *aa, struct ptr_a
                SET_NEXT(s->tags, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersNetAccessPoint'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersNetAccessPoint'\n", str);
 		return -1;
 	}
 	return 0;
@@ -5497,7 +5507,7 @@ int filters_net_peering_parser(void *v_s, char *str, char *aa, struct ptr_array 
                SET_NEXT(s->tags, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersNetPeering'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersNetPeering'\n", str);
 		return -1;
 	}
 	return 0;
@@ -6265,7 +6275,7 @@ int filters_nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                SET_NEXT(s->tags, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersNic'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersNic'\n", str);
 		return -1;
 	}
 	return 0;
@@ -6303,7 +6313,7 @@ int filters_product_type_parser(void *v_s, char *str, char *aa, struct ptr_array
                SET_NEXT(s->product_type_ids, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersProductType'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersProductType'\n", str);
 		return -1;
 	}
 	return 0;
@@ -6621,7 +6631,7 @@ int filters_public_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *p
                SET_NEXT(s->vm_ids, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersPublicIp'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersPublicIp'\n", str);
 		return -1;
 	}
 	return 0;
@@ -6743,7 +6753,7 @@ int filters_quota_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                SET_NEXT(s->short_descriptions, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersQuota'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersQuota'\n", str);
 		return -1;
 	}
 	return 0;
@@ -7211,7 +7221,7 @@ int filters_route_table_parser(void *v_s, char *str, char *aa, struct ptr_array 
                SET_NEXT(s->tags, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersRouteTable'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersRouteTable'\n", str);
 		return -1;
 	}
 	return 0;
@@ -7809,7 +7819,7 @@ int filters_security_group_parser(void *v_s, char *str, char *aa, struct ptr_arr
                SET_NEXT(s->tags, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersSecurityGroup'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersSecurityGroup'\n", str);
 		return -1;
 	}
 	return 0;
@@ -7847,7 +7857,7 @@ int filters_server_certificate_parser(void *v_s, char *str, char *aa, struct ptr
                SET_NEXT(s->paths, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersServerCertificate'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersServerCertificate'\n", str);
 		return -1;
 	}
 	return 0;
@@ -7913,7 +7923,7 @@ int filters_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
                SET_NEXT(s->service_names, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersService'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersService'\n", str);
 		return -1;
 	}
 	return 0;
@@ -8307,7 +8317,7 @@ int filters_snapshot_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
                SET_NEXT(s->volume_sizes, atoi(aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersSnapshot'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersSnapshot'\n", str);
 		return -1;
 	}
 	return 0;
@@ -8569,7 +8579,7 @@ int filters_subnet_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
                SET_NEXT(s->tags, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersSubnet'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersSubnet'\n", str);
 		return -1;
 	}
 	return 0;
@@ -8663,7 +8673,7 @@ int filters_subregion_parser(void *v_s, char *str, char *aa, struct ptr_array *p
                SET_NEXT(s->subregion_names, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersSubregion'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersSubregion'\n", str);
 		return -1;
 	}
 	return 0;
@@ -8785,7 +8795,7 @@ int filters_tag_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                SET_NEXT(s->values, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersTag'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersTag'\n", str);
 		return -1;
 	}
 	return 0;
@@ -8828,7 +8838,7 @@ int filters_user_group_parser(void *v_s, char *str, char *aa, struct ptr_array *
                SET_NEXT(s->user_group_ids, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersUserGroup'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersUserGroup'\n", str);
 		return -1;
 	}
 	return 0;
@@ -8866,7 +8876,7 @@ int filters_users_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                SET_NEXT(s->user_ids, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersUsers'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersUsers'\n", str);
 		return -1;
 	}
 	return 0;
@@ -9100,7 +9110,7 @@ int filters_virtual_gateway_parser(void *v_s, char *str, char *aa, struct ptr_ar
                SET_NEXT(s->virtual_gateway_ids, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersVirtualGateway'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersVirtualGateway'\n", str);
 		return -1;
 	}
 	return 0;
@@ -10840,7 +10850,7 @@ int filters_vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                SET_NEXT(s->vm_types, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersVm'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersVm'\n", str);
 		return -1;
 	}
 	return 0;
@@ -11130,7 +11140,7 @@ int filters_vm_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
                SET_NEXT(s->vm_template_ids, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersVmGroup'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersVmGroup'\n", str);
 		return -1;
 	}
 	return 0;
@@ -11476,7 +11486,7 @@ int filters_vm_template_parser(void *v_s, char *str, char *aa, struct ptr_array 
                SET_NEXT(s->vm_template_names, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersVmTemplate'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersVmTemplate'\n", str);
 		return -1;
 	}
 	return 0;
@@ -11720,7 +11730,7 @@ int filters_vm_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
                SET_NEXT(s->volume_sizes, atoi(aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersVmType'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersVmType'\n", str);
 		return -1;
 	}
 	return 0;
@@ -11926,7 +11936,7 @@ int filters_vms_state_parser(void *v_s, char *str, char *aa, struct ptr_array *p
                SET_NEXT(s->vm_states, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersVmsState'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersVmsState'\n", str);
 		return -1;
 	}
 	return 0;
@@ -12366,7 +12376,7 @@ int filters_volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
                SET_NEXT(s->volume_types, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersVolume'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersVolume'\n", str);
 		return -1;
 	}
 	return 0;
@@ -12666,7 +12676,7 @@ int filters_vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_arr
                SET_NEXT(s->vpn_connection_ids, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FiltersVpnConnection'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersVpnConnection'\n", str);
 		return -1;
 	}
 	return 0;
@@ -12716,7 +12726,7 @@ int flexible_gpu_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FlexibleGpu'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FlexibleGpu'\n", str);
 		return -1;
 	}
 	return 0;
@@ -12774,7 +12784,7 @@ int flexible_gpu_catalog_parser(void *v_s, char *str, char *aa, struct ptr_array
             s->vram = atoll(aa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'FlexibleGpuCatalog'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'FlexibleGpuCatalog'\n", str);
 		return -1;
 	}
 	return 0;
@@ -12819,7 +12829,7 @@ int health_check_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             s->unhealthy_threshold = atoll(aa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'HealthCheck'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'HealthCheck'\n", str);
 		return -1;
 	}
 	return 0;
@@ -12855,7 +12865,7 @@ int image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'BlockDeviceMappings' require an index (example array ref BlockDeviceMappingImage.BlockDeviceMappings.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'BlockDeviceMappings' require a .\n");
+            		      BAD_RET("'BlockDeviceMappings' require a '.'\n");
             	      TRY_ALLOC_AT(s,block_device_mappings, pa, pos, sizeof(*s->block_device_mappings));
             	      cascade_struct = &s->block_device_mappings[pos];
             	      cascade_parser = block_device_mapping_image_parser;
@@ -13025,7 +13035,7 @@ int image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -13039,7 +13049,7 @@ int image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             }
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Image'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Image'\n", str);
 		return -1;
 	}
 	return 0;
@@ -13097,7 +13107,7 @@ int image_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array *p
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -13116,7 +13126,7 @@ int image_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array *p
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'ImageExportTask'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'ImageExportTask'\n", str);
 		return -1;
 	}
 	return 0;
@@ -13136,7 +13146,7 @@ int inline_policy_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'InlinePolicy'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'InlinePolicy'\n", str);
 		return -1;
 	}
 	return 0;
@@ -13172,7 +13182,7 @@ int internet_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -13186,7 +13196,7 @@ int internet_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
             }
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'InternetService'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'InternetService'\n", str);
 		return -1;
 	}
 	return 0;
@@ -13227,7 +13237,7 @@ int keypair_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -13241,7 +13251,7 @@ int keypair_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             }
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Keypair'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Keypair'\n", str);
 		return -1;
 	}
 	return 0;
@@ -13287,7 +13297,7 @@ int keypair_created_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -13301,7 +13311,7 @@ int keypair_created_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
             }
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'KeypairCreated'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'KeypairCreated'\n", str);
 		return -1;
 	}
 	return 0;
@@ -13346,7 +13356,7 @@ int link_nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'LinkNic'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'LinkNic'\n", str);
 		return -1;
 	}
 	return 0;
@@ -13381,7 +13391,7 @@ int link_nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'LinkNicLight'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'LinkNicLight'\n", str);
 		return -1;
 	}
 	return 0;
@@ -13406,7 +13416,7 @@ int link_nic_to_update_parser(void *v_s, char *str, char *aa, struct ptr_array *
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'LinkNicToUpdate'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'LinkNicToUpdate'\n", str);
 		return -1;
 	}
 	return 0;
@@ -13441,7 +13451,7 @@ int link_public_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'LinkPublicIp'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'LinkPublicIp'\n", str);
 		return -1;
 	}
 	return 0;
@@ -13466,7 +13476,7 @@ int link_public_ip_light_for_vm_parser(void *v_s, char *str, char *aa, struct pt
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'LinkPublicIpLightForVm'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'LinkPublicIpLightForVm'\n", str);
 		return -1;
 	}
 	return 0;
@@ -13506,7 +13516,7 @@ int link_route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'LinkRouteTable'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'LinkRouteTable'\n", str);
 		return -1;
 	}
 	return 0;
@@ -13541,7 +13551,7 @@ int linked_policy_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'LinkedPolicy'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'LinkedPolicy'\n", str);
 		return -1;
 	}
 	return 0;
@@ -13581,7 +13591,7 @@ int linked_volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'LinkedVolume'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'LinkedVolume'\n", str);
 		return -1;
 	}
 	return 0;
@@ -13644,7 +13654,7 @@ int listener_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Listener'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Listener'\n", str);
 		return -1;
 	}
 	return 0;
@@ -13679,7 +13689,7 @@ int listener_for_creation_parser(void *v_s, char *str, char *aa, struct ptr_arra
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'ListenerForCreation'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'ListenerForCreation'\n", str);
 		return -1;
 	}
 	return 0;
@@ -13752,7 +13762,7 @@ int listener_rule_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                SET_NEXT(s->vm_ids, (aa), pa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'ListenerRule'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'ListenerRule'\n", str);
 		return -1;
 	}
 	return 0;
@@ -13787,7 +13797,7 @@ int listener_rule_for_creation_parser(void *v_s, char *str, char *aa, struct ptr
             s->priority = atoll(aa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'ListenerRuleForCreation'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'ListenerRuleForCreation'\n", str);
 		return -1;
 	}
 	return 0;
@@ -13825,7 +13835,7 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'ApplicationStickyCookiePolicies' require an index (example array ref ApplicationStickyCookiePolicy.ApplicationStickyCookiePolicies.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'ApplicationStickyCookiePolicies' require a .\n");
+            		      BAD_RET("'ApplicationStickyCookiePolicies' require a '.'\n");
             	      TRY_ALLOC_AT(s,application_sticky_cookie_policies, pa, pos, sizeof(*s->application_sticky_cookie_policies));
             	      cascade_struct = &s->application_sticky_cookie_policies[pos];
             	      cascade_parser = application_sticky_cookie_policy_parser;
@@ -13928,7 +13938,7 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'Listeners' require an index (example array ref Listener.Listeners.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Listeners' require a .\n");
+            		      BAD_RET("'Listeners' require a '.'\n");
             	      TRY_ALLOC_AT(s,listeners, pa, pos, sizeof(*s->listeners));
             	      cascade_struct = &s->listeners[pos];
             	      cascade_parser = listener_parser;
@@ -13958,7 +13968,7 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'LoadBalancerStickyCookiePolicies' require an index (example array ref LoadBalancerStickyCookiePolicy.LoadBalancerStickyCookiePolicies.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'LoadBalancerStickyCookiePolicies' require a .\n");
+            		      BAD_RET("'LoadBalancerStickyCookiePolicies' require a '.'\n");
             	      TRY_ALLOC_AT(s,load_balancer_sticky_cookie_policies, pa, pos, sizeof(*s->load_balancer_sticky_cookie_policies));
             	      cascade_struct = &s->load_balancer_sticky_cookie_policies[pos];
             	      cascade_parser = load_balancer_sticky_cookie_policy_parser;
@@ -14109,7 +14119,7 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -14123,7 +14133,7 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             }
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'LoadBalancer'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'LoadBalancer'\n", str);
 		return -1;
 	}
 	return 0;
@@ -14143,7 +14153,7 @@ int load_balancer_light_parser(void *v_s, char *str, char *aa, struct ptr_array 
             s->load_balancer_port = atoll(aa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'LoadBalancerLight'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'LoadBalancerLight'\n", str);
 		return -1;
 	}
 	return 0;
@@ -14163,7 +14173,7 @@ int load_balancer_sticky_cookie_policy_parser(void *v_s, char *str, char *aa, st
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'LoadBalancerStickyCookiePolicy'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'LoadBalancerStickyCookiePolicy'\n", str);
 		return -1;
 	}
 	return 0;
@@ -14188,7 +14198,7 @@ int load_balancer_tag_parser(void *v_s, char *str, char *aa, struct ptr_array *p
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'LoadBalancerTag'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'LoadBalancerTag'\n", str);
 		return -1;
 	}
 	return 0;
@@ -14208,7 +14218,7 @@ int location_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Location'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Location'\n", str);
 		return -1;
 	}
 	return 0;
@@ -14298,7 +14308,7 @@ int log_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             s->response_status_code = atoll(aa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Log'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Log'\n", str);
 		return -1;
 	}
 	return 0;
@@ -14328,7 +14338,7 @@ int maintenance_event_parser(void *v_s, char *str, char *aa, struct ptr_array *p
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'MaintenanceEvent'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'MaintenanceEvent'\n", str);
 		return -1;
 	}
 	return 0;
@@ -14353,7 +14363,7 @@ int minimal_policy_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'MinimalPolicy'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'MinimalPolicy'\n", str);
 		return -1;
 	}
 	return 0;
@@ -14389,7 +14399,7 @@ int nat_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'PublicIps' require an index (example array ref PublicIpLight.PublicIps.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'PublicIps' require a .\n");
+            		      BAD_RET("'PublicIps' require a '.'\n");
             	      TRY_ALLOC_AT(s,public_ips, pa, pos, sizeof(*s->public_ips));
             	      cascade_struct = &s->public_ips[pos];
             	      cascade_parser = public_ip_light_parser;
@@ -14424,7 +14434,7 @@ int nat_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -14438,7 +14448,7 @@ int nat_service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             }
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'NatService'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'NatService'\n", str);
 		return -1;
 	}
 	return 0;
@@ -14479,7 +14489,7 @@ int net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -14498,7 +14508,7 @@ int net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Net'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Net'\n", str);
 		return -1;
 	}
 	return 0;
@@ -14567,7 +14577,7 @@ int net_access_point_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -14581,7 +14591,7 @@ int net_access_point_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
             }
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'NetAccessPoint'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'NetAccessPoint'\n", str);
 		return -1;
 	}
 	return 0;
@@ -14663,7 +14673,7 @@ int net_peering_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -14677,7 +14687,7 @@ int net_peering_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             }
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'NetPeering'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'NetPeering'\n", str);
 		return -1;
 	}
 	return 0;
@@ -14697,7 +14707,7 @@ int net_peering_state_parser(void *v_s, char *str, char *aa, struct ptr_array *p
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'NetPeeringState'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'NetPeeringState'\n", str);
 		return -1;
 	}
 	return 0;
@@ -14717,7 +14727,7 @@ int net_to_virtual_gateway_link_parser(void *v_s, char *str, char *aa, struct pt
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'NetToVirtualGatewayLink'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'NetToVirtualGatewayLink'\n", str);
 		return -1;
 	}
 	return 0;
@@ -14812,7 +14822,7 @@ int nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'PrivateIps' require an index (example array ref PrivateIp.PrivateIps.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'PrivateIps' require a .\n");
+            		      BAD_RET("'PrivateIps' require a '.'\n");
             	      TRY_ALLOC_AT(s,private_ips, pa, pos, sizeof(*s->private_ips));
             	      cascade_struct = &s->private_ips[pos];
             	      cascade_parser = private_ip_parser;
@@ -14837,7 +14847,7 @@ int nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'SecurityGroups' require an index (example array ref SecurityGroupLight.SecurityGroups.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'SecurityGroups' require a .\n");
+            		      BAD_RET("'SecurityGroups' require a '.'\n");
             	      TRY_ALLOC_AT(s,security_groups, pa, pos, sizeof(*s->security_groups));
             	      cascade_struct = &s->security_groups[pos];
             	      cascade_parser = security_group_light_parser;
@@ -14877,7 +14887,7 @@ int nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -14891,7 +14901,7 @@ int nic_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             }
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Nic'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Nic'\n", str);
 		return -1;
 	}
 	return 0;
@@ -14937,7 +14947,7 @@ int nic_for_vm_creation_parser(void *v_s, char *str, char *aa, struct ptr_array 
             	      if (endptr == dot_pos)
             		      BAD_RET("'PrivateIps' require an index (example array ref PrivateIpLight.PrivateIps.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'PrivateIps' require a .\n");
+            		      BAD_RET("'PrivateIps' require a '.'\n");
             	      TRY_ALLOC_AT(s,private_ips, pa, pos, sizeof(*s->private_ips));
             	      cascade_struct = &s->private_ips[pos];
             	      cascade_parser = private_ip_light_parser;
@@ -14989,7 +14999,7 @@ int nic_for_vm_creation_parser(void *v_s, char *str, char *aa, struct ptr_array 
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'NicForVmCreation'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'NicForVmCreation'\n", str);
 		return -1;
 	}
 	return 0;
@@ -15084,7 +15094,7 @@ int nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'PrivateIps' require an index (example array ref PrivateIpLightForVm.PrivateIps.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'PrivateIps' require a .\n");
+            		      BAD_RET("'PrivateIps' require a '.'\n");
             	      TRY_ALLOC_AT(s,private_ips, pa, pos, sizeof(*s->private_ips));
             	      cascade_struct = &s->private_ips[pos];
             	      cascade_parser = private_ip_light_for_vm_parser;
@@ -15109,7 +15119,7 @@ int nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'SecurityGroups' require an index (example array ref SecurityGroupLight.SecurityGroups.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'SecurityGroups' require a .\n");
+            		      BAD_RET("'SecurityGroups' require a '.'\n");
             	      TRY_ALLOC_AT(s,security_groups, pa, pos, sizeof(*s->security_groups));
             	      cascade_struct = &s->security_groups[pos];
             	      cascade_parser = security_group_light_parser;
@@ -15133,7 +15143,7 @@ int nic_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'NicLight'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'NicLight'\n", str);
 		return -1;
 	}
 	return 0;
@@ -15153,7 +15163,7 @@ int osu_api_key_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'OsuApiKey'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'OsuApiKey'\n", str);
 		return -1;
 	}
 	return 0;
@@ -15183,7 +15193,7 @@ int osu_export_image_export_task_parser(void *v_s, char *str, char *aa, struct p
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'OsuExportImageExportTask'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'OsuExportImageExportTask'\n", str);
 		return -1;
 	}
 	return 0;
@@ -15208,7 +15218,7 @@ int osu_export_snapshot_export_task_parser(void *v_s, char *str, char *aa, struc
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'OsuExportSnapshotExportTask'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'OsuExportSnapshotExportTask'\n", str);
 		return -1;
 	}
 	return 0;
@@ -15255,7 +15265,7 @@ int osu_export_to_create_parser(void *v_s, char *str, char *aa, struct ptr_array
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'OsuExportToCreate'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'OsuExportToCreate'\n", str);
 		return -1;
 	}
 	return 0;
@@ -15303,7 +15313,7 @@ int permissions_on_resource_parser(void *v_s, char *str, char *aa, struct ptr_ar
              }
         } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'PermissionsOnResource'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'PermissionsOnResource'\n", str);
 		return -1;
 	}
 	return 0;
@@ -15347,7 +15357,7 @@ int permissions_on_resource_creation_parser(void *v_s, char *str, char *aa, stru
              }
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'PermissionsOnResourceCreation'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'PermissionsOnResourceCreation'\n", str);
 		return -1;
 	}
 	return 0;
@@ -15494,7 +15504,7 @@ int phase1_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Phase1Options'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Phase1Options'\n", str);
 		return -1;
 	}
 	return 0;
@@ -15598,7 +15608,7 @@ int phase2_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Phase2Options'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Phase2Options'\n", str);
 		return -1;
 	}
 	return 0;
@@ -15618,7 +15628,7 @@ int placement_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Placement'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Placement'\n", str);
 		return -1;
 	}
 	return 0;
@@ -15683,7 +15693,7 @@ int policy_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             s->resources_count = atoll(aa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Policy'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Policy'\n", str);
 		return -1;
 	}
 	return 0;
@@ -15704,7 +15714,7 @@ int policy_entities_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
             	      if (endptr == dot_pos)
             		      BAD_RET("'Accounts' require an index (example array ref MinimalPolicy.Accounts.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Accounts' require a .\n");
+            		      BAD_RET("'Accounts' require a '.'\n");
             	      TRY_ALLOC_AT(s,accounts, pa, pos, sizeof(*s->accounts));
             	      cascade_struct = &s->accounts[pos];
             	      cascade_parser = minimal_policy_parser;
@@ -15729,7 +15739,7 @@ int policy_entities_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
             	      if (endptr == dot_pos)
             		      BAD_RET("'Groups' require an index (example array ref MinimalPolicy.Groups.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Groups' require a .\n");
+            		      BAD_RET("'Groups' require a '.'\n");
             	      TRY_ALLOC_AT(s,groups, pa, pos, sizeof(*s->groups));
             	      cascade_struct = &s->groups[pos];
             	      cascade_parser = minimal_policy_parser;
@@ -15784,7 +15794,7 @@ int policy_entities_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
             	      if (endptr == dot_pos)
             		      BAD_RET("'Users' require an index (example array ref MinimalPolicy.Users.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Users' require a .\n");
+            		      BAD_RET("'Users' require a '.'\n");
             	      TRY_ALLOC_AT(s,users, pa, pos, sizeof(*s->users));
             	      cascade_struct = &s->users[pos];
             	      cascade_parser = minimal_policy_parser;
@@ -15798,7 +15808,7 @@ int policy_entities_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
             }
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'PolicyEntities'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'PolicyEntities'\n", str);
 		return -1;
 	}
 	return 0;
@@ -15833,7 +15843,7 @@ int policy_version_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'PolicyVersion'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'PolicyVersion'\n", str);
 		return -1;
 	}
 	return 0;
@@ -15880,7 +15890,7 @@ int private_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'PrivateIp'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'PrivateIp'\n", str);
 		return -1;
 	}
 	return 0;
@@ -15905,7 +15915,7 @@ int private_ip_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'PrivateIpLight'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'PrivateIpLight'\n", str);
 		return -1;
 	}
 	return 0;
@@ -15952,7 +15962,7 @@ int private_ip_light_for_vm_parser(void *v_s, char *str, char *aa, struct ptr_ar
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'PrivateIpLightForVm'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'PrivateIpLightForVm'\n", str);
 		return -1;
 	}
 	return 0;
@@ -15977,7 +15987,7 @@ int product_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'ProductType'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'ProductType'\n", str);
 		return -1;
 	}
 	return 0;
@@ -16028,7 +16038,7 @@ int public_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -16047,7 +16057,7 @@ int public_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'PublicIp'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'PublicIp'\n", str);
 		return -1;
 	}
 	return 0;
@@ -16067,7 +16077,7 @@ int public_ip_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'PublicIpLight'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'PublicIpLight'\n", str);
 		return -1;
 	}
 	return 0;
@@ -16112,7 +16122,7 @@ int quota_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             s->used_value = atoll(aa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Quota'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Quota'\n", str);
 		return -1;
 	}
 	return 0;
@@ -16138,7 +16148,7 @@ int quota_types_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'Quotas' require an index (example array ref Quota.Quotas.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Quotas' require a .\n");
+            		      BAD_RET("'Quotas' require a '.'\n");
             	      TRY_ALLOC_AT(s,quotas, pa, pos, sizeof(*s->quotas));
             	      cascade_struct = &s->quotas[pos];
             	      cascade_parser = quota_parser;
@@ -16152,7 +16162,7 @@ int quota_types_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             }
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'QuotaTypes'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'QuotaTypes'\n", str);
 		return -1;
 	}
 	return 0;
@@ -16167,7 +16177,7 @@ int read_linked_policies_filters_parser(void *v_s, char *str, char *aa, struct p
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'ReadLinkedPoliciesFilters'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'ReadLinkedPoliciesFilters'\n", str);
 		return -1;
 	}
 	return 0;
@@ -16197,7 +16207,7 @@ int read_policies_filters_parser(void *v_s, char *str, char *aa, struct ptr_arra
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'ReadPoliciesFilters'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'ReadPoliciesFilters'\n", str);
 		return -1;
 	}
 	return 0;
@@ -16217,7 +16227,7 @@ int region_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Region'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Region'\n", str);
 		return -1;
 	}
 	return 0;
@@ -16232,7 +16242,7 @@ int resource_load_balancer_tag_parser(void *v_s, char *str, char *aa, struct ptr
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'ResourceLoadBalancerTag'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'ResourceLoadBalancerTag'\n", str);
 		return -1;
 	}
 	return 0;
@@ -16252,7 +16262,7 @@ int resource_tag_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'ResourceTag'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'ResourceTag'\n", str);
 		return -1;
 	}
 	return 0;
@@ -16317,7 +16327,7 @@ int route_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Route'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Route'\n", str);
 		return -1;
 	}
 	return 0;
@@ -16342,7 +16352,7 @@ int route_light_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'RouteLight'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'RouteLight'\n", str);
 		return -1;
 	}
 	return 0;
@@ -16357,7 +16367,7 @@ int route_propagating_virtual_gateway_parser(void *v_s, char *str, char *aa, str
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'RoutePropagatingVirtualGateway'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'RoutePropagatingVirtualGateway'\n", str);
 		return -1;
 	}
 	return 0;
@@ -16378,7 +16388,7 @@ int route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'LinkRouteTables' require an index (example array ref LinkRouteTable.LinkRouteTables.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'LinkRouteTables' require a .\n");
+            		      BAD_RET("'LinkRouteTables' require a '.'\n");
             	      TRY_ALLOC_AT(s,link_route_tables, pa, pos, sizeof(*s->link_route_tables));
             	      cascade_struct = &s->link_route_tables[pos];
             	      cascade_parser = link_route_table_parser;
@@ -16408,7 +16418,7 @@ int route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'RoutePropagatingVirtualGateways' require an index (example array ref RoutePropagatingVirtualGateway.RoutePropagatingVirtualGateways.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'RoutePropagatingVirtualGateways' require a .\n");
+            		      BAD_RET("'RoutePropagatingVirtualGateways' require a '.'\n");
             	      TRY_ALLOC_AT(s,route_propagating_virtual_gateways, pa, pos, sizeof(*s->route_propagating_virtual_gateways));
             	      cascade_struct = &s->route_propagating_virtual_gateways[pos];
             	      cascade_parser = route_propagating_virtual_gateway_parser;
@@ -16438,7 +16448,7 @@ int route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'Routes' require an index (example array ref Route.Routes.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Routes' require a .\n");
+            		      BAD_RET("'Routes' require a '.'\n");
             	      TRY_ALLOC_AT(s,routes, pa, pos, sizeof(*s->routes));
             	      cascade_struct = &s->routes[pos];
             	      cascade_parser = route_parser;
@@ -16463,7 +16473,7 @@ int route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -16477,7 +16487,7 @@ int route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             }
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'RouteTable'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'RouteTable'\n", str);
 		return -1;
 	}
 	return 0;
@@ -16508,7 +16518,7 @@ int security_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             	      if (endptr == dot_pos)
             		      BAD_RET("'InboundRules' require an index (example array ref SecurityGroupRule.InboundRules.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'InboundRules' require a .\n");
+            		      BAD_RET("'InboundRules' require a '.'\n");
             	      TRY_ALLOC_AT(s,inbound_rules, pa, pos, sizeof(*s->inbound_rules));
             	      cascade_struct = &s->inbound_rules[pos];
             	      cascade_parser = security_group_rule_parser;
@@ -16538,7 +16548,7 @@ int security_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             	      if (endptr == dot_pos)
             		      BAD_RET("'OutboundRules' require an index (example array ref SecurityGroupRule.OutboundRules.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'OutboundRules' require a .\n");
+            		      BAD_RET("'OutboundRules' require a '.'\n");
             	      TRY_ALLOC_AT(s,outbound_rules, pa, pos, sizeof(*s->outbound_rules));
             	      cascade_struct = &s->outbound_rules[pos];
             	      cascade_parser = security_group_rule_parser;
@@ -16573,7 +16583,7 @@ int security_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -16587,7 +16597,7 @@ int security_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             }
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'SecurityGroup'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'SecurityGroup'\n", str);
 		return -1;
 	}
 	return 0;
@@ -16607,7 +16617,7 @@ int security_group_light_parser(void *v_s, char *str, char *aa, struct ptr_array
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'SecurityGroupLight'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'SecurityGroupLight'\n", str);
 		return -1;
 	}
 	return 0;
@@ -16666,7 +16676,7 @@ int security_group_rule_parser(void *v_s, char *str, char *aa, struct ptr_array 
             	      if (endptr == dot_pos)
             		      BAD_RET("'SecurityGroupsMembers' require an index (example array ref SecurityGroupsMember.SecurityGroupsMembers.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'SecurityGroupsMembers' require a .\n");
+            		      BAD_RET("'SecurityGroupsMembers' require a '.'\n");
             	      TRY_ALLOC_AT(s,security_groups_members, pa, pos, sizeof(*s->security_groups_members));
             	      cascade_struct = &s->security_groups_members[pos];
             	      cascade_parser = security_groups_member_parser;
@@ -16713,7 +16723,7 @@ int security_group_rule_parser(void *v_s, char *str, char *aa, struct ptr_array 
             s->to_port_range = atoll(aa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'SecurityGroupRule'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'SecurityGroupRule'\n", str);
 		return -1;
 	}
 	return 0;
@@ -16738,7 +16748,7 @@ int security_groups_member_parser(void *v_s, char *str, char *aa, struct ptr_arr
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'SecurityGroupsMember'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'SecurityGroupsMember'\n", str);
 		return -1;
 	}
 	return 0;
@@ -16778,7 +16788,7 @@ int server_certificate_parser(void *v_s, char *str, char *aa, struct ptr_array *
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'ServerCertificate'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'ServerCertificate'\n", str);
 		return -1;
 	}
 	return 0;
@@ -16826,7 +16836,7 @@ int service_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Service'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Service'\n", str);
 		return -1;
 	}
 	return 0;
@@ -16904,7 +16914,7 @@ int snapshot_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -16928,7 +16938,7 @@ int snapshot_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             s->volume_size = atoll(aa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Snapshot'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Snapshot'\n", str);
 		return -1;
 	}
 	return 0;
@@ -16986,7 +16996,7 @@ int snapshot_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -17005,7 +17015,7 @@ int snapshot_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'SnapshotExportTask'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'SnapshotExportTask'\n", str);
 		return -1;
 	}
 	return 0;
@@ -17030,7 +17040,7 @@ int source_net_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'SourceNet'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'SourceNet'\n", str);
 		return -1;
 	}
 	return 0;
@@ -17050,7 +17060,7 @@ int source_security_group_parser(void *v_s, char *str, char *aa, struct ptr_arra
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'SourceSecurityGroup'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'SourceSecurityGroup'\n", str);
 		return -1;
 	}
 	return 0;
@@ -17070,7 +17080,7 @@ int state_comment_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'StateComment'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'StateComment'\n", str);
 		return -1;
 	}
 	return 0;
@@ -17131,7 +17141,7 @@ int subnet_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -17145,7 +17155,7 @@ int subnet_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             }
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Subnet'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Subnet'\n", str);
 		return -1;
 	}
 	return 0;
@@ -17175,7 +17185,7 @@ int subregion_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Subregion'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Subregion'\n", str);
 		return -1;
 	}
 	return 0;
@@ -17205,7 +17215,7 @@ int tag_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Tag'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Tag'\n", str);
 		return -1;
 	}
 	return 0;
@@ -17245,7 +17255,7 @@ int unit_price_entry_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
             s->unit_price = atof(aa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'UnitPriceEntry'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'UnitPriceEntry'\n", str);
 		return -1;
 	}
 	return 0;
@@ -17264,6 +17274,16 @@ int user_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             s->last_modification_date = aa; // string string
 
          } else
+	if ((aret = argcmp(str, "OutscaleLoginAllowed")) == 0 || aret == '=' || aret == '.') {
+            s->is_set_outscale_login_allowed = 1;
+            if (!aa || !strcasecmp(aa, "true")) {
+            		s->outscale_login_allowed = 1;
+             } else if (!strcasecmp(aa, "false")) {
+            		s->outscale_login_allowed = 0;
+             } else {
+            		BAD_RET("OutscaleLoginAllowed require true/false\n");
+             }
+        } else
 	if ((aret = argcmp(str, "Path")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "Path argument missing\n");
             s->path = aa; // string string
@@ -17285,7 +17305,7 @@ int user_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'User'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'User'\n", str);
 		return -1;
 	}
 	return 0;
@@ -17325,7 +17345,7 @@ int user_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'UserGroup'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'UserGroup'\n", str);
 		return -1;
 	}
 	return 0;
@@ -17360,7 +17380,7 @@ int vgw_telemetry_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'VgwTelemetry'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'VgwTelemetry'\n", str);
 		return -1;
 	}
 	return 0;
@@ -17386,7 +17406,7 @@ int virtual_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
             	      if (endptr == dot_pos)
             		      BAD_RET("'NetToVirtualGatewayLinks' require an index (example array ref NetToVirtualGatewayLink.NetToVirtualGatewayLinks.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'NetToVirtualGatewayLinks' require a .\n");
+            		      BAD_RET("'NetToVirtualGatewayLinks' require a '.'\n");
             	      TRY_ALLOC_AT(s,net_to_virtual_gateway_links, pa, pos, sizeof(*s->net_to_virtual_gateway_links));
             	      cascade_struct = &s->net_to_virtual_gateway_links[pos];
             	      cascade_parser = net_to_virtual_gateway_link_parser;
@@ -17416,7 +17436,7 @@ int virtual_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -17435,7 +17455,7 @@ int virtual_gateway_parser(void *v_s, char *str, char *aa, struct ptr_array *pa)
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'VirtualGateway'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'VirtualGateway'\n", str);
 		return -1;
 	}
 	return 0;
@@ -17478,7 +17498,7 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'BlockDeviceMappings' require an index (example array ref BlockDeviceMappingCreated.BlockDeviceMappings.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'BlockDeviceMappings' require a .\n");
+            		      BAD_RET("'BlockDeviceMappings' require a '.'\n");
             	      TRY_ALLOC_AT(s,block_device_mappings, pa, pos, sizeof(*s->block_device_mappings));
             	      cascade_struct = &s->block_device_mappings[pos];
             	      cascade_parser = block_device_mapping_created_parser;
@@ -17583,7 +17603,7 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'Nics' require an index (example array ref NicLight.Nics.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Nics' require a .\n");
+            		      BAD_RET("'Nics' require a '.'\n");
             	      TRY_ALLOC_AT(s,nics, pa, pos, sizeof(*s->nics));
             	      cascade_struct = &s->nics[pos];
             	      cascade_parser = nic_light_parser;
@@ -17698,7 +17718,7 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'SecurityGroups' require an index (example array ref SecurityGroupLight.SecurityGroups.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'SecurityGroups' require a .\n");
+            		      BAD_RET("'SecurityGroups' require a '.'\n");
             	      TRY_ALLOC_AT(s,security_groups, pa, pos, sizeof(*s->security_groups));
             	      cascade_struct = &s->security_groups[pos];
             	      cascade_parser = security_group_light_parser;
@@ -17738,7 +17758,7 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -17772,7 +17792,7 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Vm'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Vm'\n", str);
 		return -1;
 	}
 	return 0;
@@ -17846,7 +17866,7 @@ int vm_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -17908,7 +17928,7 @@ int vm_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'VmGroup'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'VmGroup'\n", str);
 		return -1;
 	}
 	return 0;
@@ -17933,7 +17953,7 @@ int vm_state_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'VmState'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'VmState'\n", str);
 		return -1;
 	}
 	return 0;
@@ -17954,7 +17974,7 @@ int vm_states_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'MaintenanceEvents' require an index (example array ref MaintenanceEvent.MaintenanceEvents.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'MaintenanceEvents' require a .\n");
+            		      BAD_RET("'MaintenanceEvents' require a '.'\n");
             	      TRY_ALLOC_AT(s,maintenance_events, pa, pos, sizeof(*s->maintenance_events));
             	      cascade_struct = &s->maintenance_events[pos];
             	      cascade_parser = maintenance_event_parser;
@@ -17983,7 +18003,7 @@ int vm_states_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'VmStates'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'VmStates'\n", str);
 		return -1;
 	}
 	return 0;
@@ -18044,7 +18064,7 @@ int vm_template_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -18068,7 +18088,7 @@ int vm_template_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'VmTemplate'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'VmTemplate'\n", str);
 		return -1;
 	}
 	return 0;
@@ -18133,7 +18153,7 @@ int vm_type_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             s->volume_size = atoll(aa);
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'VmType'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'VmType'\n", str);
 		return -1;
 	}
 	return 0;
@@ -18169,7 +18189,7 @@ int volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'LinkedVolumes' require an index (example array ref LinkedVolume.LinkedVolumes.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'LinkedVolumes' require a .\n");
+            		      BAD_RET("'LinkedVolumes' require a '.'\n");
             	      TRY_ALLOC_AT(s,linked_volumes, pa, pos, sizeof(*s->linked_volumes));
             	      cascade_struct = &s->linked_volumes[pos];
             	      cascade_parser = linked_volume_parser;
@@ -18214,7 +18234,7 @@ int volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -18238,7 +18258,7 @@ int volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'Volume'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'Volume'\n", str);
 		return -1;
 	}
 	return 0;
@@ -18274,7 +18294,7 @@ int vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             	      if (endptr == dot_pos)
             		      BAD_RET("'Routes' require an index (example array ref RouteLight.Routes.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Routes' require a .\n");
+            		      BAD_RET("'Routes' require a '.'\n");
             	      TRY_ALLOC_AT(s,routes, pa, pos, sizeof(*s->routes));
             	      cascade_struct = &s->routes[pos];
             	      cascade_parser = route_light_parser;
@@ -18314,7 +18334,7 @@ int vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             	      if (endptr == dot_pos)
             		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'Tags' require a .\n");
+            		      BAD_RET("'Tags' require a '.'\n");
             	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
             	      cascade_struct = &s->tags[pos];
             	      cascade_parser = resource_tag_parser;
@@ -18339,7 +18359,7 @@ int vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
             	      if (endptr == dot_pos)
             		      BAD_RET("'VgwTelemetries' require an index (example array ref VgwTelemetry.VgwTelemetries.0)\n");
             	      else if (*endptr != '.')
-            		      BAD_RET("'VgwTelemetries' require a .\n");
+            		      BAD_RET("'VgwTelemetries' require a '.'\n");
             	      TRY_ALLOC_AT(s,vgw_telemetries, pa, pos, sizeof(*s->vgw_telemetries));
             	      cascade_struct = &s->vgw_telemetries[pos];
             	      cascade_parser = vgw_telemetry_parser;
@@ -18380,7 +18400,7 @@ int vpn_connection_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) 
              }
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'VpnConnection'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'VpnConnection'\n", str);
 		return -1;
 	}
 	return 0;
@@ -18429,7 +18449,7 @@ int vpn_options_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 
          } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'VpnOptions'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'VpnOptions'\n", str);
 		return -1;
 	}
 	return 0;
@@ -18599,7 +18619,7 @@ int with_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              }
         } else
 	{
-		fprintf(stderr, "'%s' not an argumemt of 'With'\n", str);
+		fprintf(stderr, "'%s' is not an argumemt of 'With'\n", str);
 		return -1;
 	}
 	return 0;
@@ -18673,7 +18693,7 @@ int main(int ac, char **av)
 				auth_str = av[i+1];
 				++i;
 			} else {
-				fprintf(stderr, "--auth-method seems weirds\n");
+				fprintf(stderr, "unexpected auth-method parameter\n");
 				return 1;
 			}
 			auth_m = str_auth_method_to_int(auth_str);
@@ -18687,7 +18707,7 @@ int main(int ac, char **av)
 				auth_str = av[i+1];
 				++i;
 			} else {
-				fprintf(stderr, "--authentication_method seems weirds\n");
+				fprintf(stderr, "unexpected authentication_method parameter\n");
 				return 1;
 			}
 			auth_m = str_auth_method_to_int(auth_str);
@@ -18701,7 +18721,7 @@ int main(int ac, char **av)
 				cfg_str = av[i+1];
 				++i;
 			} else {
-				fprintf(stderr, "--config seems weirds\n");
+				fprintf(stderr, "unexpected config parameter\n");
 				return 1;
 			}
 			osc_set_cfg_path(cfg_str);
@@ -18713,7 +18733,7 @@ int main(int ac, char **av)
 				profile = av[i+1];
 				++i;
 			} else {
-				fprintf(stderr, "--profile seems weirds");
+				fprintf(stderr, "unexpected profile parameter");
 				return 1;
 			}
 		} else if (!argcmp2("--password", av[i], '=')) {
@@ -18724,7 +18744,7 @@ int main(int ac, char **av)
 				password = av[i+1];
 				++i;
 			} else {
-				fprintf(stderr, "--password seems weirds");
+				fprintf(stderr, "unexpected password parameter");
 				return 1;
 			}
 		} else if (!argcmp2("--login", av[i], '=')) {
@@ -18735,7 +18755,7 @@ int main(int ac, char **av)
 				login = av[i+1];
 				++i;
 			} else {
-				fprintf(stderr, "--login seems weirds");
+				fprintf(stderr, "unexpected login parameter");
 				return 1;
 			}
 		}
@@ -18854,8 +18874,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -18908,7 +18927,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'AcceptNetPeering'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'AcceptNetPeering'\n", next_a);
 			    }
 		            i += incr;
 			    goto accept_net_peering_arg;
@@ -18925,7 +18944,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called AcceptNetPeering (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called AcceptNetPeering (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -18965,8 +18984,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -19052,7 +19070,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'AddUserToUserGroup'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'AddUserToUserGroup'\n", next_a);
 			    }
 		            i += incr;
 			    goto add_user_to_user_group_arg;
@@ -19069,7 +19087,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called AddUserToUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called AddUserToUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -19109,8 +19127,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -19174,7 +19191,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CheckAuthentication'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CheckAuthentication'\n", next_a);
 			    }
 		            i += incr;
 			    goto check_authentication_arg;
@@ -19191,7 +19208,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CheckAuthentication (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CheckAuthentication (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -19231,8 +19248,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -19307,7 +19323,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateAccessKey'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateAccessKey'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_access_key_arg;
@@ -19324,7 +19340,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateAccessKey (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateAccessKey (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -19364,8 +19380,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -19584,7 +19599,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateAccount'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateAccount'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_account_arg;
@@ -19601,7 +19616,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateAccount (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateAccount (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -19641,8 +19656,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -19797,7 +19811,7 @@ int main(int ac, char **av)
 				             SET_NEXT(s->ip_ranges, (aa), pa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateApiAccessRule'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateApiAccessRule'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_api_access_rule_arg;
@@ -19814,7 +19828,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateApiAccessRule (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateApiAccessRule (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -19854,8 +19868,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -19919,7 +19932,7 @@ int main(int ac, char **av)
 				           }
 				      } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateCa'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateCa'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_ca_arg;
@@ -19936,7 +19949,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateCa (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateCa (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -19976,8 +19989,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -20052,7 +20064,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateClientGateway'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateClientGateway'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_client_gateway_arg;
@@ -20069,7 +20081,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateClientGateway (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateClientGateway (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -20109,8 +20121,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -20185,7 +20196,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateDedicatedGroup'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateDedicatedGroup'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_dedicated_group_arg;
@@ -20202,7 +20213,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateDedicatedGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateDedicatedGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -20242,8 +20253,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -20398,7 +20408,7 @@ int main(int ac, char **av)
 				             SET_NEXT(s->ntp_servers, (aa), pa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateDhcpOptions'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateDhcpOptions'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_dhcp_options_arg;
@@ -20415,7 +20425,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateDhcpOptions (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateDhcpOptions (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -20455,8 +20465,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -20532,7 +20541,7 @@ int main(int ac, char **av)
 				           }
 				      } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateDirectLinkInterface'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateDirectLinkInterface'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_direct_link_interface_arg;
@@ -20549,7 +20558,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateDirectLinkInterface (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateDirectLinkInterface (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -20589,8 +20598,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -20665,7 +20673,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateDirectLink'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateDirectLink'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_direct_link_arg;
@@ -20682,7 +20690,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateDirectLink (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateDirectLink (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -20722,8 +20730,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -20814,7 +20821,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateFlexibleGpu'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateFlexibleGpu'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_flexible_gpu_arg;
@@ -20831,7 +20838,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateFlexibleGpu (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateFlexibleGpu (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -20871,8 +20878,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -20948,7 +20954,7 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateImageExportTask'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateImageExportTask'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_image_export_task_arg;
@@ -20965,7 +20971,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateImageExportTask (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateImageExportTask (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -21005,8 +21011,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -21060,7 +21065,7 @@ int main(int ac, char **av)
 				          	      if (endptr == dot_pos)
 				          		      BAD_RET("'BlockDeviceMappings' require an index (example array ref BlockDeviceMappingImage.BlockDeviceMappings.0)\n");
 				          	      else if (*endptr != '.')
-				          		      BAD_RET("'BlockDeviceMappings' require a .\n");
+				          		      BAD_RET("'BlockDeviceMappings' require a '.'\n");
 				          	      TRY_ALLOC_AT(s,block_device_mappings, pa, pos, sizeof(*s->block_device_mappings));
 				          	      cascade_struct = &s->block_device_mappings[pos];
 				          	      cascade_parser = block_device_mapping_image_parser;
@@ -21251,7 +21256,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateImage'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateImage'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_image_arg;
@@ -21268,7 +21273,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateImage (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateImage (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -21308,8 +21313,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -21351,7 +21355,7 @@ int main(int ac, char **av)
 				           }
 				      } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateInternetService'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateInternetService'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_internet_service_arg;
@@ -21368,7 +21372,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateInternetService (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateInternetService (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -21408,8 +21412,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -21473,7 +21476,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateKeypair'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateKeypair'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_keypair_arg;
@@ -21490,7 +21493,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateKeypair (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateKeypair (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -21530,8 +21533,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -21653,7 +21655,7 @@ int main(int ac, char **av)
 				             SET_NEXT(s->vm_ids, (aa), pa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateListenerRule'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateListenerRule'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_listener_rule_arg;
@@ -21670,7 +21672,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateListenerRule (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateListenerRule (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -21710,8 +21712,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -21770,7 +21771,7 @@ int main(int ac, char **av)
 				          	      if (endptr == dot_pos)
 				          		      BAD_RET("'Listeners' require an index (example array ref ListenerForCreation.Listeners.0)\n");
 				          	      else if (*endptr != '.')
-				          		      BAD_RET("'Listeners' require a .\n");
+				          		      BAD_RET("'Listeners' require a '.'\n");
 				          	      TRY_ALLOC_AT(s,listeners, pa, pos, sizeof(*s->listeners));
 				          	      cascade_struct = &s->listeners[pos];
 				          	      cascade_parser = listener_for_creation_parser;
@@ -21795,7 +21796,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateLoadBalancerListeners'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateLoadBalancerListeners'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_load_balancer_listeners_arg;
@@ -21812,7 +21813,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateLoadBalancerListeners (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateLoadBalancerListeners (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -21852,8 +21853,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -21950,7 +21950,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateLoadBalancerPolicy'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateLoadBalancerPolicy'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_load_balancer_policy_arg;
@@ -21967,7 +21967,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateLoadBalancerPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateLoadBalancerPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -22007,8 +22007,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -22067,7 +22066,7 @@ int main(int ac, char **av)
 				          	      if (endptr == dot_pos)
 				          		      BAD_RET("'Listeners' require an index (example array ref ListenerForCreation.Listeners.0)\n");
 				          	      else if (*endptr != '.')
-				          		      BAD_RET("'Listeners' require a .\n");
+				          		      BAD_RET("'Listeners' require a '.'\n");
 				          	      TRY_ALLOC_AT(s,listeners, pa, pos, sizeof(*s->listeners));
 				          	      cascade_struct = &s->listeners[pos];
 				          	      cascade_parser = listener_for_creation_parser;
@@ -22233,7 +22232,7 @@ int main(int ac, char **av)
 				          	      if (endptr == dot_pos)
 				          		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
 				          	      else if (*endptr != '.')
-				          		      BAD_RET("'Tags' require a .\n");
+				          		      BAD_RET("'Tags' require a '.'\n");
 				          	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
 				          	      cascade_struct = &s->tags[pos];
 				          	      cascade_parser = resource_tag_parser;
@@ -22247,7 +22246,7 @@ int main(int ac, char **av)
 				          }
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateLoadBalancer'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateLoadBalancer'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_load_balancer_arg;
@@ -22264,7 +22263,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateLoadBalancer (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateLoadBalancer (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -22304,8 +22303,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -22398,7 +22396,7 @@ int main(int ac, char **av)
 				          	      if (endptr == dot_pos)
 				          		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
 				          	      else if (*endptr != '.')
-				          		      BAD_RET("'Tags' require a .\n");
+				          		      BAD_RET("'Tags' require a '.'\n");
 				          	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
 				          	      cascade_struct = &s->tags[pos];
 				          	      cascade_parser = resource_tag_parser;
@@ -22412,7 +22410,7 @@ int main(int ac, char **av)
 				          }
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateLoadBalancerTags'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateLoadBalancerTags'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_load_balancer_tags_arg;
@@ -22429,7 +22427,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateLoadBalancerTags (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateLoadBalancerTags (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -22469,8 +22467,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -22545,7 +22542,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateNatService'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateNatService'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_nat_service_arg;
@@ -22562,7 +22559,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateNatService (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateNatService (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -22602,8 +22599,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -22701,7 +22697,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateNetAccessPoint'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateNetAccessPoint'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_net_access_point_arg;
@@ -22718,7 +22714,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateNetAccessPoint (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateNetAccessPoint (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -22758,8 +22754,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -22834,7 +22829,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateNetPeering'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateNetPeering'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_net_peering_arg;
@@ -22851,7 +22846,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateNetPeering (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateNetPeering (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -22891,8 +22886,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -22956,7 +22950,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateNet'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateNet'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_net_arg;
@@ -22973,7 +22967,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateNet (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateNet (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -23013,8 +23007,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -23084,7 +23077,7 @@ int main(int ac, char **av)
 				          	      if (endptr == dot_pos)
 				          		      BAD_RET("'PrivateIps' require an index (example array ref PrivateIpLight.PrivateIps.0)\n");
 				          	      else if (*endptr != '.')
-				          		      BAD_RET("'PrivateIps' require a .\n");
+				          		      BAD_RET("'PrivateIps' require a '.'\n");
 				          	      TRY_ALLOC_AT(s,private_ips, pa, pos, sizeof(*s->private_ips));
 				          	      cascade_struct = &s->private_ips[pos];
 				          	      cascade_parser = private_ip_light_parser;
@@ -23143,7 +23136,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateNic'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateNic'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_nic_arg;
@@ -23160,7 +23153,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateNic (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateNic (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -23200,8 +23193,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -23287,7 +23279,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreatePolicy'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreatePolicy'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_policy_arg;
@@ -23304,7 +23296,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreatePolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreatePolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -23344,8 +23336,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -23409,7 +23400,7 @@ int main(int ac, char **av)
 				           }
 				      } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreatePolicyVersion'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreatePolicyVersion'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_policy_version_arg;
@@ -23426,7 +23417,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreatePolicyVersion (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreatePolicyVersion (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -23466,8 +23457,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -23531,7 +23521,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateProductType'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateProductType'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_product_type_arg;
@@ -23548,7 +23538,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateProductType (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateProductType (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -23588,8 +23578,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -23631,7 +23620,7 @@ int main(int ac, char **av)
 				           }
 				      } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreatePublicIp'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreatePublicIp'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_public_ip_arg;
@@ -23648,7 +23637,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreatePublicIp (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreatePublicIp (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -23688,8 +23677,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -23808,7 +23796,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateRoute'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateRoute'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_route_arg;
@@ -23825,7 +23813,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateRoute (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateRoute (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -23865,8 +23853,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -23919,7 +23906,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateRouteTable'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateRouteTable'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_route_table_arg;
@@ -23936,7 +23923,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateRouteTable (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateRouteTable (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -23976,8 +23963,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -24052,7 +24038,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateSecurityGroup'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateSecurityGroup'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_security_group_arg;
@@ -24069,7 +24055,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateSecurityGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateSecurityGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -24109,8 +24095,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -24213,7 +24198,7 @@ int main(int ac, char **av)
 				          	      if (endptr == dot_pos)
 				          		      BAD_RET("'Rules' require an index (example array ref SecurityGroupRule.Rules.0)\n");
 				          	      else if (*endptr != '.')
-				          		      BAD_RET("'Rules' require a .\n");
+				          		      BAD_RET("'Rules' require a '.'\n");
 				          	      TRY_ALLOC_AT(s,rules, pa, pos, sizeof(*s->rules));
 				          	      cascade_struct = &s->rules[pos];
 				          	      cascade_parser = security_group_rule_parser;
@@ -24271,7 +24256,7 @@ int main(int ac, char **av)
 				          s->to_port_range = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateSecurityGroupRule'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateSecurityGroupRule'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_security_group_rule_arg;
@@ -24288,7 +24273,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateSecurityGroupRule (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateSecurityGroupRule (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -24328,8 +24313,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -24426,7 +24410,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateServerCertificate'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateServerCertificate'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_server_certificate_arg;
@@ -24443,7 +24427,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateServerCertificate (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateServerCertificate (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -24483,8 +24467,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -24560,7 +24543,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateSnapshotExportTask'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateSnapshotExportTask'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_snapshot_export_task_arg;
@@ -24577,7 +24560,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateSnapshotExportTask (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateSnapshotExportTask (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -24617,8 +24600,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -24737,7 +24719,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateSnapshot'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateSnapshot'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_snapshot_arg;
@@ -24754,7 +24736,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateSnapshot (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateSnapshot (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -24794,8 +24776,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -24870,7 +24851,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateSubnet'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateSubnet'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_subnet_arg;
@@ -24887,7 +24868,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateSubnet (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateSubnet (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -24927,8 +24908,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -25021,7 +25001,7 @@ int main(int ac, char **av)
 				          	      if (endptr == dot_pos)
 				          		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
 				          	      else if (*endptr != '.')
-				          		      BAD_RET("'Tags' require a .\n");
+				          		      BAD_RET("'Tags' require a '.'\n");
 				          	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
 				          	      cascade_struct = &s->tags[pos];
 				          	      cascade_parser = resource_tag_parser;
@@ -25035,7 +25015,7 @@ int main(int ac, char **av)
 				          }
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateTags'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateTags'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_tags_arg;
@@ -25052,7 +25032,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateTags (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateTags (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -25092,8 +25072,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -25157,7 +25136,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateUserGroup'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateUserGroup'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_user_group_arg;
@@ -25174,7 +25153,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -25214,8 +25193,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -25290,7 +25268,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateUser'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateUser'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_user_arg;
@@ -25307,7 +25285,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateUser (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateUser (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -25347,8 +25325,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -25401,7 +25378,7 @@ int main(int ac, char **av)
 				           }
 				      } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateVirtualGateway'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateVirtualGateway'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_virtual_gateway_arg;
@@ -25418,7 +25395,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateVirtualGateway (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateVirtualGateway (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -25458,8 +25435,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -25585,7 +25561,7 @@ int main(int ac, char **av)
 				          	      if (endptr == dot_pos)
 				          		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
 				          	      else if (*endptr != '.')
-				          		      BAD_RET("'Tags' require a .\n");
+				          		      BAD_RET("'Tags' require a '.'\n");
 				          	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
 				          	      cascade_struct = &s->tags[pos];
 				          	      cascade_parser = resource_tag_parser;
@@ -25632,7 +25608,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateVmGroup'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateVmGroup'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_vm_group_arg;
@@ -25649,7 +25625,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateVmGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateVmGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -25689,8 +25665,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -25826,7 +25801,7 @@ int main(int ac, char **av)
 				          	      if (endptr == dot_pos)
 				          		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
 				          	      else if (*endptr != '.')
-				          		      BAD_RET("'Tags' require a .\n");
+				          		      BAD_RET("'Tags' require a '.'\n");
 				          	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
 				          	      cascade_struct = &s->tags[pos];
 				          	      cascade_parser = resource_tag_parser;
@@ -25851,7 +25826,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateVmTemplate'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateVmTemplate'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_vm_template_arg;
@@ -25868,7 +25843,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateVmTemplate (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateVmTemplate (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -25908,8 +25883,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -25975,7 +25949,7 @@ int main(int ac, char **av)
 				          	      if (endptr == dot_pos)
 				          		      BAD_RET("'BlockDeviceMappings' require an index (example array ref BlockDeviceMappingVmCreation.BlockDeviceMappings.0)\n");
 				          	      else if (*endptr != '.')
-				          		      BAD_RET("'BlockDeviceMappings' require a .\n");
+				          		      BAD_RET("'BlockDeviceMappings' require a '.'\n");
 				          	      TRY_ALLOC_AT(s,block_device_mappings, pa, pos, sizeof(*s->block_device_mappings));
 				          	      cascade_struct = &s->block_device_mappings[pos];
 				          	      cascade_parser = block_device_mapping_vm_creation_parser;
@@ -26152,7 +26126,7 @@ int main(int ac, char **av)
 				          	      if (endptr == dot_pos)
 				          		      BAD_RET("'Nics' require an index (example array ref NicForVmCreation.Nics.0)\n");
 				          	      else if (*endptr != '.')
-				          		      BAD_RET("'Nics' require a .\n");
+				          		      BAD_RET("'Nics' require a '.'\n");
 				          	      TRY_ALLOC_AT(s,nics, pa, pos, sizeof(*s->nics));
 				          	      cascade_struct = &s->nics[pos];
 				          	      cascade_parser = nic_for_vm_creation_parser;
@@ -26346,7 +26320,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateVms'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateVms'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_vms_arg;
@@ -26363,7 +26337,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateVms (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateVms (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -26403,8 +26377,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -26512,7 +26485,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateVolume'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateVolume'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_volume_arg;
@@ -26529,7 +26502,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateVolume (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateVolume (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -26569,8 +26542,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -26661,7 +26633,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateVpnConnection'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateVpnConnection'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_vpn_connection_arg;
@@ -26678,7 +26650,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateVpnConnection (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateVpnConnection (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -26718,8 +26690,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -26783,7 +26754,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'CreateVpnConnectionRoute'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'CreateVpnConnectionRoute'\n", next_a);
 			    }
 		            i += incr;
 			    goto create_vpn_connection_route_arg;
@@ -26800,7 +26771,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called CreateVpnConnectionRoute (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called CreateVpnConnectionRoute (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -26840,8 +26811,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -26905,7 +26875,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteAccessKey'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteAccessKey'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_access_key_arg;
@@ -26922,7 +26892,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteAccessKey (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteAccessKey (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -26962,8 +26932,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -27016,7 +26985,7 @@ int main(int ac, char **av)
 				           }
 				      } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteApiAccessRule'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteApiAccessRule'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_api_access_rule_arg;
@@ -27033,7 +27002,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteApiAccessRule (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteApiAccessRule (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -27073,8 +27042,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -27127,7 +27095,7 @@ int main(int ac, char **av)
 				           }
 				      } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteCa'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteCa'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_ca_arg;
@@ -27144,7 +27112,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteCa (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteCa (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -27184,8 +27152,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -27238,7 +27205,7 @@ int main(int ac, char **av)
 				           }
 				      } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteClientGateway'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteClientGateway'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_client_gateway_arg;
@@ -27255,7 +27222,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteClientGateway (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteClientGateway (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -27295,8 +27262,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -27365,7 +27331,7 @@ int main(int ac, char **av)
 				           }
 				      } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteDedicatedGroup'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteDedicatedGroup'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_dedicated_group_arg;
@@ -27382,7 +27348,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteDedicatedGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteDedicatedGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -27422,8 +27388,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -27476,7 +27441,7 @@ int main(int ac, char **av)
 				           }
 				      } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteDhcpOptions'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteDhcpOptions'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_dhcp_options_arg;
@@ -27493,7 +27458,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteDhcpOptions (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteDhcpOptions (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -27533,8 +27498,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -27587,7 +27551,7 @@ int main(int ac, char **av)
 				           }
 				      } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteDirectLinkInterface'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteDirectLinkInterface'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_direct_link_interface_arg;
@@ -27604,7 +27568,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteDirectLinkInterface (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteDirectLinkInterface (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -27644,8 +27608,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -27698,7 +27661,7 @@ int main(int ac, char **av)
 				           }
 				      } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteDirectLink'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteDirectLink'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_direct_link_arg;
@@ -27715,7 +27678,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteDirectLink (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteDirectLink (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -27755,8 +27718,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -27809,7 +27771,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteExportTask'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteExportTask'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_export_task_arg;
@@ -27826,7 +27788,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteExportTask (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteExportTask (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -27866,8 +27828,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -27920,7 +27881,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteFlexibleGpu'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteFlexibleGpu'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_flexible_gpu_arg;
@@ -27937,7 +27898,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteFlexibleGpu (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteFlexibleGpu (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -27977,8 +27938,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -28031,7 +27991,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteImage'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteImage'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_image_arg;
@@ -28048,7 +28008,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteImage (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteImage (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -28088,8 +28048,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -28142,7 +28101,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteInternetService'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteInternetService'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_internet_service_arg;
@@ -28159,7 +28118,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteInternetService (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteInternetService (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -28199,8 +28158,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -28264,7 +28222,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteKeypair'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteKeypair'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_keypair_arg;
@@ -28281,7 +28239,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteKeypair (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteKeypair (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -28321,8 +28279,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -28375,7 +28332,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteListenerRule'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteListenerRule'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_listener_rule_arg;
@@ -28392,7 +28349,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteListenerRule (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteListenerRule (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -28432,8 +28389,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -28520,7 +28476,7 @@ int main(int ac, char **av)
 				             SET_NEXT(s->load_balancer_ports, atoi(aa), pa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteLoadBalancerListeners'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteLoadBalancerListeners'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_load_balancer_listeners_arg;
@@ -28537,7 +28493,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteLoadBalancerListeners (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteLoadBalancerListeners (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -28577,8 +28533,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -28642,7 +28597,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteLoadBalancerPolicy'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteLoadBalancerPolicy'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_load_balancer_policy_arg;
@@ -28659,7 +28614,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteLoadBalancerPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteLoadBalancerPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -28699,8 +28654,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -28753,7 +28707,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteLoadBalancer'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteLoadBalancer'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_load_balancer_arg;
@@ -28770,7 +28724,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteLoadBalancer (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteLoadBalancer (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -28810,8 +28764,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -28904,7 +28857,7 @@ int main(int ac, char **av)
 				          	      if (endptr == dot_pos)
 				          		      BAD_RET("'Tags' require an index (example array ref ResourceLoadBalancerTag.Tags.0)\n");
 				          	      else if (*endptr != '.')
-				          		      BAD_RET("'Tags' require a .\n");
+				          		      BAD_RET("'Tags' require a '.'\n");
 				          	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
 				          	      cascade_struct = &s->tags[pos];
 				          	      cascade_parser = resource_load_balancer_tag_parser;
@@ -28918,7 +28871,7 @@ int main(int ac, char **av)
 				          }
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteLoadBalancerTags'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteLoadBalancerTags'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_load_balancer_tags_arg;
@@ -28935,7 +28888,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteLoadBalancerTags (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteLoadBalancerTags (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -28975,8 +28928,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -29029,7 +28981,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteNatService'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteNatService'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_nat_service_arg;
@@ -29046,7 +28998,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteNatService (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteNatService (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -29086,8 +29038,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -29140,7 +29091,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteNetAccessPoint'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteNetAccessPoint'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_net_access_point_arg;
@@ -29157,7 +29108,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteNetAccessPoint (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteNetAccessPoint (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -29197,8 +29148,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -29251,7 +29201,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteNetPeering'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteNetPeering'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_net_peering_arg;
@@ -29268,7 +29218,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteNetPeering (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteNetPeering (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -29308,8 +29258,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -29362,7 +29311,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteNet'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteNet'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_net_arg;
@@ -29379,7 +29328,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteNet (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteNet (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -29419,8 +29368,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -29473,7 +29421,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteNic'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteNic'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_nic_arg;
@@ -29490,7 +29438,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteNic (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteNic (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -29530,8 +29478,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -29584,7 +29531,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeletePolicy'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeletePolicy'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_policy_arg;
@@ -29601,7 +29548,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeletePolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeletePolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -29641,8 +29588,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -29690,7 +29636,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeletePolicyVersion'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeletePolicyVersion'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_policy_version_arg;
@@ -29707,7 +29653,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeletePolicyVersion (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeletePolicyVersion (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -29747,8 +29693,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -29817,7 +29762,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteProductType'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteProductType'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_product_type_arg;
@@ -29834,7 +29779,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteProductType (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteProductType (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -29874,8 +29819,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -29939,7 +29883,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeletePublicIp'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeletePublicIp'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_public_ip_arg;
@@ -29956,7 +29900,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeletePublicIp (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeletePublicIp (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -29996,8 +29940,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -30061,7 +30004,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteRoute'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteRoute'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_route_arg;
@@ -30078,7 +30021,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteRoute (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteRoute (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -30118,8 +30061,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -30172,7 +30114,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteRouteTable'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteRouteTable'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_route_table_arg;
@@ -30189,7 +30131,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteRouteTable (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteRouteTable (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -30229,8 +30171,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -30294,7 +30235,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteSecurityGroup'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteSecurityGroup'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_security_group_arg;
@@ -30311,7 +30252,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteSecurityGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteSecurityGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -30351,8 +30292,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -30455,7 +30395,7 @@ int main(int ac, char **av)
 				          	      if (endptr == dot_pos)
 				          		      BAD_RET("'Rules' require an index (example array ref SecurityGroupRule.Rules.0)\n");
 				          	      else if (*endptr != '.')
-				          		      BAD_RET("'Rules' require a .\n");
+				          		      BAD_RET("'Rules' require a '.'\n");
 				          	      TRY_ALLOC_AT(s,rules, pa, pos, sizeof(*s->rules));
 				          	      cascade_struct = &s->rules[pos];
 				          	      cascade_parser = security_group_rule_parser;
@@ -30513,7 +30453,7 @@ int main(int ac, char **av)
 				          s->to_port_range = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteSecurityGroupRule'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteSecurityGroupRule'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_security_group_rule_arg;
@@ -30530,7 +30470,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteSecurityGroupRule (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteSecurityGroupRule (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -30570,8 +30510,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -30624,7 +30563,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteServerCertificate'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteServerCertificate'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_server_certificate_arg;
@@ -30641,7 +30580,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteServerCertificate (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteServerCertificate (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -30681,8 +30620,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -30735,7 +30673,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteSnapshot'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteSnapshot'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_snapshot_arg;
@@ -30752,7 +30690,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteSnapshot (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteSnapshot (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -30792,8 +30730,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -30846,7 +30783,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteSubnet'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteSubnet'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_subnet_arg;
@@ -30863,7 +30800,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteSubnet (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteSubnet (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -30903,8 +30840,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -30997,7 +30933,7 @@ int main(int ac, char **av)
 				          	      if (endptr == dot_pos)
 				          		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
 				          	      else if (*endptr != '.')
-				          		      BAD_RET("'Tags' require a .\n");
+				          		      BAD_RET("'Tags' require a '.'\n");
 				          	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
 				          	      cascade_struct = &s->tags[pos];
 				          	      cascade_parser = resource_tag_parser;
@@ -31011,7 +30947,7 @@ int main(int ac, char **av)
 				          }
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteTags'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteTags'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_tags_arg;
@@ -31028,7 +30964,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteTags (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteTags (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -31068,8 +31004,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -31144,7 +31079,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteUserGroupPolicy'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteUserGroupPolicy'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_user_group_policy_arg;
@@ -31161,7 +31096,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteUserGroupPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteUserGroupPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -31201,8 +31136,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -31282,7 +31216,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteUserGroup'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteUserGroup'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_user_group_arg;
@@ -31299,7 +31233,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -31339,8 +31273,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -31404,7 +31337,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteUserPolicy'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteUserPolicy'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_user_policy_arg;
@@ -31421,7 +31354,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteUserPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteUserPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -31461,8 +31394,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -31515,7 +31447,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteUser'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteUser'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_user_arg;
@@ -31532,7 +31464,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteUser (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteUser (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -31572,8 +31504,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -31626,7 +31557,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteVirtualGateway'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteVirtualGateway'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_virtual_gateway_arg;
@@ -31643,7 +31574,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteVirtualGateway (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteVirtualGateway (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -31683,8 +31614,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -31737,7 +31667,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteVmGroup'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteVmGroup'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_vm_group_arg;
@@ -31754,7 +31684,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteVmGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteVmGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -31794,8 +31724,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -31848,7 +31777,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteVmTemplate'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteVmTemplate'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_vm_template_arg;
@@ -31865,7 +31794,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteVmTemplate (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteVmTemplate (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -31905,8 +31834,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -31982,7 +31910,7 @@ int main(int ac, char **av)
 				             SET_NEXT(s->vm_ids, (aa), pa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteVms'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteVms'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_vms_arg;
@@ -31999,7 +31927,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteVms (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteVms (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -32039,8 +31967,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -32093,7 +32020,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteVolume'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteVolume'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_volume_arg;
@@ -32110,7 +32037,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteVolume (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteVolume (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -32150,8 +32077,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -32204,7 +32130,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteVpnConnection'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteVpnConnection'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_vpn_connection_arg;
@@ -32221,7 +32147,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteVpnConnection (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteVpnConnection (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -32261,8 +32187,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -32326,7 +32251,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeleteVpnConnectionRoute'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeleteVpnConnectionRoute'\n", next_a);
 			    }
 		            i += incr;
 			    goto delete_vpn_connection_route_arg;
@@ -32343,7 +32268,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeleteVpnConnectionRoute (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeleteVpnConnectionRoute (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -32383,8 +32308,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -32471,7 +32395,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'DeregisterVmsInLoadBalancer'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'DeregisterVmsInLoadBalancer'\n", next_a);
 			    }
 		            i += incr;
 			    goto deregister_vms_in_load_balancer_arg;
@@ -32488,7 +32412,669 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called DeregisterVmsInLoadBalancer (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called DeregisterVmsInLoadBalancer (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("DisableOutscaleLoginForUsers", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_disable_outscale_login_for_users_arg a = {0};
+		     struct osc_disable_outscale_login_for_users_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     disable_outscale_login_for_users_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS({CHK_BAD_RET(aa[0] == '-', "cascade need an argument"); })
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto disable_outscale_login_for_users_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				 	META_ARGS({ aa = 0; incr = 1; });
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			    {
+				BAD_RET("'%s' is not a valid argument for 'DisableOutscaleLoginForUsers'\n", next_a);
+			    }
+		            i += incr;
+			    goto disable_outscale_login_for_users_arg;
+		     }
+		     cret = osc_disable_outscale_login_for_users(&e, &r, &a);
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DisableOutscaleLoginForUsers: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     } else fprintf(stderr, "called DisableOutscaleLoginForUsers (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("DisableOutscaleLoginPerUsers", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_disable_outscale_login_per_users_arg a = {0};
+		     struct osc_disable_outscale_login_per_users_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     disable_outscale_login_per_users_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS({CHK_BAD_RET(aa[0] == '-', "cascade need an argument"); })
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto disable_outscale_login_per_users_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				 	META_ARGS({ aa = 0; incr = 1; });
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "UserNames")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserNames argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				               if (aret == '.') {
+				                    int pos;
+				                    char *endptr;
+				                    int last = 0;
+				                    char *dot_pos = strchr(str, '.');
+
+				                    TRY(!(dot_pos++), "UserNames argument missing\n");
+				                    pos = strtoul(dot_pos, &endptr, 0);
+				                    TRY(endptr == dot_pos, "UserNames require an index\n");
+				                    if (s->user_names) {
+				                            for (; s->user_names[last]; ++last);
+				                    }
+				                    if (pos < last) {
+				                            s->user_names[pos] = (aa);
+				                    } else {
+				                            for (int i = last; i < pos; ++i)
+				                                    SET_NEXT(s->user_names, "", pa);
+				                            SET_NEXT(s->user_names, (aa), pa);
+				                    }
+				               } else {
+				          	       TRY(!aa, "UserNames argument missing\n");
+				                   s->user_names_str = aa;
+				               }
+				       } else if (!(aret = argcmp(str, "UserNames[]")) || aret == '=') {
+				             TRY(!aa, "UserNames[] argument missing\n");
+				             SET_NEXT(s->user_names, (aa), pa);
+				       } else
+			    {
+				BAD_RET("'%s' is not a valid argument for 'DisableOutscaleLoginPerUsers'\n", next_a);
+			    }
+		            i += incr;
+			    goto disable_outscale_login_per_users_arg;
+		     }
+		     cret = osc_disable_outscale_login_per_users(&e, &r, &a);
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DisableOutscaleLoginPerUsers: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     } else fprintf(stderr, "called DisableOutscaleLoginPerUsers (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("DisableOutscaleLogin", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_disable_outscale_login_arg a = {0};
+		     struct osc_disable_outscale_login_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     disable_outscale_login_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS({CHK_BAD_RET(aa[0] == '-', "cascade need an argument"); })
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto disable_outscale_login_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				 	META_ARGS({ aa = 0; incr = 1; });
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			    {
+				BAD_RET("'%s' is not a valid argument for 'DisableOutscaleLogin'\n", next_a);
+			    }
+		            i += incr;
+			    goto disable_outscale_login_arg;
+		     }
+		     cret = osc_disable_outscale_login(&e, &r, &a);
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call DisableOutscaleLogin: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     } else fprintf(stderr, "called DisableOutscaleLogin (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("EnableOutscaleLoginForUsers", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_enable_outscale_login_for_users_arg a = {0};
+		     struct osc_enable_outscale_login_for_users_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     enable_outscale_login_for_users_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS({CHK_BAD_RET(aa[0] == '-', "cascade need an argument"); })
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto enable_outscale_login_for_users_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				 	META_ARGS({ aa = 0; incr = 1; });
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			    {
+				BAD_RET("'%s' is not a valid argument for 'EnableOutscaleLoginForUsers'\n", next_a);
+			    }
+		            i += incr;
+			    goto enable_outscale_login_for_users_arg;
+		     }
+		     cret = osc_enable_outscale_login_for_users(&e, &r, &a);
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call EnableOutscaleLoginForUsers: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     } else fprintf(stderr, "called EnableOutscaleLoginForUsers (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("EnableOutscaleLoginPerUsers", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_enable_outscale_login_per_users_arg a = {0};
+		     struct osc_enable_outscale_login_per_users_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     enable_outscale_login_per_users_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS({CHK_BAD_RET(aa[0] == '-', "cascade need an argument"); })
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto enable_outscale_login_per_users_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				 	META_ARGS({ aa = 0; incr = 1; });
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "UserNames")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "UserNames argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				               if (aret == '.') {
+				                    int pos;
+				                    char *endptr;
+				                    int last = 0;
+				                    char *dot_pos = strchr(str, '.');
+
+				                    TRY(!(dot_pos++), "UserNames argument missing\n");
+				                    pos = strtoul(dot_pos, &endptr, 0);
+				                    TRY(endptr == dot_pos, "UserNames require an index\n");
+				                    if (s->user_names) {
+				                            for (; s->user_names[last]; ++last);
+				                    }
+				                    if (pos < last) {
+				                            s->user_names[pos] = (aa);
+				                    } else {
+				                            for (int i = last; i < pos; ++i)
+				                                    SET_NEXT(s->user_names, "", pa);
+				                            SET_NEXT(s->user_names, (aa), pa);
+				                    }
+				               } else {
+				          	       TRY(!aa, "UserNames argument missing\n");
+				                   s->user_names_str = aa;
+				               }
+				       } else if (!(aret = argcmp(str, "UserNames[]")) || aret == '=') {
+				             TRY(!aa, "UserNames[] argument missing\n");
+				             SET_NEXT(s->user_names, (aa), pa);
+				       } else
+			    {
+				BAD_RET("'%s' is not a valid argument for 'EnableOutscaleLoginPerUsers'\n", next_a);
+			    }
+		            i += incr;
+			    goto enable_outscale_login_per_users_arg;
+		     }
+		     cret = osc_enable_outscale_login_per_users(&e, &r, &a);
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call EnableOutscaleLoginPerUsers: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     } else fprintf(stderr, "called EnableOutscaleLoginPerUsers (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("EnableOutscaleLogin", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_enable_outscale_login_arg a = {0};
+		     struct osc_enable_outscale_login_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     enable_outscale_login_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS({CHK_BAD_RET(aa[0] == '-', "cascade need an argument"); })
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto enable_outscale_login_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				 	META_ARGS({ aa = 0; incr = 1; });
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			    {
+				BAD_RET("'%s' is not a valid argument for 'EnableOutscaleLogin'\n", next_a);
+			    }
+		            i += incr;
+			    goto enable_outscale_login_arg;
+		     }
+		     cret = osc_enable_outscale_login(&e, &r, &a);
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call EnableOutscaleLogin: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     } else fprintf(stderr, "called EnableOutscaleLogin (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -32528,8 +33114,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -32593,7 +33178,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'LinkFlexibleGpu'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'LinkFlexibleGpu'\n", next_a);
 			    }
 		            i += incr;
 			    goto link_flexible_gpu_arg;
@@ -32610,7 +33195,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called LinkFlexibleGpu (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called LinkFlexibleGpu (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -32650,8 +33235,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -32715,7 +33299,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'LinkInternetService'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'LinkInternetService'\n", next_a);
 			    }
 		            i += incr;
 			    goto link_internet_service_arg;
@@ -32732,7 +33316,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called LinkInternetService (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called LinkInternetService (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -32772,8 +33356,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -32894,7 +33477,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'LinkLoadBalancerBackendMachines'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'LinkLoadBalancerBackendMachines'\n", next_a);
 			    }
 		            i += incr;
 			    goto link_load_balancer_backend_machines_arg;
@@ -32911,7 +33494,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called LinkLoadBalancerBackendMachines (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called LinkLoadBalancerBackendMachines (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -32951,8 +33534,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -33016,7 +33598,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'LinkManagedPolicyToUserGroup'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'LinkManagedPolicyToUserGroup'\n", next_a);
 			    }
 		            i += incr;
 			    goto link_managed_policy_to_user_group_arg;
@@ -33033,7 +33615,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called LinkManagedPolicyToUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called LinkManagedPolicyToUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -33073,8 +33655,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -33149,7 +33730,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'LinkNic'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'LinkNic'\n", next_a);
 			    }
 		            i += incr;
 			    goto link_nic_arg;
@@ -33166,7 +33747,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called LinkNic (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called LinkNic (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -33206,8 +33787,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -33271,7 +33851,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'LinkPolicy'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'LinkPolicy'\n", next_a);
 			    }
 		            i += incr;
 			    goto link_policy_arg;
@@ -33288,7 +33868,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called LinkPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called LinkPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -33328,8 +33908,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -33443,7 +34022,7 @@ int main(int ac, char **av)
 				          s->secondary_private_ip_count = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'LinkPrivateIps'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'LinkPrivateIps'\n", next_a);
 			    }
 		            i += incr;
 			    goto link_private_ips_arg;
@@ -33460,7 +34039,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called LinkPrivateIps (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called LinkPrivateIps (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -33500,8 +34079,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -33614,7 +34192,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'LinkPublicIp'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'LinkPublicIp'\n", next_a);
 			    }
 		            i += incr;
 			    goto link_public_ip_arg;
@@ -33631,7 +34209,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called LinkPublicIp (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called LinkPublicIp (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -33671,8 +34249,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -33736,7 +34313,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'LinkRouteTable'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'LinkRouteTable'\n", next_a);
 			    }
 		            i += incr;
 			    goto link_route_table_arg;
@@ -33753,7 +34330,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called LinkRouteTable (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called LinkRouteTable (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -33793,8 +34370,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -33858,7 +34434,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'LinkVirtualGateway'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'LinkVirtualGateway'\n", next_a);
 			    }
 		            i += incr;
 			    goto link_virtual_gateway_arg;
@@ -33875,7 +34451,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called LinkVirtualGateway (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called LinkVirtualGateway (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -33915,8 +34491,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -33991,7 +34566,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'LinkVolume'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'LinkVolume'\n", next_a);
 			    }
 		            i += incr;
 			    goto link_volume_arg;
@@ -34008,7 +34583,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called LinkVolume (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called LinkVolume (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -34048,8 +34623,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -34135,7 +34709,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'PutUserGroupPolicy'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'PutUserGroupPolicy'\n", next_a);
 			    }
 		            i += incr;
 			    goto put_user_group_policy_arg;
@@ -34152,7 +34726,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called PutUserGroupPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called PutUserGroupPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -34192,8 +34766,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -34268,7 +34841,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'PutUserPolicy'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'PutUserPolicy'\n", next_a);
 			    }
 		            i += incr;
 			    goto put_user_policy_arg;
@@ -34285,7 +34858,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called PutUserPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called PutUserPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -34325,8 +34898,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -34413,7 +34985,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadAccessKeys'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadAccessKeys'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_access_keys_arg;
@@ -34430,7 +35002,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadAccessKeys (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadAccessKeys (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -34470,8 +35042,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -34513,7 +35084,7 @@ int main(int ac, char **av)
 				           }
 				      } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadAccounts'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadAccounts'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_accounts_arg;
@@ -34530,7 +35101,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadAccounts (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadAccounts (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -34570,8 +35141,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -34624,7 +35194,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadAdminPassword'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadAdminPassword'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_admin_password_arg;
@@ -34641,7 +35211,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadAdminPassword (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadAdminPassword (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -34681,8 +35251,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -34724,7 +35293,7 @@ int main(int ac, char **av)
 				           }
 				      } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadApiAccessPolicy'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadApiAccessPolicy'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_api_access_policy_arg;
@@ -34741,7 +35310,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadApiAccessPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadApiAccessPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -34781,8 +35350,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -34847,7 +35415,7 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadApiAccessRules'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadApiAccessRules'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_api_access_rules_arg;
@@ -34864,7 +35432,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadApiAccessRules (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadApiAccessRules (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -34904,8 +35472,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -35015,7 +35582,7 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadApiLogs'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadApiLogs'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_api_logs_arg;
@@ -35032,7 +35599,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadApiLogs (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadApiLogs (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -35072,8 +35639,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -35138,7 +35704,7 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadCas'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadCas'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_cas_arg;
@@ -35155,7 +35721,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadCas (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadCas (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -35195,8 +35761,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -35238,7 +35803,7 @@ int main(int ac, char **av)
 				           }
 				      } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadCatalog'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadCatalog'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_catalog_arg;
@@ -35255,7 +35820,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadCatalog (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadCatalog (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -35295,8 +35860,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -35361,7 +35925,7 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadCatalogs'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadCatalogs'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_catalogs_arg;
@@ -35378,7 +35942,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadCatalogs (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadCatalogs (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -35418,8 +35982,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -35506,7 +36069,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadClientGateways'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadClientGateways'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_client_gateways_arg;
@@ -35523,7 +36086,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadClientGateways (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadClientGateways (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -35563,8 +36126,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -35617,7 +36179,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadConsoleOutput'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadConsoleOutput'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_console_output_arg;
@@ -35634,7 +36196,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadConsoleOutput (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadConsoleOutput (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -35674,8 +36236,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -35771,7 +36332,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadConsumptionAccount'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadConsumptionAccount'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_consumption_account_arg;
@@ -35788,7 +36349,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadConsumptionAccount (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadConsumptionAccount (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -35828,8 +36389,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -35916,7 +36476,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadDedicatedGroups'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadDedicatedGroups'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_dedicated_groups_arg;
@@ -35933,7 +36493,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadDedicatedGroups (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadDedicatedGroups (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -35973,8 +36533,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -36061,7 +36620,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadDhcpOptions'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadDhcpOptions'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_dhcp_options_arg;
@@ -36078,7 +36637,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadDhcpOptions (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadDhcpOptions (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -36118,8 +36677,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -36206,7 +36764,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadDirectLinkInterfaces'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadDirectLinkInterfaces'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_direct_link_interfaces_arg;
@@ -36223,7 +36781,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadDirectLinkInterfaces (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadDirectLinkInterfaces (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -36263,8 +36821,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -36351,7 +36908,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadDirectLinks'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadDirectLinks'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_direct_links_arg;
@@ -36368,7 +36925,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadDirectLinks (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadDirectLinks (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -36408,8 +36965,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -36502,7 +37058,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadEntitiesLinkedToPolicy'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadEntitiesLinkedToPolicy'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_entities_linked_to_policy_arg;
@@ -36519,7 +37075,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadEntitiesLinkedToPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadEntitiesLinkedToPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -36559,8 +37115,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -36602,7 +37157,7 @@ int main(int ac, char **av)
 				           }
 				      } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadFlexibleGpuCatalog'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadFlexibleGpuCatalog'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_flexible_gpu_catalog_arg;
@@ -36619,7 +37174,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadFlexibleGpuCatalog (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadFlexibleGpuCatalog (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -36659,8 +37214,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -36725,7 +37279,7 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadFlexibleGpus'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadFlexibleGpus'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_flexible_gpus_arg;
@@ -36742,7 +37296,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadFlexibleGpus (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadFlexibleGpus (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -36782,8 +37336,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -36870,7 +37423,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadImageExportTasks'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadImageExportTasks'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_image_export_tasks_arg;
@@ -36887,7 +37440,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadImageExportTasks (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadImageExportTasks (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -36927,8 +37480,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -37015,7 +37567,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadImages'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadImages'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_images_arg;
@@ -37032,7 +37584,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadImages (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadImages (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -37072,8 +37624,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -37160,7 +37711,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadInternetServices'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadInternetServices'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_internet_services_arg;
@@ -37177,7 +37728,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadInternetServices (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadInternetServices (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -37217,8 +37768,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -37305,7 +37855,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadKeypairs'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadKeypairs'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_keypairs_arg;
@@ -37322,7 +37872,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadKeypairs (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadKeypairs (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -37362,8 +37912,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -37461,7 +38010,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadLinkedPolicies'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadLinkedPolicies'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_linked_policies_arg;
@@ -37478,7 +38027,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadLinkedPolicies (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadLinkedPolicies (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -37518,8 +38067,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -37584,7 +38132,7 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadListenerRules'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadListenerRules'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_listener_rules_arg;
@@ -37601,7 +38149,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadListenerRules (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadListenerRules (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -37641,8 +38189,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -37718,7 +38265,7 @@ int main(int ac, char **av)
 				             SET_NEXT(s->load_balancer_names, (aa), pa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadLoadBalancerTags'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadLoadBalancerTags'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_load_balancer_tags_arg;
@@ -37735,7 +38282,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadLoadBalancerTags (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadLoadBalancerTags (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -37775,8 +38322,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -37841,7 +38387,7 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadLoadBalancers'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadLoadBalancers'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_load_balancers_arg;
@@ -37858,7 +38404,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadLoadBalancers (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadLoadBalancers (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -37898,8 +38444,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -37963,7 +38508,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadLocations'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadLocations'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_locations_arg;
@@ -37980,7 +38525,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadLocations (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadLocations (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -38020,8 +38565,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -38119,7 +38663,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadManagedPoliciesLinkedToUserGroup'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadManagedPoliciesLinkedToUserGroup'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_managed_policies_linked_to_user_group_arg;
@@ -38136,7 +38680,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadManagedPoliciesLinkedToUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadManagedPoliciesLinkedToUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -38176,8 +38720,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -38264,7 +38807,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadNatServices'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadNatServices'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_nat_services_arg;
@@ -38281,7 +38824,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadNatServices (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadNatServices (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -38321,8 +38864,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -38409,7 +38951,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadNetAccessPointServices'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadNetAccessPointServices'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_net_access_point_services_arg;
@@ -38426,7 +38968,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadNetAccessPointServices (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadNetAccessPointServices (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -38466,8 +39008,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -38554,7 +39095,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadNetAccessPoints'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadNetAccessPoints'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_net_access_points_arg;
@@ -38571,7 +39112,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadNetAccessPoints (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadNetAccessPoints (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -38611,8 +39152,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -38699,7 +39239,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadNetPeerings'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadNetPeerings'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_net_peerings_arg;
@@ -38716,7 +39256,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadNetPeerings (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadNetPeerings (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -38756,8 +39296,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -38844,7 +39383,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadNets'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadNets'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_nets_arg;
@@ -38861,7 +39400,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadNets (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadNets (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -38901,8 +39440,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -38989,7 +39527,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadNics'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadNics'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_nics_arg;
@@ -39006,7 +39544,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadNics (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadNics (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -39046,8 +39584,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -39134,7 +39671,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadPolicies'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadPolicies'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_policies_arg;
@@ -39151,7 +39688,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadPolicies (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadPolicies (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -39191,8 +39728,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -39229,7 +39765,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadPolicy'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadPolicy'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_policy_arg;
@@ -39246,7 +39782,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -39286,8 +39822,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -39335,7 +39870,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadPolicyVersion'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadPolicyVersion'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_policy_version_arg;
@@ -39352,7 +39887,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadPolicyVersion (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadPolicyVersion (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -39392,8 +39927,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -39452,7 +39986,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadPolicyVersions'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadPolicyVersions'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_policy_versions_arg;
@@ -39469,7 +40003,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadPolicyVersions (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadPolicyVersions (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -39509,8 +40043,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -39597,7 +40130,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadProductTypes'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadProductTypes'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_product_types_arg;
@@ -39614,7 +40147,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadProductTypes (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadProductTypes (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -39654,8 +40187,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -39697,7 +40229,7 @@ int main(int ac, char **av)
 				           }
 				      } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadPublicCatalog'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadPublicCatalog'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_public_catalog_arg;
@@ -39714,7 +40246,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadPublicCatalog (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadPublicCatalog (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -39754,8 +40286,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -39819,7 +40350,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadPublicIpRanges'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadPublicIpRanges'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_public_ip_ranges_arg;
@@ -39836,7 +40367,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadPublicIpRanges (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadPublicIpRanges (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -39876,8 +40407,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -39964,7 +40494,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadPublicIps'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadPublicIps'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_public_ips_arg;
@@ -39981,7 +40511,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadPublicIps (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadPublicIps (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -40021,8 +40551,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -40109,7 +40638,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadQuotas'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadQuotas'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_quotas_arg;
@@ -40126,7 +40655,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadQuotas (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadQuotas (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -40166,8 +40695,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -40209,7 +40737,7 @@ int main(int ac, char **av)
 				           }
 				      } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadRegions'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadRegions'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_regions_arg;
@@ -40226,7 +40754,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadRegions (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadRegions (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -40266,8 +40794,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -40354,7 +40881,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadRouteTables'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadRouteTables'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_route_tables_arg;
@@ -40371,7 +40898,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadRouteTables (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadRouteTables (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -40411,8 +40938,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -40499,7 +41025,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadSecurityGroups'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadSecurityGroups'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_security_groups_arg;
@@ -40516,7 +41042,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadSecurityGroups (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadSecurityGroups (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -40556,8 +41082,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -40622,7 +41147,7 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadServerCertificates'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadServerCertificates'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_server_certificates_arg;
@@ -40639,7 +41164,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadServerCertificates (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadServerCertificates (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -40679,8 +41204,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -40767,7 +41291,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadSnapshotExportTasks'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadSnapshotExportTasks'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_snapshot_export_tasks_arg;
@@ -40784,7 +41308,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadSnapshotExportTasks (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadSnapshotExportTasks (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -40824,8 +41348,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -40912,7 +41435,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadSnapshots'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadSnapshots'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_snapshots_arg;
@@ -40929,7 +41452,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadSnapshots (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadSnapshots (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -40969,8 +41492,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -41057,7 +41579,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadSubnets'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadSubnets'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_subnets_arg;
@@ -41074,7 +41596,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadSubnets (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadSubnets (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -41114,8 +41636,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -41202,7 +41723,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadSubregions'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadSubregions'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_subregions_arg;
@@ -41219,7 +41740,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadSubregions (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadSubregions (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -41259,8 +41780,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -41347,7 +41867,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadTags'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadTags'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_tags_arg;
@@ -41364,7 +41884,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadTags (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadTags (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -41404,8 +41924,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -41464,7 +41983,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadUnitPrice'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadUnitPrice'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_unit_price_arg;
@@ -41481,7 +42000,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadUnitPrice (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadUnitPrice (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -41521,8 +42040,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -41608,7 +42126,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadUserGroupPolicies'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadUserGroupPolicies'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_user_group_policies_arg;
@@ -41625,7 +42143,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadUserGroupPolicies (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadUserGroupPolicies (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -41665,8 +42183,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -41741,7 +42258,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadUserGroupPolicy'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadUserGroupPolicy'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_user_group_policy_arg;
@@ -41758,7 +42275,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadUserGroupPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadUserGroupPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -41798,8 +42315,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -41863,7 +42379,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadUserGroup'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadUserGroup'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_user_group_arg;
@@ -41880,7 +42396,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -41920,8 +42436,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -41985,7 +42500,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadUserGroupsPerUser'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadUserGroupsPerUser'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_user_groups_per_user_arg;
@@ -42002,7 +42517,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadUserGroupsPerUser (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadUserGroupsPerUser (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -42042,8 +42557,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -42130,7 +42644,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadUserGroups'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadUserGroups'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_user_groups_arg;
@@ -42147,7 +42661,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadUserGroups (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadUserGroups (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -42187,8 +42701,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -42241,7 +42754,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadUserPolicies'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadUserPolicies'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_user_policies_arg;
@@ -42258,7 +42771,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadUserPolicies (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadUserPolicies (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -42298,8 +42811,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -42363,7 +42875,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadUserPolicy'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadUserPolicy'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_user_policy_arg;
@@ -42380,7 +42892,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadUserPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadUserPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -42420,8 +42932,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -42508,7 +43019,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadUsers'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadUsers'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_users_arg;
@@ -42525,7 +43036,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadUsers (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadUsers (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -42565,8 +43076,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -42653,7 +43163,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadVirtualGateways'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadVirtualGateways'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_virtual_gateways_arg;
@@ -42670,7 +43180,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadVirtualGateways (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadVirtualGateways (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -42710,8 +43220,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -42776,7 +43285,7 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadVmGroups'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadVmGroups'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_vm_groups_arg;
@@ -42793,7 +43302,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadVmGroups (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadVmGroups (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -42833,8 +43342,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -42899,7 +43407,7 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadVmTemplates'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadVmTemplates'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_vm_templates_arg;
@@ -42916,7 +43424,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadVmTemplates (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadVmTemplates (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -42956,8 +43464,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -43044,7 +43551,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadVmTypes'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadVmTypes'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_vm_types_arg;
@@ -43061,7 +43568,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadVmTypes (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadVmTypes (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -43101,8 +43608,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -43189,7 +43695,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadVmsHealth'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadVmsHealth'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_vms_health_arg;
@@ -43206,7 +43712,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadVmsHealth (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadVmsHealth (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -43246,8 +43752,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -43334,7 +43839,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadVms'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadVms'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_vms_arg;
@@ -43351,7 +43856,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadVms (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadVms (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -43391,8 +43896,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -43495,7 +43999,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadVmsState'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadVmsState'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_vms_state_arg;
@@ -43512,7 +44016,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadVmsState (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadVmsState (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -43552,8 +44056,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -43640,7 +44143,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadVolumes'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadVolumes'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_volumes_arg;
@@ -43657,7 +44160,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadVolumes (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadVolumes (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -43697,8 +44200,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -43785,7 +44287,7 @@ int main(int ac, char **av)
 				          s->results_per_page = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ReadVpnConnections'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ReadVpnConnections'\n", next_a);
 			    }
 		            i += incr;
 			    goto read_vpn_connections_arg;
@@ -43802,7 +44304,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ReadVpnConnections (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ReadVpnConnections (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -43842,8 +44344,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -43919,7 +44420,7 @@ int main(int ac, char **av)
 				             SET_NEXT(s->vm_ids, (aa), pa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'RebootVms'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'RebootVms'\n", next_a);
 			    }
 		            i += incr;
 			    goto reboot_vms_arg;
@@ -43936,7 +44437,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called RebootVms (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called RebootVms (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -43976,8 +44477,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -44064,7 +44564,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'RegisterVmsInLoadBalancer'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'RegisterVmsInLoadBalancer'\n", next_a);
 			    }
 		            i += incr;
 			    goto register_vms_in_load_balancer_arg;
@@ -44081,7 +44581,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called RegisterVmsInLoadBalancer (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called RegisterVmsInLoadBalancer (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -44121,8 +44621,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -44175,7 +44674,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'RejectNetPeering'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'RejectNetPeering'\n", next_a);
 			    }
 		            i += incr;
 			    goto reject_net_peering_arg;
@@ -44192,7 +44691,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called RejectNetPeering (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called RejectNetPeering (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -44232,8 +44731,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -44319,7 +44817,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'RemoveUserFromUserGroup'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'RemoveUserFromUserGroup'\n", next_a);
 			    }
 		            i += incr;
 			    goto remove_user_from_user_group_arg;
@@ -44336,7 +44834,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called RemoveUserFromUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called RemoveUserFromUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -44376,8 +44874,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -44441,7 +44938,7 @@ int main(int ac, char **av)
 				          s->vm_subtraction = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ScaleDownVmGroup'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ScaleDownVmGroup'\n", next_a);
 			    }
 		            i += incr;
 			    goto scale_down_vm_group_arg;
@@ -44458,7 +44955,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ScaleDownVmGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ScaleDownVmGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -44498,8 +44995,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -44563,7 +45059,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'ScaleUpVmGroup'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'ScaleUpVmGroup'\n", next_a);
 			    }
 		            i += incr;
 			    goto scale_up_vm_group_arg;
@@ -44580,7 +45076,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called ScaleUpVmGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called ScaleUpVmGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -44620,8 +45116,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -44669,7 +45164,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'SetDefaultPolicyVersion'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'SetDefaultPolicyVersion'\n", next_a);
 			    }
 		            i += incr;
 			    goto set_default_policy_version_arg;
@@ -44686,7 +45181,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called SetDefaultPolicyVersion (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called SetDefaultPolicyVersion (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -44726,8 +45221,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -44803,7 +45297,7 @@ int main(int ac, char **av)
 				             SET_NEXT(s->vm_ids, (aa), pa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'StartVms'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'StartVms'\n", next_a);
 			    }
 		            i += incr;
 			    goto start_vms_arg;
@@ -44820,7 +45314,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called StartVms (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called StartVms (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -44860,8 +45354,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -44953,7 +45446,7 @@ int main(int ac, char **av)
 				             SET_NEXT(s->vm_ids, (aa), pa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'StopVms'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'StopVms'\n", next_a);
 			    }
 		            i += incr;
 			    goto stop_vms_arg;
@@ -44970,7 +45463,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called StopVms (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called StopVms (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -45010,8 +45503,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -45064,7 +45556,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UnlinkFlexibleGpu'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UnlinkFlexibleGpu'\n", next_a);
 			    }
 		            i += incr;
 			    goto unlink_flexible_gpu_arg;
@@ -45081,7 +45573,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UnlinkFlexibleGpu (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UnlinkFlexibleGpu (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -45121,8 +45613,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -45186,7 +45677,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UnlinkInternetService'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UnlinkInternetService'\n", next_a);
 			    }
 		            i += incr;
 			    goto unlink_internet_service_arg;
@@ -45203,7 +45694,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UnlinkInternetService (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UnlinkInternetService (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -45243,8 +45734,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -45365,7 +45855,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UnlinkLoadBalancerBackendMachines'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UnlinkLoadBalancerBackendMachines'\n", next_a);
 			    }
 		            i += incr;
 			    goto unlink_load_balancer_backend_machines_arg;
@@ -45382,7 +45872,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UnlinkLoadBalancerBackendMachines (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UnlinkLoadBalancerBackendMachines (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -45422,8 +45912,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -45487,7 +45976,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UnlinkManagedPolicyFromUserGroup'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UnlinkManagedPolicyFromUserGroup'\n", next_a);
 			    }
 		            i += incr;
 			    goto unlink_managed_policy_from_user_group_arg;
@@ -45504,7 +45993,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UnlinkManagedPolicyFromUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UnlinkManagedPolicyFromUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -45544,8 +46033,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -45598,7 +46086,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UnlinkNic'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UnlinkNic'\n", next_a);
 			    }
 		            i += incr;
 			    goto unlink_nic_arg;
@@ -45615,7 +46103,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UnlinkNic (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UnlinkNic (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -45655,8 +46143,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -45720,7 +46207,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UnlinkPolicy'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UnlinkPolicy'\n", next_a);
 			    }
 		            i += incr;
 			    goto unlink_policy_arg;
@@ -45737,7 +46224,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UnlinkPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UnlinkPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -45777,8 +46264,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -45865,7 +46351,7 @@ int main(int ac, char **av)
 				             SET_NEXT(s->private_ips, (aa), pa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UnlinkPrivateIps'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UnlinkPrivateIps'\n", next_a);
 			    }
 		            i += incr;
 			    goto unlink_private_ips_arg;
@@ -45882,7 +46368,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UnlinkPrivateIps (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UnlinkPrivateIps (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -45922,8 +46408,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -45987,7 +46472,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UnlinkPublicIp'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UnlinkPublicIp'\n", next_a);
 			    }
 		            i += incr;
 			    goto unlink_public_ip_arg;
@@ -46004,7 +46489,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UnlinkPublicIp (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UnlinkPublicIp (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -46044,8 +46529,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -46098,7 +46582,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UnlinkRouteTable'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UnlinkRouteTable'\n", next_a);
 			    }
 		            i += incr;
 			    goto unlink_route_table_arg;
@@ -46115,7 +46599,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UnlinkRouteTable (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UnlinkRouteTable (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -46155,8 +46639,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -46220,7 +46703,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UnlinkVirtualGateway'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UnlinkVirtualGateway'\n", next_a);
 			    }
 		            i += incr;
 			    goto unlink_virtual_gateway_arg;
@@ -46237,7 +46720,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UnlinkVirtualGateway (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UnlinkVirtualGateway (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -46277,8 +46760,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -46347,7 +46829,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UnlinkVolume'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UnlinkVolume'\n", next_a);
 			    }
 		            i += incr;
 			    goto unlink_volume_arg;
@@ -46364,7 +46846,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UnlinkVolume (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UnlinkVolume (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -46404,8 +46886,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -46491,7 +46972,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateAccessKey'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateAccessKey'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_access_key_arg;
@@ -46508,7 +46989,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateAccessKey (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateAccessKey (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -46548,8 +47029,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -46757,7 +47237,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateAccount'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateAccount'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_account_arg;
@@ -46774,7 +47254,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateAccount (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateAccount (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -46814,8 +47294,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -46884,7 +47363,7 @@ int main(int ac, char **av)
 				           }
 				      } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateApiAccessPolicy'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateApiAccessPolicy'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_api_access_policy_arg;
@@ -46901,7 +47380,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateApiAccessPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateApiAccessPolicy (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -46941,8 +47420,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -47108,7 +47586,7 @@ int main(int ac, char **av)
 				             SET_NEXT(s->ip_ranges, (aa), pa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateApiAccessRule'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateApiAccessRule'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_api_access_rule_arg;
@@ -47125,7 +47603,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateApiAccessRule (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateApiAccessRule (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -47165,8 +47643,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -47230,7 +47707,7 @@ int main(int ac, char **av)
 				           }
 				      } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateCa'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateCa'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_ca_arg;
@@ -47247,7 +47724,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateCa (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateCa (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -47287,8 +47764,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -47352,7 +47828,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateDedicatedGroup'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateDedicatedGroup'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_dedicated_group_arg;
@@ -47369,7 +47845,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateDedicatedGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateDedicatedGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -47409,8 +47885,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -47474,7 +47949,7 @@ int main(int ac, char **av)
 				          s->mtu = atoll(aa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateDirectLinkInterface'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateDirectLinkInterface'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_direct_link_interface_arg;
@@ -47491,7 +47966,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateDirectLinkInterface (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateDirectLinkInterface (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -47531,8 +48006,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -47601,7 +48075,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateFlexibleGpu'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateFlexibleGpu'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_flexible_gpu_arg;
@@ -47618,7 +48092,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateFlexibleGpu (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateFlexibleGpu (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -47658,8 +48132,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -47780,7 +48253,7 @@ int main(int ac, char **av)
 				             SET_NEXT(s->product_codes, (aa), pa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateImage'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateImage'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_image_arg;
@@ -47797,7 +48270,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateImage (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateImage (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -47837,8 +48310,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -47913,7 +48385,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateListenerRule'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateListenerRule'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_listener_rule_arg;
@@ -47930,7 +48402,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateListenerRule (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateListenerRule (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -47970,8 +48442,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -48187,7 +48658,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateLoadBalancer'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateLoadBalancer'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_load_balancer_arg;
@@ -48204,7 +48675,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateLoadBalancer (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateLoadBalancer (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -48244,8 +48715,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -48366,7 +48836,7 @@ int main(int ac, char **av)
 				             SET_NEXT(s->remove_route_table_ids, (aa), pa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateNetAccessPoint'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateNetAccessPoint'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_net_access_point_arg;
@@ -48383,7 +48853,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateNetAccessPoint (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateNetAccessPoint (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -48423,8 +48893,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -48488,7 +48957,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateNet'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateNet'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_net_arg;
@@ -48505,7 +48974,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateNet (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateNet (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -48545,8 +49014,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -48667,7 +49135,7 @@ int main(int ac, char **av)
 				             SET_NEXT(s->security_group_ids, (aa), pa);
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateNic'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateNic'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_nic_arg;
@@ -48684,7 +49152,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateNic (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateNic (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -48724,8 +49192,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -48805,7 +49272,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateRoutePropagation'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateRoutePropagation'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_route_propagation_arg;
@@ -48822,7 +49289,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateRoutePropagation (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateRoutePropagation (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -48862,8 +49329,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -48982,7 +49448,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateRoute'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateRoute'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_route_arg;
@@ -48999,7 +49465,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateRoute (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateRoute (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -49039,8 +49505,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -49104,7 +49569,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateRouteTableLink'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateRouteTableLink'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_route_table_link_arg;
@@ -49121,7 +49586,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateRouteTableLink (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateRouteTableLink (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -49161,8 +49626,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -49237,7 +49701,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateServerCertificate'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateServerCertificate'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_server_certificate_arg;
@@ -49254,7 +49718,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateServerCertificate (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateServerCertificate (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -49294,8 +49758,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -49371,7 +49834,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateSnapshot'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateSnapshot'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_snapshot_arg;
@@ -49388,7 +49851,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateSnapshot (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateSnapshot (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -49428,8 +49891,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -49498,7 +49960,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateSubnet'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateSubnet'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_subnet_arg;
@@ -49515,7 +49977,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateSubnet (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateSubnet (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -49555,8 +50017,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -49642,7 +50103,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateUserGroup'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateUserGroup'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_user_group_arg;
@@ -49659,7 +50120,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateUserGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -49699,8 +50160,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -49786,7 +50246,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateUser'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateUser'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_user_arg;
@@ -49803,7 +50263,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateUser (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateUser (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -49843,8 +50303,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -49914,7 +50373,7 @@ int main(int ac, char **av)
 				          	      if (endptr == dot_pos)
 				          		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
 				          	      else if (*endptr != '.')
-				          		      BAD_RET("'Tags' require a .\n");
+				          		      BAD_RET("'Tags' require a '.'\n");
 				          	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
 				          	      cascade_struct = &s->tags[pos];
 				          	      cascade_parser = resource_tag_parser;
@@ -49961,7 +50420,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateVmGroup'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateVmGroup'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_vm_group_arg;
@@ -49978,7 +50437,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateVmGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateVmGroup (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -50018,8 +50477,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -50085,7 +50543,7 @@ int main(int ac, char **av)
 				          	      if (endptr == dot_pos)
 				          		      BAD_RET("'BlockDeviceMappings' require an index (example array ref BlockDeviceMappingVmUpdate.BlockDeviceMappings.0)\n");
 				          	      else if (*endptr != '.')
-				          		      BAD_RET("'BlockDeviceMappings' require a .\n");
+				          		      BAD_RET("'BlockDeviceMappings' require a '.'\n");
 				          	      TRY_ALLOC_AT(s,block_device_mappings, pa, pos, sizeof(*s->block_device_mappings));
 				          	      cascade_struct = &s->block_device_mappings[pos];
 				          	      cascade_parser = block_device_mapping_vm_update_parser;
@@ -50279,7 +50737,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateVm'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateVm'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_vm_arg;
@@ -50296,7 +50754,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateVm (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateVm (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -50336,8 +50794,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -50407,7 +50864,7 @@ int main(int ac, char **av)
 				          	      if (endptr == dot_pos)
 				          		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
 				          	      else if (*endptr != '.')
-				          		      BAD_RET("'Tags' require a .\n");
+				          		      BAD_RET("'Tags' require a '.'\n");
 				          	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
 				          	      cascade_struct = &s->tags[pos];
 				          	      cascade_parser = resource_tag_parser;
@@ -50443,7 +50900,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateVmTemplate'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateVmTemplate'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_vm_template_arg;
@@ -50460,7 +50917,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateVmTemplate (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateVmTemplate (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -50500,8 +50957,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -50587,7 +51043,7 @@ int main(int ac, char **av)
 
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateVolume'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateVolume'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_volume_arg;
@@ -50604,7 +51060,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateVolume (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateVolume (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;
@@ -50644,8 +51100,7 @@ int main(int ac, char **av)
 		           char *aa = i + 2 < ac ? av[i + 2] : 0;
 			   int incr = 2;
 			   char *eq_ptr = strchr(next_a, '=');
-
-	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be se first\n");
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
 			   if (eq_ptr) {
 			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
 			      	  incr = 1;
@@ -50743,7 +51198,7 @@ int main(int ac, char **av)
 				           }
 				       } else
 			    {
-				BAD_RET("'%s' is not a valide argument for 'UpdateVpnConnection'\n", next_a);
+				BAD_RET("'%s' is not a valid argument for 'UpdateVpnConnection'\n", next_a);
 			    }
 		            i += incr;
 			    goto update_vpn_connection_arg;
@@ -50760,7 +51215,7 @@ int main(int ac, char **av)
 			     puts(json_object_to_json_string_ext(jobj,
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
-		     } else fprintf(stderr, "Called UpdateVpnConnection (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+		     } else fprintf(stderr, "called UpdateVpnConnection (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;

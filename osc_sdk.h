@@ -77,8 +77,8 @@ struct osc_str {
 
 #define OSC_ENV_FREE_AK_SK (OSC_ENV_FREE_AK | OSC_ENV_FREE_SK)
 
-#define OSC_API_VERSION "1.35.3"
-#define OSC_SDK_VERSION 0X001500
+#define OSC_API_VERSION "1.35.4"
+#define OSC_SDK_VERSION 0X001600
 
 enum osc_auth_method {
 	OSC_AKSK_METHOD,
@@ -104,6 +104,9 @@ struct osc_env {
 	enum osc_auth_method auth_method;
 	struct curl_slist *headers;
 	struct osc_str endpoint;
+    int max_retries;
+    float retry_backoff_factor;
+    float retry_backoff_jitter;
 	CURL *c;
 };
 
@@ -283,6 +286,12 @@ struct account {
          */
 	char *mobile_number;
         /*
+         * Whether the account is allowed to log in to Cockpit v2 using its 
+         * Outscale credentials when identity federation is activated.
+         */
+        int is_set_outscale_login_allowed;
+	int outscale_login_allowed;
+        /*
          * The landline phone number of the account owner.
          */
 	char *phone_number;
@@ -302,9 +311,13 @@ struct account {
 
 struct actions_on_next_boot {
         /*
-         *   One action to perform on the next boot of the VM (`enable` | 
-         * `disable` | 
-         *   `setup-mode` |`none`).
+         *   One action to perform on the next boot of the VM. For more 
+         * information, 
+         *   see [About Secure 
+         *   
+         * Boot](https://docs.outscale.com/en/userguide/About-Secure-Boot.html#_s
+         * ecur
+         *   e_boot_actions).
          */
 	char *secure_boot;
 };
@@ -443,8 +456,8 @@ struct block_device_mapping_created {
 
 struct bsu_to_create {
         /*
-         * By default or if set to true, the volume is deleted when terminating 
-         * the VM. If false, the volume is not deleted when terminating the VM.
+         * If set to true, the volume is deleted when terminating the VM. If 
+         * false, the volume is not deleted when terminating the VM.
          */
         int is_set_delete_on_vm_deletion;
 	int delete_on_vm_deletion;
@@ -483,9 +496,9 @@ struct block_device_mapping_image {
         /*
          *   Information about the BSU volume to create.
          *   --Bsu.DeleteOnVmDeletion: bool
-         *     By default or if set to true, the volume is deleted when 
-         * terminating the 
-         *     VM. If false, the volume is not deleted when terminating the VM.
+         *     If set to true, the volume is deleted when terminating the VM. If 
+         * false, 
+         *     the volume is not deleted when terminating the VM.
          *   --Bsu.Iops: long long int
          *     The number of I/O operations per second (IOPS). This parameter 
          * must be 
@@ -535,9 +548,9 @@ struct block_device_mapping_vm_creation {
         /*
          *   Information about the BSU volume to create.
          *   --Bsu.DeleteOnVmDeletion: bool
-         *     By default or if set to true, the volume is deleted when 
-         * terminating the 
-         *     VM. If false, the volume is not deleted when terminating the VM.
+         *     If set to true, the volume is deleted when terminating the VM. If 
+         * false, 
+         *     the volume is not deleted when terminating the VM.
          *   --Bsu.Iops: long long int
          *     The number of I/O operations per second (IOPS). This parameter 
          * must be 
@@ -756,7 +769,7 @@ struct catalogs {
          */
 	char *from_date;
         /*
-         * The state of the catalog (`CURRENT` \\| `OBSOLETE`).
+         * The state of the catalog.
          */
 	char *state;
         /*
@@ -1062,7 +1075,7 @@ struct direct_link_interfaces {
 	char *location;
         /*
          * The maximum transmission unit (MTU) of the DirectLink interface, in 
-         * bytes (always `1500`).
+         * bytes.
          */
         int is_set_mtu;
 	long long int mtu;
@@ -1475,7 +1488,7 @@ struct filters_image {
         char *block_device_mapping_volume_types_str;
 	char **block_device_mapping_volume_types;
         /*
-         * The boot modes compatible with the OMIs (`legacy` and/or `uefi`).
+         * The boot modes compatible with the OMIs.
          */
         char *boot_modes_str;
 	char **boot_modes;
@@ -2642,7 +2655,7 @@ struct filters_vm {
         char *block_device_mapping_volume_ids_str;
 	char **block_device_mapping_volume_ids;
         /*
-         * The boot modes of the VMs (`legacy` \\| `uefi`).
+         * The boot modes of the VMs.
          */
         char *boot_modes_str;
 	char **boot_modes;
@@ -3245,7 +3258,7 @@ struct filters_volume {
 	int *volume_sizes;
         /*
          * The states of the volumes (`creating` \\| `available` \\| `in-use` 
-         * \\| `updating` \\| `deleting` \\| `error`).
+         * \\| `deleting` \\| `error`).
          */
         char *volume_states_str;
 	char **volume_states;
@@ -3475,10 +3488,9 @@ struct image {
          *   --BlockDeviceMappings.INDEX.Bsu: ref BsuToCreate
          *       Information about the BSU volume to create.
          *       --BlockDeviceMappings.INDEX.Bsu.DeleteOnVmDeletion: bool
-         *         By default or if set to true, the volume is deleted when 
-         * terminating the 
-         *         VM. If false, the volume is not deleted when terminating the 
-         * VM.
+         *         If set to true, the volume is deleted when terminating the 
+         * VM. If false, 
+         *         the volume is not deleted when terminating the VM.
          *       --BlockDeviceMappings.INDEX.Bsu.Iops: long long int
          *         The number of I/O operations per second (IOPS). This 
          * parameter must be 
@@ -3522,7 +3534,7 @@ struct image {
         int nb_block_device_mappings;
 	struct block_device_mapping_image *block_device_mappings;
         /*
-         * The boot modes compatible with the OMI (`legacy` and/or `uefi`).
+         * The boot modes compatible with the OMI.
          */
         char *boot_modes_str;
 	char **boot_modes;
@@ -4044,7 +4056,8 @@ struct listener_for_creation {
          * The OUTSCALE Resource Name (ORN) of the server certificate. For more 
          * information, see [Resource Identifiers > OUTSCALE Resource Names 
          * (ORNs)](https://docs.outscale.com/en/userguide/Resource-Identifiers.ht
-         * ml#_outscale_resource_names_orns).
+         * ml#_outscale_resource_names_orns).<br/>\nThis parameter is required 
+         * for `HTTPS` and `SSL` protocols.
          */
 	char *server_certificate_id;
 };
@@ -5260,6 +5273,7 @@ struct policy {
 
 struct policy_entities {
         /*
+         * The accounts linked to the specified policy.
          *   Information about the entity.
          *   --Accounts.INDEX.Id: string
          *     The ID of the entity.
@@ -5278,6 +5292,7 @@ struct policy_entities {
         int nb_accounts;
 	struct minimal_policy *accounts;
         /*
+         * The groups linked to the specified policy.
          *   Information about the entity.
          *   --Groups.INDEX.Id: string
          *     The ID of the entity.
@@ -5317,6 +5332,7 @@ struct policy_entities {
         int is_set_max_results_truncated;
 	int max_results_truncated;
         /*
+         * The users linked to the specified policy.
          *   Information about the entity.
          *   --Users.INDEX.Id: string
          *     The ID of the entity.
@@ -6155,7 +6171,7 @@ struct snapshot_export_task {
 	char *snapshot_id;
         /*
          * The state of the snapshot export task (`pending` \\| `active` \\| 
-         * `completed` \\| `failed`).
+         * `completed` \\| `cancelled` \\| `failed`).
          */
 	char *state;
         /*
@@ -6307,6 +6323,12 @@ struct user {
          */
 	char *last_modification_date;
         /*
+         * Whether the user is allowed to log in to Cockpit v2 using its 
+         * Outscale credentials when identity federation is activated.
+         */
+        int is_set_outscale_login_allowed;
+	int outscale_login_allowed;
+        /*
          * The path to the EIM user.
          */
 	char *path;
@@ -6424,9 +6446,13 @@ struct vm {
         /*
          *   The action to perform on the next boot of the VM.
          *   --ActionsOnNextBoot.SecureBoot: string
-         *       One action to perform on the next boot of the VM (`enable` | 
-         * `disable` | 
-         *       `setup-mode` |`none`).
+         *       One action to perform on the next boot of the VM. For more 
+         * information, 
+         *       see [About Secure 
+         *       
+         * Boot](https://docs.outscale.com/en/userguide/About-Secure-Boot.html#_s
+         * ecur
+         *       e_boot_actions).
          */
         char *actions_on_next_boot_str;
         int is_set_actions_on_next_boot;
@@ -6459,6 +6485,7 @@ struct vm {
         int nb_block_device_mappings;
 	struct block_device_mapping_created *block_device_mappings;
         /*
+         *   Information about the boot mode of the VM.
          */
 	char *boot_mode;
         /*
@@ -6597,7 +6624,7 @@ struct vm {
          */
 	char *os_family;
         /*
-         * The performance of the VM (`medium` \\| `high` \\| `highest`).
+         * The performance of the VM.
          */
 	char *performance;
         /*
@@ -6712,9 +6739,9 @@ struct vm_group {
          */
 	char *description;
         /*
-         * The positioning strategy of the VMs on hypervisors. By default, or if 
-         * set to `no-strategy`, TINA determines the most adequate position for 
-         * the VMs. If set to `attract`, the VMs are deployed on the same 
+         * The positioning strategy of the VMs on hypervisors. If set to 
+         * `no-strategy`, TINA determines the most adequate position for the 
+         * VMs. If set to `attract`, the VMs are deployed on the same 
          * hypervisor, which improves network performance. If set to `repulse`, 
          * the VMs are deployed on a different hypervisor, which improves fault 
          * tolerance.
@@ -6726,8 +6753,7 @@ struct vm_group {
         char *security_group_ids_str;
 	char **security_group_ids;
         /*
-         * The state of the VM group (`pending` \\| `available` \\| `scaling up` 
-         * \\| `scaling down` \\| `deleting` \\| `deleted`).
+         * The state of the VM group.
          */
 	char *state;
         /*
@@ -6735,7 +6761,7 @@ struct vm_group {
          */
 	char *subnet_id;
         /*
-         * One or more tags associated with the VM.
+         * One or more tags associated with the VM group.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
          *     The key of the tag, with a minimum of 1 character.
@@ -6973,7 +6999,7 @@ struct volume {
 	char *snapshot_id;
         /*
          * The state of the volume (`creating` \\| `available` \\| `in-use` \\| 
-         * `updating` \\| `deleting` \\| `error`).
+         * `deleting` \\| `error`).
          */
 	char *state;
         /*
@@ -7227,88 +7253,82 @@ struct vpn_connection {
 
 struct with {
         /*
-         * By default or if set to true, the account ID is displayed.
+         * If true, the account ID is displayed.
          */
         int is_set_account_id;
 	int account_id;
         /*
-         * By default or if set to true, the duration of the call is displayed.
+         * If true, the duration of the call is displayed.
          */
         int is_set_call_duration;
 	int call_duration;
         /*
-         * By default or if set to true, the access key is displayed.
+         * If true, the access key is displayed.
          */
         int is_set_query_access_key;
 	int query_access_key;
         /*
-         * By default or if set to true, the name of the API is displayed.
+         * If true, the name of the API is displayed.
          */
         int is_set_query_api_name;
 	int query_api_name;
         /*
-         * By default or if set to true, the version of the API is displayed.
+         * If true, the version of the API is displayed.
          */
         int is_set_query_api_version;
 	int query_api_version;
         /*
-         * By default or if set to true, the name of the call is displayed.
+         * If true, the name of the call is displayed.
          */
         int is_set_query_call_name;
 	int query_call_name;
         /*
-         * By default or if set to true, the date of the call is displayed.
+         * If true, the date of the call is displayed.
          */
         int is_set_query_date;
 	int query_date;
         /*
-         * By default or if set to true, the raw header of the HTTP request is 
-         * displayed.
+         * If true, the raw header of the HTTP request is displayed.
          */
         int is_set_query_header_raw;
 	int query_header_raw;
         /*
-         * By default or if set to true, the size of the raw header of the HTTP 
-         * request is displayed.
+         * If true, the size of the raw header of the HTTP request is displayed.
          */
         int is_set_query_header_size;
 	int query_header_size;
         /*
-         * By default or if set to true, the IP is displayed.
+         * If true, the IP is displayed.
          */
         int is_set_query_ip_address;
 	int query_ip_address;
         /*
-         * By default or if set to true, the raw payload of the HTTP request is 
-         * displayed.
+         * If true, the raw payload of the HTTP request is displayed.
          */
         int is_set_query_payload_raw;
 	int query_payload_raw;
         /*
-         * By default or if set to true, the size of the raw payload of the HTTP 
-         * request is displayed.
+         * If true, the size of the raw payload of the HTTP request is displayed.
          */
         int is_set_query_payload_size;
 	int query_payload_size;
         /*
-         * By default or if set to true, the user agent of the HTTP request is 
-         * displayed.
+         * If true, the user agent of the HTTP request is displayed.
          */
         int is_set_query_user_agent;
 	int query_user_agent;
         /*
-         * By default or if set to true, the request ID is displayed.
+         * If true, the request ID is displayed.
          */
         int is_set_request_id;
 	int request_id;
         /*
-         * By default or if set to true, the size of the response is displayed.
+         * If true, the size of the response is displayed.
          */
         int is_set_response_size;
 	int response_size;
         /*
-         * By default or if set to true, the HTTP status code of the response is 
-         * displayed.
+         * If true, the HTTP status code of the response is displayed.
          */
         int is_set_response_status_code;
 	int response_status_code;
@@ -7782,10 +7802,9 @@ struct osc_create_image_arg  {
          *   --BlockDeviceMappings.INDEX.Bsu: ref BsuToCreate
          *       Information about the BSU volume to create.
          *       --BlockDeviceMappings.INDEX.Bsu.DeleteOnVmDeletion: bool
-         *         By default or if set to true, the volume is deleted when 
-         * terminating the 
-         *         VM. If false, the volume is not deleted when terminating the 
-         * VM.
+         *         If set to true, the volume is deleted when terminating the 
+         * VM. If false, 
+         *         the volume is not deleted when terminating the VM.
          *       --BlockDeviceMappings.INDEX.Bsu.Iops: long long int
          *         The number of I/O operations per second (IOPS). This 
          * parameter must be 
@@ -7829,7 +7848,7 @@ struct osc_create_image_arg  {
         int nb_block_device_mappings;
 	struct block_device_mapping_image *block_device_mappings;
         /*
-         * The boot modes compatible with the OMI (`legacy` and/or `uefi`).
+         * The boot modes compatible with the OMI.
          */
         char *boot_modes_str;
 	char **boot_modes;
@@ -8009,7 +8028,9 @@ struct osc_create_load_balancer_listeners_arg  {
          *     
          * (ORNs)](https://docs.outscale.com/en/userguide/Resource-Identifiers.ht
          * ml#_
-         *     outscale_resource_names_orns).
+         *     outscale_resource_names_orns).<br/>\nThis parameter is required 
+         * for 
+         *     `HTTPS` and `SSL` protocols.
          */
         char *listeners_str;
         int nb_listeners;
@@ -8090,7 +8111,9 @@ struct osc_create_load_balancer_arg  {
          *     
          * (ORNs)](https://docs.outscale.com/en/userguide/Resource-Identifiers.ht
          * ml#_
-         *     outscale_resource_names_orns).
+         *     outscale_resource_names_orns).<br/>\nThis parameter is required 
+         * for 
+         *     `HTTPS` and `SSL` protocols.
          */
         char *listeners_str;
         int nb_listeners;
@@ -8857,12 +8880,12 @@ struct osc_create_vm_group_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The positioning strategy of VMs on hypervisors. By default, or if set 
-         * to `no-strategy` our orchestrator determines the most adequate 
-         * position for your VMs. If set to `attract`, your VMs are deployed on 
-         * the same hypervisor, which improves network performance. If set to 
-         * `repulse`, your VMs are deployed on a different hypervisor, which 
-         * improves fault tolerance.
+         * The positioning strategy of VMs on hypervisors. If set to 
+         * `no-strategy`, our orchestrator determines the most adequate position 
+         * for your VMs. If set to `attract`, your VMs are deployed on the same 
+         * hypervisor, which improves network performance. If set to `repulse`, 
+         * your VMs are deployed on a different hypervisor, which improves fault 
+         * tolerance.
          */
 	char *positioning_strategy;
         /*
@@ -8913,7 +8936,7 @@ struct osc_create_vm_template_arg  {
          */
 	char *cpu_generation;
         /*
-         * The performance of the VMs (`medium` \\| `high` \\| `highest`).
+         * The performance of the VMs.
          */
 	char *cpu_performance;
         /*
@@ -8963,9 +8986,13 @@ struct osc_create_vms_arg  {
         /*
          *   The action to perform on the next boot of the VM.
          *   --ActionsOnNextBoot.SecureBoot: string
-         *       One action to perform on the next boot of the VM (`enable` | 
-         * `disable` | 
-         *       `setup-mode` |`none`).
+         *       One action to perform on the next boot of the VM. For more 
+         * information, 
+         *       see [About Secure 
+         *       
+         * Boot](https://docs.outscale.com/en/userguide/About-Secure-Boot.html#_s
+         * ecur
+         *       e_boot_actions).
          */
         char *actions_on_next_boot_str;
         int is_set_actions_on_next_boot;
@@ -8976,10 +9003,9 @@ struct osc_create_vms_arg  {
          *   --BlockDeviceMappings.INDEX.Bsu: ref BsuToCreate
          *       Information about the BSU volume to create.
          *       --BlockDeviceMappings.INDEX.Bsu.DeleteOnVmDeletion: bool
-         *         By default or if set to true, the volume is deleted when 
-         * terminating the 
-         *         VM. If false, the volume is not deleted when terminating the 
-         * VM.
+         *         If set to true, the volume is deleted when terminating the 
+         * VM. If false, 
+         *         the volume is not deleted when terminating the VM.
          *       --BlockDeviceMappings.INDEX.Bsu.Iops: long long int
          *         The number of I/O operations per second (IOPS). This 
          * parameter must be 
@@ -9027,11 +9053,12 @@ struct osc_create_vms_arg  {
         int nb_block_device_mappings;
 	struct block_device_mapping_vm_creation *block_device_mappings;
         /*
+         *   Information about the boot mode of the VM.
          */
 	char *boot_mode;
         /*
-         * By default or if true, the VM is started on creation. If false, the 
-         * VM is stopped on creation.
+         * If true, the VM is started on creation. If false, the VM is stopped 
+         * on creation.
          */
         int is_set_boot_on_creation;
 	int boot_on_creation;
@@ -9141,8 +9168,7 @@ struct osc_create_vms_arg  {
         int nb_nics;
 	struct nic_for_vm_creation *nics;
         /*
-         * The performance of the VM (`medium` \\| `high` \\| `highest`). By 
-         * default, `high`. This parameter is ignored if you specify a 
+         * The performance of the VM. This parameter is ignored if you specify a 
          * performance flag directly in the `VmType` parameter.
          */
 	char *performance;
@@ -9189,9 +9215,9 @@ struct osc_create_vms_arg  {
          */
 	char *user_data;
         /*
-         * The VM behavior when you stop it. By default or if set to `stop`, the 
-         * VM stops. If set to `restart`, the VM stops then automatically 
-         * restarts. If set to `terminate`, the VM stops and is terminated.
+         * The VM behavior when you stop it. If set to `stop`, the VM stops. If 
+         * set to `restart`, the VM stops then automatically restarts. If set to 
+         * `terminate`, the VM stops and is terminated.
          */
 	char *vm_initiated_shutdown_behavior;
         /*
@@ -10208,6 +10234,84 @@ struct osc_deregister_vms_in_load_balancer_arg  {
 	char *load_balancer_name;
 };
 
+struct osc_disable_outscale_login_for_users_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+};
+
+struct osc_disable_outscale_login_per_users_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The usernames of the EIM users you want to disable the Outscale login 
+         * for.
+         */
+        char *user_names_str;
+	char **user_names;
+};
+
+struct osc_disable_outscale_login_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+};
+
+struct osc_enable_outscale_login_for_users_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+};
+
+struct osc_enable_outscale_login_per_users_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * The usernames of the EIM users you want to enable the Outscale login 
+         * for.
+         */
+        char *user_names_str;
+	char **user_names;
+};
+
+struct osc_enable_outscale_login_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+};
+
 struct osc_link_flexible_gpu_arg  {
         /* Required: FlexibleGpuId VmId
  */
@@ -10693,58 +10797,46 @@ struct osc_read_api_logs_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
         /*
          *   The information to display in each returned log.
          *   --With.AccountId: bool
-         *     By default or if set to true, the account ID is displayed.
+         *     If true, the account ID is displayed.
          *   --With.CallDuration: bool
-         *     By default or if set to true, the duration of the call is 
-         * displayed.
+         *     If true, the duration of the call is displayed.
          *   --With.QueryAccessKey: bool
-         *     By default or if set to true, the access key is displayed.
+         *     If true, the access key is displayed.
          *   --With.QueryApiName: bool
-         *     By default or if set to true, the name of the API is displayed.
+         *     If true, the name of the API is displayed.
          *   --With.QueryApiVersion: bool
-         *     By default or if set to true, the version of the API is displayed.
+         *     If true, the version of the API is displayed.
          *   --With.QueryCallName: bool
-         *     By default or if set to true, the name of the call is displayed.
+         *     If true, the name of the call is displayed.
          *   --With.QueryDate: bool
-         *     By default or if set to true, the date of the call is displayed.
+         *     If true, the date of the call is displayed.
          *   --With.QueryHeaderRaw: bool
-         *     By default or if set to true, the raw header of the HTTP request 
-         * is 
-         *     displayed.
+         *     If true, the raw header of the HTTP request is displayed.
          *   --With.QueryHeaderSize: bool
-         *     By default or if set to true, the size of the raw header of the 
-         * HTTP 
-         *     request is displayed.
-         *   --With.QueryIpAddress: bool
-         *     By default or if set to true, the IP is displayed.
-         *   --With.QueryPayloadRaw: bool
-         *     By default or if set to true, the raw payload of the HTTP request 
-         * is 
-         *     displayed.
-         *   --With.QueryPayloadSize: bool
-         *     By default or if set to true, the size of the raw payload of the 
-         * HTTP 
-         *     request is displayed.
-         *   --With.QueryUserAgent: bool
-         *     By default or if set to true, the user agent of the HTTP request 
-         * is 
-         *     displayed.
-         *   --With.RequestId: bool
-         *     By default or if set to true, the request ID is displayed.
-         *   --With.ResponseSize: bool
-         *     By default or if set to true, the size of the response is 
+         *     If true, the size of the raw header of the HTTP request is 
          * displayed.
+         *   --With.QueryIpAddress: bool
+         *     If true, the IP is displayed.
+         *   --With.QueryPayloadRaw: bool
+         *     If true, the raw payload of the HTTP request is displayed.
+         *   --With.QueryPayloadSize: bool
+         *     If true, the size of the raw payload of the HTTP request is 
+         * displayed.
+         *   --With.QueryUserAgent: bool
+         *     If true, the user agent of the HTTP request is displayed.
+         *   --With.RequestId: bool
+         *     If true, the request ID is displayed.
+         *   --With.ResponseSize: bool
+         *     If true, the size of the response is displayed.
          *   --With.ResponseStatusCode: bool
-         *     By default or if set to true, the HTTP status code of the 
-         * response is 
-         *     displayed.
+         *     If true, the HTTP status code of the response is displayed.
          */
         char *with_str;
         int is_set_with;
@@ -10863,7 +10955,7 @@ struct osc_read_client_gateways_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -10902,11 +10994,11 @@ struct osc_read_consumption_account_arg  {
          */
 	char *from_date;
         /*
-         * By default or if false, returns only the consumption of the specific 
-         * account that sends this request. If true, returns either the overall 
-         * consumption of your paying account and all linked accounts (if the 
-         * account that sends this request is a paying account) or returns 
-         * nothing (if the account that sends this request is a linked account).
+         * If false, returns only the consumption of the specific account that 
+         * sends this request. If true, returns either the overall consumption 
+         * of your paying account and all linked accounts (if the account that 
+         * sends this request is a paying account) or returns nothing (if the 
+         * account that sends this request is a linked account).
          */
         int is_set_overall;
 	int overall;
@@ -10960,7 +11052,7 @@ struct osc_read_dedicated_groups_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -11013,7 +11105,7 @@ struct osc_read_dhcp_options_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -11045,7 +11137,7 @@ struct osc_read_direct_link_interfaces_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -11075,7 +11167,7 @@ struct osc_read_direct_links_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -11085,8 +11177,8 @@ struct osc_read_entities_linked_to_policy_arg  {
         /* Required: null
  */
         /*
-         * The type of entity linked to the policy (`ACCOUNT` \\| `USER` \\| 
-         * `GROUP`) you want to get information about.
+         * The type of entity linked to the policy you want to get information 
+         * about.
          */
         char *entities_type_str;
 	char **entities_type;
@@ -11182,7 +11274,7 @@ struct osc_read_image_export_tasks_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -11218,7 +11310,7 @@ struct osc_read_images_arg  {
          *   --Filters.BlockDeviceMappingVolumeTypes: array string
          *     The types of volumes (`standard` \\| `gp2` \\| `io1`).
          *   --Filters.BootModes: array string
-         *     The boot modes compatible with the OMIs (`legacy` and/or `uefi`).
+         *     The boot modes compatible with the OMIs.
          *   --Filters.Descriptions: array string
          *     The descriptions of the OMIs, provided when they were created.
          *   --Filters.FileLocations: array string
@@ -11268,7 +11360,7 @@ struct osc_read_images_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -11316,7 +11408,7 @@ struct osc_read_internet_services_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -11476,7 +11568,7 @@ struct osc_read_locations_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -11564,7 +11656,7 @@ struct osc_read_nat_services_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -11596,7 +11688,7 @@ struct osc_read_net_access_point_services_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -11645,7 +11737,7 @@ struct osc_read_net_access_points_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -11707,7 +11799,7 @@ struct osc_read_net_peerings_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -11756,7 +11848,7 @@ struct osc_read_nets_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -11858,7 +11950,7 @@ struct osc_read_nics_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -11979,7 +12071,7 @@ struct osc_read_product_types_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -12012,7 +12104,7 @@ struct osc_read_public_ip_ranges_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -12068,7 +12160,7 @@ struct osc_read_public_ips_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -12106,7 +12198,7 @@ struct osc_read_quotas_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -12184,7 +12276,7 @@ struct osc_read_route_tables_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -12277,7 +12369,7 @@ struct osc_read_security_groups_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -12326,7 +12418,7 @@ struct osc_read_snapshot_export_tasks_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -12399,7 +12491,7 @@ struct osc_read_snapshots_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -12451,7 +12543,7 @@ struct osc_read_subnets_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -12485,7 +12577,7 @@ struct osc_read_subregions_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -12540,7 +12632,7 @@ struct osc_read_tags_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -12800,7 +12892,7 @@ struct osc_read_virtual_gateways_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -12935,7 +13027,7 @@ struct osc_read_vm_types_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -12989,7 +13081,7 @@ struct osc_read_vms_arg  {
          *   --Filters.BlockDeviceMappingVolumeIds: array string
          *     The volume IDs of the BSU volumes.
          *   --Filters.BootModes: array string
-         *     The boot modes of the VMs (`legacy` \\| `uefi`).
+         *     The boot modes of the VMs.
          *   --Filters.ClientTokens: array string
          *     The idempotency tokens provided when launching the VMs.
          *   --Filters.CreationDates: array string
@@ -13157,7 +13249,7 @@ struct osc_read_vms_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -13167,8 +13259,8 @@ struct osc_read_vms_state_arg  {
         /* Required: null
  */
         /*
-         * If true, includes the status of all VMs. By default or if set to 
-         * false, only includes the status of running VMs.
+         * If true, includes the status of all VMs. If false, only includes the 
+         * status of running VMs.
          */
         int is_set_all_vms;
 	int all_vms;
@@ -13207,7 +13299,7 @@ struct osc_read_vms_state_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -13265,7 +13357,7 @@ struct osc_read_volumes_arg  {
          *   --Filters.VolumeStates: array string
          *     The states of the volumes (`creating` \\| `available` \\| 
          * `in-use` \\| 
-         *     `updating` \\| `deleting` \\| `error`).
+         *     `deleting` \\| `error`).
          *   --Filters.VolumeTypes: array string
          *     The types of the volumes (`standard` \\| `gp2` \\| `io1`).
          */
@@ -13279,7 +13371,7 @@ struct osc_read_volumes_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -13342,7 +13434,7 @@ struct osc_read_vpn_connections_arg  {
 	char *next_page_token;
         /*
          * The maximum number of logs returned in a single response (between `1` 
-         * and `1000`, both included). By default, `100`.
+         * and `1000`, both included).
          */
         int is_set_results_per_page;
 	long long int results_per_page;
@@ -13958,7 +14050,7 @@ struct osc_update_direct_link_interface_arg  {
 	int dry_run;
         /*
          * The maximum transmission unit (MTU) of the DirectLink interface, in 
-         * bytes (always `1500`).
+         * bytes.
          */
         int is_set_mtu;
 	long long int mtu;
@@ -14551,9 +14643,13 @@ struct osc_update_vm_arg  {
         /*
          *   The action to perform on the next boot of the VM.
          *   --ActionsOnNextBoot.SecureBoot: string
-         *       One action to perform on the next boot of the VM (`enable` | 
-         * `disable` | 
-         *       `setup-mode` |`none`).
+         *       One action to perform on the next boot of the VM. For more 
+         * information, 
+         *       see [About Secure 
+         *       
+         * Boot](https://docs.outscale.com/en/userguide/About-Secure-Boot.html#_s
+         * ecur
+         *       e_boot_actions).
          */
         char *actions_on_next_boot_str;
         int is_set_actions_on_next_boot;
@@ -14629,7 +14725,7 @@ struct osc_update_vm_arg  {
         int is_set_nested_virtualization;
 	int nested_virtualization;
         /*
-         * The performance of the VM (`medium` \\| `high` \\| `highest`).
+         * The performance of the VM.
          */
 	char *performance;
         /*
@@ -14916,6 +15012,8 @@ const char **osc_calls_name(void);
 
 #endif /* WITH_DESCRIPTION */
 
+CURLcode osc_easy_perform(struct osc_env *e);
+
 int osc_accept_net_peering(struct osc_env *e, struct osc_str *out, struct osc_accept_net_peering_arg *args);
 int osc_add_user_to_user_group(struct osc_env *e, struct osc_str *out, struct osc_add_user_to_user_group_arg *args);
 int osc_check_authentication(struct osc_env *e, struct osc_str *out, struct osc_check_authentication_arg *args);
@@ -15012,6 +15110,12 @@ int osc_delete_volume(struct osc_env *e, struct osc_str *out, struct osc_delete_
 int osc_delete_vpn_connection(struct osc_env *e, struct osc_str *out, struct osc_delete_vpn_connection_arg *args);
 int osc_delete_vpn_connection_route(struct osc_env *e, struct osc_str *out, struct osc_delete_vpn_connection_route_arg *args);
 int osc_deregister_vms_in_load_balancer(struct osc_env *e, struct osc_str *out, struct osc_deregister_vms_in_load_balancer_arg *args);
+int osc_disable_outscale_login_for_users(struct osc_env *e, struct osc_str *out, struct osc_disable_outscale_login_for_users_arg *args);
+int osc_disable_outscale_login_per_users(struct osc_env *e, struct osc_str *out, struct osc_disable_outscale_login_per_users_arg *args);
+int osc_disable_outscale_login(struct osc_env *e, struct osc_str *out, struct osc_disable_outscale_login_arg *args);
+int osc_enable_outscale_login_for_users(struct osc_env *e, struct osc_str *out, struct osc_enable_outscale_login_for_users_arg *args);
+int osc_enable_outscale_login_per_users(struct osc_env *e, struct osc_str *out, struct osc_enable_outscale_login_per_users_arg *args);
+int osc_enable_outscale_login(struct osc_env *e, struct osc_str *out, struct osc_enable_outscale_login_arg *args);
 int osc_link_flexible_gpu(struct osc_env *e, struct osc_str *out, struct osc_link_flexible_gpu_arg *args);
 int osc_link_internet_service(struct osc_env *e, struct osc_str *out, struct osc_link_internet_service_arg *args);
 int osc_link_load_balancer_backend_machines(struct osc_env *e, struct osc_str *out, struct osc_link_load_balancer_backend_machines_arg *args);
