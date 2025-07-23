@@ -16,7 +16,7 @@ branch_name="autobuild-$new_sdk_version"
 git checkout -B $branch_name
 git config user.name "Outscale Bot"
 git config user.email "opensource+bot@outscale.com"
-git commit -asm "oapi-cli v$new_sdk_version"
+git commit -asm "🔖 release: oapi-cli v$new_sdk_version"
 
 if [ -z "$SSH_PRIVATE_KEY" ]; then
     echo "SSH_PRIVATE_KEY is missing, abort."
