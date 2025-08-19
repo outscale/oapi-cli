@@ -77,8 +77,8 @@ struct osc_str {
 
 #define OSC_ENV_FREE_AK_SK (OSC_ENV_FREE_AK | OSC_ENV_FREE_SK)
 
-#define OSC_API_VERSION "1.35.4"
-#define OSC_SDK_VERSION 0X001600
+#define OSC_API_VERSION "1.35.5"
+#define OSC_SDK_VERSION 0X001700
 
 enum osc_auth_method {
 	OSC_AKSK_METHOD,
@@ -984,13 +984,12 @@ struct direct_link {
          */
 	char *region_name;
         /*
-         * The state of the DirectLink.<br />\n* `requested`: The DirectLink is 
-         * requested but the request has not been validated yet.<br />\n* 
-         * `pending`: The DirectLink request has been validated. It remains in 
-         * the `pending` state until you establish the physical link.<br />\n* 
-         * `available`: The physical link is established and the connection is 
-         * ready to use.<br />\n* `deleting`: The deletion process is in 
-         * progress.<br />\n* `deleted`: The DirectLink is deleted.
+         * The state of the DirectLink.\n<ul><li>`pending`: The DirectLink 
+         * request has been validated. It remains in the `pending` state until 
+         * you establish the physical link.</li>\n<li>`available`: The physical 
+         * link is established and the connection is ready to 
+         * use.</li>\n<li>`disabled`: The network link is 
+         * down.</li>\n<li>`deleted`: The DirectLink is deleted.</li>\n</ul>\n
          */
 	char *state;
 };
@@ -5131,74 +5130,81 @@ struct permissions_on_resource_creation {
 
 struct phase1_options {
         /*
-         * The action to carry out after a Dead Peer Detection (DPD) timeout 
-         * occurs.
+         * This parameter is not available. It is present in our API for the 
+         * sake of historical compatibility with AWS.
          */
 	char *dpd_timeout_action;
         /*
-         * The maximum waiting time for a Dead Peer Detection (DPD) response 
-         * before considering the peer as dead, in seconds.
+         * This parameter is not available. It is present in our API for the 
+         * sake of historical compatibility with AWS.
          */
         int is_set_dpd_timeout_seconds;
 	long long int dpd_timeout_seconds;
         /*
-         * The Internet Key Exchange (IKE) versions allowed for the VPN tunnel.
+         * This parameter is not available. It is present in our API for the 
+         * sake of historical compatibility with AWS.
          */
         char *ike_versions_str;
 	char **ike_versions;
         /*
-         * The Diffie-Hellman (DH) group numbers allowed for the VPN tunnel for 
-         * phase 1.
+         * This parameter is not available. It is present in our API for the 
+         * sake of historical compatibility with AWS.
          */
         char *phase1_dh_group_numbers_str;
 	int *phase1_dh_group_numbers;
         /*
-         * The encryption algorithms allowed for the VPN tunnel for phase 1.
+         * This parameter is not available. It is present in our API for the 
+         * sake of historical compatibility with AWS.
          */
         char *phase1_encryption_algorithms_str;
 	char **phase1_encryption_algorithms;
         /*
-         * The integrity algorithms allowed for the VPN tunnel for phase 1.
+         * This parameter is not available. It is present in our API for the 
+         * sake of historical compatibility with AWS.
          */
         char *phase1_integrity_algorithms_str;
 	char **phase1_integrity_algorithms;
         /*
-         * The lifetime for phase 1 of the IKE negotiation process, in seconds.
+         * This parameter is not available. It is present in our API for the 
+         * sake of historical compatibility with AWS.
          */
         int is_set_phase1_lifetime_seconds;
 	long long int phase1_lifetime_seconds;
         /*
-         * The number of packets in an IKE replay window.
+         * This parameter is not available. It is present in our API for the 
+         * sake of historical compatibility with AWS.
          */
         int is_set_replay_window_size;
 	long long int replay_window_size;
         /*
-         * The action to carry out when establishing tunnels for a VPN 
-         * connection.
+         * This parameter is not available. It is present in our API for the 
+         * sake of historical compatibility with AWS.
          */
 	char *startup_action;
 };
 
 struct phase2_options {
         /*
-         * The Diffie-Hellman (DH) group numbers allowed for the VPN tunnel for 
-         * phase 2.
+         * This parameter is not available. It is present in our API for the 
+         * sake of historical compatibility with AWS.
          */
         char *phase2_dh_group_numbers_str;
 	int *phase2_dh_group_numbers;
         /*
-         * The encryption algorithms allowed for the VPN tunnel for phase 2.
+         * This parameter is not available. It is present in our API for the 
+         * sake of historical compatibility with AWS.
          */
         char *phase2_encryption_algorithms_str;
 	char **phase2_encryption_algorithms;
         /*
-         * The integrity algorithms allowed for the VPN tunnel for phase 2.
+         * This parameter is not available. It is present in our API for the 
+         * sake of historical compatibility with AWS.
          */
         char *phase2_integrity_algorithms_str;
 	char **phase2_integrity_algorithms;
         /*
-         * The lifetime for phase 2 of the Internet Key Exchange (IKE) 
-         * negotiation process, in seconds.
+         * This parameter is not available. It is present in our API for the 
+         * sake of historical compatibility with AWS.
          */
         int is_set_phase2_lifetime_seconds;
 	long long int phase2_lifetime_seconds;
@@ -6116,7 +6122,7 @@ struct snapshot {
 	char *snapshot_id;
         /*
          * The state of the snapshot (`in-queue` \\| `pending` \\| `completed` 
-         * \\| `error` \\| `deleting`)).
+         * \\| `error` \\| `deleting`).
          */
 	char *state;
         /*
@@ -7029,36 +7035,45 @@ struct volume {
 
 struct vpn_options {
         /*
-         *   Information about Phase 1 of the Internet Key Exchange (IKE) 
-         *   negotiation. When Phase 1 finishes successfully, peers proceed to 
-         * Phase 2 
-         *   negotiations.
+         *   This parameter is not available. It is present in our API for the 
+         * sake 
+         *   of historical compatibility with AWS.
          *   --Phase1Options.DpdTimeoutAction: string
-         *     The action to carry out after a Dead Peer Detection (DPD) timeout 
-         *     occurs.
+         *     This parameter is not available. It is present in our API for the 
+         * sake 
+         *     of historical compatibility with AWS.
          *   --Phase1Options.DpdTimeoutSeconds: long long int
-         *     The maximum waiting time for a Dead Peer Detection (DPD) response 
-         * before 
-         *     considering the peer as dead, in seconds.
+         *     This parameter is not available. It is present in our API for the 
+         * sake 
+         *     of historical compatibility with AWS.
          *   --Phase1Options.IkeVersions: array string
-         *     The Internet Key Exchange (IKE) versions allowed for the VPN 
-         * tunnel.
+         *     This parameter is not available. It is present in our API for the 
+         * sake 
+         *     of historical compatibility with AWS.
          *   --Phase1Options.Phase1DhGroupNumbers: array integer
-         *     The Diffie-Hellman (DH) group numbers allowed for the VPN tunnel 
-         * for 
-         *     phase 1.
+         *     This parameter is not available. It is present in our API for the 
+         * sake 
+         *     of historical compatibility with AWS.
          *   --Phase1Options.Phase1EncryptionAlgorithms: array string
-         *     The encryption algorithms allowed for the VPN tunnel for phase 1.
+         *     This parameter is not available. It is present in our API for the 
+         * sake 
+         *     of historical compatibility with AWS.
          *   --Phase1Options.Phase1IntegrityAlgorithms: array string
-         *     The integrity algorithms allowed for the VPN tunnel for phase 1.
+         *     This parameter is not available. It is present in our API for the 
+         * sake 
+         *     of historical compatibility with AWS.
          *   --Phase1Options.Phase1LifetimeSeconds: long long int
-         *     The lifetime for phase 1 of the IKE negotiation process, in 
-         * seconds.
+         *     This parameter is not available. It is present in our API for the 
+         * sake 
+         *     of historical compatibility with AWS.
          *   --Phase1Options.ReplayWindowSize: long long int
-         *     The number of packets in an IKE replay window.
+         *     This parameter is not available. It is present in our API for the 
+         * sake 
+         *     of historical compatibility with AWS.
          *   --Phase1Options.StartupAction: string
-         *     The action to carry out when establishing tunnels for a VPN 
-         * connection.
+         *     This parameter is not available. It is present in our API for the 
+         * sake 
+         *     of historical compatibility with AWS.
          */
         char *phase1_options_str;
         int is_set_phase1_options;
@@ -7067,17 +7082,21 @@ struct vpn_options {
          *   Information about Phase 2 of the Internet Key Exchange (IKE) 
          *   negotiation.
          *   --Phase2Options.Phase2DhGroupNumbers: array integer
-         *     The Diffie-Hellman (DH) group numbers allowed for the VPN tunnel 
-         * for 
-         *     phase 2.
+         *     This parameter is not available. It is present in our API for the 
+         * sake 
+         *     of historical compatibility with AWS.
          *   --Phase2Options.Phase2EncryptionAlgorithms: array string
-         *     The encryption algorithms allowed for the VPN tunnel for phase 2.
+         *     This parameter is not available. It is present in our API for the 
+         * sake 
+         *     of historical compatibility with AWS.
          *   --Phase2Options.Phase2IntegrityAlgorithms: array string
-         *     The integrity algorithms allowed for the VPN tunnel for phase 2.
+         *     This parameter is not available. It is present in our API for the 
+         * sake 
+         *     of historical compatibility with AWS.
          *   --Phase2Options.Phase2LifetimeSeconds: long long int
-         *     The lifetime for phase 2 of the Internet Key Exchange (IKE) 
-         * negotiation 
-         *     process, in seconds.
+         *     This parameter is not available. It is present in our API for the 
+         * sake 
+         *     of historical compatibility with AWS.
          *   --Phase2Options.PreSharedKey: string
          *     The pre-shared key to establish the initial authentication 
          * between the 
@@ -7181,60 +7200,68 @@ struct vpn_connection {
         /*
          *   Information about the VPN options.
          *   --VpnOptions.Phase1Options: ref Phase1Options
-         *       Information about Phase 1 of the Internet Key Exchange (IKE) 
-         *       negotiation. When Phase 1 finishes successfully, peers proceed 
-         * to Phase 2 
-         *       negotiations.
+         *       This parameter is not available. It is present in our API for 
+         * the sake 
+         *       of historical compatibility with AWS.
          *       --VpnOptions.Phase1Options.DpdTimeoutAction: string
-         *         The action to carry out after a Dead Peer Detection (DPD) 
-         * timeout 
-         *         occurs.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *       --VpnOptions.Phase1Options.DpdTimeoutSeconds: long long int
-         *         The maximum waiting time for a Dead Peer Detection (DPD) 
-         * response before 
-         *         considering the peer as dead, in seconds.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *       --VpnOptions.Phase1Options.IkeVersions: array string
-         *         The Internet Key Exchange (IKE) versions allowed for the VPN 
-         * tunnel.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *       --VpnOptions.Phase1Options.Phase1DhGroupNumbers: array integer
-         *         The Diffie-Hellman (DH) group numbers allowed for the VPN 
-         * tunnel for 
-         *         phase 1.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *       --VpnOptions.Phase1Options.Phase1EncryptionAlgorithms: array 
          * string
-         *         The encryption algorithms allowed for the VPN tunnel for 
-         * phase 1.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *       --VpnOptions.Phase1Options.Phase1IntegrityAlgorithms: array 
          * string
-         *         The integrity algorithms allowed for the VPN tunnel for phase 
-         * 1.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *       --VpnOptions.Phase1Options.Phase1LifetimeSeconds: long long int
-         *         The lifetime for phase 1 of the IKE negotiation process, in 
-         * seconds.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *       --VpnOptions.Phase1Options.ReplayWindowSize: long long int
-         *         The number of packets in an IKE replay window.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *       --VpnOptions.Phase1Options.StartupAction: string
-         *         The action to carry out when establishing tunnels for a VPN 
-         * connection.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *   --VpnOptions.Phase2Options: ref Phase2Options
          *       Information about Phase 2 of the Internet Key Exchange (IKE) 
          *       negotiation.
          *       --VpnOptions.Phase2Options.Phase2DhGroupNumbers: array integer
-         *         The Diffie-Hellman (DH) group numbers allowed for the VPN 
-         * tunnel for 
-         *         phase 2.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *       --VpnOptions.Phase2Options.Phase2EncryptionAlgorithms: array 
          * string
-         *         The encryption algorithms allowed for the VPN tunnel for 
-         * phase 2.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *       --VpnOptions.Phase2Options.Phase2IntegrityAlgorithms: array 
          * string
-         *         The integrity algorithms allowed for the VPN tunnel for phase 
-         * 2.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *       --VpnOptions.Phase2Options.Phase2LifetimeSeconds: long long int
-         *         The lifetime for phase 2 of the Internet Key Exchange (IKE) 
-         * negotiation 
-         *         process, in seconds.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *       --VpnOptions.Phase2Options.PreSharedKey: string
          *         The pre-shared key to establish the initial authentication 
          * between the 
@@ -10246,7 +10273,7 @@ struct osc_disable_outscale_login_for_users_arg  {
 };
 
 struct osc_disable_outscale_login_per_users_arg  {
-        /* Required: null
+        /* Required: UserNames
  */
         /*
          * If true, checks whether you have the required permissions to perform 
@@ -10285,7 +10312,7 @@ struct osc_enable_outscale_login_for_users_arg  {
 };
 
 struct osc_enable_outscale_login_per_users_arg  {
-        /* Required: null
+        /* Required: UserNames
  */
         /*
          * If true, checks whether you have the required permissions to perform 
@@ -14854,60 +14881,68 @@ struct osc_update_vpn_connection_arg  {
         /*
          *   Information about the VPN options.
          *   --VpnOptions.Phase1Options: ref Phase1Options
-         *       Information about Phase 1 of the Internet Key Exchange (IKE) 
-         *       negotiation. When Phase 1 finishes successfully, peers proceed 
-         * to Phase 2 
-         *       negotiations.
+         *       This parameter is not available. It is present in our API for 
+         * the sake 
+         *       of historical compatibility with AWS.
          *       --VpnOptions.Phase1Options.DpdTimeoutAction: string
-         *         The action to carry out after a Dead Peer Detection (DPD) 
-         * timeout 
-         *         occurs.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *       --VpnOptions.Phase1Options.DpdTimeoutSeconds: long long int
-         *         The maximum waiting time for a Dead Peer Detection (DPD) 
-         * response before 
-         *         considering the peer as dead, in seconds.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *       --VpnOptions.Phase1Options.IkeVersions: array string
-         *         The Internet Key Exchange (IKE) versions allowed for the VPN 
-         * tunnel.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *       --VpnOptions.Phase1Options.Phase1DhGroupNumbers: array integer
-         *         The Diffie-Hellman (DH) group numbers allowed for the VPN 
-         * tunnel for 
-         *         phase 1.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *       --VpnOptions.Phase1Options.Phase1EncryptionAlgorithms: array 
          * string
-         *         The encryption algorithms allowed for the VPN tunnel for 
-         * phase 1.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *       --VpnOptions.Phase1Options.Phase1IntegrityAlgorithms: array 
          * string
-         *         The integrity algorithms allowed for the VPN tunnel for phase 
-         * 1.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *       --VpnOptions.Phase1Options.Phase1LifetimeSeconds: long long int
-         *         The lifetime for phase 1 of the IKE negotiation process, in 
-         * seconds.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *       --VpnOptions.Phase1Options.ReplayWindowSize: long long int
-         *         The number of packets in an IKE replay window.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *       --VpnOptions.Phase1Options.StartupAction: string
-         *         The action to carry out when establishing tunnels for a VPN 
-         * connection.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *   --VpnOptions.Phase2Options: ref Phase2Options
          *       Information about Phase 2 of the Internet Key Exchange (IKE) 
          *       negotiation.
          *       --VpnOptions.Phase2Options.Phase2DhGroupNumbers: array integer
-         *         The Diffie-Hellman (DH) group numbers allowed for the VPN 
-         * tunnel for 
-         *         phase 2.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *       --VpnOptions.Phase2Options.Phase2EncryptionAlgorithms: array 
          * string
-         *         The encryption algorithms allowed for the VPN tunnel for 
-         * phase 2.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *       --VpnOptions.Phase2Options.Phase2IntegrityAlgorithms: array 
          * string
-         *         The integrity algorithms allowed for the VPN tunnel for phase 
-         * 2.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *       --VpnOptions.Phase2Options.Phase2LifetimeSeconds: long long int
-         *         The lifetime for phase 2 of the Internet Key Exchange (IKE) 
-         * negotiation 
-         *         process, in seconds.
+         *         This parameter is not available. It is present in our API for 
+         * the sake 
+         *         of historical compatibility with AWS.
          *       --VpnOptions.Phase2Options.PreSharedKey: string
          *         The pre-shared key to establish the initial authentication 
          * between the 
