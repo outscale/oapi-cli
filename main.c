@@ -47,7 +47,7 @@
 
 #define OAPI_RAW_OUTPUT 1
 
-#define OAPI_CLI_VERSION "0.11.0"
+#define OAPI_CLI_VERSION "0.12.0"
 
 #define OAPI_CLI_UAGENT "oapi-cli/"OAPI_CLI_VERSION"; osc-sdk-c/"
 
@@ -271,6 +271,9 @@ int block_device_mapping_vm_update_parser(void *s, char *str, char *aa, struct p
 int bsu_created_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int bsu_to_create_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int bsu_to_update_vm_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int co2_category_distribution_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int co2_emission_entry_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int co2_factor_distribution_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int ca_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int catalog_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int catalog_entry_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -316,6 +319,7 @@ int filters_snapshot_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_subnet_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_subregion_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_tag_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int filters_update_volume_task_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_user_group_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_users_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_virtual_gateway_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -419,6 +423,9 @@ int vm_states_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int vm_template_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int vm_type_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int volume_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int volume_update_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int volume_update_parameters_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int volume_update_task_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int vpn_connection_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int vpn_options_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int with_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -1128,6 +1135,126 @@ int bsu_to_update_vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
          } else
 	{
 		fprintf(stderr, "'%s' is not an argumemt of 'BsuToUpdateVm'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
+int co2_category_distribution_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct co2_category_distribution *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "Category")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "Category argument missing\n");
+            s->category = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "Value")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "Value argument missing\n");
+            s->is_set_value = 1;
+            s->value = atof(aa);
+         } else
+	{
+		fprintf(stderr, "'%s' is not an argumemt of 'CO2CategoryDistribution'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
+int co2_emission_entry_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct co2_emission_entry *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "AccountId")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "AccountId argument missing\n");
+            s->account_id = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "CategoryDistribution")) == 0 || aret == '=' || aret == '.') {
+            char *dot_pos = strchr(str, '.');
+
+            if (dot_pos) {
+            	      int pos;
+            	      char *endptr;
+
+            	      ++dot_pos;
+            	      pos = strtoul(dot_pos, &endptr, 0);
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'CategoryDistribution' require an index (example array ref CO2CategoryDistribution.CategoryDistribution.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'CategoryDistribution' require a '.'\n");
+            	      TRY_ALLOC_AT(s,category_distribution, pa, pos, sizeof(*s->category_distribution));
+            	      cascade_struct = &s->category_distribution[pos];
+            	      cascade_parser = co2_category_distribution_parser;
+            	      if (endptr[1] == '.') {
+            		     ++endptr;
+            	      }
+            	      STRY(co2_category_distribution_parser(&s->category_distribution[pos], endptr + 1, aa, pa));
+             } else {
+            	TRY(!aa, "CategoryDistribution argument missing\n");
+            	s->category_distribution_str = aa; // array ref CO2CategoryDistribution ref
+            }
+         } else
+	if ((aret = argcmp(str, "FactorDistribution")) == 0 || aret == '=' || aret == '.') {
+            char *dot_pos = strchr(str, '.');
+
+            if (dot_pos) {
+            	      int pos;
+            	      char *endptr;
+
+            	      ++dot_pos;
+            	      pos = strtoul(dot_pos, &endptr, 0);
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'FactorDistribution' require an index (example array ref CO2FactorDistribution.FactorDistribution.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'FactorDistribution' require a '.'\n");
+            	      TRY_ALLOC_AT(s,factor_distribution, pa, pos, sizeof(*s->factor_distribution));
+            	      cascade_struct = &s->factor_distribution[pos];
+            	      cascade_parser = co2_factor_distribution_parser;
+            	      if (endptr[1] == '.') {
+            		     ++endptr;
+            	      }
+            	      STRY(co2_factor_distribution_parser(&s->factor_distribution[pos], endptr + 1, aa, pa));
+             } else {
+            	TRY(!aa, "FactorDistribution argument missing\n");
+            	s->factor_distribution_str = aa; // array ref CO2FactorDistribution ref
+            }
+         } else
+	if ((aret = argcmp(str, "Month")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "Month argument missing\n");
+            s->month = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "PayingAccountId")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "PayingAccountId argument missing\n");
+            s->paying_account_id = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "Value")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "Value argument missing\n");
+            s->is_set_value = 1;
+            s->value = atof(aa);
+         } else
+	{
+		fprintf(stderr, "'%s' is not an argumemt of 'CO2EmissionEntry'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
+int co2_factor_distribution_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct co2_factor_distribution *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "Factor")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "Factor argument missing\n");
+            s->factor = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "Value")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "Value argument missing\n");
+            s->is_set_value = 1;
+            s->value = atof(aa);
+         } else
+	{
+		fprintf(stderr, "'%s' is not an argumemt of 'CO2FactorDistribution'\n", str);
 		return -1;
 	}
 	return 0;
@@ -3304,6 +3431,31 @@ int filters_flexible_gpu_parser(void *v_s, char *str, char *aa, struct ptr_array
                TRY(!aa, "SubregionNames[] argument missing\n");
                SET_NEXT(s->subregion_names, (aa), pa);
          } else
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=' || aret == '.') {
+            char *dot_pos = strchr(str, '.');
+
+            if (dot_pos) {
+            	      int pos;
+            	      char *endptr;
+
+            	      ++dot_pos;
+            	      pos = strtoul(dot_pos, &endptr, 0);
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref Tag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a '.'\n");
+            	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
+            	      cascade_struct = &s->tags[pos];
+            	      cascade_parser = tag_parser;
+            	      if (endptr[1] == '.') {
+            		     ++endptr;
+            	      }
+            	      STRY(tag_parser(&s->tags[pos], endptr + 1, aa, pa));
+             } else {
+            	TRY(!aa, "Tags argument missing\n");
+            	s->tags_str = aa; // array ref Tag ref
+            }
+         } else
 	if ((aret = argcmp(str, "VmIds")) == 0 || aret == '=' || aret == '.') {
                  if (aret == '.') {
                       int pos;
@@ -3988,6 +4140,16 @@ int filters_image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                TRY(!aa, "Tags[] argument missing\n");
                SET_NEXT(s->tags, (aa), pa);
          } else
+	if ((aret = argcmp(str, "TpmMandatory")) == 0 || aret == '=' || aret == '.') {
+            s->is_set_tpm_mandatory = 1;
+            if (!aa || !strcasecmp(aa, "true")) {
+            		s->tpm_mandatory = 1;
+             } else if (!strcasecmp(aa, "false")) {
+            		s->tpm_mandatory = 0;
+             } else {
+            		BAD_RET("TpmMandatory require true/false\n");
+             }
+        } else
 	if ((aret = argcmp(str, "VirtualizationTypes")) == 0 || aret == '=' || aret == '.') {
                  if (aret == '.') {
                       int pos;
@@ -8801,6 +8963,44 @@ int filters_tag_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	return 0;
 }
 
+int filters_update_volume_task_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct filters_update_volume_task *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "TaskIds")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "TaskIds argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "TaskIds require an index\n");
+                      if (s->task_ids) {
+                              for (; s->task_ids[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->task_ids[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->task_ids, "", pa);
+                              SET_NEXT(s->task_ids, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "TaskIds argument missing\n");
+                     s->task_ids_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "TaskIds[]")) || aret == '=') {
+               TRY(!aa, "TaskIds[] argument missing\n");
+               SET_NEXT(s->task_ids, (aa), pa);
+         } else
+	{
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersUpdateVolumeTask'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
 int filters_user_group_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_user_group *s = v_s;
 	    int aret = 0;
@@ -10681,6 +10881,16 @@ int filters_vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
                TRY(!aa, "Tenancies[] argument missing\n");
                SET_NEXT(s->tenancies, (aa), pa);
          } else
+	if ((aret = argcmp(str, "TpmEnabled")) == 0 || aret == '=' || aret == '.') {
+            s->is_set_tpm_enabled = 1;
+            if (!aa || !strcasecmp(aa, "true")) {
+            		s->tpm_enabled = 1;
+             } else if (!strcasecmp(aa, "false")) {
+            		s->tpm_enabled = 0;
+             } else {
+            		BAD_RET("TpmEnabled require true/false\n");
+             }
+        } else
 	if ((aret = argcmp(str, "VmIds")) == 0 || aret == '=' || aret == '.') {
                  if (aret == '.') {
                       int pos;
@@ -12720,6 +12930,31 @@ int flexible_gpu_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             s->subregion_name = aa; // string string
 
          } else
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=' || aret == '.') {
+            char *dot_pos = strchr(str, '.');
+
+            if (dot_pos) {
+            	      int pos;
+            	      char *endptr;
+
+            	      ++dot_pos;
+            	      pos = strtoul(dot_pos, &endptr, 0);
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref Tag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a '.'\n");
+            	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
+            	      cascade_struct = &s->tags[pos];
+            	      cascade_parser = tag_parser;
+            	      if (endptr[1] == '.') {
+            		     ++endptr;
+            	      }
+            	      STRY(tag_parser(&s->tags[pos], endptr + 1, aa, pa));
+             } else {
+            	TRY(!aa, "Tags argument missing\n");
+            	s->tags_str = aa; // array ref Tag ref
+            }
+         } else
 	if ((aret = argcmp(str, "VmId")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "VmId argument missing\n");
             s->vm_id = aa; // string string
@@ -13048,6 +13283,16 @@ int image_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->tags_str = aa; // array ref ResourceTag ref
             }
          } else
+	if ((aret = argcmp(str, "TpmMandatory")) == 0 || aret == '=' || aret == '.') {
+            s->is_set_tpm_mandatory = 1;
+            if (!aa || !strcasecmp(aa, "true")) {
+            		s->tpm_mandatory = 1;
+             } else if (!strcasecmp(aa, "false")) {
+            		s->tpm_mandatory = 0;
+             } else {
+            		BAD_RET("TpmMandatory require true/false\n");
+             }
+        } else
 	{
 		fprintf(stderr, "'%s' is not an argumemt of 'Image'\n", str);
 		return -1;
@@ -17771,6 +18016,16 @@ int vm_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->tags_str = aa; // array ref ResourceTag ref
             }
          } else
+	if ((aret = argcmp(str, "TpmEnabled")) == 0 || aret == '=' || aret == '.') {
+            s->is_set_tpm_enabled = 1;
+            if (!aa || !strcasecmp(aa, "true")) {
+            		s->tpm_enabled = 1;
+             } else if (!strcasecmp(aa, "false")) {
+            		s->tpm_enabled = 0;
+             } else {
+            		BAD_RET("TpmEnabled require true/false\n");
+             }
+        } else
 	if ((aret = argcmp(str, "UserData")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "UserData argument missing\n");
             s->user_data = aa; // string string
@@ -18247,6 +18502,11 @@ int volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             	s->tags_str = aa; // array ref ResourceTag ref
             }
          } else
+	if ((aret = argcmp(str, "TaskId")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "TaskId argument missing\n");
+            s->task_id = aa; // string string
+
+         } else
 	if ((aret = argcmp(str, "VolumeId")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "VolumeId argument missing\n");
             s->volume_id = aa; // string string
@@ -18259,6 +18519,162 @@ int volume_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' is not an argumemt of 'Volume'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
+int volume_update_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct volume_update *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "Origin")) == 0 || aret == '=' || aret == '.') {
+            char *dot_pos;
+
+            TRY(!aa, "Origin argument missing\n");
+            dot_pos = strchr(str, '.');
+            if (dot_pos++) {
+            	    cascade_struct = &s->origin;
+            	    cascade_parser = volume_update_parameters_parser;
+            	    if (*dot_pos == '.') {
+            		++dot_pos;
+            	    }
+            	    STRY(volume_update_parameters_parser(&s->origin, dot_pos, aa, pa));
+            	    s->is_set_origin = 1;
+             } else {
+                   s->origin_str = aa;
+             }
+         } else
+	if ((aret = argcmp(str, "Target")) == 0 || aret == '=' || aret == '.') {
+            char *dot_pos;
+
+            TRY(!aa, "Target argument missing\n");
+            dot_pos = strchr(str, '.');
+            if (dot_pos++) {
+            	    cascade_struct = &s->target;
+            	    cascade_parser = volume_update_parameters_parser;
+            	    if (*dot_pos == '.') {
+            		++dot_pos;
+            	    }
+            	    STRY(volume_update_parameters_parser(&s->target, dot_pos, aa, pa));
+            	    s->is_set_target = 1;
+             } else {
+                   s->target_str = aa;
+             }
+         } else
+	{
+		fprintf(stderr, "'%s' is not an argumemt of 'VolumeUpdate'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
+int volume_update_parameters_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct volume_update_parameters *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "Iops")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "Iops argument missing\n");
+            s->is_set_iops = 1;
+            s->iops = atoll(aa);
+         } else
+	if ((aret = argcmp(str, "Size")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "Size argument missing\n");
+            s->is_set_size = 1;
+            s->size = atoll(aa);
+         } else
+	if ((aret = argcmp(str, "VolumeType")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "VolumeType argument missing\n");
+            s->volume_type = aa; // string string
+
+         } else
+	{
+		fprintf(stderr, "'%s' is not an argumemt of 'VolumeUpdateParameters'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
+int volume_update_task_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct volume_update_task *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "Comment")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "Comment argument missing\n");
+            s->comment = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "CompletionDate")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "CompletionDate argument missing\n");
+            s->completion_date = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "Progress")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "Progress argument missing\n");
+            s->is_set_progress = 1;
+            s->progress = atoll(aa);
+         } else
+	if ((aret = argcmp(str, "StartDate")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "StartDate argument missing\n");
+            s->start_date = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "State argument missing\n");
+            s->state = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "Tags")) == 0 || aret == '=' || aret == '.') {
+            char *dot_pos = strchr(str, '.');
+
+            if (dot_pos) {
+            	      int pos;
+            	      char *endptr;
+
+            	      ++dot_pos;
+            	      pos = strtoul(dot_pos, &endptr, 0);
+            	      if (endptr == dot_pos)
+            		      BAD_RET("'Tags' require an index (example array ref ResourceTag.Tags.0)\n");
+            	      else if (*endptr != '.')
+            		      BAD_RET("'Tags' require a '.'\n");
+            	      TRY_ALLOC_AT(s,tags, pa, pos, sizeof(*s->tags));
+            	      cascade_struct = &s->tags[pos];
+            	      cascade_parser = resource_tag_parser;
+            	      if (endptr[1] == '.') {
+            		     ++endptr;
+            	      }
+            	      STRY(resource_tag_parser(&s->tags[pos], endptr + 1, aa, pa));
+             } else {
+            	TRY(!aa, "Tags argument missing\n");
+            	s->tags_str = aa; // array ref ResourceTag ref
+            }
+         } else
+	if ((aret = argcmp(str, "TaskId")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "TaskId argument missing\n");
+            s->task_id = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "VolumeId")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "VolumeId argument missing\n");
+            s->volume_id = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "VolumeUpdate")) == 0 || aret == '=' || aret == '.') {
+            char *dot_pos;
+
+            TRY(!aa, "VolumeUpdate argument missing\n");
+            dot_pos = strchr(str, '.');
+            if (dot_pos++) {
+            	    cascade_struct = &s->volume_update;
+            	    cascade_parser = volume_update_parser;
+            	    if (*dot_pos == '.') {
+            		++dot_pos;
+            	    }
+            	    STRY(volume_update_parser(&s->volume_update, dot_pos, aa, pa));
+            	    s->is_set_volume_update = 1;
+             } else {
+                   s->volume_update_str = aa;
+             }
+         } else
+	{
+		fprintf(stderr, "'%s' is not an argumemt of 'VolumeUpdateTask'\n", str);
 		return -1;
 	}
 	return 0;
@@ -21244,6 +21660,22 @@ int main(int ac, char **av)
 				          s->source_region_name = aa; // string string
 
 				       } else
+			      if ((aret = argcmp(next_a, "TpmMandatory")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "TpmMandatory argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_tpm_mandatory = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->tpm_mandatory = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->tpm_mandatory = 0;
+				           } else {
+				          		BAD_RET("TpmMandatory require true/false\n");
+				           }
+				      } else
 			      if ((aret = argcmp(next_a, "VmId")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
 			      	 if (eq_ptr) {
@@ -26286,6 +26718,22 @@ int main(int ac, char **av)
 				          s->subnet_id = aa; // string string
 
 				       } else
+			      if ((aret = argcmp(next_a, "TpmEnabled")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "TpmEnabled argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_tpm_enabled = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->tpm_enabled = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->tpm_enabled = 0;
+				           } else {
+				          		BAD_RET("TpmEnabled require true/false\n");
+				           }
+				      } else
 			      if ((aret = argcmp(next_a, "UserData")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
 			      	 if (eq_ptr) {
@@ -35620,6 +36068,127 @@ int main(int ac, char **av)
 		      }
 		     osc_deinit_str(&r);
 	      } else
+              if (!strcmp("ReadCO2EmissionAccount", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_read_co2_emission_account_arg a = {0};
+		     struct osc_read_co2_emission_account_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     read_co2_emission_account_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS({CHK_BAD_RET(aa[0] == '-', "cascade need an argument"); })
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto read_co2_emission_account_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				 	META_ARGS({ aa = 0; incr = 1; });
+			     }
+			      if ((aret = argcmp(next_a, "FromMonth")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "FromMonth argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "FromMonth argument missing\n");
+				          s->from_month = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "Overall")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Overall argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_overall = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->overall = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->overall = 0;
+				           } else {
+				          		BAD_RET("Overall require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "ToMonth")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ToMonth argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ToMonth argument missing\n");
+				          s->to_month = aa; // string string
+
+				       } else
+			    {
+				BAD_RET("'%s' is not a valid argument for 'ReadCO2EmissionAccount'\n", next_a);
+			    }
+		            i += incr;
+			    goto read_co2_emission_account_arg;
+		     }
+		     cret = osc_read_co2_emission_account(&e, &r, &a);
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadCO2EmissionAccount: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     } else fprintf(stderr, "called ReadCO2EmissionAccount (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
               if (!strcmp("ReadCas", av[i])) {
 		     auto_osc_json_c json_object *jobj = NULL;
 		     auto_ptr_array struct ptr_array opa = {0};
@@ -44017,6 +44586,150 @@ int main(int ac, char **av)
 					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
 					color_flag));
 		     } else fprintf(stderr, "called ReadVmsState (%s) and received an empty body. ", cret ? "failed" : "succeeded");
+
+                     if (cret)
+		     	return cret;
+
+		     while (i + 1 < ac && !strcmp(av[i + 1], "--set-var")) {
+		     	     ++i;
+			     TRY(i + 1 >= ac, "--set-var require an argument");
+		     	     if (!jobj)
+			     	jobj = json_tokener_parse(r.buf);
+			     if (parse_variable(jobj, av, ac, i))
+			     	return -1;
+		     	     ++i;
+		      }
+
+		      if (jobj) {
+			     json_object_put(jobj);
+			     jobj = NULL;
+		      }
+		     osc_deinit_str(&r);
+	      } else
+              if (!strcmp("ReadVolumeUpdateTasks", av[i])) {
+		     auto_osc_json_c json_object *jobj = NULL;
+		     auto_ptr_array struct ptr_array opa = {0};
+		     struct ptr_array *pa = &opa;
+	      	     struct osc_read_volume_update_tasks_arg a = {0};
+		     struct osc_read_volume_update_tasks_arg *s = &a;
+		     __attribute__((cleanup(files_cnt_cleanup))) char *files_cnt[MAX_FILES_PER_CMD] = {NULL};
+	             int cret;
+
+		     cascade_struct = NULL;
+		     cascade_parser = NULL;
+
+		     read_volume_update_tasks_arg:
+
+		     if (i + 1 < ac && av[i + 1][0] == '.' && av[i + 1][1] == '.') {
+ 		           char *next_a = &av[i + 1][2];
+		           char *aa = i + 2 < ac ? av[i + 2] : 0;
+			   int incr = 2;
+			   char *eq_ptr = strchr(next_a, '=');
+	      	           CHK_BAD_RET(!cascade_struct, "cascade need to be set first\n");
+			   if (eq_ptr) {
+			      	  CHK_BAD_RET(!*eq_ptr, "cascade need an argument\n");
+			      	  incr = 1;
+				  aa = eq_ptr + 1;
+			   } else {
+			     	  CHK_BAD_RET(!aa, "cascade need an argument\n");
+					  META_ARGS({CHK_BAD_RET(aa[0] == '-', "cascade need an argument"); })
+			   }
+		      	   STRY(cascade_parser(cascade_struct, next_a, aa, pa));
+			   i += incr;
+		       	   goto read_volume_update_tasks_arg;
+		      }
+
+		     if (i + 1 < ac && av[i + 1][0] == '-' && av[i + 1][1] == '-' && strcmp(av[i + 1] + 2, "set-var")) {
+ 		             char *next_a = &av[i + 1][2];
+			     char *str = next_a;
+ 		     	     char *aa = i + 2 < ac ? av[i + 2] : 0;
+			     int aret = 0;
+			     int incr = aa ? 2 : 1;
+
+			     (void)str;
+			     if (aa && aa[0] == '-' && aa[1] == '-' && aa[2] != '-') {
+				 	META_ARGS({ aa = 0; incr = 1; });
+			     }
+			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "DryRun argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_dry_run = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->dry_run = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->dry_run = 0;
+				           } else {
+				          		BAD_RET("DryRun require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "Filters")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Filters argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          char *dot_pos;
+
+				          TRY(!aa, "Filters argument missing\n");
+				          dot_pos = strchr(str, '.');
+				          if (dot_pos++) {
+				          	    cascade_struct = &s->filters;
+				          	    cascade_parser = filters_update_volume_task_parser;
+				          	    if (*dot_pos == '.') {
+				          		++dot_pos;
+				          	    }
+				          	    STRY(filters_update_volume_task_parser(&s->filters, dot_pos, aa, pa));
+				          	    s->is_set_filters = 1;
+				           } else {
+				                 s->filters_str = aa;
+				           }
+				       } else
+			      if ((aret = argcmp(next_a, "NextPageToken")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "NextPageToken argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "NextPageToken argument missing\n");
+				          s->next_page_token = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "ResultsPerPage")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ResultsPerPage argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "ResultsPerPage argument missing\n");
+				          s->is_set_results_per_page = 1;
+				          s->results_per_page = atoll(aa);
+				       } else
+			    {
+				BAD_RET("'%s' is not a valid argument for 'ReadVolumeUpdateTasks'\n", next_a);
+			    }
+		            i += incr;
+			    goto read_volume_update_tasks_arg;
+		     }
+		     cret = osc_read_volume_update_tasks(&e, &r, &a);
+		     jobj = NULL;
+		     if (program_flag & OAPI_RAW_OUTPUT) {
+		     	if (r.buf)
+				puts(r.buf);
+			else if (cret)
+				fprintf(stderr, "fail to call ReadVolumeUpdateTasks: %s", curl_easy_strerror(cret));
+		     } else if (r.buf) {
+			     jobj = json_tokener_parse(r.buf);
+			     puts(json_object_to_json_string_ext(jobj,
+					JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_NOSLASHESCAPE |
+					color_flag));
+		     } else fprintf(stderr, "called ReadVolumeUpdateTasks (%s) and received an empty body. ", cret ? "failed" : "succeeded");
 
                      if (cret)
 		     	return cret;

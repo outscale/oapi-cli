@@ -201,6 +201,7 @@ static const char *calls_name[] = {
 	"ReadApiAccessPolicy",
 	"ReadApiAccessRules",
 	"ReadApiLogs",
+	"ReadCO2EmissionAccount",
 	"ReadCas",
 	"ReadCatalog",
 	"ReadCatalogs",
@@ -264,6 +265,7 @@ static const char *calls_name[] = {
 	"ReadVmsHealth",
 	"ReadVms",
 	"ReadVmsState",
+	"ReadVolumeUpdateTasks",
 	"ReadVolumes",
 	"ReadVpnConnections",
 	"RebootVms",
@@ -559,6 +561,8 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli ReadApiLogs [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
+	"Usage: oapi-cli ReadCO2EmissionAccount --FromMonth=frommonth --ToMonth=tomonth [OPTIONS]\n" "null\n" "\nRequired Argument: FromMonth ToMonth \n"
+,
 	"Usage: oapi-cli ReadCas [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
 	"Usage: oapi-cli ReadCatalog [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
@@ -579,7 +583,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli ReadDirectLinks [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
-	"Usage: oapi-cli ReadEntitiesLinkedToPolicy [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
+	"Usage: oapi-cli ReadEntitiesLinkedToPolicy --PolicyOrn=policyorn [OPTIONS]\n" "null\n" "\nRequired Argument: PolicyOrn \n"
 ,
 	"Usage: oapi-cli ReadFlexibleGpuCatalog [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
@@ -684,6 +688,8 @@ static const char *calls_descriptions[] = {
 	"Usage: oapi-cli ReadVms [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
 	"Usage: oapi-cli ReadVmsState [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
+,
+	"Usage: oapi-cli ReadVolumeUpdateTasks [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
 	"Usage: oapi-cli ReadVolumes [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
@@ -921,6 +927,7 @@ static const char *calls_args_descriptions[] = {
 	"--DirectLinkId: string\n"
 	"  The ID of the existing DirectLink for which you want to create the DirectLink interface.\n"
 "--DirectLinkInterface: ref DirectLinkInterface\n"
+	"  Information about the DirectLink interface.\n"
 	"    Information about the DirectLink interface.\n"
 	"    --DirectLinkInterface.BgpAsn: long long int\n"
 	"      The BGP (Border Gateway Protocol) ASN (Autonomous System Number) on the \n"
@@ -974,10 +981,12 @@ static const char *calls_args_descriptions[] = {
 "--ImageId: string\n"
 	"  The ID of the OMI to export.\n"
 "--OsuExport: ref OsuExportToCreate\n"
+	"  Information about the OOS export task to create.\n"
 	"    Information about the OOS export task to create.\n"
 	"    --OsuExport.DiskImageFormat: string\n"
 	"      The format of the export disk (`qcow2` \\| `raw`).\n"
 	"    --OsuExport.OsuApiKey: ref OsuApiKey\n"
+	"      Information about the OOS API key.\n"
 	"        Information about the OOS API key.\n"
 	"        --OsuExport.OsuApiKey.ApiKeyId: string\n"
 	"          The API key of the OOS account that enables you to access the bucket.\n"
@@ -997,6 +1006,7 @@ static const char *calls_args_descriptions[] = {
 	"    One or more parameters used to automatically set up volumes when the VM \n"
 	"    is created.\n"
 	"    --BlockDeviceMappings.INDEX.Bsu: ref BsuToCreate\n"
+	"      Information about the BSU volume to create.\n"
 	"        Information about the BSU volume to create.\n"
 	"        --BlockDeviceMappings.INDEX.Bsu.DeleteOnVmDeletion: bool\n"
 	"          If set to true, the volume is deleted when terminating the VM. If false, \n"
@@ -1052,6 +1062,9 @@ static const char *calls_args_descriptions[] = {
 "--SourceRegionName: string\n"
 	"  **(required) When copying an OMI:** The name of the source Region (always the same as the \n"
 	"  Region of your account).\n"
+"--TpmMandatory: bool\n"
+	"  By default or if set to false, a virtual Trusted Platform Module (vTPM) is not mandatory on \n"
+	"  VMs created from this OMI. If true, VMs created from this OMI must have a vTPM enabled.\n"
 "--VmId: string\n"
 	"  **(required) When creating from a VM:** The ID of the VM from which you want to create the \n"
 	"  OMI.\n"
@@ -1071,6 +1084,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Listener: ref LoadBalancerLight\n"
+	"  Information about the load balancer.\n"
 	"    Information about the load balancer.\n"
 	"    --Listener.LoadBalancerName: string\n"
 	"      The name of the load balancer to which the listener is attached.\n"
@@ -1078,6 +1092,7 @@ static const char *calls_args_descriptions[] = {
 	"      The port of load balancer on which the load balancer is listening \n"
 	"      (between `1` and `65535` both included).\n"
 "--ListenerRule: ref ListenerRuleForCreation\n"
+	"  Information about the listener rule.\n"
 	"    Information about the listener rule.\n"
 	"    --ListenerRule.Action: string\n"
 	"      The type of action for the rule (always `forward`).\n"
@@ -1420,10 +1435,12 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--OsuExport: ref OsuExportToCreate\n"
+	"  Information about the OOS export task to create.\n"
 	"    Information about the OOS export task to create.\n"
 	"    --OsuExport.DiskImageFormat: string\n"
 	"      The format of the export disk (`qcow2` \\| `raw`).\n"
 	"    --OsuExport.OsuApiKey: ref OsuApiKey\n"
+	"      Information about the OOS API key.\n"
 	"        Information about the OOS API key.\n"
 	"        --OsuExport.OsuApiKey.ApiKeyId: string\n"
 	"          The API key of the OOS account that enables you to access the bucket.\n"
@@ -1565,16 +1582,22 @@ static const char *calls_args_descriptions[] = {
 	"  The name of the VM template.\n"
 ,
 	"--ActionsOnNextBoot: ref ActionsOnNextBoot\n"
+	"  The action to perform on the next boot of the VM.\n"
 	"    The action to perform on the next boot of the VM.\n"
 	"    --ActionsOnNextBoot.SecureBoot: string\n"
-	"        One action to perform on the next boot of the VM. For more information, \n"
-	"        see [About Secure \n"
+	"      One action to perform on the next boot of the VM. For more information, \n"
+	"      see [About Secure \n"
+	"      Boot](https://docs.outscale.com/en/userguide/About-Secure-Boot.html#_secur\n"
+	"      e_boot_actions).\n"
+	"        One action to perform on the next boot of the VM (`enable` | `disable` | \n"
+	"        `setup-mode` | `none`). For more information, see [About Secure \n"
 	"        Boot](https://docs.outscale.com/en/userguide/About-Secure-Boot.html#_secur\n"
 	"        e_boot_actions).\n"
 "--BlockDeviceMappings: array ref BlockDeviceMappingVmCreation\n"
 	"  One or more block device mappings.\n"
 	"    Information about the block device mapping.\n"
 	"    --BlockDeviceMappings.INDEX.Bsu: ref BsuToCreate\n"
+	"      Information about the BSU volume to create.\n"
 	"        Information about the BSU volume to create.\n"
 	"        --BlockDeviceMappings.INDEX.Bsu.DeleteOnVmDeletion: bool\n"
 	"          If set to true, the volume is deleted when terminating the VM. If false, \n"
@@ -1608,6 +1631,7 @@ static const char *calls_args_descriptions[] = {
 	"    --BlockDeviceMappings.INDEX.VirtualDeviceName: string\n"
 	"      The name of the virtual device (`ephemeralN`).\n"
 "--BootMode: string\n"
+	"  The boot mode of the VM.\n"
 	"    Information about the boot mode of the VM.\n"
 "--BootOnCreation: bool\n"
 	"  If true, the VM is started on creation. If false, the VM is stopped on creation.\n"
@@ -1676,6 +1700,7 @@ static const char *calls_args_descriptions[] = {
 	"  The performance of the VM. This parameter is ignored if you specify a performance flag \n"
 	"  directly in the `VmType` parameter.\n"
 "--Placement: ref Placement\n"
+	"  Information about the placement of the VM.\n"
 	"    Information about the placement of the VM.\n"
 	"    --Placement.SubregionName: string\n"
 	"      The name of the Subregion. If you specify this parameter, you must not \n"
@@ -1691,6 +1716,8 @@ static const char *calls_args_descriptions[] = {
 "--SubnetId: string\n"
 	"  The ID of the Subnet in which you want to create the VM. If you specify this parameter, you \n"
 	"  must not specify the `Nics` parameter.\n"
+"--TpmEnabled: bool\n"
+	"  If true, a virtual Trusted Platform Module (vTPM) is enabled on the VM. If false, it is not.\n"
 "--UserData: string\n"
 	"  Data or script used to add a specific configuration to the VM. It must be Base64-encoded \n"
 	"  and is limited to 500 kibibytes (KiB). For more information about user data, see \n"
@@ -2250,6 +2277,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersAccessKeys\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.AccessKeyIds: array string\n"
 	"      The IDs of the access keys.\n"
@@ -2275,6 +2303,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersApiAccessRule\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.ApiAccessRuleIds: array string\n"
 	"      One or more IDs of API access rules.\n"
@@ -2290,6 +2319,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersApiLog\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.QueryAccessKeys: array string\n"
 	"      The access keys used for the logged calls.\n"
@@ -2322,6 +2352,7 @@ static const char *calls_args_descriptions[] = {
 	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
 	"  included).\n"
 "--With: ref With\n"
+	"  The information to display in each returned log.\n"
 	"    The information to display in each returned log.\n"
 	"    --With.AccountId: bool\n"
 	"      If true, the account ID is displayed.\n"
@@ -2356,9 +2387,23 @@ static const char *calls_args_descriptions[] = {
 	"    --With.ResponseStatusCode: bool\n"
 	"      If true, the HTTP status code of the response is displayed.\n"
 ,
+	"--FromMonth: string\n"
+	"  The beginning of the time period, in ISO 8601 date format (for example, `2020-06-01`). This \n"
+	"  value must correspond to the first day of the month and is included in the time period.\n"
+"--Overall: bool\n"
+	"  If false, returns only the CO2 emission of the specific account that sends the request. If \n"
+	"  true, returns either the overall CO2 emission of your paying account and all linked \n"
+	"  accounts (if the account that sends this request is a paying account) or returns nothing \n"
+	"  (if the account that sends this request is a linked account).\n"
+"--ToMonth: string\n"
+	"  The end of the time period, in ISO 8601 date format (for example, `2020-06-14`). This value \n"
+	"  must correspond to the first day of the month and is excluded from the time period. It must \n"
+	"  be set to a later date than `FromMonth`.\n"
+,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersCa\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.CaFingerprints: array string\n"
 	"      The fingerprints of the CAs.\n"
@@ -2373,6 +2418,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersCatalogs\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.CurrentCatalogOnly: bool\n"
 	"      By default or if set to true, only returns the current catalog. If \n"
@@ -2389,6 +2435,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersClientGateway\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.BgpAsns: array integer\n"
 	"      The Border Gateway Protocol (BGP) Autonomous System Numbers (ASNs) of \n"
@@ -2446,6 +2493,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersDedicatedGroup\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.CpuGenerations: array integer\n"
 	"      The processor generation for the VMs in the dedicated group (for \n"
@@ -2465,6 +2513,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersDhcpOptions\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.Default: bool\n"
 	"      If true, lists all default DHCP options set. If false, lists all \n"
@@ -2497,6 +2546,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersDirectLinkInterface\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.DirectLinkIds: array string\n"
 	"      The IDs of the DirectLinks.\n"
@@ -2511,6 +2561,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersDirectLink\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.DirectLinkIds: array string\n"
 	"      The IDs of the DirectLinks.\n"
@@ -2536,6 +2587,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersFlexibleGpu\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.DeleteOnVmDeletion: bool\n"
 	"      Indicates whether the fGPU is deleted when terminating the VM.\n"
@@ -2551,12 +2603,24 @@ static const char *calls_args_descriptions[] = {
 	"      `detaching`).\n"
 	"    --Filters.SubregionNames: array string\n"
 	"      The Subregions where the fGPUs are located.\n"
+	"    --Filters.Tags: array ref Tag\n"
+	"      One or more tags associated with the fGPUs.\n"
+	"        Information about the tag.\n"
+	"        --Filters.Tags.INDEX.Key: string\n"
+	"          The key of the tag, with a minimum of 1 character.\n"
+	"        --Filters.Tags.INDEX.ResourceId: string\n"
+	"          The ID of the resource.\n"
+	"        --Filters.Tags.INDEX.ResourceType: string\n"
+	"          The type of the resource.\n"
+	"        --Filters.Tags.INDEX.Value: string\n"
+	"          The value of the tag, between 0 and 255 characters.\n"
 	"    --Filters.VmIds: array string\n"
 	"      One or more IDs of VMs.\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersExportTask\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.TaskIds: array string\n"
 	"      The IDs of the export tasks.\n"
@@ -2569,6 +2633,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersImage\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.AccountAliases: array string\n"
 	"      The account aliases of the owners of the OMIs.\n"
@@ -2623,6 +2688,9 @@ static const char *calls_args_descriptions[] = {
 	"      The key/value combination of the tags associated with the OMIs, in the \n"
 	"      following format: \n"
 	"      \"Filters\":{\"Tags\":[\"TAGKEY=TAGVALUE\"]}.\n"
+	"    --Filters.TpmMandatory: bool\n"
+	"      Whether a virtual Trusted Platform Module (vTPM) is mandatory for VMs \n"
+	"      created from this OMI (true) or not (false).\n"
 	"    --Filters.VirtualizationTypes: array string\n"
 	"      The virtualization types (always `hvm`).\n"
 "--NextPageToken: string\n"
@@ -2634,6 +2702,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersInternetService\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.InternetServiceIds: array string\n"
 	"      The IDs of the internet services.\n"
@@ -2660,6 +2729,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersKeypair\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.KeypairFingerprints: array string\n"
 	"      The fingerprints of the keypairs.\n"
@@ -2687,6 +2757,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref ReadLinkedPoliciesFilters\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.PathPrefix: string\n"
 	"      The path prefix of the policies. If not specified, it is set to a slash \n"
@@ -2701,6 +2772,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersListenerRule\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.ListenerRuleNames: array string\n"
 	"      The names of the listener rules.\n"
@@ -2713,6 +2785,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersLoadBalancer\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.LoadBalancerNames: array string\n"
 	"      The names of the load balancers.\n"
@@ -2728,6 +2801,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersUserGroup\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.PathPrefix: string\n"
 	"      The path prefix of the groups. If not specified, it is set to a slash \n"
@@ -2744,6 +2818,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersNatService\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.ClientTokens: array string\n"
 	"      The idempotency tokens provided when creating the NAT services.\n"
@@ -2773,6 +2848,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersService\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.ServiceIds: array string\n"
 	"      The IDs of the services.\n"
@@ -2787,6 +2863,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersNetAccessPoint\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.NetAccessPointIds: array string\n"
 	"      The IDs of the Net access points.\n"
@@ -2815,6 +2892,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersNetPeering\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.AccepterNetAccountIds: array string\n"
 	"      The account IDs of the owners of the peer Nets.\n"
@@ -2856,6 +2934,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersNet\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.DhcpOptionsSetIds: array string\n"
 	"      The IDs of the DHCP options sets.\n"
@@ -2885,6 +2964,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersNic\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.Descriptions: array string\n"
 	"      The descriptions of the NICs.\n"
@@ -2961,6 +3041,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref ReadPoliciesFilters\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.OnlyLinked: bool\n"
 	"      If set to true, lists only the policies attached to a user.\n"
@@ -2997,6 +3078,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersProductType\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.ProductTypeIds: array string\n"
 	"      The IDs of the product types.\n"
@@ -3020,6 +3102,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersPublicIp\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.LinkPublicIpIds: array string\n"
 	"      The IDs representing the associations of public IPs with VMs or NICs.\n"
@@ -3054,6 +3137,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersQuota\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.Collections: array string\n"
 	"      The group names of the quotas.\n"
@@ -3076,6 +3160,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersRouteTable\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.LinkRouteTableIds: array string\n"
 	"      The IDs of the route tables involved in the associations.\n"
@@ -3122,6 +3207,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersSecurityGroup\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.Descriptions: array string\n"
 	"      The descriptions of the security groups.\n"
@@ -3184,6 +3270,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersServerCertificate\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.Paths: array string\n"
 	"      The paths to the server certificates.\n"
@@ -3191,6 +3278,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersExportTask\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.TaskIds: array string\n"
 	"      The IDs of the export tasks.\n"
@@ -3203,6 +3291,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersSnapshot\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.AccountAliases: array string\n"
 	"      The account aliases of the owners of the snapshots.\n"
@@ -3251,6 +3340,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersSubnet\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.AvailableIpsCounts: array integer\n"
 	"      The number of available IPs.\n"
@@ -3282,6 +3372,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersSubregion\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.RegionNames: array string\n"
 	"      The names of the Regions containing the Subregions.\n"
@@ -3298,6 +3389,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersTag\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.Keys: array string\n"
 	"      The keys of the tags that are assigned to the resources. You can use \n"
@@ -3306,11 +3398,12 @@ static const char *calls_args_descriptions[] = {
 	"    --Filters.ResourceIds: array string\n"
 	"      The IDs of the resources with which the tags are associated.\n"
 	"    --Filters.ResourceTypes: array string\n"
-	"      The resource type (`customer-gateway` \\| `dhcpoptions` \\| `image` \\| \n"
-	"      `instance` \\| `keypair` \\| `natgateway` \\| `network-interface` \\| \n"
-	"      `public-ip` \\| `route-table` \\| `security-group` \\| `snapshot` \\| \n"
-	"      `subnet` \\| `task` \\| `virtual-private-gateway` \\| `volume` \\| `vpc` \n"
-	"      \\| `vpc-endpoint` \\| `vpc-peering-connection`\\| `vpn-connection`).\n"
+	"      The resource type (`customer-gateway` \\| `dhcpoptions` \\| \n"
+	"      `flexible-gpu` \\| `image` \\| `instance` \\| `keypair` \\| `natgateway` \n"
+	"      \\| `network-interface` \\| `public-ip` \\| `route-table` \\| \n"
+	"      `security-group` \\| `snapshot` \\| `subnet` \\| `task` \\| \n"
+	"      `virtual-private-gateway` \\| `volume` \\| `vpc` \\| `vpc-endpoint` \\| \n"
+	"      `vpc-peering-connection`\\| `vpn-connection`).\n"
 	"    --Filters.Values: array string\n"
 	"      The values of the tags that are assigned to the resources. You can use \n"
 	"      this filter alongside the `TagKeys` filter. In that case, you filter the \n"
@@ -3367,6 +3460,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersUserGroup\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.PathPrefix: string\n"
 	"      The path prefix of the groups. If not specified, it is set to a slash \n"
@@ -3393,6 +3487,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersUsers\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.UserIds: array string\n"
 	"      The IDs of the users.\n"
@@ -3404,6 +3499,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersVirtualGateway\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.ConnectionTypes: array string\n"
 	"      The types of the virtual gateways (always `ipsec.1`).\n"
@@ -3434,6 +3530,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersVmGroup\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.Descriptions: array string\n"
 	"      The descriptions of the VM groups.\n"
@@ -3461,6 +3558,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersVmTemplate\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.CpuCores: array integer\n"
 	"      The number of vCores.\n"
@@ -3492,6 +3590,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersVmType\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.BsuOptimized: bool\n"
 	"      This parameter is not available. It is present in our API for the sake \n"
@@ -3529,6 +3628,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersVm\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.Architectures: array string\n"
 	"      The architectures of the VMs (`i386` \\| `x86_64`).\n"
@@ -3665,6 +3765,9 @@ static const char *calls_args_descriptions[] = {
 	"      \"Filters\":{\"Tags\":[\"TAGKEY=TAGVALUE\"]}.\n"
 	"    --Filters.Tenancies: array string\n"
 	"      The tenancies of the VMs (`dedicated` \\| `default` \\| `host`).\n"
+	"    --Filters.TpmEnabled: bool\n"
+	"      Whether a virtual Trusted Platform Module (vTPM) is enabled (true) or \n"
+	"      disabled (false) on the VM.\n"
 	"    --Filters.VmIds: array string\n"
 	"      One or more IDs of VMs.\n"
 	"    --Filters.VmSecurityGroupIds: array string\n"
@@ -3692,6 +3795,7 @@ static const char *calls_args_descriptions[] = {
 "--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersVmsState\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.MaintenanceEventCodes: array string\n"
 	"      The code for the scheduled event (`system-reboot` \\| \n"
@@ -3717,7 +3821,21 @@ static const char *calls_args_descriptions[] = {
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
+"--Filters: ref FiltersUpdateVolumeTask\n"
+	"  One or more filters.\n"
+	"    One or more filters.\n"
+	"    --Filters.TaskIds: array string\n"
+	"      The IDs of the volume update tasks.\n"
+"--NextPageToken: string\n"
+	"  The token to request the next page of results. Each token refers to a specific page.\n"
+"--ResultsPerPage: long long int\n"
+	"  The maximum number of logs returned in a single response (between `1` and `1000`, both \n"
+	"  included). By default, `100`.\n"
+,
+	"--DryRun: bool\n"
+	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersVolume\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.ClientTokens: array string\n"
 	"      The idempotency tokens provided when creating the volumes.\n"
@@ -3766,6 +3884,7 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Filters: ref FiltersVpnConnection\n"
+	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.BgpAsns: array integer\n"
 	"      The Border Gateway Protocol (BGP) Autonomous System Numbers (ASNs) of \n"
@@ -4055,9 +4174,12 @@ static const char *calls_args_descriptions[] = {
 "--ImageId: string\n"
 	"  The ID of the OMI you want to modify.\n"
 "--PermissionsToLaunch: ref PermissionsOnResourceCreation\n"
+	"  Information about the permissions for the resource.\nSpecify either the `Additions` or the \n"
+	"  `Removals` parameter.\n"
 	"    Information about the permissions for the resource.\nSpecify \n"
 	"    either the `Additions` or the `Removals` parameter.\n"
 	"    --PermissionsToLaunch.Additions: ref PermissionsOnResource\n"
+	"      Permissions for the resource.\n"
 	"        Permissions for the resource.\n"
 	"        --PermissionsToLaunch.Additions.AccountIds: array string\n"
 	"          One or more account IDs that the permission is associated with.\n"
@@ -4068,6 +4190,7 @@ static const char *calls_args_descriptions[] = {
 	"          `Removals`).\n(Response) If true, the resource is public. If false, \n"
 	"          the resource is private.\n"
 	"    --PermissionsToLaunch.Removals: ref PermissionsOnResource\n"
+	"      Permissions for the resource.\n"
 	"        Permissions for the resource.\n"
 	"        --PermissionsToLaunch.Removals.AccountIds: array string\n"
 	"          One or more account IDs that the permission is associated with.\n"
@@ -4095,6 +4218,7 @@ static const char *calls_args_descriptions[] = {
 	"  `_-.$/~\"'@:+?`.\n"
 ,
 	"--AccessLog: ref AccessLog\n"
+	"  Information about access logs.\n"
 	"    Information about access logs.\n"
 	"    --AccessLog.IsEnabled: bool\n"
 	"      If true, access logs are enabled for your load balancer. If false, they \n"
@@ -4111,6 +4235,7 @@ static const char *calls_args_descriptions[] = {
 "--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--HealthCheck: ref HealthCheck\n"
+	"  Information about the health check configuration.\n"
 	"    Information about the health check configuration.\n"
 	"    --HealthCheck.CheckInterval: long long int\n"
 	"      The number of seconds between two requests (between `5` and `600` both \n"
@@ -4179,6 +4304,8 @@ static const char *calls_args_descriptions[] = {
 "--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--LinkNic: ref LinkNicToUpdate\n"
+	"  Information about the NIC attachment. If you are modifying the `DeleteOnVmDeletion` \n"
+	"  attribute, you must specify the ID of the NIC attachment.\n"
 	"    Information about the NIC attachment. If you are modifying the \n"
 	"    `DeleteOnVmDeletion` attribute, you must specify the ID of the NIC \n"
 	"    attachment.\n"
@@ -4239,9 +4366,12 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--PermissionsToCreateVolume: ref PermissionsOnResourceCreation\n"
+	"  Information about the permissions for the resource.\nSpecify either the `Additions` or the \n"
+	"  `Removals` parameter.\n"
 	"    Information about the permissions for the resource.\nSpecify \n"
 	"    either the `Additions` or the `Removals` parameter.\n"
 	"    --PermissionsToCreateVolume.Additions: ref PermissionsOnResource\n"
+	"      Permissions for the resource.\n"
 	"        Permissions for the resource.\n"
 	"        --PermissionsToCreateVolume.Additions.AccountIds: array string\n"
 	"          One or more account IDs that the permission is associated with.\n"
@@ -4252,6 +4382,7 @@ static const char *calls_args_descriptions[] = {
 	"          `Removals`).\n(Response) If true, the resource is public. If false, \n"
 	"          the resource is private.\n"
 	"    --PermissionsToCreateVolume.Removals: ref PermissionsOnResource\n"
+	"      Permissions for the resource.\n"
 	"        Permissions for the resource.\n"
 	"        --PermissionsToCreateVolume.Removals.AccountIds: array string\n"
 	"          One or more account IDs that the permission is associated with.\n"
@@ -4313,16 +4444,22 @@ static const char *calls_args_descriptions[] = {
 	"  A new VM template ID for your VM group.\n"
 ,
 	"--ActionsOnNextBoot: ref ActionsOnNextBoot\n"
+	"  The action to perform on the next boot of the VM.\n"
 	"    The action to perform on the next boot of the VM.\n"
 	"    --ActionsOnNextBoot.SecureBoot: string\n"
-	"        One action to perform on the next boot of the VM. For more information, \n"
-	"        see [About Secure \n"
+	"      One action to perform on the next boot of the VM. For more information, \n"
+	"      see [About Secure \n"
+	"      Boot](https://docs.outscale.com/en/userguide/About-Secure-Boot.html#_secur\n"
+	"      e_boot_actions).\n"
+	"        One action to perform on the next boot of the VM (`enable` | `disable` | \n"
+	"        `setup-mode` | `none`). For more information, see [About Secure \n"
 	"        Boot](https://docs.outscale.com/en/userguide/About-Secure-Boot.html#_secur\n"
 	"        e_boot_actions).\n"
 "--BlockDeviceMappings: array ref BlockDeviceMappingVmUpdate\n"
 	"  One or more block device mappings of the VM.\n"
 	"    Information about the block device mapping.\n"
 	"    --BlockDeviceMappings.INDEX.Bsu: ref BsuToUpdateVm\n"
+	"      Information about the BSU volume.\n"
 	"        Information about the BSU volume.\n"
 	"        --BlockDeviceMappings.INDEX.Bsu.DeleteOnVmDeletion: bool\n"
 	"          If set to true, the volume is deleted when terminating the VM. If set to \n"
@@ -4392,22 +4529,16 @@ static const char *calls_args_descriptions[] = {
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--Iops: long long int\n"
-	"  **Cold volume**: the new number of I/O operations per second (IOPS). This parameter can be \n"
-	"  specified only if you update an `io1` volume or if you change the type of the volume for an \n"
-	"  `io1`. This modification is instantaneous. \n**Hot volume**: the new number of I/O \n"
-	"  operations per second (IOPS). This parameter can be specified only if you update an `io1` \n"
-	"  volume. This modification is not instantaneous. \nThe maximum number of IOPS allowed for \n"
-	"  `io1` volumes is `13000` with a maximum performance ratio of 300 IOPS per gibibyte.\n"
+	"  The new number of I/O operations per second (IOPS). This parameter can be specified only if \n"
+	"  you update an `io1` volume or if you change the type of the volume for an `io1`.\n"
 "--Size: long long int\n"
-	"  **Cold volume**: the new size of the volume, in gibibytes (GiB). This value must be equal \n"
-	"  to or greater than the current size of the volume. This modification is not instantaneous. \n"
-	"  \n**Hot volume**: you cannot change the size of a hot volume.\n"
+	"  The new size of the volume, in gibibytes (GiB). This value must be equal to or greater than \n"
+	"  the current size of the volume. This modification is not instantaneous.\n"
 "--VolumeId: string\n"
 	"  The ID of the volume you want to update.\n"
 "--VolumeType: string\n"
-	"  **Cold volume**: the new type of the volume (`standard` \\| `io1` \\| `gp2`). This \n"
-	"  modification is instantaneous. If you update to an `io1` volume, you must also specify the \n"
-	"  `Iops` parameter.\n**Hot volume**: you cannot change the type of a hot volume.\n"
+	"  The new type of the volume (`standard` \\| `io1` \\| `gp2`). If you update to an `io1` \n"
+	"  volume, you must also specify the `Iops` parameter.\n"
 ,
 	"--ClientGatewayId: string\n"
 	"  The ID of the client gateway.\n"
@@ -4418,8 +4549,11 @@ static const char *calls_args_descriptions[] = {
 "--VpnConnectionId: string\n"
 	"  The ID of the VPN connection you want to modify.\n"
 "--VpnOptions: ref VpnOptions\n"
+	"  Information about the VPN options.\n"
 	"    Information about the VPN options.\n"
 	"    --VpnOptions.Phase1Options: ref Phase1Options\n"
+	"      This parameter is not available. It is present in our API for the sake \n"
+	"      of historical compatibility with AWS.\n"
 	"        This parameter is not available. It is present in our API for the sake \n"
 	"        of historical compatibility with AWS.\n"
 	"        --VpnOptions.Phase1Options.DpdTimeoutAction: string\n"
@@ -4450,6 +4584,8 @@ static const char *calls_args_descriptions[] = {
 	"          This parameter is not available. It is present in our API for the sake \n"
 	"          of historical compatibility with AWS.\n"
 	"    --VpnOptions.Phase2Options: ref Phase2Options\n"
+	"      Information about Phase 2 of the Internet Key Exchange (IKE) \n"
+	"      negotiation.\n"
 	"        Information about Phase 2 of the Internet Key Exchange (IKE) \n"
 	"        negotiation.\n"
 	"        --VpnOptions.Phase2Options.Phase2DhGroupNumbers: array integer\n"
@@ -4917,6 +5053,9 @@ static int block_device_mapping_vm_update_setter(struct block_device_mapping_vm_
 static int bsu_created_setter(struct bsu_created *args, struct osc_str *data);
 static int bsu_to_create_setter(struct bsu_to_create *args, struct osc_str *data);
 static int bsu_to_update_vm_setter(struct bsu_to_update_vm *args, struct osc_str *data);
+static int co2_category_distribution_setter(struct co2_category_distribution *args, struct osc_str *data);
+static int co2_emission_entry_setter(struct co2_emission_entry *args, struct osc_str *data);
+static int co2_factor_distribution_setter(struct co2_factor_distribution *args, struct osc_str *data);
 static int ca_setter(struct ca *args, struct osc_str *data);
 static int catalog_setter(struct catalog *args, struct osc_str *data);
 static int catalog_entry_setter(struct catalog_entry *args, struct osc_str *data);
@@ -4962,6 +5101,7 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *data);
 static int filters_subregion_setter(struct filters_subregion *args, struct osc_str *data);
 static int filters_tag_setter(struct filters_tag *args, struct osc_str *data);
+static int filters_update_volume_task_setter(struct filters_update_volume_task *args, struct osc_str *data);
 static int filters_user_group_setter(struct filters_user_group *args, struct osc_str *data);
 static int filters_users_setter(struct filters_users *args, struct osc_str *data);
 static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, struct osc_str *data);
@@ -5065,6 +5205,9 @@ static int vm_states_setter(struct vm_states *args, struct osc_str *data);
 static int vm_template_setter(struct vm_template *args, struct osc_str *data);
 static int vm_type_setter(struct vm_type *args, struct osc_str *data);
 static int volume_setter(struct volume *args, struct osc_str *data);
+static int volume_update_setter(struct volume_update *args, struct osc_str *data);
+static int volume_update_parameters_setter(struct volume_update_parameters *args, struct osc_str *data);
+static int volume_update_task_setter(struct volume_update_task *args, struct osc_str *data);
 static int vpn_connection_setter(struct vpn_connection *args, struct osc_str *data);
 static int vpn_options_setter(struct vpn_options *args, struct osc_str *data);
 static int with_setter(struct with *args, struct osc_str *data);
@@ -5589,6 +5732,97 @@ static int bsu_to_update_vm_setter(struct bsu_to_update_vm *args, struct osc_str
 	if (args->volume_id) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"VolumeId\":", args->volume_id);
+	   	ret += 1;
+	}
+
+	return !!ret;
+}
+static int co2_category_distribution_setter(struct co2_category_distribution *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->category) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Category\":", args->category);
+	   	ret += 1;
+	}
+	if (args->is_set_value || args->value) {
+		ARG_TO_JSON(Value, double, args->value);
+	   	ret += 1;
+	}
+
+	return !!ret;
+}
+static int co2_emission_entry_setter(struct co2_emission_entry *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->account_id) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"AccountId\":", args->account_id);
+	   	ret += 1;
+	}
+        if (args->category_distribution) {
+	        TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"CategoryDistribution\":[" ));
+		for (int i = 0; i < args->nb_category_distribution; ++i) {
+	       	    struct co2_category_distribution *p = &args->category_distribution[i];
+		    if (p != args->category_distribution)
+		        STRY(osc_str_append_string(data, "," ));
+		    STRY(osc_str_append_string(data, "{ " ));
+	       	    STRY(co2_category_distribution_setter(p, data) < 0);
+	       	    STRY(osc_str_append_string(data, "}" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else
+	if (args->category_distribution_str) {
+		ARG_TO_JSON(CategoryDistribution, string, args->category_distribution_str);
+		ret += 1;
+	}
+        if (args->factor_distribution) {
+	        TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"FactorDistribution\":[" ));
+		for (int i = 0; i < args->nb_factor_distribution; ++i) {
+	       	    struct co2_factor_distribution *p = &args->factor_distribution[i];
+		    if (p != args->factor_distribution)
+		        STRY(osc_str_append_string(data, "," ));
+		    STRY(osc_str_append_string(data, "{ " ));
+	       	    STRY(co2_factor_distribution_setter(p, data) < 0);
+	       	    STRY(osc_str_append_string(data, "}" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else
+	if (args->factor_distribution_str) {
+		ARG_TO_JSON(FactorDistribution, string, args->factor_distribution_str);
+		ret += 1;
+	}
+	if (args->month) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Month\":", args->month);
+	   	ret += 1;
+	}
+	if (args->paying_account_id) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PayingAccountId\":", args->paying_account_id);
+	   	ret += 1;
+	}
+	if (args->is_set_value || args->value) {
+		ARG_TO_JSON(Value, double, args->value);
+	   	ret += 1;
+	}
+
+	return !!ret;
+}
+static int co2_factor_distribution_setter(struct co2_factor_distribution *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->factor) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Factor\":", args->factor);
+	   	ret += 1;
+	}
+	if (args->is_set_value || args->value) {
+		ARG_TO_JSON(Value, double, args->value);
 	   	ret += 1;
 	}
 
@@ -6998,6 +7232,24 @@ static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct
 		ARG_TO_JSON(SubregionNames, string, args->subregion_names_str);
 		ret += 1;
 	}
+        if (args->tags) {
+	        TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"Tags\":[" ));
+		for (int i = 0; i < args->nb_tags; ++i) {
+	       	    struct tag *p = &args->tags[i];
+		    if (p != args->tags)
+		        STRY(osc_str_append_string(data, "," ));
+		    STRY(osc_str_append_string(data, "{ " ));
+	       	    STRY(tag_setter(p, data) < 0);
+	       	    STRY(osc_str_append_string(data, "}" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else
+	if (args->tags_str) {
+		ARG_TO_JSON(Tags, string, args->tags_str);
+		ret += 1;
+	}
 	if (args->vm_ids) {
 		char **as;
 
@@ -7383,6 +7635,10 @@ static int filters_image_setter(struct filters_image *args, struct osc_str *data
 	} else if (args->tags_str) {
 		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
+	}
+	if (args->is_set_tpm_mandatory) {
+		ARG_TO_JSON(TpmMandatory, bool, args->tpm_mandatory);
+	   	ret += 1;
 	}
 	if (args->virtualization_types) {
 		char **as;
@@ -10133,6 +10389,28 @@ static int filters_tag_setter(struct filters_tag *args, struct osc_str *data) {
 
 	return !!ret;
 }
+static int filters_update_volume_task_setter(struct filters_update_volume_task *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->task_ids) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"TaskIds\":[" ));
+		for (as = args->task_ids; *as; ++as) {
+			if (as != args->task_ids)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->task_ids_str) {
+		ARG_TO_JSON(TaskIds, string, args->task_ids_str);
+		ret += 1;
+	}
+
+	return !!ret;
+}
 static int filters_user_group_setter(struct filters_user_group *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
@@ -11202,6 +11480,10 @@ static int filters_vm_setter(struct filters_vm *args, struct osc_str *data) {
 	} else if (args->tenancies_str) {
 		ARG_TO_JSON(Tenancies, string, args->tenancies_str);
 		ret += 1;
+	}
+	if (args->is_set_tpm_enabled) {
+		ARG_TO_JSON(TpmEnabled, bool, args->tpm_enabled);
+	   	ret += 1;
 	}
 	if (args->vm_ids) {
 		char **as;
@@ -12374,6 +12656,24 @@ static int flexible_gpu_setter(struct flexible_gpu *args, struct osc_str *data) 
 	        ARG_TO_JSON_STR("\"SubregionName\":", args->subregion_name);
 	   	ret += 1;
 	}
+        if (args->tags) {
+	        TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"Tags\":[" ));
+		for (int i = 0; i < args->nb_tags; ++i) {
+	       	    struct tag *p = &args->tags[i];
+		    if (p != args->tags)
+		        STRY(osc_str_append_string(data, "," ));
+		    STRY(osc_str_append_string(data, "{ " ));
+	       	    STRY(tag_setter(p, data) < 0);
+	       	    STRY(osc_str_append_string(data, "}" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else
+	if (args->tags_str) {
+		ARG_TO_JSON(Tags, string, args->tags_str);
+		ret += 1;
+	}
 	if (args->vm_id) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"VmId\":", args->vm_id);
@@ -12611,6 +12911,10 @@ static int image_setter(struct image *args, struct osc_str *data) {
 	if (args->tags_str) {
 		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
+	}
+	if (args->is_set_tpm_mandatory) {
+		ARG_TO_JSON(TpmMandatory, bool, args->tpm_mandatory);
+	   	ret += 1;
 	}
 
 	return !!ret;
@@ -16142,6 +16446,10 @@ static int vm_setter(struct vm *args, struct osc_str *data) {
 		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
+	if (args->is_set_tpm_enabled) {
+		ARG_TO_JSON(TpmEnabled, bool, args->tpm_enabled);
+	   	ret += 1;
+	}
 	if (args->user_data) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"UserData\":", args->user_data);
@@ -16517,6 +16825,11 @@ static int volume_setter(struct volume *args, struct osc_str *data) {
 		ARG_TO_JSON(Tags, string, args->tags_str);
 		ret += 1;
 	}
+	if (args->task_id) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"TaskId\":", args->task_id);
+	   	ret += 1;
+	}
 	if (args->volume_id) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"VolumeId\":", args->volume_id);
@@ -16526,6 +16839,119 @@ static int volume_setter(struct volume *args, struct osc_str *data) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"VolumeType\":", args->volume_type);
 	   	ret += 1;
+	}
+
+	return !!ret;
+}
+static int volume_update_setter(struct volume_update *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->origin_str) {
+		ARG_TO_JSON(Origin, string, args->origin_str);
+		ret += 1;
+	} else if (args->is_set_origin) {
+	       TRY_APPEND_COL(count_args, data);
+	       STRY(osc_str_append_string(data, "\"Origin\": { " ));
+	       STRY(volume_update_parameters_setter(&args->origin, data) < 0);
+	       STRY(osc_str_append_string(data, "}" ));
+	       ret += 1;
+	}
+	if (args->target_str) {
+		ARG_TO_JSON(Target, string, args->target_str);
+		ret += 1;
+	} else if (args->is_set_target) {
+	       TRY_APPEND_COL(count_args, data);
+	       STRY(osc_str_append_string(data, "\"Target\": { " ));
+	       STRY(volume_update_parameters_setter(&args->target, data) < 0);
+	       STRY(osc_str_append_string(data, "}" ));
+	       ret += 1;
+	}
+
+	return !!ret;
+}
+static int volume_update_parameters_setter(struct volume_update_parameters *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->is_set_iops || args->iops) {
+		ARG_TO_JSON(Iops, int, args->iops);
+	   	ret += 1;
+	}
+	if (args->is_set_size || args->size) {
+		ARG_TO_JSON(Size, int, args->size);
+	   	ret += 1;
+	}
+	if (args->volume_type) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VolumeType\":", args->volume_type);
+	   	ret += 1;
+	}
+
+	return !!ret;
+}
+static int volume_update_task_setter(struct volume_update_task *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->comment) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Comment\":", args->comment);
+	   	ret += 1;
+	}
+	if (args->completion_date) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"CompletionDate\":", args->completion_date);
+	   	ret += 1;
+	}
+	if (args->is_set_progress || args->progress) {
+		ARG_TO_JSON(Progress, int, args->progress);
+	   	ret += 1;
+	}
+	if (args->start_date) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"StartDate\":", args->start_date);
+	   	ret += 1;
+	}
+	if (args->state) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
+	   	ret += 1;
+	}
+        if (args->tags) {
+	        TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"Tags\":[" ));
+		for (int i = 0; i < args->nb_tags; ++i) {
+	       	    struct resource_tag *p = &args->tags[i];
+		    if (p != args->tags)
+		        STRY(osc_str_append_string(data, "," ));
+		    STRY(osc_str_append_string(data, "{ " ));
+	       	    STRY(resource_tag_setter(p, data) < 0);
+	       	    STRY(osc_str_append_string(data, "}" ));
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else
+	if (args->tags_str) {
+		ARG_TO_JSON(Tags, string, args->tags_str);
+		ret += 1;
+	}
+	if (args->task_id) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"TaskId\":", args->task_id);
+	   	ret += 1;
+	}
+	if (args->volume_id) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"VolumeId\":", args->volume_id);
+	   	ret += 1;
+	}
+	if (args->volume_update_str) {
+		ARG_TO_JSON(VolumeUpdate, string, args->volume_update_str);
+		ret += 1;
+	} else if (args->is_set_volume_update) {
+	       TRY_APPEND_COL(count_args, data);
+	       STRY(osc_str_append_string(data, "\"VolumeUpdate\": { " ));
+	       STRY(volume_update_setter(&args->volume_update, data) < 0);
+	       STRY(osc_str_append_string(data, "}" ));
+	       ret += 1;
 	}
 
 	return !!ret;
@@ -17977,6 +18403,10 @@ static  int create_image_data(struct osc_env *e, struct osc_create_image_arg *ar
 	if (args->source_region_name) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"SourceRegionName\":", args->source_region_name);
+	   	ret += 1;
+	}
+	if (args->is_set_tpm_mandatory) {
+		ARG_TO_JSON(TpmMandatory, bool, args->tpm_mandatory);
 	   	ret += 1;
 	}
 	if (args->vm_id) {
@@ -20666,6 +21096,10 @@ static  int create_vms_data(struct osc_env *e, struct osc_create_vms_arg *args, 
 	if (args->subnet_id) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"SubnetId\":", args->subnet_id);
+	   	ret += 1;
+	}
+	if (args->is_set_tpm_enabled) {
+		ARG_TO_JSON(TpmEnabled, bool, args->tpm_enabled);
 	   	ret += 1;
 	}
 	if (args->user_data) {
@@ -25825,6 +26259,73 @@ out:
 	osc_deinit_str(&data);
 	return res;
 }
+static  int read_co2_emission_account_data(struct osc_env *e, struct osc_read_co2_emission_account_arg *args, struct osc_str *data)
+{
+	struct osc_str end_call;
+	int ret = 0;
+	int count_args = 0;
+
+	(void)count_args; /* if use only query/header and path, this is unused */
+	osc_init_str(&end_call);
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	if (!args)
+		goto no_data;
+
+	osc_str_append_string(data, "{");
+	if (args->from_month) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"FromMonth\":", args->from_month);
+	   	ret += 1;
+	}
+	if (args->is_set_overall) {
+		ARG_TO_JSON(Overall, bool, args->overall);
+	   	ret += 1;
+	}
+	if (args->to_month) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ToMonth\":", args->to_month);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+
+no_data:
+	osc_str_append_string(&end_call, "/api/v1/ReadCO2EmissionAccount");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	osc_deinit_str(&end_call);
+	return !!ret;
+}
+
+int osc_read_co2_emission_account(struct osc_env *e, struct osc_str *out, struct osc_read_co2_emission_account_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	int r;
+
+	osc_init_str(&data);
+	r = read_co2_emission_account_data(e, args, &data);
+	if (r < 0)
+		goto out;
+
+        curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = osc_easy_perform(e);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
+out:
+	osc_deinit_str(&data);
+	return res;
+}
 static  int read_cas_data(struct osc_env *e, struct osc_read_cas_arg *args, struct osc_str *data)
 {
 	struct osc_str end_call;
@@ -30326,6 +30827,82 @@ int osc_read_vms_state(struct osc_env *e, struct osc_str *out, struct osc_read_v
 
 	osc_init_str(&data);
 	r = read_vms_state_data(e, args, &data);
+	if (r < 0)
+		goto out;
+
+        curl_easy_setopt(e->c, CURLOPT_POSTFIELDS, r ? data.buf : "");
+	curl_easy_setopt(e->c, CURLOPT_WRITEDATA, out);
+	if (e->flag & OSC_VERBOSE_MODE) {
+	  printf("<Data send to curl>\n%s\n</Data send to curl>\n", data.buf);
+	}
+	res = osc_easy_perform(e);
+	if (res != CURLE_OK)
+		goto out;
+
+	long statuscode = 200;
+	res = curl_easy_getinfo(e->c, CURLINFO_RESPONSE_CODE, &statuscode);
+	if (res != CURLE_OK)
+		goto out;
+
+	if (statuscode >= 400)
+		res = 1;
+out:
+	osc_deinit_str(&data);
+	return res;
+}
+static  int read_volume_update_tasks_data(struct osc_env *e, struct osc_read_volume_update_tasks_arg *args, struct osc_str *data)
+{
+	struct osc_str end_call;
+	int ret = 0;
+	int count_args = 0;
+
+	(void)count_args; /* if use only query/header and path, this is unused */
+	osc_init_str(&end_call);
+	osc_str_append_string(&end_call, e->endpoint.buf);
+	if (!args)
+		goto no_data;
+
+	osc_str_append_string(data, "{");
+	if (args->is_set_dry_run) {
+		ARG_TO_JSON(DryRun, bool, args->dry_run);
+	   	ret += 1;
+	}
+	if (args->filters_str) {
+		ARG_TO_JSON(Filters, string, args->filters_str);
+		ret += 1;
+	} else if (args->is_set_filters) {
+	       TRY_APPEND_COL(count_args, data);
+	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
+	       STRY(filters_update_volume_task_setter(&args->filters, data) < 0);
+	       STRY(osc_str_append_string(data, "}" ));
+	       ret += 1;
+	}
+	if (args->next_page_token) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NextPageToken\":", args->next_page_token);
+	   	ret += 1;
+	}
+	if (args->is_set_results_per_page || args->results_per_page) {
+		ARG_TO_JSON(ResultsPerPage, int, args->results_per_page);
+	   	ret += 1;
+	}
+	osc_str_append_string(data, "}");
+
+no_data:
+	osc_str_append_string(&end_call, "/api/v1/ReadVolumeUpdateTasks");
+	curl_easy_setopt(e->c, CURLOPT_URL, end_call.buf);
+	osc_deinit_str(&end_call);
+	return !!ret;
+}
+
+int osc_read_volume_update_tasks(struct osc_env *e, struct osc_str *out, struct osc_read_volume_update_tasks_arg *args)
+{
+	CURLcode res = CURLE_OUT_OF_MEMORY;
+	struct osc_str data;
+	int r;
+
+	osc_init_str(&data);
+	r = read_volume_update_tasks_data(e, args, &data);
 	if (r < 0)
 		goto out;
 
