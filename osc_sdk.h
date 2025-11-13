@@ -77,8 +77,8 @@ struct osc_str {
 
 #define OSC_ENV_FREE_AK_SK (OSC_ENV_FREE_AK | OSC_ENV_FREE_SK)
 
-#define OSC_API_VERSION "1.35.5"
-#define OSC_SDK_VERSION 0X001700
+#define OSC_API_VERSION "1.37.1"
+#define OSC_SDK_VERSION 0X001800
 
 enum osc_auth_method {
 	OSC_AKSK_METHOD,
@@ -311,9 +311,13 @@ struct account {
 
 struct actions_on_next_boot {
         /*
-         *   One action to perform on the next boot of the VM. For more 
-         * information, 
-         *   see [About Secure 
+         * One action to perform on the next boot of the VM. For more 
+         * information, see [About Secure 
+         * Boot](https://docs.outscale.com/en/userguide/About-Secure-Boot.html#_s
+         * ecure_boot_actions).
+         *   One action to perform on the next boot of the VM (`enable` | 
+         * `disable` | 
+         *   `setup-mode` | `none`). For more information, see [About Secure 
          *   
          * Boot](https://docs.outscale.com/en/userguide/About-Secure-Boot.html#_s
          * ecur
@@ -431,6 +435,7 @@ struct bsu_created {
 
 struct block_device_mapping_created {
         /*
+         * Information about the created BSU volume.
          *   Information about the created BSU volume.
          *   --Bsu.DeleteOnVmDeletion: bool
          *     If true, the volume is deleted when terminating the VM. If false, 
@@ -494,6 +499,7 @@ struct bsu_to_create {
 
 struct block_device_mapping_image {
         /*
+         * Information about the BSU volume to create.
          *   Information about the BSU volume to create.
          *   --Bsu.DeleteOnVmDeletion: bool
          *     If set to true, the volume is deleted when terminating the VM. If 
@@ -546,6 +552,7 @@ struct block_device_mapping_image {
 
 struct block_device_mapping_vm_creation {
         /*
+         * Information about the BSU volume to create.
          *   Information about the BSU volume to create.
          *   --Bsu.DeleteOnVmDeletion: bool
          *     If set to true, the volume is deleted when terminating the VM. If 
@@ -616,6 +623,7 @@ struct bsu_to_update_vm {
 
 struct block_device_mapping_vm_update {
         /*
+         * Information about the BSU volume.
          *   Information about the BSU volume.
          *   --Bsu.DeleteOnVmDeletion: bool
          *     If set to true, the volume is deleted when terminating the VM. If 
@@ -643,6 +651,74 @@ struct block_device_mapping_vm_update {
          * The name of the virtual device (`ephemeralN`).
          */
 	char *virtual_device_name;
+};
+
+struct co2_category_distribution {
+        /*
+         * The category of the resource (for example, `storage`).
+         */
+	char *category;
+        /*
+         * The total CO2 emissions for the category.
+         */
+        int is_set_value;
+	double value;
+};
+
+struct co2_emission_entry {
+        /*
+         * The ID of the account associated with the consumption.
+         */
+	char *account_id;
+        /*
+         * The allocation of the `Value` among categories.
+         *   The allocation of the `Value` among categories.
+         *   --CategoryDistribution.INDEX.Category: string
+         *     The category of the resource (for example, `storage`).
+         *   --CategoryDistribution.INDEX.Value: double
+         *     The total CO2 emissions for the category.
+         */
+        char *category_distribution_str;
+        int nb_category_distribution;
+	struct co2_category_distribution *category_distribution;
+        /*
+         * The allocation of the `Value` among factors.
+         *   The allocation of the `Value` among factors.
+         *   --FactorDistribution.INDEX.Factor: string
+         *     The emission source (for example, `hardware`).
+         *   --FactorDistribution.INDEX.Value: double
+         *     The total CO2 emissions for the factor.
+         */
+        char *factor_distribution_str;
+        int nb_factor_distribution;
+	struct co2_factor_distribution *factor_distribution;
+        /*
+         * The month associated with the CO2 emission entry.
+         */
+	char *month;
+        /*
+         * The ID of the paying account related to the `AccountId` parameter.
+         */
+	char *paying_account_id;
+        /*
+         * The total CO2 emissions for the `Month` and `AccountId` specified. 
+         * This value corresponds to the sum of all entries in 
+         * `CategoryDistribution` and `FactorDistributionEntry`.
+         */
+        int is_set_value;
+	double value;
+};
+
+struct co2_factor_distribution {
+        /*
+         * The emission source (for example, `hardware`).
+         */
+	char *factor;
+        /*
+         * The total CO2 emissions for the factor.
+         */
+        int is_set_value;
+	double value;
 };
 
 struct ca {
@@ -849,7 +925,7 @@ struct consumption_entry {
 	double price;
         /*
          * The service of the API call (`TinaOS-FCU`, `TinaOS-LBU`, 
-         * `TinaOS-DirectLink`, `TinaOS-OOS`, or `TinaOS-OSU`).
+         * `TinaOS-DirectLink`, `TinaOS-OOS`, `TinaOS-OSU`, or `OKS`).
          */
 	char *service;
         /*
@@ -1438,6 +1514,21 @@ struct filters_flexible_gpu {
         char *subregion_names_str;
 	char **subregion_names;
         /*
+         * One or more tags associated with the fGPUs.
+         *   Information about the tag.
+         *   --Tags.INDEX.Key: string
+         *     The key of the tag, with a minimum of 1 character.
+         *   --Tags.INDEX.ResourceId: string
+         *     The ID of the resource.
+         *   --Tags.INDEX.ResourceType: string
+         *     The type of the resource.
+         *   --Tags.INDEX.Value: string
+         *     The value of the tag, between 0 and 255 characters.
+         */
+        char *tags_str;
+        int nb_tags;
+	struct tag *tags;
+        /*
          * One or more IDs of VMs.
          */
         char *vm_ids_str;
@@ -1573,6 +1664,12 @@ struct filters_image {
          */
         char *tags_str;
 	char **tags;
+        /*
+         * Whether a virtual Trusted Platform Module (vTPM) is mandatory for VMs 
+         * created from this OMI (true) or not (false).
+         */
+        int is_set_tpm_mandatory;
+	int tpm_mandatory;
         /*
          * The virtualization types (always `hvm`).
          */
@@ -2531,12 +2628,12 @@ struct filters_tag {
         char *resource_ids_str;
 	char **resource_ids;
         /*
-         * The resource type (`customer-gateway` \\| `dhcpoptions` \\| `image` 
-         * \\| `instance` \\| `keypair` \\| `natgateway` \\| `network-interface` 
-         * \\| `public-ip` \\| `route-table` \\| `security-group` \\| `snapshot` 
-         * \\| `subnet` \\| `task` \\| `virtual-private-gateway` \\| `volume` 
-         * \\| `vpc` \\| `vpc-endpoint` \\| `vpc-peering-connection`\\| 
-         * `vpn-connection`).
+         * The resource type (`customer-gateway` \\| `dhcpoptions` \\| 
+         * `flexible-gpu` \\| `image` \\| `instance` \\| `keypair` \\| 
+         * `natgateway` \\| `network-interface` \\| `public-ip` \\| 
+         * `route-table` \\| `security-group` \\| `snapshot` \\| `subnet` \\| 
+         * `task` \\| `virtual-private-gateway` \\| `volume` \\| `vpc` \\| 
+         * `vpc-endpoint` \\| `vpc-peering-connection`\\| `vpn-connection`).
          */
         char *resource_types_str;
 	char **resource_types;
@@ -2548,6 +2645,14 @@ struct filters_tag {
          */
         char *values_str;
 	char **values;
+};
+
+struct filters_update_volume_task {
+        /*
+         * The IDs of the volume update tasks.
+         */
+        char *task_ids_str;
+	char **task_ids;
 };
 
 struct filters_user_group {
@@ -2933,6 +3038,12 @@ struct filters_vm {
          */
         char *tenancies_str;
 	char **tenancies;
+        /*
+         * Whether a virtual Trusted Platform Module (vTPM) is enabled (true) or 
+         * disabled (false) on the VM.
+         */
+        int is_set_tpm_enabled;
+	int tpm_enabled;
         /*
          * One or more IDs of VMs.
          */
@@ -3364,6 +3475,21 @@ struct flexible_gpu {
          */
 	char *subregion_name;
         /*
+         * One or more tags associated with the fGPU.
+         *   Information about the tag.
+         *   --Tags.INDEX.Key: string
+         *     The key of the tag, with a minimum of 1 character.
+         *   --Tags.INDEX.ResourceId: string
+         *     The ID of the resource.
+         *   --Tags.INDEX.ResourceType: string
+         *     The type of the resource.
+         *   --Tags.INDEX.Value: string
+         *     The value of the tag, between 0 and 255 characters.
+         */
+        char *tags_str;
+        int nb_tags;
+	struct tag *tags;
+        /*
          * The ID of the VM the fGPU is attached to, if any.
          */
 	char *vm_id;
@@ -3485,6 +3611,7 @@ struct image {
          * the VM 
          *   is created.
          *   --BlockDeviceMappings.INDEX.Bsu: ref BsuToCreate
+         *     Information about the BSU volume to create.
          *       Information about the BSU volume to create.
          *       --BlockDeviceMappings.INDEX.Bsu.DeleteOnVmDeletion: bool
          *         If set to true, the volume is deleted when terminating the 
@@ -3562,6 +3689,7 @@ struct image {
          */
 	char *image_type;
         /*
+         * Permissions for the resource.
          *   Permissions for the resource.
          *   --PermissionsToLaunch.AccountIds: array string
          *     One or more account IDs that the permission is associated with.
@@ -3601,6 +3729,7 @@ struct image {
          */
 	char *state;
         /*
+         * Information about the change of state.
          *   Information about the change of state.
          *   --StateComment.StateCode: string
          *     The code of the change of state.
@@ -3621,6 +3750,12 @@ struct image {
         char *tags_str;
         int nb_tags;
 	struct resource_tag *tags;
+        /*
+         * If true, a virtual Trusted Platform Module (vTPM) is mandatory for 
+         * VMs created from this OMI. If false, a vTPM is not mandatory.
+         */
+        int is_set_tpm_mandatory;
+	int tpm_mandatory;
 };
 
 struct osu_export_image_export_task {
@@ -3652,6 +3787,7 @@ struct image_export_task {
          */
 	char *image_id;
         /*
+         * Information about the OMI export task.
          *   Information about the OMI export task.
          *   --OsuExport.DiskImageFormat: string
          *     The format of the export disk (`qcow2` \\| `raw`).
@@ -4149,6 +4285,7 @@ struct source_security_group {
 
 struct load_balancer {
         /*
+         * Information about access logs.
          *   Information about access logs.
          *   --AccessLog.IsEnabled: bool
          *     If true, access logs are enabled for your load balancer. If 
@@ -4198,6 +4335,7 @@ struct load_balancer {
          */
 	char *dns_name;
         /*
+         * Information about the health check configuration.
          *   Information about the health check configuration.
          *   --HealthCheck.CheckInterval: long long int
          *     The number of seconds between two requests (between `5` and `600` 
@@ -4310,6 +4448,11 @@ struct load_balancer {
         char *security_groups_str;
 	char **security_groups;
         /*
+         * Information about the source security group of the load balancer, 
+         * which you can use as part of your inbound rules for your registered 
+         * VMs.<br />\nTo only allow traffic from load balancers, add a security 
+         * group rule that specifies this source security group as the inbound 
+         * source.
          *   Information about the source security group of the load balancer, 
          * which 
          *   you can use as part of your inbound rules for your registered 
@@ -4665,6 +4808,7 @@ struct net_peering_state {
 
 struct net_peering {
         /*
+         * Information about the accepter Net.
          *   Information about the accepter Net.
          *   --AccepterNet.AccountId: string
          *     The account ID of the owner of the accepter Net.
@@ -4686,6 +4830,7 @@ struct net_peering {
          */
 	char *net_peering_id;
         /*
+         * Information about the source Net.
          *   Information about the source Net.
          *   --SourceNet.AccountId: string
          *     The account ID of the owner of the source Net.
@@ -4699,6 +4844,7 @@ struct net_peering {
         int is_set_source_net;
 	struct source_net source_net;
         /*
+         * Information about the state of the Net peering.
          *   Information about the state of the Net peering.
          *   --State.Message: string
          *     Additional information about the state of the Net peering.
@@ -4751,6 +4897,7 @@ struct nic {
         int is_set_is_source_dest_checked;
 	int is_source_dest_checked;
         /*
+         * Information about the NIC attachment.
          *   Information about the NIC attachment.
          *   --LinkNic.DeleteOnVmDeletion: bool
          *     If true, the NIC is deleted when the VM is terminated.
@@ -4773,6 +4920,7 @@ struct nic {
         int is_set_link_nic;
 	struct link_nic link_nic;
         /*
+         * Information about the public IP association.
          *   Information about the public IP association.
          *   --LinkPublicIp.LinkPublicIpId: string
          *     (Required in a Net) The ID representing the association of the 
@@ -4812,6 +4960,7 @@ struct nic {
          *   --PrivateIps.INDEX.IsPrimary: bool
          *     If true, the IP is the primary private IP of the NIC.
          *   --PrivateIps.INDEX.LinkPublicIp: ref LinkPublicIp
+         *     Information about the public IP association.
          *       Information about the public IP association.
          *       --PrivateIps.INDEX.LinkPublicIp.LinkPublicIpId: string
          *         (Required in a Net) The ID representing the association of 
@@ -4944,6 +5093,7 @@ struct nic_light {
         int is_set_is_source_dest_checked;
 	int is_source_dest_checked;
         /*
+         * Information about the network interface card (NIC).
          *   Information about the network interface card (NIC).
          *   --LinkNic.DeleteOnVmDeletion: bool
          *     If true, the NIC is deleted when the VM is terminated.
@@ -4962,6 +5112,7 @@ struct nic_light {
         int is_set_link_nic;
 	struct link_nic_light link_nic;
         /*
+         * Information about the public IP associated with the NIC.
          *   Information about the public IP associated with the NIC.
          *   --LinkPublicIp.PublicDnsName: string
          *     The name of the public DNS.
@@ -4995,6 +5146,7 @@ struct nic_light {
          *   --PrivateIps.INDEX.IsPrimary: bool
          *     If true, the IP is the primary private IP of the NIC.
          *   --PrivateIps.INDEX.LinkPublicIp: ref LinkPublicIpLightForVm
+         *     Information about the public IP associated with the NIC.
          *       Information about the public IP associated with the NIC.
          *       --PrivateIps.INDEX.LinkPublicIp.PublicDnsName: string
          *         The name of the public DNS.
@@ -5066,6 +5218,7 @@ struct osu_export_to_create {
          */
 	char *disk_image_format;
         /*
+         * Information about the OOS API key.
          *   Information about the OOS API key.
          *   --OsuApiKey.ApiKeyId: string
          *     The API key of the OOS account that enables you to access the 
@@ -5093,6 +5246,7 @@ struct osu_export_to_create {
 
 struct permissions_on_resource_creation {
         /*
+         * Permissions for the resource.
          *   Permissions for the resource.
          *   --Additions.AccountIds: array string
          *     One or more account IDs that the permission is associated with.
@@ -5110,6 +5264,7 @@ struct permissions_on_resource_creation {
         int is_set_additions;
 	struct permissions_on_resource additions;
         /*
+         * Permissions for the resource.
          *   Permissions for the resource.
          *   --Removals.AccountIds: array string
          *     One or more account IDs that the permission is associated with.
@@ -5390,6 +5545,7 @@ struct private_ip {
         int is_set_is_primary;
 	int is_primary;
         /*
+         * Information about the public IP association.
          *   Information about the public IP association.
          *   --LinkPublicIp.LinkPublicIpId: string
          *     (Required in a Net) The ID representing the association of the 
@@ -5436,6 +5592,7 @@ struct private_ip_light_for_vm {
         int is_set_is_primary;
 	int is_primary;
         /*
+         * Information about the public IP associated with the NIC.
          *   Information about the public IP associated with the NIC.
          *   --LinkPublicIp.PublicDnsName: string
          *     The name of the public DNS.
@@ -6029,7 +6186,7 @@ struct security_groups_member {
 
 struct server_certificate {
         /*
-         * The date on which the server certificate expires.
+         * The date and time (UTC) on which the server certificate expires.
          */
 	char *expiration_date;
         /*
@@ -6052,7 +6209,8 @@ struct server_certificate {
          */
 	char *path;
         /*
-         * The date on which the server certificate has been uploaded.
+         * The date and time (UTC) on which the server certificate has been 
+         * uploaded.
          */
 	char *upload_date;
 };
@@ -6095,6 +6253,7 @@ struct snapshot {
          */
 	char *description;
         /*
+         * Permissions for the resource.
          *   Permissions for the resource.
          *   --PermissionsToCreateVolume.AccountIds: array string
          *     One or more account IDs that the permission is associated with.
@@ -6154,6 +6313,7 @@ struct snapshot_export_task {
          */
 	char *comment;
         /*
+         * Information about the snapshot export task.
          *   Information about the snapshot export task.
          *   --OsuExport.DiskImageFormat: string
          *     The format of the export disk (`qcow2` \\| `raw`).
@@ -6450,11 +6610,19 @@ struct virtual_gateway {
 
 struct vm {
         /*
+         * The action to perform on the next boot of the VM.
          *   The action to perform on the next boot of the VM.
          *   --ActionsOnNextBoot.SecureBoot: string
-         *       One action to perform on the next boot of the VM. For more 
+         *     One action to perform on the next boot of the VM. For more 
          * information, 
-         *       see [About Secure 
+         *     see [About Secure 
+         *     
+         * Boot](https://docs.outscale.com/en/userguide/About-Secure-Boot.html#_s
+         * ecur
+         *     e_boot_actions).
+         *       One action to perform on the next boot of the VM (`enable` | 
+         * `disable` | 
+         *       `setup-mode` | `none`). For more information, see [About Secure 
          *       
          * Boot](https://docs.outscale.com/en/userguide/About-Secure-Boot.html#_s
          * ecur
@@ -6471,6 +6639,7 @@ struct vm {
          * The block device mapping of the VM.
          *   Information about the created block device mapping.
          *   --BlockDeviceMappings.INDEX.Bsu: ref BsuCreated
+         *     Information about the created BSU volume.
          *       Information about the created BSU volume.
          *       --BlockDeviceMappings.INDEX.Bsu.DeleteOnVmDeletion: bool
          *         If true, the volume is deleted when terminating the VM. If 
@@ -6491,6 +6660,7 @@ struct vm {
         int nb_block_device_mappings;
 	struct block_device_mapping_created *block_device_mappings;
         /*
+         * The boot mode of the VM.
          *   Information about the boot mode of the VM.
          */
 	char *boot_mode;
@@ -6559,6 +6729,7 @@ struct vm {
          * false, 
          *     it is disabled.
          *   --Nics.INDEX.LinkNic: ref LinkNicLight
+         *     Information about the network interface card (NIC).
          *       Information about the network interface card (NIC).
          *       --Nics.INDEX.LinkNic.DeleteOnVmDeletion: bool
          *         If true, the NIC is deleted when the VM is terminated.
@@ -6573,6 +6744,7 @@ struct vm {
          * `detaching` 
          *         \\| `detached`).
          *   --Nics.INDEX.LinkPublicIp: ref LinkPublicIpLightForVm
+         *     Information about the public IP associated with the NIC.
          *       Information about the public IP associated with the NIC.
          *       --Nics.INDEX.LinkPublicIp.PublicDnsName: string
          *         The name of the public DNS.
@@ -6595,6 +6767,7 @@ struct vm {
          *         If true, the IP is the primary private IP of the NIC.
          *       --Nics.INDEX.PrivateIps.INDEX.LinkPublicIp: ref 
          * LinkPublicIpLightForVm
+         *         Information about the public IP associated with the NIC.
          *           Information about the public IP associated with the NIC.
          *           --Nics.INDEX.PrivateIps.INDEX.LinkPublicIp.PublicDnsName: 
          * string
@@ -6634,6 +6807,7 @@ struct vm {
          */
 	char *performance;
         /*
+         * Information about the placement of the VM.
          *   Information about the placement of the VM.
          *   --Placement.SubregionName: string
          *     The name of the Subregion. If you specify this parameter, you 
@@ -6714,6 +6888,12 @@ struct vm {
         char *tags_str;
         int nb_tags;
 	struct resource_tag *tags;
+        /*
+         * If true, a virtual Trusted Platform Module (vTPM) is enabled on the 
+         * VM. If false, it is not.
+         */
+        int is_set_tpm_enabled;
+	int tpm_enabled;
         /*
          * The Base64-encoded MIME user data.
          */
@@ -7024,6 +7204,11 @@ struct volume {
         int nb_tags;
 	struct resource_tag *tags;
         /*
+         * The ID of the volume update task in progress. Otherwise, it is not 
+         * returned.
+         */
+	char *task_id;
+        /*
          * The ID of the volume.
          */
 	char *volume_id;
@@ -7033,8 +7218,144 @@ struct volume {
 	char *volume_type;
 };
 
+struct volume_update_parameters {
+        /*
+         * The new number of I/O operations per second (IOPS):<br />\n- For 
+         * `io1` volumes, the number of provisioned IOPS.<br />\n- For `gp2` 
+         * volumes, the baseline performance of the volume.
+         */
+        int is_set_iops;
+	long long int iops;
+        /*
+         * The new size of the volume, in gibibytes (GiB).
+         */
+        int is_set_size;
+	long long int size;
+        /*
+         * The type of the volume (`standard` \\| `io1` \\| `gp2`).
+         */
+	char *volume_type;
+};
+
+struct volume_update {
+        /*
+         * Information about the parameters of the update of a volume.
+         *   Information about the parameters of the update of a volume.
+         *   --Origin.Iops: long long int
+         *     The new number of I/O operations per second (IOPS):<br />\n- For 
+         * `io1` 
+         *     volumes, the number of provisioned IOPS.<br />\n- For `gp2` 
+         * volumes, the 
+         *     baseline performance of the volume.
+         *   --Origin.Size: long long int
+         *     The new size of the volume, in gibibytes (GiB).
+         *   --Origin.VolumeType: string
+         *     The type of the volume (`standard` \\| `io1` \\| `gp2`).
+         */
+        char *origin_str;
+        int is_set_origin;
+	struct volume_update_parameters origin;
+        /*
+         * Information about the parameters of the update of a volume.
+         *   Information about the parameters of the update of a volume.
+         *   --Target.Iops: long long int
+         *     The new number of I/O operations per second (IOPS):<br />\n- For 
+         * `io1` 
+         *     volumes, the number of provisioned IOPS.<br />\n- For `gp2` 
+         * volumes, the 
+         *     baseline performance of the volume.
+         *   --Target.Size: long long int
+         *     The new size of the volume, in gibibytes (GiB).
+         *   --Target.VolumeType: string
+         *     The type of the volume (`standard` \\| `io1` \\| `gp2`).
+         */
+        char *target_str;
+        int is_set_target;
+	struct volume_update_parameters target;
+};
+
+struct volume_update_task {
+        /*
+         * If the update volume task fails, an error message appears.
+         */
+	char *comment;
+        /*
+         * The date at which the volume update task was marked as completed.
+         */
+	char *completion_date;
+        /*
+         * The progress of the volume update task, as a percentage.
+         */
+        int is_set_progress;
+	long long int progress;
+        /*
+         * The creation date of the volume update task.
+         */
+	char *start_date;
+        /*
+         * The state of the volume (`pending` \\| `active` \\| `completed` \\| 
+         * `failed` \\| `canceled`).
+         */
+	char *state;
+        /*
+         * One or more tags associated with the volume update task.
+         *   Information about the tag.
+         *   --Tags.INDEX.Key: string
+         *     The key of the tag, with a minimum of 1 character.
+         *   --Tags.INDEX.Value: string
+         *     The value of the tag, between 0 and 255 characters.
+         */
+        char *tags_str;
+        int nb_tags;
+	struct resource_tag *tags;
+        /*
+         * The ID of the volume update task in progress. Otherwise, it is not 
+         * returned.
+         */
+	char *task_id;
+        /*
+         * The ID of the updated volume.
+         */
+	char *volume_id;
+        /*
+         * Information about the update of a volume.
+         *   Information about the update of a volume.
+         *   --VolumeUpdate.Origin: ref VolumeUpdateParameters
+         *     Information about the parameters of the update of a volume.
+         *       Information about the parameters of the update of a volume.
+         *       --VolumeUpdate.Origin.Iops: long long int
+         *         The new number of I/O operations per second (IOPS):<br />\n- 
+         * For `io1` 
+         *         volumes, the number of provisioned IOPS.<br />\n- For `gp2` 
+         * volumes, the 
+         *         baseline performance of the volume.
+         *       --VolumeUpdate.Origin.Size: long long int
+         *         The new size of the volume, in gibibytes (GiB).
+         *       --VolumeUpdate.Origin.VolumeType: string
+         *         The type of the volume (`standard` \\| `io1` \\| `gp2`).
+         *   --VolumeUpdate.Target: ref VolumeUpdateParameters
+         *     Information about the parameters of the update of a volume.
+         *       Information about the parameters of the update of a volume.
+         *       --VolumeUpdate.Target.Iops: long long int
+         *         The new number of I/O operations per second (IOPS):<br />\n- 
+         * For `io1` 
+         *         volumes, the number of provisioned IOPS.<br />\n- For `gp2` 
+         * volumes, the 
+         *         baseline performance of the volume.
+         *       --VolumeUpdate.Target.Size: long long int
+         *         The new size of the volume, in gibibytes (GiB).
+         *       --VolumeUpdate.Target.VolumeType: string
+         *         The type of the volume (`standard` \\| `io1` \\| `gp2`).
+         */
+        char *volume_update_str;
+        int is_set_volume_update;
+	struct volume_update volume_update;
+};
+
 struct vpn_options {
         /*
+         * This parameter is not available. It is present in our API for the 
+         * sake of historical compatibility with AWS.
          *   This parameter is not available. It is present in our API for the 
          * sake 
          *   of historical compatibility with AWS.
@@ -7079,6 +7400,8 @@ struct vpn_options {
         int is_set_phase1_options;
 	struct phase1_options phase1_options;
         /*
+         * Information about Phase 2 of the Internet Key Exchange (IKE) 
+         * negotiation.
          *   Information about Phase 2 of the Internet Key Exchange (IKE) 
          *   negotiation.
          *   --Phase2Options.Phase2DhGroupNumbers: array integer
@@ -7198,8 +7521,12 @@ struct vpn_connection {
          */
 	char *vpn_connection_id;
         /*
+         * Information about the VPN options.
          *   Information about the VPN options.
          *   --VpnOptions.Phase1Options: ref Phase1Options
+         *     This parameter is not available. It is present in our API for the 
+         * sake 
+         *     of historical compatibility with AWS.
          *       This parameter is not available. It is present in our API for 
          * the sake 
          *       of historical compatibility with AWS.
@@ -7242,6 +7569,8 @@ struct vpn_connection {
          * the sake 
          *         of historical compatibility with AWS.
          *   --VpnOptions.Phase2Options: ref Phase2Options
+         *     Information about Phase 2 of the Internet Key Exchange (IKE) 
+         *     negotiation.
          *       Information about Phase 2 of the Internet Key Exchange (IKE) 
          *       negotiation.
          *       --VpnOptions.Phase2Options.Phase2DhGroupNumbers: array integer
@@ -7678,6 +8007,7 @@ struct osc_create_direct_link_interface_arg  {
          */
 	char *direct_link_id;
         /*
+         * Information about the DirectLink interface.
          *   Information about the DirectLink interface.
          *   --DirectLinkInterface.BgpAsn: long long int
          *     The BGP (Border Gateway Protocol) ASN (Autonomous System Number) 
@@ -7789,10 +8119,12 @@ struct osc_create_image_export_task_arg  {
          */
 	char *image_id;
         /*
+         * Information about the OOS export task to create.
          *   Information about the OOS export task to create.
          *   --OsuExport.DiskImageFormat: string
          *     The format of the export disk (`qcow2` \\| `raw`).
          *   --OsuExport.OsuApiKey: ref OsuApiKey
+         *     Information about the OOS API key.
          *       Information about the OOS API key.
          *       --OsuExport.OsuApiKey.ApiKeyId: string
          *         The API key of the OOS account that enables you to access the 
@@ -7827,6 +8159,7 @@ struct osc_create_image_arg  {
          * the VM 
          *   is created.
          *   --BlockDeviceMappings.INDEX.Bsu: ref BsuToCreate
+         *     Information about the BSU volume to create.
          *       Information about the BSU volume to create.
          *       --BlockDeviceMappings.INDEX.Bsu.DeleteOnVmDeletion: bool
          *         If set to true, the volume is deleted when terminating the 
@@ -7930,6 +8263,13 @@ struct osc_create_image_arg  {
          */
 	char *source_region_name;
         /*
+         * By default or if set to false, a virtual Trusted Platform Module 
+         * (vTPM) is not mandatory on VMs created from this OMI. If true, VMs 
+         * created from this OMI must have a vTPM enabled.
+         */
+        int is_set_tpm_mandatory;
+	int tpm_mandatory;
+        /*
          * **(required) When creating from a VM:** The ID of the VM from which 
          * you want to create the OMI.
          */
@@ -7979,6 +8319,7 @@ struct osc_create_listener_rule_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * Information about the load balancer.
          *   Information about the load balancer.
          *   --Listener.LoadBalancerName: string
          *     The name of the load balancer to which the listener is attached.
@@ -7990,6 +8331,7 @@ struct osc_create_listener_rule_arg  {
         int is_set_listener;
 	struct load_balancer_light listener;
         /*
+         * Information about the listener rule.
          *   Information about the listener rule.
          *   --ListenerRule.Action: string
          *     The type of action for the rule (always `forward`).
@@ -8699,10 +9041,12 @@ struct osc_create_snapshot_export_task_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * Information about the OOS export task to create.
          *   Information about the OOS export task to create.
          *   --OsuExport.DiskImageFormat: string
          *     The format of the export disk (`qcow2` \\| `raw`).
          *   --OsuExport.OsuApiKey: ref OsuApiKey
+         *     Information about the OOS API key.
          *       Information about the OOS API key.
          *       --OsuExport.OsuApiKey.ApiKeyId: string
          *         The API key of the OOS account that enables you to access the 
@@ -9011,11 +9355,19 @@ struct osc_create_vms_arg  {
         /* Required: ImageId
  */
         /*
+         * The action to perform on the next boot of the VM.
          *   The action to perform on the next boot of the VM.
          *   --ActionsOnNextBoot.SecureBoot: string
-         *       One action to perform on the next boot of the VM. For more 
+         *     One action to perform on the next boot of the VM. For more 
          * information, 
-         *       see [About Secure 
+         *     see [About Secure 
+         *     
+         * Boot](https://docs.outscale.com/en/userguide/About-Secure-Boot.html#_s
+         * ecur
+         *     e_boot_actions).
+         *       One action to perform on the next boot of the VM (`enable` | 
+         * `disable` | 
+         *       `setup-mode` | `none`). For more information, see [About Secure 
          *       
          * Boot](https://docs.outscale.com/en/userguide/About-Secure-Boot.html#_s
          * ecur
@@ -9028,6 +9380,7 @@ struct osc_create_vms_arg  {
          * One or more block device mappings.
          *   Information about the block device mapping.
          *   --BlockDeviceMappings.INDEX.Bsu: ref BsuToCreate
+         *     Information about the BSU volume to create.
          *       Information about the BSU volume to create.
          *       --BlockDeviceMappings.INDEX.Bsu.DeleteOnVmDeletion: bool
          *         If set to true, the volume is deleted when terminating the 
@@ -9080,6 +9433,7 @@ struct osc_create_vms_arg  {
         int nb_block_device_mappings;
 	struct block_device_mapping_vm_creation *block_device_mappings;
         /*
+         * The boot mode of the VM.
          *   Information about the boot mode of the VM.
          */
 	char *boot_mode;
@@ -9200,6 +9554,7 @@ struct osc_create_vms_arg  {
          */
 	char *performance;
         /*
+         * Information about the placement of the VM.
          *   Information about the placement of the VM.
          *   --Placement.SubregionName: string
          *     The name of the Subregion. If you specify this parameter, you 
@@ -9232,6 +9587,12 @@ struct osc_create_vms_arg  {
          * specify this parameter, you must not specify the `Nics` parameter.
          */
 	char *subnet_id;
+        /*
+         * If true, a virtual Trusted Platform Module (vTPM) is enabled on the 
+         * VM. If false, it is not.
+         */
+        int is_set_tpm_enabled;
+	int tpm_enabled;
         /*
          * Data or script used to add a specific configuration to the VM. It 
          * must be Base64-encoded and is limited to 500 kibibytes (KiB). For 
@@ -10687,6 +11048,7 @@ struct osc_read_access_keys_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.AccessKeyIds: array string
          *     The IDs of the access keys.
@@ -10754,6 +11116,7 @@ struct osc_read_api_access_rules_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.ApiAccessRuleIds: array string
          *     One or more IDs of API access rules.
@@ -10781,6 +11144,7 @@ struct osc_read_api_logs_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.QueryAccessKeys: array string
          *     The access keys used for the logged calls.
@@ -10829,6 +11193,7 @@ struct osc_read_api_logs_arg  {
         int is_set_results_per_page;
 	long long int results_per_page;
         /*
+         * The information to display in each returned log.
          *   The information to display in each returned log.
          *   --With.AccountId: bool
          *     If true, the account ID is displayed.
@@ -10870,6 +11235,33 @@ struct osc_read_api_logs_arg  {
 	struct with with;
 };
 
+struct osc_read_co2_emission_account_arg  {
+        /* Required: FromMonth ToMonth
+ */
+        /*
+         * The beginning of the time period, in ISO 8601 date format (for 
+         * example, `2020-06-01`). This value must correspond to the first day 
+         * of the month and is included in the time period.
+         */
+	char *from_month;
+        /*
+         * If false, returns only the CO2 emission of the specific account that 
+         * sends the request. If true, returns either the overall CO2 emission 
+         * of your paying account and all linked accounts (if the account that 
+         * sends this request is a paying account) or returns nothing (if the 
+         * account that sends this request is a linked account).
+         */
+        int is_set_overall;
+	int overall;
+        /*
+         * The end of the time period, in ISO 8601 date format (for example, 
+         * `2020-06-14`). This value must correspond to the first day of the 
+         * month and is excluded from the time period. It must be set to a later 
+         * date than `FromMonth`.
+         */
+	char *to_month;
+};
+
 struct osc_read_cas_arg  {
         /* Required: null
  */
@@ -10880,6 +11272,7 @@ struct osc_read_cas_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.CaFingerprints: array string
          *     The fingerprints of the CAs.
@@ -10914,6 +11307,7 @@ struct osc_read_catalogs_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.CurrentCatalogOnly: bool
          *     By default or if set to true, only returns the current catalog. 
@@ -10946,6 +11340,7 @@ struct osc_read_client_gateways_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.BgpAsns: array integer
          *     The Border Gateway Protocol (BGP) Autonomous System Numbers 
@@ -11057,6 +11452,7 @@ struct osc_read_dedicated_groups_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.CpuGenerations: array integer
          *     The processor generation for the VMs in the dedicated group (for 
@@ -11095,6 +11491,7 @@ struct osc_read_dhcp_options_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.Default: bool
          *     If true, lists all default DHCP options set. If false, lists all 
@@ -11148,6 +11545,7 @@ struct osc_read_direct_link_interfaces_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.DirectLinkIds: array string
          *     The IDs of the DirectLinks.
@@ -11180,6 +11578,7 @@ struct osc_read_direct_links_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.DirectLinkIds: array string
          *     The IDs of the DirectLinks.
@@ -11201,7 +11600,7 @@ struct osc_read_direct_links_arg  {
 };
 
 struct osc_read_entities_linked_to_policy_arg  {
-        /* Required: null
+        /* Required: PolicyOrn
  */
         /*
          * The type of entity linked to the policy you want to get information 
@@ -11250,6 +11649,7 @@ struct osc_read_flexible_gpus_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.DeleteOnVmDeletion: bool
          *     Indicates whether the fGPU is deleted when terminating the VM.
@@ -11269,6 +11669,17 @@ struct osc_read_flexible_gpus_arg  {
          *     `detaching`).
          *   --Filters.SubregionNames: array string
          *     The Subregions where the fGPUs are located.
+         *   --Filters.Tags: array ref Tag
+         *     One or more tags associated with the fGPUs.
+         *       Information about the tag.
+         *       --Filters.Tags.INDEX.Key: string
+         *         The key of the tag, with a minimum of 1 character.
+         *       --Filters.Tags.INDEX.ResourceId: string
+         *         The ID of the resource.
+         *       --Filters.Tags.INDEX.ResourceType: string
+         *         The type of the resource.
+         *       --Filters.Tags.INDEX.Value: string
+         *         The value of the tag, between 0 and 255 characters.
          *   --Filters.VmIds: array string
          *     One or more IDs of VMs.
          */
@@ -11287,6 +11698,7 @@ struct osc_read_image_export_tasks_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.TaskIds: array string
          *     The IDs of the export tasks.
@@ -11317,6 +11729,7 @@ struct osc_read_images_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.AccountAliases: array string
          *     The account aliases of the owners of the OMIs.
@@ -11374,6 +11787,10 @@ struct osc_read_images_arg  {
          *     following format: 
          *     
          * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
+         *   --Filters.TpmMandatory: bool
+         *     Whether a virtual Trusted Platform Module (vTPM) is mandatory for 
+         * VMs 
+         *     created from this OMI (true) or not (false).
          *   --Filters.VirtualizationTypes: array string
          *     The virtualization types (always `hvm`).
          */
@@ -11403,6 +11820,7 @@ struct osc_read_internet_services_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.InternetServiceIds: array string
          *     The IDs of the internet services.
@@ -11451,6 +11869,7 @@ struct osc_read_keypairs_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.KeypairFingerprints: array string
          *     The fingerprints of the keypairs.
@@ -11499,6 +11918,7 @@ struct osc_read_linked_policies_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.PathPrefix: string
          *     The path prefix of the policies. If not specified, it is set to a 
@@ -11535,6 +11955,7 @@ struct osc_read_listener_rules_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.ListenerRuleNames: array string
          *     The names of the listener rules.
@@ -11570,6 +11991,7 @@ struct osc_read_load_balancers_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.LoadBalancerNames: array string
          *     The names of the load balancers.
@@ -11611,6 +12033,7 @@ struct osc_read_managed_policies_linked_to_user_group_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.PathPrefix: string
          *     The path prefix of the groups. If not specified, it is set to a 
@@ -11649,6 +12072,7 @@ struct osc_read_nat_services_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.ClientTokens: array string
          *     The idempotency tokens provided when creating the NAT services.
@@ -11699,6 +12123,7 @@ struct osc_read_net_access_point_services_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.ServiceIds: array string
          *     The IDs of the services.
@@ -11731,6 +12156,7 @@ struct osc_read_net_access_points_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.NetAccessPointIds: array string
          *     The IDs of the Net access points.
@@ -11780,6 +12206,7 @@ struct osc_read_net_peerings_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.AccepterNetAccountIds: array string
          *     The account IDs of the owners of the peer Nets.
@@ -11842,6 +12269,7 @@ struct osc_read_nets_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.DhcpOptionsSetIds: array string
          *     The IDs of the DHCP options sets.
@@ -11891,6 +12319,7 @@ struct osc_read_nics_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.Descriptions: array string
          *     The descriptions of the NICs.
@@ -11993,6 +12422,7 @@ struct osc_read_policies_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.OnlyLinked: bool
          *     If set to true, lists only the policies attached to a user.
@@ -12084,6 +12514,7 @@ struct osc_read_product_types_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.ProductTypeIds: array string
          *     The IDs of the product types.
@@ -12147,6 +12578,7 @@ struct osc_read_public_ips_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.LinkPublicIpIds: array string
          *     The IDs representing the associations of public IPs with VMs or 
@@ -12203,6 +12635,7 @@ struct osc_read_quotas_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.Collections: array string
          *     The group names of the quotas.
@@ -12252,6 +12685,7 @@ struct osc_read_route_tables_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.LinkRouteTableIds: array string
          *     The IDs of the route tables involved in the associations.
@@ -12319,6 +12753,7 @@ struct osc_read_security_groups_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.Descriptions: array string
          *     The descriptions of the security groups.
@@ -12412,6 +12847,7 @@ struct osc_read_server_certificates_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.Paths: array string
          *     The paths to the server certificates.
@@ -12431,6 +12867,7 @@ struct osc_read_snapshot_export_tasks_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.TaskIds: array string
          *     The IDs of the export tasks.
@@ -12461,6 +12898,7 @@ struct osc_read_snapshots_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.AccountAliases: array string
          *     The account aliases of the owners of the snapshots.
@@ -12534,6 +12972,7 @@ struct osc_read_subnets_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.AvailableIpsCounts: array integer
          *     The number of available IPs.
@@ -12586,6 +13025,7 @@ struct osc_read_subregions_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.RegionNames: array string
          *     The names of the Regions containing the Subregions.
@@ -12620,6 +13060,7 @@ struct osc_read_tags_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.Keys: array string
          *     The keys of the tags that are assigned to the resources. You can 
@@ -12632,15 +13073,13 @@ struct osc_read_tags_arg  {
          *     The IDs of the resources with which the tags are associated.
          *   --Filters.ResourceTypes: array string
          *     The resource type (`customer-gateway` \\| `dhcpoptions` \\| 
-         * `image` \\| 
-         *     `instance` \\| `keypair` \\| `natgateway` \\| `network-interface` 
-         * \\| 
-         *     `public-ip` \\| `route-table` \\| `security-group` \\| `snapshot` 
-         * \\| 
-         *     `subnet` \\| `task` \\| `virtual-private-gateway` \\| `volume` 
-         * \\| `vpc` 
-         *     \\| `vpc-endpoint` \\| `vpc-peering-connection`\\| 
-         * `vpn-connection`).
+         *     `flexible-gpu` \\| `image` \\| `instance` \\| `keypair` \\| 
+         * `natgateway` 
+         *     \\| `network-interface` \\| `public-ip` \\| `route-table` \\| 
+         *     `security-group` \\| `snapshot` \\| `subnet` \\| `task` \\| 
+         *     `virtual-private-gateway` \\| `volume` \\| `vpc` \\| 
+         * `vpc-endpoint` \\| 
+         *     `vpc-peering-connection`\\| `vpn-connection`).
          *   --Filters.Values: array string
          *     The values of the tags that are assigned to the resources. You 
          * can use 
@@ -12786,6 +13225,7 @@ struct osc_read_user_groups_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.PathPrefix: string
          *     The path prefix of the groups. If not specified, it is set to a 
@@ -12854,6 +13294,7 @@ struct osc_read_users_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.UserIds: array string
          *     The IDs of the users.
@@ -12884,6 +13325,7 @@ struct osc_read_virtual_gateways_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.ConnectionTypes: array string
          *     The types of the virtual gateways (always `ipsec.1`).
@@ -12935,6 +13377,7 @@ struct osc_read_vm_groups_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.Descriptions: array string
          *     The descriptions of the VM groups.
@@ -12976,6 +13419,7 @@ struct osc_read_vm_templates_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.CpuCores: array integer
          *     The number of vCores.
@@ -13021,6 +13465,7 @@ struct osc_read_vm_types_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.BsuOptimized: bool
          *     This parameter is not available. It is present in our API for the 
@@ -13090,6 +13535,7 @@ struct osc_read_vms_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.Architectures: array string
          *     The architectures of the VMs (`i386` \\| `x86_64`).
@@ -13245,6 +13691,10 @@ struct osc_read_vms_arg  {
          * &quot;Filters&quot;:{&quot;Tags&quot;:[&quot;TAGKEY=TAGVALUE&quot;]}.
          *   --Filters.Tenancies: array string
          *     The tenancies of the VMs (`dedicated` \\| `default` \\| `host`).
+         *   --Filters.TpmEnabled: bool
+         *     Whether a virtual Trusted Platform Module (vTPM) is enabled 
+         * (true) or 
+         *     disabled (false) on the VM.
          *   --Filters.VmIds: array string
          *     One or more IDs of VMs.
          *   --Filters.VmSecurityGroupIds: array string
@@ -13298,6 +13748,7 @@ struct osc_read_vms_state_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.MaintenanceEventCodes: array string
          *     The code for the scheduled event (`system-reboot` \\| 
@@ -13332,6 +13783,37 @@ struct osc_read_vms_state_arg  {
 	long long int results_per_page;
 };
 
+struct osc_read_volume_update_tasks_arg  {
+        /* Required: null
+ */
+        /*
+         * If true, checks whether you have the required permissions to perform 
+         * the action.
+         */
+        int is_set_dry_run;
+	int dry_run;
+        /*
+         * One or more filters.
+         *   One or more filters.
+         *   --Filters.TaskIds: array string
+         *     The IDs of the volume update tasks.
+         */
+        char *filters_str;
+        int is_set_filters;
+	struct filters_update_volume_task filters;
+        /*
+         * The token to request the next page of results. Each token refers to a 
+         * specific page.
+         */
+	char *next_page_token;
+        /*
+         * The maximum number of logs returned in a single response (between `1` 
+         * and `1000`, both included). By default, `100`.
+         */
+        int is_set_results_per_page;
+	long long int results_per_page;
+};
+
 struct osc_read_volumes_arg  {
         /* Required: null
  */
@@ -13342,6 +13824,7 @@ struct osc_read_volumes_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.ClientTokens: array string
          *     The idempotency tokens provided when creating the volumes.
@@ -13414,6 +13897,7 @@ struct osc_read_vpn_connections_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * One or more filters.
          *   One or more filters.
          *   --Filters.BgpAsns: array integer
          *     The Border Gateway Protocol (BGP) Autonomous System Numbers 
@@ -14121,9 +14605,12 @@ struct osc_update_image_arg  {
          */
 	char *image_id;
         /*
+         * Information about the permissions for the resource.<br />\nSpecify 
+         * either the `Additions` or the `Removals` parameter.
          *   Information about the permissions for the resource.<br />\nSpecify 
          *   either the `Additions` or the `Removals` parameter.
          *   --PermissionsToLaunch.Additions: ref PermissionsOnResource
+         *     Permissions for the resource.
          *       Permissions for the resource.
          *       --PermissionsToLaunch.Additions.AccountIds: array string
          *         One or more account IDs that the permission is associated 
@@ -14139,6 +14626,7 @@ struct osc_update_image_arg  {
          * public. If false, 
          *         the resource is private.
          *   --PermissionsToLaunch.Removals: ref PermissionsOnResource
+         *     Permissions for the resource.
          *       Permissions for the resource.
          *       --PermissionsToLaunch.Removals.AccountIds: array string
          *         One or more account IDs that the permission is associated 
@@ -14197,6 +14685,7 @@ struct osc_update_load_balancer_arg  {
         /* Required: LoadBalancerName
  */
         /*
+         * Information about access logs.
          *   Information about access logs.
          *   --AccessLog.IsEnabled: bool
          *     If true, access logs are enabled for your load balancer. If 
@@ -14225,6 +14714,7 @@ struct osc_update_load_balancer_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * Information about the health check configuration.
          *   Information about the health check configuration.
          *   --HealthCheck.CheckInterval: long long int
          *     The number of seconds between two requests (between `5` and `600` 
@@ -14365,6 +14855,9 @@ struct osc_update_nic_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * Information about the NIC attachment. If you are modifying the 
+         * `DeleteOnVmDeletion` attribute, you must specify the ID of the NIC 
+         * attachment.
          *   Information about the NIC attachment. If you are modifying the 
          *   `DeleteOnVmDeletion` attribute, you must specify the ID of the NIC 
          *   attachment.
@@ -14508,9 +15001,12 @@ struct osc_update_snapshot_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
+         * Information about the permissions for the resource.<br />\nSpecify 
+         * either the `Additions` or the `Removals` parameter.
          *   Information about the permissions for the resource.<br />\nSpecify 
          *   either the `Additions` or the `Removals` parameter.
          *   --PermissionsToCreateVolume.Additions: ref PermissionsOnResource
+         *     Permissions for the resource.
          *       Permissions for the resource.
          *       --PermissionsToCreateVolume.Additions.AccountIds: array string
          *         One or more account IDs that the permission is associated 
@@ -14526,6 +15022,7 @@ struct osc_update_snapshot_arg  {
          * public. If false, 
          *         the resource is private.
          *   --PermissionsToCreateVolume.Removals: ref PermissionsOnResource
+         *     Permissions for the resource.
          *       Permissions for the resource.
          *       --PermissionsToCreateVolume.Removals.AccountIds: array string
          *         One or more account IDs that the permission is associated 
@@ -14668,11 +15165,19 @@ struct osc_update_vm_arg  {
         /* Required: VmId
  */
         /*
+         * The action to perform on the next boot of the VM.
          *   The action to perform on the next boot of the VM.
          *   --ActionsOnNextBoot.SecureBoot: string
-         *       One action to perform on the next boot of the VM. For more 
+         *     One action to perform on the next boot of the VM. For more 
          * information, 
-         *       see [About Secure 
+         *     see [About Secure 
+         *     
+         * Boot](https://docs.outscale.com/en/userguide/About-Secure-Boot.html#_s
+         * ecur
+         *     e_boot_actions).
+         *       One action to perform on the next boot of the VM (`enable` | 
+         * `disable` | 
+         *       `setup-mode` | `none`). For more information, see [About Secure 
          *       
          * Boot](https://docs.outscale.com/en/userguide/About-Secure-Boot.html#_s
          * ecur
@@ -14685,6 +15190,7 @@ struct osc_update_vm_arg  {
          * One or more block device mappings of the VM.
          *   Information about the block device mapping.
          *   --BlockDeviceMappings.INDEX.Bsu: ref BsuToUpdateVm
+         *     Information about the BSU volume.
          *       Information about the BSU volume.
          *       --BlockDeviceMappings.INDEX.Bsu.DeleteOnVmDeletion: bool
          *         If set to true, the volume is deleted when terminating the 
@@ -14825,22 +15331,16 @@ struct osc_update_volume_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * **Cold volume**: the new number of I/O operations per second (IOPS). 
-         * This parameter can be specified only if you update an `io1` volume or 
-         * if you change the type of the volume for an `io1`. This modification 
-         * is instantaneous. <br />\n**Hot volume**: the new number of I/O 
-         * operations per second (IOPS). This parameter can be specified only if 
-         * you update an `io1` volume. This modification is not instantaneous. 
-         * <br /><br />\nThe maximum number of IOPS allowed for `io1` volumes is 
-         * `13000` with a maximum performance ratio of 300 IOPS per gibibyte.
+         * The new number of I/O operations per second (IOPS). This parameter 
+         * can be specified only if you update an `io1` volume or if you change 
+         * the type of the volume for an `io1`.
          */
         int is_set_iops;
 	long long int iops;
         /*
-         * **Cold volume**: the new size of the volume, in gibibytes (GiB). This 
-         * value must be equal to or greater than the current size of the 
-         * volume. This modification is not instantaneous. <br />\n**Hot 
-         * volume**: you cannot change the size of a hot volume.
+         * The new size of the volume, in gibibytes (GiB). This value must be 
+         * equal to or greater than the current size of the volume. This 
+         * modification is not instantaneous.
          */
         int is_set_size;
 	long long int size;
@@ -14849,10 +15349,8 @@ struct osc_update_volume_arg  {
          */
 	char *volume_id;
         /*
-         * **Cold volume**: the new type of the volume (`standard` \\| `io1` \\| 
-         * `gp2`). This modification is instantaneous. If you update to an `io1` 
-         * volume, you must also specify the `Iops` parameter.<br />\n**Hot 
-         * volume**: you cannot change the type of a hot volume.
+         * The new type of the volume (`standard` \\| `io1` \\| `gp2`). If you 
+         * update to an `io1` volume, you must also specify the `Iops` parameter.
          */
 	char *volume_type;
 };
@@ -14879,8 +15377,12 @@ struct osc_update_vpn_connection_arg  {
          */
 	char *vpn_connection_id;
         /*
+         * Information about the VPN options.
          *   Information about the VPN options.
          *   --VpnOptions.Phase1Options: ref Phase1Options
+         *     This parameter is not available. It is present in our API for the 
+         * sake 
+         *     of historical compatibility with AWS.
          *       This parameter is not available. It is present in our API for 
          * the sake 
          *       of historical compatibility with AWS.
@@ -14923,6 +15425,8 @@ struct osc_update_vpn_connection_arg  {
          * the sake 
          *         of historical compatibility with AWS.
          *   --VpnOptions.Phase2Options: ref Phase2Options
+         *     Information about Phase 2 of the Internet Key Exchange (IKE) 
+         *     negotiation.
          *       Information about Phase 2 of the Internet Key Exchange (IKE) 
          *       negotiation.
          *       --VpnOptions.Phase2Options.Phase2DhGroupNumbers: array integer
@@ -15170,6 +15674,7 @@ int osc_read_admin_password(struct osc_env *e, struct osc_str *out, struct osc_r
 int osc_read_api_access_policy(struct osc_env *e, struct osc_str *out, struct osc_read_api_access_policy_arg *args);
 int osc_read_api_access_rules(struct osc_env *e, struct osc_str *out, struct osc_read_api_access_rules_arg *args);
 int osc_read_api_logs(struct osc_env *e, struct osc_str *out, struct osc_read_api_logs_arg *args);
+int osc_read_co2_emission_account(struct osc_env *e, struct osc_str *out, struct osc_read_co2_emission_account_arg *args);
 int osc_read_cas(struct osc_env *e, struct osc_str *out, struct osc_read_cas_arg *args);
 int osc_read_catalog(struct osc_env *e, struct osc_str *out, struct osc_read_catalog_arg *args);
 int osc_read_catalogs(struct osc_env *e, struct osc_str *out, struct osc_read_catalogs_arg *args);
@@ -15233,6 +15738,7 @@ int osc_read_vm_types(struct osc_env *e, struct osc_str *out, struct osc_read_vm
 int osc_read_vms_health(struct osc_env *e, struct osc_str *out, struct osc_read_vms_health_arg *args);
 int osc_read_vms(struct osc_env *e, struct osc_str *out, struct osc_read_vms_arg *args);
 int osc_read_vms_state(struct osc_env *e, struct osc_str *out, struct osc_read_vms_state_arg *args);
+int osc_read_volume_update_tasks(struct osc_env *e, struct osc_str *out, struct osc_read_volume_update_tasks_arg *args);
 int osc_read_volumes(struct osc_env *e, struct osc_str *out, struct osc_read_volumes_arg *args);
 int osc_read_vpn_connections(struct osc_env *e, struct osc_str *out, struct osc_read_vpn_connections_arg *args);
 int osc_reboot_vms(struct osc_env *e, struct osc_str *out, struct osc_reboot_vms_arg *args);
