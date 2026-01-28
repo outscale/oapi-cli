@@ -1000,7 +1000,8 @@ static const char *calls_args_descriptions[] = {
 	"      The prefix for the key of the OOS object.\n"
 ,
 	"--Architecture: string\n"
-	"  **When registering from a snapshot:** The architecture of the OMI (`i386` or `x86_64`).\n"
+	"  **When registering from a snapshot:** The architecture of the OMI (`i386` or `x86_64`). By \n"
+	"  default, set to `x86_64`.\n"
 "--BlockDeviceMappings: array ref BlockDeviceMappingImage\n"
 	"  **(required) When registering from a snapshot:** One or more block device mappings.\n"
 	"    One or more parameters used to automatically set up volumes when the VM \n"
@@ -1143,8 +1144,9 @@ static const char *calls_args_descriptions[] = {
 	"  parameter is `1`, which means that the sticky session lasts for the duration of the browser \n"
 	"  session.\n"
 "--CookieName: string\n"
-	"  The name of the application cookie used for stickiness. This parameter is required if you \n"
-	"  create a stickiness policy based on an application-generated cookie.\n"
+	"  The name of the application cookie used for stickiness, between 1 and 255 characters. This \n"
+	"  parameter is required if you create a stickiness policy based on an application-generated \n"
+	"  cookie.\n"
 "--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--LoadBalancerName: string\n"
@@ -1201,7 +1203,7 @@ static const char *calls_args_descriptions[] = {
 	"  One or more tags assigned to the load balancer.\n"
 	"    Information about the tag.\n"
 	"    --Tags.INDEX.Key: string\n"
-	"      The key of the tag, with a minimum of 1 character.\n"
+	"      The key of the tag, between 1 and 255 characters.\n"
 	"    --Tags.INDEX.Value: string\n"
 	"      The value of the tag, between 0 and 255 characters.\n"
 ,
@@ -1213,7 +1215,7 @@ static const char *calls_args_descriptions[] = {
 	"  One or more tags to add to the specified load balancers.\n"
 	"    Information about the tag.\n"
 	"    --Tags.INDEX.Key: string\n"
-	"      The key of the tag, with a minimum of 1 character.\n"
+	"      The key of the tag, between 1 and 255 characters.\n"
 	"    --Tags.INDEX.Value: string\n"
 	"      The value of the tag, between 0 and 255 characters.\n"
 ,
@@ -1364,7 +1366,7 @@ static const char *calls_args_descriptions[] = {
 	"  website](https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml). If you \n"
 	"  specify this parameter, you cannot specify the `Rules` parameter and its subparameters.\n"
 "--IpRange: string\n"
-	"  The IP range for the security group rule, in CIDR notation (for example, 10.0.0.0/16). If \n"
+	"  The IP range for the security group rule, in CIDR notation (for example, `10.0.0.0/16`). If \n"
 	"  you specify this parameter, you cannot specify the `Rules` parameter and its subparameters.\n"
 "--Rules: array ref SecurityGroupRule\n"
 	"  Information about the security group rule to create. If you specify this parent parameter \n"
@@ -1382,7 +1384,9 @@ static const char *calls_args_descriptions[] = {
 	"      s.xhtml).\n"
 	"    --Rules.INDEX.IpRanges: array string\n"
 	"      One or more IP ranges for the security group rules, in CIDR notation \n"
-	"      (for example, `10.0.0.0/16`).\n"
+	"      (for example, `[\"10.0.0.0/24\" , \"10.0.1.0/24\"]`).\n"
+	"    --Rules.INDEX.SecurityGroupRuleId: string\n"
+	"      The ID of the security group rule.\n"
 	"    --Rules.INDEX.SecurityGroupsMembers: array ref SecurityGroupsMember\n"
 	"      Information about one or more source or destination security groups.\n"
 	"        Information about a source or destination security group.\n"
@@ -1392,8 +1396,8 @@ static const char *calls_args_descriptions[] = {
 	"          The ID of a source or destination security group that you want to link \n"
 	"          to the security group of the rule.\n"
 	"        --Rules.INDEX.SecurityGroupsMembers.INDEX.SecurityGroupName: string\n"
-	"          (Public Cloud only) The name of a source or destination security group \n"
-	"          that you want to link to the security group of the rule.\n"
+	"          The name of a source or destination security group that you want to link \n"
+	"          to the security group of the rule.\n"
 	"    --Rules.INDEX.ServiceIds: array string\n"
 	"      One or more service IDs to allow traffic from a Net to access the \n"
 	"      corresponding OUTSCALE services. For more information, see \n"
@@ -1498,7 +1502,7 @@ static const char *calls_args_descriptions[] = {
 	"  One or more tags to add to the specified resources.\n"
 	"    Information about the tag.\n"
 	"    --Tags.INDEX.Key: string\n"
-	"      The key of the tag, with a minimum of 1 character.\n"
+	"      The key of the tag, between 1 and 255 characters.\n"
 	"    --Tags.INDEX.Value: string\n"
 	"      The value of the tag, between 0 and 255 characters.\n"
 ,
@@ -1544,7 +1548,7 @@ static const char *calls_args_descriptions[] = {
 	"  One or more tags to add to the VM group.\n"
 	"    Information about the tag.\n"
 	"    --Tags.INDEX.Key: string\n"
-	"      The key of the tag, with a minimum of 1 character.\n"
+	"      The key of the tag, between 1 and 255 characters.\n"
 	"    --Tags.INDEX.Value: string\n"
 	"      The value of the tag, between 0 and 255 characters.\n"
 "--VmCount: long long int\n"
@@ -1575,7 +1579,7 @@ static const char *calls_args_descriptions[] = {
 	"  One or more tags to add to the VM template.\n"
 	"    Information about the tag.\n"
 	"    --Tags.INDEX.Key: string\n"
-	"      The key of the tag, with a minimum of 1 character.\n"
+	"      The key of the tag, between 1 and 255 characters.\n"
 	"    --Tags.INDEX.Value: string\n"
 	"      The value of the tag, between 0 and 255 characters.\n"
 "--VmTemplateName: string\n"
@@ -1985,7 +1989,9 @@ static const char *calls_args_descriptions[] = {
 	"      s.xhtml).\n"
 	"    --Rules.INDEX.IpRanges: array string\n"
 	"      One or more IP ranges for the security group rules, in CIDR notation \n"
-	"      (for example, `10.0.0.0/16`).\n"
+	"      (for example, `[\"10.0.0.0/24\" , \"10.0.1.0/24\"]`).\n"
+	"    --Rules.INDEX.SecurityGroupRuleId: string\n"
+	"      The ID of the security group rule.\n"
 	"    --Rules.INDEX.SecurityGroupsMembers: array ref SecurityGroupsMember\n"
 	"      Information about one or more source or destination security groups.\n"
 	"        Information about a source or destination security group.\n"
@@ -1995,8 +2001,8 @@ static const char *calls_args_descriptions[] = {
 	"          The ID of a source or destination security group that you want to link \n"
 	"          to the security group of the rule.\n"
 	"        --Rules.INDEX.SecurityGroupsMembers.INDEX.SecurityGroupName: string\n"
-	"          (Public Cloud only) The name of a source or destination security group \n"
-	"          that you want to link to the security group of the rule.\n"
+	"          The name of a source or destination security group that you want to link \n"
+	"          to the security group of the rule.\n"
 	"    --Rules.INDEX.ServiceIds: array string\n"
 	"      One or more service IDs to allow traffic from a Net to access the \n"
 	"      corresponding OUTSCALE services. For more information, see \n"
@@ -2038,7 +2044,7 @@ static const char *calls_args_descriptions[] = {
 	"  value are deleted).\n"
 	"    Information about the tag.\n"
 	"    --Tags.INDEX.Key: string\n"
-	"      The key of the tag, with a minimum of 1 character.\n"
+	"      The key of the tag, between 1 and 255 characters.\n"
 	"    --Tags.INDEX.Value: string\n"
 	"      The value of the tag, between 0 and 255 characters.\n"
 ,
@@ -2483,7 +2489,10 @@ static const char *calls_args_descriptions[] = {
 "--ShowPrice: bool\n"
 	"  If true, the response also includes the unit price of the consumed resource (`UnitPrice`) \n"
 	"  and the total price of the consumed resource during the specified time period (`Price`), in \n"
-	"  the currency of your account.\n"
+	"  the currency of the Region's catalog.\n"
+"--ShowResourceDetails: bool\n"
+	"  By default or if false, returns the consumption aggregated by resource type. If true, the \n"
+	"  response returns the consumption per `ResourceId`.\n"
 "--ToDate: string\n"
 	"  The end of the time period, in ISO 8601 date format (for example, `2020-06-30`). The \n"
 	"  date-time format is also accepted, but only with a time set to midnight (for example, \n"
@@ -2607,7 +2616,7 @@ static const char *calls_args_descriptions[] = {
 	"      One or more tags associated with the fGPUs.\n"
 	"        Information about the tag.\n"
 	"        --Filters.Tags.INDEX.Key: string\n"
-	"          The key of the tag, with a minimum of 1 character.\n"
+	"          The key of the tag, between 1 and 255 characters.\n"
 	"        --Filters.Tags.INDEX.ResourceId: string\n"
 	"          The ID of the resource.\n"
 	"        --Filters.Tags.INDEX.ResourceType: string\n"
@@ -4433,7 +4442,7 @@ static const char *calls_args_descriptions[] = {
 	"  New tags for your VM group.\n"
 	"    Information about the tag.\n"
 	"    --Tags.INDEX.Key: string\n"
-	"      The key of the tag, with a minimum of 1 character.\n"
+	"      The key of the tag, between 1 and 255 characters.\n"
 	"    --Tags.INDEX.Value: string\n"
 	"      The value of the tag, between 0 and 255 characters.\n"
 "--VmGroupId: string\n"
@@ -4518,7 +4527,7 @@ static const char *calls_args_descriptions[] = {
 	"  New tags for your VM template.\n"
 	"    Information about the tag.\n"
 	"    --Tags.INDEX.Key: string\n"
-	"      The key of the tag, with a minimum of 1 character.\n"
+	"      The key of the tag, between 1 and 255 characters.\n"
 	"    --Tags.INDEX.Value: string\n"
 	"      The value of the tag, between 0 and 255 characters.\n"
 "--VmTemplateId: string\n"
@@ -6035,6 +6044,11 @@ static int consumption_entry_setter(struct consumption_entry *args, struct osc_s
 	}
 	if (args->is_set_price || args->price) {
 		ARG_TO_JSON(Price, double, args->price);
+	   	ret += 1;
+	}
+	if (args->resource_id) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"ResourceId\":", args->resource_id);
 	   	ret += 1;
 	}
 	if (args->service) {
@@ -15584,6 +15598,11 @@ static int security_group_rule_setter(struct security_group_rule *args, struct o
 	} else if (args->ip_ranges_str) {
 		ARG_TO_JSON(IpRanges, string, args->ip_ranges_str);
 		ret += 1;
+	}
+	if (args->security_group_rule_id) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"SecurityGroupRuleId\":", args->security_group_rule_id);
+	   	ret += 1;
 	}
         if (args->security_groups_members) {
 	        TRY_APPEND_COL(count_args, data);
@@ -26683,6 +26702,10 @@ static  int read_consumption_account_data(struct osc_env *e, struct osc_read_con
 	}
 	if (args->is_set_show_price) {
 		ARG_TO_JSON(ShowPrice, bool, args->show_price);
+	   	ret += 1;
+	}
+	if (args->is_set_show_resource_details) {
+		ARG_TO_JSON(ShowResourceDetails, bool, args->show_resource_details);
 	   	ret += 1;
 	}
 	if (args->to_date) {

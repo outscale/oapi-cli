@@ -47,7 +47,7 @@
 
 #define OAPI_RAW_OUTPUT 1
 
-#define OAPI_CLI_VERSION "0.12.0"
+#define OAPI_CLI_VERSION "0.13.0"
 
 #define OAPI_CLI_UAGENT "oapi-cli/"OAPI_CLI_VERSION"; osc-sdk-c/"
 
@@ -1512,6 +1512,11 @@ int consumption_entry_parser(void *v_s, char *str, char *aa, struct ptr_array *p
             TRY(!aa, "Price argument missing\n");
             s->is_set_price = 1;
             s->price = atof(aa);
+         } else
+	if ((aret = argcmp(str, "ResourceId")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "ResourceId argument missing\n");
+            s->resource_id = aa; // string string
+
          } else
 	if ((aret = argcmp(str, "Service")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "Service argument missing\n");
@@ -16908,6 +16913,11 @@ int security_group_rule_parser(void *v_s, char *str, char *aa, struct ptr_array 
          } else if (!(aret = argcmp(str, "IpRanges[]")) || aret == '=') {
                TRY(!aa, "IpRanges[] argument missing\n");
                SET_NEXT(s->ip_ranges, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "SecurityGroupRuleId")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "SecurityGroupRuleId argument missing\n");
+            s->security_group_rule_id = aa; // string string
+
          } else
 	if ((aret = argcmp(str, "SecurityGroupsMembers")) == 0 || aret == '=' || aret == '.') {
             char *dot_pos = strchr(str, '.');
@@ -36887,6 +36897,22 @@ int main(int ac, char **av)
 				          		s->show_price = 0;
 				           } else {
 				          		BAD_RET("ShowPrice require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "ShowResourceDetails")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ShowResourceDetails argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_show_resource_details = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->show_resource_details = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->show_resource_details = 0;
+				           } else {
+				          		BAD_RET("ShowResourceDetails require true/false\n");
 				           }
 				      } else
 			      if ((aret = argcmp(next_a, "ToDate")) == 0 || aret == '='  || aret == '.') {

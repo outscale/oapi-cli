@@ -77,8 +77,8 @@ struct osc_str {
 
 #define OSC_ENV_FREE_AK_SK (OSC_ENV_FREE_AK | OSC_ENV_FREE_SK)
 
-#define OSC_API_VERSION "1.37.1"
-#define OSC_SDK_VERSION 0X001800
+#define OSC_API_VERSION "1.39.1"
+#define OSC_SDK_VERSION 0X001900
 
 enum osc_auth_method {
 	OSC_AKSK_METHOD,
@@ -379,7 +379,8 @@ struct api_access_rule {
 
 struct application_sticky_cookie_policy {
         /*
-         * The name of the application cookie used for stickiness.
+         * The name of the application cookie used for stickiness, between 1 and 
+         * 255 characters.
          */
 	char *cookie_name;
         /*
@@ -885,7 +886,7 @@ struct client_gateway {
          * One or more tags associated with the client gateway.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -923,6 +924,10 @@ struct consumption_entry {
          */
         int is_set_price;
 	double price;
+        /*
+         * The ID of the consumed resource.
+         */
+	char *resource_id;
         /*
          * The service of the API call (`TinaOS-FCU`, `TinaOS-LBU`, 
          * `TinaOS-DirectLink`, `TinaOS-OOS`, `TinaOS-OSU`, or `OKS`).
@@ -1025,7 +1030,7 @@ struct dhcp_options_set {
          * One or more tags associated with the DHCP options set.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -1517,7 +1522,7 @@ struct filters_flexible_gpu {
          * One or more tags associated with the fGPUs.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.ResourceId: string
          *     The ID of the resource.
          *   --Tags.INDEX.ResourceType: string
@@ -3478,7 +3483,7 @@ struct flexible_gpu {
          * One or more tags associated with the fGPU.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.ResourceId: string
          *     The ID of the resource.
          *   --Tags.INDEX.ResourceType: string
@@ -3743,7 +3748,7 @@ struct image {
          * One or more tags associated with the OMI.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -3816,7 +3821,7 @@ struct image_export_task {
          * One or more tags associated with the image export task.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -3863,7 +3868,7 @@ struct internet_service {
          * One or more tags associated with the internet service.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -3895,7 +3900,7 @@ struct keypair {
          * One or more tags associated with the keypair.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -3934,7 +3939,7 @@ struct keypair_created {
          * One or more tags associated with the keypair.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -4311,7 +4316,9 @@ struct load_balancer {
          * The stickiness policies defined for the load balancer.
          *   Information about the stickiness policy.
          *   --ApplicationStickyCookiePolicies.INDEX.CookieName: string
-         *     The name of the application cookie used for stickiness.
+         *     The name of the application cookie used for stickiness, between 1 
+         * and 
+         *     255 characters.
          *   --ApplicationStickyCookiePolicies.INDEX.PolicyName: string
          *     The mnemonic name for the policy being created. The name must be 
          * unique 
@@ -4482,7 +4489,7 @@ struct load_balancer {
          * One or more tags associated with the load balancer.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -4697,7 +4704,7 @@ struct nat_service {
          * One or more tags associated with the NAT service.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -4729,7 +4736,7 @@ struct net {
          * One or more tags associated with the Net.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -4769,7 +4776,7 @@ struct net_access_point {
          * One or more tags associated with the Net access point.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -4860,7 +4867,7 @@ struct net_peering {
          * One or more tags associated with the Net peering.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -5010,7 +5017,7 @@ struct nic {
          * One or more tags associated with the NIC.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -5659,7 +5666,7 @@ struct public_ip {
          * One or more tags associated with the public IP.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -5795,7 +5802,7 @@ struct resource_load_balancer_tag {
 
 struct resource_tag {
         /*
-         * The key of the tag, with a minimum of 1 character.
+         * The key of the tag, between 1 and 255 characters.
          */
 	char *key;
         /*
@@ -5952,7 +5959,7 @@ struct route_table {
          * One or more tags associated with the route table.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -5990,7 +5997,10 @@ struct security_group {
          *   --InboundRules.INDEX.IpRanges: array string
          *     One or more IP ranges for the security group rules, in CIDR 
          * notation 
-         *     (for example, `10.0.0.0/16`).
+         *     (for example, `[&quot;10.0.0.0/24&quot; , 
+         * &quot;10.0.1.0/24&quot;]`).
+         *   --InboundRules.INDEX.SecurityGroupRuleId: string
+         *     The ID of the security group rule.
          *   --InboundRules.INDEX.SecurityGroupsMembers: array ref 
          * SecurityGroupsMember
          *     Information about one or more source or destination security 
@@ -6009,9 +6019,9 @@ struct security_group {
          *       
          * --InboundRules.INDEX.SecurityGroupsMembers.INDEX.SecurityGroupName: 
          * string
-         *         (Public Cloud only) The name of a source or destination 
-         * security group 
-         *         that you want to link to the security group of the rule.
+         *         The name of a source or destination security group that you 
+         * want to link 
+         *         to the security group of the rule.
          *   --InboundRules.INDEX.ServiceIds: array string
          *     One or more service IDs to allow traffic from a Net to access the 
          *     corresponding OUTSCALE services. For more information, see 
@@ -6048,7 +6058,10 @@ struct security_group {
          *   --OutboundRules.INDEX.IpRanges: array string
          *     One or more IP ranges for the security group rules, in CIDR 
          * notation 
-         *     (for example, `10.0.0.0/16`).
+         *     (for example, `[&quot;10.0.0.0/24&quot; , 
+         * &quot;10.0.1.0/24&quot;]`).
+         *   --OutboundRules.INDEX.SecurityGroupRuleId: string
+         *     The ID of the security group rule.
          *   --OutboundRules.INDEX.SecurityGroupsMembers: array ref 
          * SecurityGroupsMember
          *     Information about one or more source or destination security 
@@ -6067,9 +6080,9 @@ struct security_group {
          *       
          * --OutboundRules.INDEX.SecurityGroupsMembers.INDEX.SecurityGroupName: 
          * string
-         *         (Public Cloud only) The name of a source or destination 
-         * security group 
-         *         that you want to link to the security group of the rule.
+         *         The name of a source or destination security group that you 
+         * want to link 
+         *         to the security group of the rule.
          *   --OutboundRules.INDEX.ServiceIds: array string
          *     One or more service IDs to allow traffic from a Net to access the 
          *     corresponding OUTSCALE services. For more information, see 
@@ -6094,7 +6107,7 @@ struct security_group {
          * One or more tags associated with the security group.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -6131,10 +6144,14 @@ struct security_group_rule {
 	char *ip_protocol;
         /*
          * One or more IP ranges for the security group rules, in CIDR notation 
-         * (for example, `10.0.0.0/16`).
+         * (for example, `[&quot;10.0.0.0/24&quot; , &quot;10.0.1.0/24&quot;]`).
          */
         char *ip_ranges_str;
 	char **ip_ranges;
+        /*
+         * The ID of the security group rule.
+         */
+	char *security_group_rule_id;
         /*
          * Information about one or more source or destination security groups.
          *   Information about a source or destination security group.
@@ -6145,9 +6162,9 @@ struct security_group_rule {
          * link 
          *     to the security group of the rule.
          *   --SecurityGroupsMembers.INDEX.SecurityGroupName: string
-         *     (Public Cloud only) The name of a source or destination security 
-         * group 
-         *     that you want to link to the security group of the rule.
+         *     The name of a source or destination security group that you want 
+         * to link 
+         *     to the security group of the rule.
          */
         char *security_groups_members_str;
         int nb_security_groups_members;
@@ -6178,8 +6195,8 @@ struct security_groups_member {
          */
 	char *security_group_id;
         /*
-         * (Public Cloud only) The name of a source or destination security 
-         * group that you want to link to the security group of the rule.
+         * The name of a source or destination security group that you want to 
+         * link to the security group of the rule.
          */
 	char *security_group_name;
 };
@@ -6288,7 +6305,7 @@ struct snapshot {
          * One or more tags associated with the snapshot.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -6344,7 +6361,7 @@ struct snapshot_export_task {
          * One or more tags associated with the snapshot export task.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -6394,7 +6411,7 @@ struct subnet {
          * One or more tags associated with the Subnet.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -6428,7 +6445,7 @@ struct subregion {
 
 struct tag {
         /*
-         * The key of the tag, with a minimum of 1 character.
+         * The key of the tag, between 1 and 255 characters.
          */
 	char *key;
         /*
@@ -6595,7 +6612,7 @@ struct virtual_gateway {
          * One or more tags associated with the virtual gateway.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -6881,7 +6898,7 @@ struct vm {
          * One or more tags associated with the VM.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -6950,7 +6967,7 @@ struct vm_group {
          * One or more tags associated with the VM group.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -7068,7 +7085,7 @@ struct vm_template {
          * One or more tags associated with the VM template.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -7196,7 +7213,7 @@ struct volume {
          * One or more tags associated with the volume.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -7301,7 +7318,7 @@ struct volume_update_task {
          * One or more tags associated with the volume update task.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -7485,7 +7502,7 @@ struct vpn_connection {
          * One or more tags associated with the VPN connection.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -8149,7 +8166,7 @@ struct osc_create_image_arg  {
  */
         /*
          * **When registering from a snapshot:** The architecture of the OMI 
-         * (`i386` or `x86_64`).
+         * (`i386` or `x86_64`). By default, set to `x86_64`.
          */
 	char *architecture;
         /*
@@ -8421,9 +8438,9 @@ struct osc_create_load_balancer_policy_arg  {
         int is_set_cookie_expiration_period;
 	long long int cookie_expiration_period;
         /*
-         * The name of the application cookie used for stickiness. This 
-         * parameter is required if you create a stickiness policy based on an 
-         * application-generated cookie.
+         * The name of the application cookie used for stickiness, between 1 and 
+         * 255 characters. This parameter is required if you create a stickiness 
+         * policy based on an application-generated cookie.
          */
 	char *cookie_name;
         /*
@@ -8530,7 +8547,7 @@ struct osc_create_load_balancer_arg  {
          * One or more tags assigned to the load balancer.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -8557,7 +8574,7 @@ struct osc_create_load_balancer_tags_arg  {
          * One or more tags to add to the specified load balancers.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -8911,7 +8928,7 @@ struct osc_create_security_group_rule_arg  {
 	char *ip_protocol;
         /*
          * The IP range for the security group rule, in CIDR notation (for 
-         * example, 10.0.0.0/16). If you specify this parameter, you cannot 
+         * example, `10.0.0.0/16`). If you specify this parameter, you cannot 
          * specify the `Rules` parameter and its subparameters.
          */
 	char *ip_range;
@@ -8938,7 +8955,10 @@ struct osc_create_security_group_rule_arg  {
          *   --Rules.INDEX.IpRanges: array string
          *     One or more IP ranges for the security group rules, in CIDR 
          * notation 
-         *     (for example, `10.0.0.0/16`).
+         *     (for example, `[&quot;10.0.0.0/24&quot; , 
+         * &quot;10.0.1.0/24&quot;]`).
+         *   --Rules.INDEX.SecurityGroupRuleId: string
+         *     The ID of the security group rule.
          *   --Rules.INDEX.SecurityGroupsMembers: array ref SecurityGroupsMember
          *     Information about one or more source or destination security 
          * groups.
@@ -8953,9 +8973,9 @@ struct osc_create_security_group_rule_arg  {
          *         to the security group of the rule.
          *       --Rules.INDEX.SecurityGroupsMembers.INDEX.SecurityGroupName: 
          * string
-         *         (Public Cloud only) The name of a source or destination 
-         * security group 
-         *         that you want to link to the security group of the rule.
+         *         The name of a source or destination security group that you 
+         * want to link 
+         *         to the security group of the rule.
          *   --Rules.INDEX.ServiceIds: array string
          *     One or more service IDs to allow traffic from a Net to access the 
          *     corresponding OUTSCALE services. For more information, see 
@@ -9164,7 +9184,7 @@ struct osc_create_tags_arg  {
          * One or more tags to add to the specified resources.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -9272,7 +9292,7 @@ struct osc_create_vm_group_arg  {
          * One or more tags to add to the VM group.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -9338,7 +9358,7 @@ struct osc_create_vm_template_arg  {
          * One or more tags to add to the VM template.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -10283,7 +10303,10 @@ struct osc_delete_security_group_rule_arg  {
          *   --Rules.INDEX.IpRanges: array string
          *     One or more IP ranges for the security group rules, in CIDR 
          * notation 
-         *     (for example, `10.0.0.0/16`).
+         *     (for example, `[&quot;10.0.0.0/24&quot; , 
+         * &quot;10.0.1.0/24&quot;]`).
+         *   --Rules.INDEX.SecurityGroupRuleId: string
+         *     The ID of the security group rule.
          *   --Rules.INDEX.SecurityGroupsMembers: array ref SecurityGroupsMember
          *     Information about one or more source or destination security 
          * groups.
@@ -10298,9 +10321,9 @@ struct osc_delete_security_group_rule_arg  {
          *         to the security group of the rule.
          *       --Rules.INDEX.SecurityGroupsMembers.INDEX.SecurityGroupName: 
          * string
-         *         (Public Cloud only) The name of a source or destination 
-         * security group 
-         *         that you want to link to the security group of the rule.
+         *         The name of a source or destination security group that you 
+         * want to link 
+         *         to the security group of the rule.
          *   --Rules.INDEX.ServiceIds: array string
          *     One or more service IDs to allow traffic from a Net to access the 
          *     corresponding OUTSCALE services. For more information, see 
@@ -10399,7 +10422,7 @@ struct osc_delete_tags_arg  {
          * matching exactly this value are deleted).
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -11427,11 +11450,18 @@ struct osc_read_consumption_account_arg  {
         /*
          * If true, the response also includes the unit price of the consumed 
          * resource (`UnitPrice`) and the total price of the consumed resource 
-         * during the specified time period (`Price`), in the currency of your 
-         * account.
+         * during the specified time period (`Price`), in the currency of the 
+         * Region's catalog.
          */
         int is_set_show_price;
 	int show_price;
+        /*
+         * By default or if false, returns the consumption aggregated by 
+         * resource type. If true, the response returns the consumption per 
+         * `ResourceId`.
+         */
+        int is_set_show_resource_details;
+	int show_resource_details;
         /*
          * The end of the time period, in ISO 8601 date format (for example, 
          * `2020-06-30`). The date-time format is also accepted, but only with a 
@@ -11673,7 +11703,7 @@ struct osc_read_flexible_gpus_arg  {
          *     One or more tags associated with the fGPUs.
          *       Information about the tag.
          *       --Filters.Tags.INDEX.Key: string
-         *         The key of the tag, with a minimum of 1 character.
+         *         The key of the tag, between 1 and 255 characters.
          *       --Filters.Tags.INDEX.ResourceId: string
          *         The ID of the resource.
          *       --Filters.Tags.INDEX.ResourceType: string
@@ -15140,7 +15170,7 @@ struct osc_update_vm_group_arg  {
          * New tags for your VM group.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
@@ -15304,7 +15334,7 @@ struct osc_update_vm_template_arg  {
          * New tags for your VM template.
          *   Information about the tag.
          *   --Tags.INDEX.Key: string
-         *     The key of the tag, with a minimum of 1 character.
+         *     The key of the tag, between 1 and 255 characters.
          *   --Tags.INDEX.Value: string
          *     The value of the tag, between 0 and 255 characters.
          */
