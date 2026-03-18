@@ -77,8 +77,8 @@ struct osc_str {
 
 #define OSC_ENV_FREE_AK_SK (OSC_ENV_FREE_AK | OSC_ENV_FREE_SK)
 
-#define OSC_API_VERSION "1.39.1"
-#define OSC_SDK_VERSION 0X001900
+#define OSC_API_VERSION "1.40.1"
+#define OSC_SDK_VERSION 0X002000
 
 enum osc_auth_method {
 	OSC_AKSK_METHOD,
@@ -137,7 +137,7 @@ struct osc_additional_strings {
 
 struct accepter_net {
         /*
-         * The account ID of the owner of the accepter Net.
+         * The OUTSCALE account ID of the owner of the accepter Net.
          */
 	char *account_id;
         /*
@@ -897,7 +897,7 @@ struct client_gateway {
 
 struct consumption_entry {
         /*
-         * The ID of your TINA account.
+         * The ID of your OUTSCALE account.
          */
 	char *account_id;
         /*
@@ -914,8 +914,8 @@ struct consumption_entry {
          */
 	char *operation;
         /*
-         * The ID of the TINA account which is billed for your consumption. It 
-         * can be different from your account in the `AccountId` parameter.
+         * The ID of the OUTSCALE account which is billed for your consumption. 
+         * It can be different from your account in the `AccountId` parameter.
          */
 	char *paying_account_id;
         /*
@@ -965,7 +965,7 @@ struct consumption_entry {
 
 struct dedicated_group {
         /*
-         * The account ID of the owners of the dedicated group.
+         * The OUTSCALE account ID of the owners of the dedicated group.
          */
 	char *account_id;
         /*
@@ -1041,7 +1041,7 @@ struct dhcp_options_set {
 
 struct direct_link {
         /*
-         * The account ID of the owner of the DirectLink.
+         * The OUTSCALE account ID of the owner of the DirectLink.
          */
 	char *account_id;
         /*
@@ -1116,7 +1116,7 @@ struct direct_link_interface {
 
 struct direct_link_interfaces {
         /*
-         * The account ID of the owner of the DirectLink interface.
+         * The OUTSCALE account ID of the owner of the DirectLink interface.
          */
 	char *account_id;
         /*
@@ -1475,14 +1475,6 @@ struct filters_direct_link_interface {
 	char **direct_link_interface_ids;
 };
 
-struct filters_export_task {
-        /*
-         * The IDs of the export tasks.
-         */
-        char *task_ids_str;
-	char **task_ids;
-};
-
 struct filters_flexible_gpu {
         /*
          * Indicates whether the fGPU is deleted when terminating the VM.
@@ -1547,8 +1539,8 @@ struct filters_image {
         char *account_aliases_str;
 	char **account_aliases;
         /*
-         * The account IDs of the owners of the OMIs. By default, all the OMIs 
-         * for which you have launch permissions are described.
+         * The OUTSCALE account IDs of the owners of the OMIs. By default, all 
+         * the OMIs for which you have launch permissions are described.
          */
         char *account_ids_str;
 	char **account_ids;
@@ -1613,7 +1605,7 @@ struct filters_image {
         char *image_names_str;
 	char **image_names;
         /*
-         * The account IDs which have launch permissions for the OMIs.
+         * The OUTSCALE account IDs which have launch permissions for the OMIs.
          */
         char *permissions_to_launch_account_ids_str;
 	char **permissions_to_launch_account_ids;
@@ -1775,6 +1767,13 @@ struct filters_load_balancer {
          */
         char *load_balancer_names_str;
 	char **load_balancer_names;
+        /*
+         * The states of the load balancer (`provisioning` \\| `starting` \\| 
+         * `reloading` \\| `active` \\| `reconfiguring` \\| `deleting` \\| 
+         * `deleted`).
+         */
+        char *states_str;
+	char **states;
 };
 
 struct filters_nat_service {
@@ -1913,7 +1912,7 @@ struct filters_net_access_point {
 
 struct filters_net_peering {
         /*
-         * The account IDs of the owners of the peer Nets.
+         * The OUTSCALE account IDs of the owners of the peer Nets.
          */
         char *accepter_net_account_ids_str;
 	char **accepter_net_account_ids;
@@ -1940,7 +1939,7 @@ struct filters_net_peering {
         char *net_peering_ids_str;
 	char **net_peering_ids;
         /*
-         * The account IDs of the owners of the peer Nets.
+         * The OUTSCALE account IDs of the owners of the peer Nets.
          */
         char *source_net_account_ids_str;
 	char **source_net_account_ids;
@@ -2018,7 +2017,8 @@ struct filters_nic {
         char *link_nic_states_str;
 	char **link_nic_states;
         /*
-         * The account IDs of the owners of the VMs the NICs are attached to.
+         * The OUTSCALE account IDs of the owners of the VMs the NICs are 
+         * attached to.
          */
         char *link_nic_vm_account_ids_str;
 	char **link_nic_vm_account_ids;
@@ -2028,8 +2028,8 @@ struct filters_nic {
         char *link_nic_vm_ids_str;
 	char **link_nic_vm_ids;
         /*
-         * The account IDs of the owners of the public IPs associated with the 
-         * NICs.
+         * The OUTSCALE account IDs of the owners of the public IPs associated 
+         * with the NICs.
          */
         char *link_public_ip_account_ids_str;
 	char **link_public_ip_account_ids;
@@ -2076,8 +2076,8 @@ struct filters_nic {
         char *private_dns_names_str;
 	char **private_dns_names;
         /*
-         * The account IDs of the owner of the public IPs associated with the 
-         * private IPs.
+         * The OUTSCALE account IDs of the owner of the public IPs associated 
+         * with the private IPs.
          */
         char *private_ips_link_public_ip_account_ids_str;
 	char **private_ips_link_public_ip_account_ids;
@@ -2155,7 +2155,7 @@ struct filters_public_ip {
         char *link_public_ip_ids_str;
 	char **link_public_ip_ids;
         /*
-         * The account IDs of the owners of the NICs.
+         * The OUTSCALE account IDs of the owners of the NICs.
          */
         char *nic_account_ids_str;
 	char **nic_account_ids;
@@ -2230,6 +2230,32 @@ struct filters_quota {
          */
         char *short_descriptions_str;
 	char **short_descriptions;
+};
+
+struct filters_read_image_export_task {
+        /*
+         * The IDs of the OMIs used for the snapshot export tasks.
+         */
+        char *image_ids_str;
+	char **image_ids;
+        /*
+         * The IDs of the snapshot export tasks.
+         */
+        char *task_ids_str;
+	char **task_ids;
+};
+
+struct filters_read_volume_update_task {
+        /*
+         * The IDs of the snapshot export tasks.
+         */
+        char *task_ids_str;
+	char **task_ids;
+        /*
+         * The IDs of the volumes used for the snapshot export tasks.
+         */
+        char *volume_ids_str;
+	char **volume_ids;
 };
 
 struct filters_route_table {
@@ -2329,7 +2355,7 @@ struct filters_security_group {
         char *descriptions_str;
 	char **descriptions;
         /*
-         * The account IDs that have been granted permissions.
+         * The OUTSCALE account IDs that have been granted permissions.
          */
         char *inbound_rule_account_ids_str;
 	char **inbound_rule_account_ids;
@@ -2373,7 +2399,7 @@ struct filters_security_group {
         char *net_ids_str;
 	char **net_ids;
         /*
-         * The account IDs that have been granted permissions.
+         * The OUTSCALE account IDs that have been granted permissions.
          */
         char *outbound_rule_account_ids_str;
 	char **outbound_rule_account_ids;
@@ -2468,7 +2494,7 @@ struct filters_snapshot {
         char *account_aliases_str;
 	char **account_aliases;
         /*
-         * The account IDs of the owners of the snapshots.
+         * The OUTSCALE account IDs of the owners of the snapshots.
          */
         char *account_ids_str;
 	char **account_ids;
@@ -2488,7 +2514,7 @@ struct filters_snapshot {
          */
 	char *from_creation_date;
         /*
-         * The account IDs which have permissions to create volumes.
+         * The OUTSCALE account IDs which have permissions to create volumes.
          */
         char *permissions_to_create_volume_account_ids_str;
 	char **permissions_to_create_volume_account_ids;
@@ -2547,6 +2573,19 @@ struct filters_snapshot {
          */
         char *volume_sizes_str;
 	int *volume_sizes;
+};
+
+struct filters_snapshot_export_task {
+        /*
+         * The IDs of the snapshots used with the snapshot export tasks
+         */
+        char *snapshot_ids_str;
+	char **snapshot_ids;
+        /*
+         * The IDs of the snapshot export tasks.
+         */
+        char *task_ids_str;
+	char **task_ids;
 };
 
 struct filters_subnet {
@@ -2650,14 +2689,6 @@ struct filters_tag {
          */
         char *values_str;
 	char **values;
-};
-
-struct filters_update_volume_task {
-        /*
-         * The IDs of the volume update tasks.
-         */
-        char *task_ids_str;
-	char **task_ids;
 };
 
 struct filters_user_group {
@@ -2853,7 +2884,8 @@ struct filters_vm {
         char *nic_link_nic_states_str;
 	char **nic_link_nic_states;
         /*
-         * The account IDs of the owners of the VMs the NICs are attached to.
+         * The OUTSCALE account IDs of the owners of the VMs the NICs are 
+         * attached to.
          */
         char *nic_link_nic_vm_account_ids_str;
 	char **nic_link_nic_vm_account_ids;
@@ -2863,8 +2895,8 @@ struct filters_vm {
         char *nic_link_nic_vm_ids_str;
 	char **nic_link_nic_vm_ids;
         /*
-         * The account IDs of the owners of the public IPs associated with the 
-         * NICs.
+         * The OUTSCALE account IDs of the owners of the public IPs associated 
+         * with the NICs.
          */
         char *nic_link_public_ip_account_ids_str;
 	char **nic_link_public_ip_account_ids;
@@ -2901,8 +2933,8 @@ struct filters_vm {
         char *nic_nic_ids_str;
 	char **nic_nic_ids;
         /*
-         * The account IDs of the owner of the public IPs associated with the 
-         * private IPs.
+         * The OUTSCALE account IDs of the owner of the public IPs associated 
+         * with the private IPs.
          */
         char *nic_private_ips_link_public_ip_account_ids_str;
 	char **nic_private_ips_link_public_ip_account_ids;
@@ -3571,7 +3603,8 @@ struct health_check {
 
 struct permissions_on_resource {
         /*
-         * One or more account IDs that the permission is associated with.
+         * One or more OUTSCALE account IDs that the permission is associated 
+         * with.
          */
         char *account_ids_str;
 	char **account_ids;
@@ -3697,7 +3730,8 @@ struct image {
          * Permissions for the resource.
          *   Permissions for the resource.
          *   --PermissionsToLaunch.AccountIds: array string
-         *     One or more account IDs that the permission is associated with.
+         *     One or more OUTSCALE account IDs that the permission is 
+         * associated with.
          *   --PermissionsToLaunch.GlobalPermission: bool
          *     A global permission for all accounts.<br />\n(Request) Set this 
          *     parameter to true to make the resource public (if the parent 
@@ -3970,7 +4004,7 @@ struct link_nic {
          */
 	char *state;
         /*
-         * The account ID of the owner of the VM.
+         * The OUTSCALE account ID of the owner of the VM.
          */
 	char *vm_account_id;
         /*
@@ -4030,7 +4064,7 @@ struct link_public_ip {
          */
 	char *public_ip;
         /*
-         * The account ID of the owner of the public IP.
+         * The OUTSCALE account ID of the owner of the public IP.
          */
 	char *public_ip_account_id;
         /*
@@ -4049,7 +4083,7 @@ struct link_public_ip_light_for_vm {
          */
 	char *public_ip;
         /*
-         * The account ID of the owner of the public IP.
+         * The OUTSCALE account ID of the owner of the public IP.
          */
 	char *public_ip_account_id;
 };
@@ -4279,7 +4313,7 @@ struct listener_rule_for_creation {
 
 struct source_security_group {
         /*
-         * The account ID of the owner of the security group.
+         * The OUTSCALE account ID of the owner of the security group.
          */
 	char *security_group_account_id;
         /*
@@ -4468,13 +4502,19 @@ struct load_balancer {
          * rule 
          *   that specifies this source security group as the inbound source.
          *   --SourceSecurityGroup.SecurityGroupAccountId: string
-         *     The account ID of the owner of the security group.
+         *     The OUTSCALE account ID of the owner of the security group.
          *   --SourceSecurityGroup.SecurityGroupName: string
          *     The name of the security group.
          */
         char *source_security_group_str;
         int is_set_source_security_group;
 	struct source_security_group source_security_group;
+        /*
+         * The state of the load balancer (`provisioning` \\| `starting` \\| 
+         * `reloading` \\| `active` \\| `reconfiguring` \\| `deleting` \\| 
+         * `deleted`).
+         */
+	char *state;
         /*
          * The ID of the Subnet in which the load balancer was created.
          */
@@ -4555,7 +4595,7 @@ struct location {
 
 struct log {
         /*
-         * The account ID of the logged call.
+         * The OUTSCALE account ID of the logged call.
          */
 	char *account_id;
         /*
@@ -4787,7 +4827,7 @@ struct net_access_point {
 
 struct source_net {
         /*
-         * The account ID of the owner of the source Net.
+         * The OUTSCALE account ID of the owner of the source Net.
          */
 	char *account_id;
         /*
@@ -4818,7 +4858,7 @@ struct net_peering {
          * Information about the accepter Net.
          *   Information about the accepter Net.
          *   --AccepterNet.AccountId: string
-         *     The account ID of the owner of the accepter Net.
+         *     The OUTSCALE account ID of the owner of the accepter Net.
          *   --AccepterNet.IpRange: string
          *     The IP range for the accepter Net, in CIDR notation (for example, 
          *     `10.0.0.0/16`).
@@ -4840,7 +4880,7 @@ struct net_peering {
          * Information about the source Net.
          *   Information about the source Net.
          *   --SourceNet.AccountId: string
-         *     The account ID of the owner of the source Net.
+         *     The OUTSCALE account ID of the owner of the source Net.
          *   --SourceNet.IpRange: string
          *     The IP range for the source Net, in CIDR notation (for example, 
          *     `10.0.0.0/16`).
@@ -4890,7 +4930,7 @@ struct net_to_virtual_gateway_link {
 
 struct nic {
         /*
-         * The account ID of the owner of the NIC.
+         * The OUTSCALE account ID of the owner of the NIC.
          */
 	char *account_id;
         /*
@@ -4919,7 +4959,7 @@ struct nic {
          * `detaching` 
          *     \\| `detached`).
          *   --LinkNic.VmAccountId: string
-         *     The account ID of the owner of the VM.
+         *     The OUTSCALE account ID of the owner of the VM.
          *   --LinkNic.VmId: string
          *     The ID of the VM.
          */
@@ -4938,7 +4978,7 @@ struct nic {
          *   --LinkPublicIp.PublicIp: string
          *     The public IP associated with the NIC.
          *   --LinkPublicIp.PublicIpAccountId: string
-         *     The account ID of the owner of the public IP.
+         *     The OUTSCALE account ID of the owner of the public IP.
          *   --LinkPublicIp.PublicIpId: string
          *     The allocation ID of the public IP.
          */
@@ -4978,13 +5018,13 @@ struct nic {
          *       --PrivateIps.INDEX.LinkPublicIp.PublicIp: string
          *         The public IP associated with the NIC.
          *       --PrivateIps.INDEX.LinkPublicIp.PublicIpAccountId: string
-         *         The account ID of the owner of the public IP.
+         *         The OUTSCALE account ID of the owner of the public IP.
          *       --PrivateIps.INDEX.LinkPublicIp.PublicIpId: string
          *         The allocation ID of the public IP.
          *   --PrivateIps.INDEX.PrivateDnsName: string
          *     The name of the private DNS.
          *   --PrivateIps.INDEX.PrivateIp: string
-         *     The private IP of the NIC.
+         *     A private IP for the NIC.
          */
         char *private_ips_str;
         int nb_private_ips;
@@ -5058,7 +5098,16 @@ struct nic_for_vm_creation {
          *   --PrivateIps.INDEX.IsPrimary: bool
          *     If true, the IP is the primary private IP of the NIC.
          *   --PrivateIps.INDEX.PrivateIp: string
-         *     The private IP of the NIC.
+         *     A private IP for the NIC. This IP must be within the IP range of 
+         * the 
+         *     Subnet that you specify with the `SubnetId` parameter. However, 
+         * it cannot 
+         *     be one of the first four IPs (ending in `.0`, `.1`, `.2`, `.3`) 
+         * or the 
+         *     last IP (ending in `.255`) of the Subnet, as these are reserved 
+         * by 3DS 
+         *     OUTSCALE. For more information, see [About 
+         *     Nets](https://docs.outscale.com/en/userguide/About-Nets.html).
          */
         char *private_ips_str;
         int nb_private_ips;
@@ -5086,7 +5135,7 @@ struct nic_for_vm_creation {
 
 struct nic_light {
         /*
-         * The account ID of the owner of the NIC.
+         * The OUTSCALE account ID of the owner of the NIC.
          */
 	char *account_id;
         /*
@@ -5126,7 +5175,7 @@ struct nic_light {
          *   --LinkPublicIp.PublicIp: string
          *     The public IP associated with the NIC.
          *   --LinkPublicIp.PublicIpAccountId: string
-         *     The account ID of the owner of the public IP.
+         *     The OUTSCALE account ID of the owner of the public IP.
          */
         char *link_public_ip_str;
         int is_set_link_public_ip;
@@ -5160,11 +5209,11 @@ struct nic_light {
          *       --PrivateIps.INDEX.LinkPublicIp.PublicIp: string
          *         The public IP associated with the NIC.
          *       --PrivateIps.INDEX.LinkPublicIp.PublicIpAccountId: string
-         *         The account ID of the owner of the public IP.
+         *         The OUTSCALE account ID of the owner of the public IP.
          *   --PrivateIps.INDEX.PrivateDnsName: string
          *     The name of the private DNS.
          *   --PrivateIps.INDEX.PrivateIp: string
-         *     The private IP.
+         *     A private IP for the NIC.
          */
         char *private_ips_str;
         int nb_private_ips;
@@ -5256,7 +5305,8 @@ struct permissions_on_resource_creation {
          * Permissions for the resource.
          *   Permissions for the resource.
          *   --Additions.AccountIds: array string
-         *     One or more account IDs that the permission is associated with.
+         *     One or more OUTSCALE account IDs that the permission is 
+         * associated with.
          *   --Additions.GlobalPermission: bool
          *     A global permission for all accounts.<br />\n(Request) Set this 
          *     parameter to true to make the resource public (if the parent 
@@ -5274,7 +5324,8 @@ struct permissions_on_resource_creation {
          * Permissions for the resource.
          *   Permissions for the resource.
          *   --Removals.AccountIds: array string
-         *     One or more account IDs that the permission is associated with.
+         *     One or more OUTSCALE account IDs that the permission is 
+         * associated with.
          *   --Removals.GlobalPermission: bool
          *     A global permission for all accounts.<br />\n(Request) Set this 
          *     parameter to true to make the resource public (if the parent 
@@ -5380,8 +5431,7 @@ struct phase2_options {
 
 struct placement {
         /*
-         * The name of the Subregion. If you specify this parameter, you must 
-         * not specify the `Nics` parameter.
+         * The name of the Subregion.
          */
 	char *subregion_name;
         /*
@@ -5563,7 +5613,7 @@ struct private_ip {
          *   --LinkPublicIp.PublicIp: string
          *     The public IP associated with the NIC.
          *   --LinkPublicIp.PublicIpAccountId: string
-         *     The account ID of the owner of the public IP.
+         *     The OUTSCALE account ID of the owner of the public IP.
          *   --LinkPublicIp.PublicIpId: string
          *     The allocation ID of the public IP.
          */
@@ -5575,7 +5625,7 @@ struct private_ip {
          */
 	char *private_dns_name;
         /*
-         * The private IP of the NIC.
+         * A private IP for the NIC.
          */
 	char *private_ip;
 };
@@ -5587,7 +5637,12 @@ struct private_ip_light {
         int is_set_is_primary;
 	int is_primary;
         /*
-         * The private IP of the NIC.
+         * A private IP for the NIC. This IP must be within the IP range of the 
+         * Subnet that you specify with the `SubnetId` parameter. However, it 
+         * cannot be one of the first four IPs (ending in `.0`, `.1`, `.2`, 
+         * `.3`) or the last IP (ending in `.255`) of the Subnet, as these are 
+         * reserved by 3DS OUTSCALE. For more information, see [About 
+         * Nets](https://docs.outscale.com/en/userguide/About-Nets.html).
          */
 	char *private_ip;
 };
@@ -5606,7 +5661,7 @@ struct private_ip_light_for_vm {
          *   --LinkPublicIp.PublicIp: string
          *     The public IP associated with the NIC.
          *   --LinkPublicIp.PublicIpAccountId: string
-         *     The account ID of the owner of the public IP.
+         *     The OUTSCALE account ID of the owner of the public IP.
          */
         char *link_public_ip_str;
         int is_set_link_public_ip;
@@ -5616,7 +5671,7 @@ struct private_ip_light_for_vm {
          */
 	char *private_dns_name;
         /*
-         * The private IP.
+         * A private IP for the NIC.
          */
 	char *private_ip;
 };
@@ -5643,7 +5698,7 @@ struct public_ip {
          */
 	char *link_public_ip_id;
         /*
-         * The account ID of the owner of the NIC.
+         * The OUTSCALE account ID of the owner of the NIC.
          */
 	char *nic_account_id;
         /*
@@ -5692,7 +5747,7 @@ struct public_ip_light {
 
 struct quota {
         /*
-         * The account ID of the owner of the quotas.
+         * The OUTSCALE account ID of the owner of the quotas.
          */
 	char *account_id;
         /*
@@ -5734,7 +5789,7 @@ struct quota_types {
          * One or more quotas associated with the account.
          *   Information about the quota.
          *   --Quotas.INDEX.AccountId: string
-         *     The account ID of the owner of the quotas.
+         *     The OUTSCALE account ID of the owner of the quotas.
          *   --Quotas.INDEX.Description: string
          *     The description of the quota.
          *   --Quotas.INDEX.MaxValue: long long int
@@ -5850,7 +5905,7 @@ struct route {
          */
 	char *state;
         /*
-         * The account ID of the owner of the VM.
+         * The OUTSCALE account ID of the owner of the VM.
          */
 	char *vm_account_id;
         /*
@@ -5948,7 +6003,7 @@ struct route_table {
          *   --Routes.INDEX.State: string
          *     The state of a route in the route table (always `active`).
          *   --Routes.INDEX.VmAccountId: string
-         *     The account ID of the owner of the VM.
+         *     The OUTSCALE account ID of the owner of the VM.
          *   --Routes.INDEX.VmId: string
          *     The ID of a VM specified in a route in the table.
          */
@@ -5970,7 +6025,7 @@ struct route_table {
 
 struct security_group {
         /*
-         * The account ID that has been granted permission.
+         * The OUTSCALE account ID that has been granted permission.
          */
 	char *account_id;
         /*
@@ -6008,8 +6063,9 @@ struct security_group {
          *       Information about a source or destination security group.
          *       --InboundRules.INDEX.SecurityGroupsMembers.INDEX.AccountId: 
          * string
-         *         The account ID that owns the source or destination security 
-         * group.
+         *         The OUTSCALE account ID that owns the source or destination 
+         * security 
+         *         group.
          *       
          * --InboundRules.INDEX.SecurityGroupsMembers.INDEX.SecurityGroupId: 
          * string
@@ -6069,8 +6125,9 @@ struct security_group {
          *       Information about a source or destination security group.
          *       --OutboundRules.INDEX.SecurityGroupsMembers.INDEX.AccountId: 
          * string
-         *         The account ID that owns the source or destination security 
-         * group.
+         *         The OUTSCALE account ID that owns the source or destination 
+         * security 
+         *         group.
          *       
          * --OutboundRules.INDEX.SecurityGroupsMembers.INDEX.SecurityGroupId: 
          * string
@@ -6156,7 +6213,9 @@ struct security_group_rule {
          * Information about one or more source or destination security groups.
          *   Information about a source or destination security group.
          *   --SecurityGroupsMembers.INDEX.AccountId: string
-         *     The account ID that owns the source or destination security group.
+         *     The OUTSCALE account ID that owns the source or destination 
+         * security 
+         *     group.
          *   --SecurityGroupsMembers.INDEX.SecurityGroupId: string
          *     The ID of a source or destination security group that you want to 
          * link 
@@ -6186,7 +6245,8 @@ struct security_group_rule {
 
 struct security_groups_member {
         /*
-         * The account ID that owns the source or destination security group.
+         * The OUTSCALE account ID that owns the source or destination security 
+         * group.
          */
 	char *account_id;
         /*
@@ -6254,7 +6314,7 @@ struct snapshot {
          */
 	char *account_alias;
         /*
-         * The account ID of the owner of the snapshot.
+         * The OUTSCALE account ID of the owner of the snapshot.
          */
 	char *account_id;
         /*
@@ -6273,7 +6333,8 @@ struct snapshot {
          * Permissions for the resource.
          *   Permissions for the resource.
          *   --PermissionsToCreateVolume.AccountIds: array string
-         *     One or more account IDs that the permission is associated with.
+         *     One or more OUTSCALE account IDs that the permission is 
+         * associated with.
          *   --PermissionsToCreateVolume.GlobalPermission: bool
          *     A global permission for all accounts.<br />\n(Request) Set this 
          *     parameter to true to make the resource public (if the parent 
@@ -6738,7 +6799,7 @@ struct vm {
          * (Net only) The network interface cards (NICs) the VMs are attached to.
          *   Information about the network interface card (NIC).
          *   --Nics.INDEX.AccountId: string
-         *     The account ID of the owner of the NIC.
+         *     The OUTSCALE account ID of the owner of the NIC.
          *   --Nics.INDEX.Description: string
          *     The description of the NIC.
          *   --Nics.INDEX.IsSourceDestChecked: bool
@@ -6768,7 +6829,7 @@ struct vm {
          *       --Nics.INDEX.LinkPublicIp.PublicIp: string
          *         The public IP associated with the NIC.
          *       --Nics.INDEX.LinkPublicIp.PublicIpAccountId: string
-         *         The account ID of the owner of the public IP.
+         *         The OUTSCALE account ID of the owner of the public IP.
          *   --Nics.INDEX.MacAddress: string
          *     The Media Access Control (MAC) address of the NIC.
          *   --Nics.INDEX.NetId: string
@@ -6793,11 +6854,11 @@ struct vm {
          *             The public IP associated with the NIC.
          *           
          * --Nics.INDEX.PrivateIps.INDEX.LinkPublicIp.PublicIpAccountId: string
-         *             The account ID of the owner of the public IP.
+         *             The OUTSCALE account ID of the owner of the public IP.
          *       --Nics.INDEX.PrivateIps.INDEX.PrivateDnsName: string
          *         The name of the private DNS.
          *       --Nics.INDEX.PrivateIps.INDEX.PrivateIp: string
-         *         The private IP.
+         *         A private IP for the NIC.
          *   --Nics.INDEX.SecurityGroups: array ref SecurityGroupLight
          *     One or more IDs of security groups for the NIC.
          *       Information about the security group.
@@ -6827,9 +6888,7 @@ struct vm {
          * Information about the placement of the VM.
          *   Information about the placement of the VM.
          *   --Placement.SubregionName: string
-         *     The name of the Subregion. If you specify this parameter, you 
-         * must not 
-         *     specify the `Nics` parameter.
+         *     The name of the Subregion.
          *   --Placement.Tenancy: string
          *     The tenancy of the VM (`default`, `dedicated`, or a dedicated 
          * group ID).
@@ -6907,7 +6966,13 @@ struct vm {
 	struct resource_tag *tags;
         /*
          * If true, a virtual Trusted Platform Module (vTPM) is enabled on the 
-         * VM. If false, it is not.
+         * VM. If false, it is not.<br />The default behavior for this parameter 
+         * varies depending on the source OMI of the VM.<br />If the 
+         * `TpmMandatory` parameter of the source OMI is true, a vTPM has to be 
+         * attached to the VM and it will be created by default. Setting 
+         * `TpmEnabled` to false will cause the creation request to fail.<br 
+         * />If the `TpmMandatory` parameter of the source OMI is false, only 
+         * setting `TpmEnabled` to true will create and attach a vTPM to the VM.
          */
         int is_set_tpm_enabled;
 	int tpm_enabled;
@@ -7626,7 +7691,7 @@ struct vpn_connection {
 
 struct with {
         /*
-         * If true, the account ID is displayed.
+         * If true, the OUTSCALE account ID is displayed.
          */
         int is_set_account_id;
 	int account_id;
@@ -7780,8 +7845,8 @@ struct osc_create_access_key_arg  {
         /*
          * The date and time, or the date, at which you want the access key to 
          * expire, in ISO 8601 format (for example, `2020-06-14T00:00:00.000Z`, 
-         * or `2020-06-14`). To remove an existing expiration date, use the 
-         * method without specifying this parameter.
+         * or `2020-06-14`). If not specified, the access key is set to not 
+         * expire.
          */
 	char *expiration_date;
         /*
@@ -7791,7 +7856,7 @@ struct osc_create_access_key_arg  {
         /*
          * The name of the EIM user that owns the key to be created. If you do 
          * not specify a user name, this action creates an access key for the 
-         * user who sends the request (which can be the root account).
+         * user who sends the request (which can be the root user).
          */
 	char *user_name;
 };
@@ -8165,12 +8230,12 @@ struct osc_create_image_arg  {
         /* Required: null
  */
         /*
-         * **When registering from a snapshot:** The architecture of the OMI 
+         * **(when registering from a snapshot)** The architecture of the OMI 
          * (`i386` or `x86_64`). By default, set to `x86_64`.
          */
 	char *architecture;
         /*
-         * **(required) When registering from a snapshot:** One or more block 
+         * **(required when registering from a snapshot)** One or more block 
          * device mappings.
          *   One or more parameters used to automatically set up volumes when 
          * the VM 
@@ -8240,8 +8305,8 @@ struct osc_create_image_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * **(required) When registering from a bucket by using a manifest 
-         * file:** The pre-signed URL of the manifest file for the OMI you want 
+         * **(required when registering from a bucket by using a manifest 
+         * file)** The pre-signed URL of the manifest file for the OMI you want 
          * to register. For more information, see [Creating a Pre-signed 
          * URL](https://docs.outscale.com/en/userguide/Creating-a-Pre-Signed-URL.
          * html).
@@ -8254,7 +8319,7 @@ struct osc_create_image_arg  {
          */
 	char *image_name;
         /*
-         * **When creating from a VM:** If false, the VM shuts down before 
+         * **(when creating from a VM)** If false, the VM shuts down before 
          * creating the OMI and then reboots. If true, the VM does not.
          */
         int is_set_no_reboot;
@@ -8265,17 +8330,16 @@ struct osc_create_image_arg  {
         char *product_codes_str;
 	char **product_codes;
         /*
-         * **(required) When registering from a snapshot:** The name of the root 
+         * **(required when registering from a snapshot)** The name of the root 
          * device for the new OMI.
          */
 	char *root_device_name;
         /*
-         * **(required) When copying an OMI:** The ID of the OMI you want to 
-         * copy.
+         * **(required when copying an OMI)** The ID of the OMI you want to copy.
          */
 	char *source_image_id;
         /*
-         * **(required) When copying an OMI:** The name of the source Region 
+         * **(required when copying an OMI)** The name of the source Region 
          * (always the same as the Region of your account).
          */
 	char *source_region_name;
@@ -8287,7 +8351,7 @@ struct osc_create_image_arg  {
         int is_set_tpm_mandatory;
 	int tpm_mandatory;
         /*
-         * **(required) When creating from a VM:** The ID of the VM from which 
+         * **(required when creating from a VM)** The ID of the VM from which 
          * you want to create the OMI.
          */
 	char *vm_id;
@@ -8638,14 +8702,15 @@ struct osc_create_net_peering_arg  {
         /*
          * The ID of the Net you want to connect with. <br/ > <br/ >\nIf the Net 
          * does not belong to you, you must also specify the `AccepterOwnerId` 
-         * parameter with the account ID owning the Net you want to connect with.
+         * parameter with the OUTSCALE account ID owning the Net you want to 
+         * connect with.
          */
 	char *accepter_net_id;
         /*
-         * The account ID of the owner of the Net you want to connect with. By 
-         * default, the account ID of the owner of the Net from which the 
-         * peering request is sent. <br /><br/ >\nThis parameter is required if 
-         * the Net you want to connect with does not belong to you.
+         * The OUTSCALE account ID of the owner of the Net you want to connect 
+         * with. By default, the account ID of the owner of the Net from which 
+         * the peering request is sent. <br /><br/ >\nThis parameter is required 
+         * if the Net you want to connect with does not belong to you.
          */
 	char *accepter_owner_id;
         /*
@@ -8698,15 +8763,23 @@ struct osc_create_nic_arg  {
         int is_set_dry_run;
 	int dry_run;
         /*
-         * The primary private IP for the NIC.<br />\nThis IP must be within the 
-         * IP range of the Subnet that you specify with the `SubnetId` 
-         * attribute.<br />\nIf you do not specify this attribute, a random 
-         * private IP is selected within the IP range of the Subnet.
+         * Information about the private IP or IPs of the NIC. If you do not 
+         * specify a primary private IP, one is still created, with an IP 
+         * randomly selected within the IP range of the Subnet.
          *   Information about the private IP.
          *   --PrivateIps.INDEX.IsPrimary: bool
          *     If true, the IP is the primary private IP of the NIC.
          *   --PrivateIps.INDEX.PrivateIp: string
-         *     The private IP of the NIC.
+         *     A private IP for the NIC. This IP must be within the IP range of 
+         * the 
+         *     Subnet that you specify with the `SubnetId` parameter. However, 
+         * it cannot 
+         *     be one of the first four IPs (ending in `.0`, `.1`, `.2`, `.3`) 
+         * or the 
+         *     last IP (ending in `.255`) of the Subnet, as these are reserved 
+         * by 3DS 
+         *     OUTSCALE. For more information, see [About 
+         *     Nets](https://docs.outscale.com/en/userguide/About-Nets.html).
          */
         char *private_ips_str;
         int nb_private_ips;
@@ -8964,8 +9037,9 @@ struct osc_create_security_group_rule_arg  {
          * groups.
          *       Information about a source or destination security group.
          *       --Rules.INDEX.SecurityGroupsMembers.INDEX.AccountId: string
-         *         The account ID that owns the source or destination security 
-         * group.
+         *         The OUTSCALE account ID that owns the source or destination 
+         * security 
+         *         group.
          *       --Rules.INDEX.SecurityGroupsMembers.INDEX.SecurityGroupId: 
          * string
          *         The ID of a source or destination security group that you 
@@ -8989,8 +9063,8 @@ struct osc_create_security_group_rule_arg  {
         int nb_rules;
 	struct security_group_rule *rules;
         /*
-         * The account ID that owns the source or destination security group 
-         * specified in the `SecurityGroupNameToLink` parameter.
+         * The OUTSCALE account ID that owns the source or destination security 
+         * group specified in the `SecurityGroupNameToLink` parameter.
          */
 	char *security_group_account_id_to_link;
         /*
@@ -9514,10 +9588,9 @@ struct osc_create_vms_arg  {
         int is_set_nested_virtualization;
 	int nested_virtualization;
         /*
-         * One or more NICs. If you specify this parameter, you must not specify 
-         * the `SubnetId` and `SubregionName` parameters. You also must define 
-         * one NIC as the primary network interface of the VM with `0` as its 
-         * device number.
+         * One or more NICs. If you specify this parameter, you must define one 
+         * NIC as the primary network interface of the VM with `0` as its device 
+         * number.
          *   Information about the network interface card (NIC) when creating a 
          *   virtual machine (VM).
          *   --Nics.INDEX.DeleteOnVmDeletion: bool
@@ -9548,7 +9621,16 @@ struct osc_create_vms_arg  {
          *       --Nics.INDEX.PrivateIps.INDEX.IsPrimary: bool
          *         If true, the IP is the primary private IP of the NIC.
          *       --Nics.INDEX.PrivateIps.INDEX.PrivateIp: string
-         *         The private IP of the NIC.
+         *         A private IP for the NIC. This IP must be within the IP range 
+         * of the 
+         *         Subnet that you specify with the `SubnetId` parameter. 
+         * However, it cannot 
+         *         be one of the first four IPs (ending in `.0`, `.1`, `.2`, 
+         * `.3`) or the 
+         *         last IP (ending in `.255`) of the Subnet, as these are 
+         * reserved by 3DS 
+         *         OUTSCALE. For more information, see [About 
+         *         Nets](https://docs.outscale.com/en/userguide/About-Nets.html).
          *   --Nics.INDEX.SecondaryPrivateIpCount: long long int
          *     The number of secondary private IPs, if you create a NIC when 
          * creating a 
@@ -9577,9 +9659,7 @@ struct osc_create_vms_arg  {
          * Information about the placement of the VM.
          *   Information about the placement of the VM.
          *   --Placement.SubregionName: string
-         *     The name of the Subregion. If you specify this parameter, you 
-         * must not 
-         *     specify the `Nics` parameter.
+         *     The name of the Subregion.
          *   --Placement.Tenancy: string
          *     The tenancy of the VM (`default`, `dedicated`, or a dedicated 
          * group ID).
@@ -9588,7 +9668,12 @@ struct osc_create_vms_arg  {
         int is_set_placement;
 	struct placement placement;
         /*
-         * One or more private IPs of the VM.
+         * One or more private IPs of the VM. These IPs must be within the IP 
+         * range of the Subnet that you specify with the `SubnetId` parameter. 
+         * However, they cannot be one of the first four IPs (ending in `.0`, 
+         * `.1`, `.2`, `.3`) or the last IP (ending in `.255`) of the Subnet, as 
+         * these are reserved by 3DS OUTSCALE. For more information, see [About 
+         * Nets](https://docs.outscale.com/en/userguide/About-Nets.html).
          */
         char *private_ips_str;
 	char **private_ips;
@@ -9603,13 +9688,18 @@ struct osc_create_vms_arg  {
         char *security_groups_str;
 	char **security_groups;
         /*
-         * The ID of the Subnet in which you want to create the VM. If you 
-         * specify this parameter, you must not specify the `Nics` parameter.
+         * The ID of the Subnet in which you want to create the VM.
          */
 	char *subnet_id;
         /*
          * If true, a virtual Trusted Platform Module (vTPM) is enabled on the 
-         * VM. If false, it is not.
+         * VM. If false, it is not.<br />The default behavior for this parameter 
+         * varies depending on the source OMI of the VM.<br />If the 
+         * `TpmMandatory` parameter of the source OMI is true, a vTPM has to be 
+         * attached to the VM and it will be created by default. Setting 
+         * `TpmEnabled` to false will cause the creation request to fail.<br 
+         * />If the `TpmMandatory` parameter of the source OMI is false, only 
+         * setting `TpmEnabled` to true will create and attach a vTPM to the VM.
          */
         int is_set_tpm_enabled;
 	int tpm_enabled;
@@ -9758,7 +9848,7 @@ struct osc_delete_access_key_arg  {
         /*
          * The name of the EIM user the access key you want to delete is 
          * associated with. By default, the user who sends the request (which 
-         * can be the root account).
+         * can be the root user).
          */
 	char *user_name;
 };
@@ -10312,8 +10402,9 @@ struct osc_delete_security_group_rule_arg  {
          * groups.
          *       Information about a source or destination security group.
          *       --Rules.INDEX.SecurityGroupsMembers.INDEX.AccountId: string
-         *         The account ID that owns the source or destination security 
-         * group.
+         *         The OUTSCALE account ID that owns the source or destination 
+         * security 
+         *         group.
          *       --Rules.INDEX.SecurityGroupsMembers.INDEX.SecurityGroupId: 
          * string
          *         The ID of a source or destination security group that you 
@@ -10337,8 +10428,8 @@ struct osc_delete_security_group_rule_arg  {
         int nb_rules;
 	struct security_group_rule *rules;
         /*
-         * The account ID of the owner of the security group you want to delete 
-         * a rule from.
+         * The OUTSCALE account ID of the owner of the security group you want 
+         * to delete a rule from.
          */
 	char *security_group_account_id_to_unlink;
         /*
@@ -10877,7 +10968,11 @@ struct osc_link_private_ips_arg  {
 	char *nic_id;
         /*
          * The secondary private IP or IPs you want to assign to the NIC within 
-         * the IP range of the Subnet.
+         * the IP range of the Subnet. They cannot be one of the first four IPs 
+         * (ending in `.0`, `.1`, `.2`, `.3`) or the last IP (ending in `.255`) 
+         * of the Subnet, as these are reserved by 3DS OUTSCALE. For more 
+         * information, see [About 
+         * Nets](https://docs.outscale.com/en/userguide/About-Nets.html).
          */
         char *private_ips_str;
 	char **private_ips;
@@ -11087,7 +11182,7 @@ struct osc_read_access_keys_arg  {
 	char *tag;
         /*
          * The name of the EIM user. By default, the user who sends the request 
-         * (which can be the root account).
+         * (which can be the root user).
          */
 	char *user_name;
 };
@@ -11219,7 +11314,7 @@ struct osc_read_api_logs_arg  {
          * The information to display in each returned log.
          *   The information to display in each returned log.
          *   --With.AccountId: bool
-         *     If true, the account ID is displayed.
+         *     If true, the OUTSCALE account ID is displayed.
          *   --With.CallDuration: bool
          *     If true, the duration of the call is displayed.
          *   --With.QueryAccessKey: bool
@@ -11730,12 +11825,14 @@ struct osc_read_image_export_tasks_arg  {
         /*
          * One or more filters.
          *   One or more filters.
+         *   --Filters.ImageIds: array string
+         *     The IDs of the OMIs used for the snapshot export tasks.
          *   --Filters.TaskIds: array string
-         *     The IDs of the export tasks.
+         *     The IDs of the snapshot export tasks.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_export_task filters;
+	struct filters_read_image_export_task filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
@@ -11764,9 +11861,9 @@ struct osc_read_images_arg  {
          *   --Filters.AccountAliases: array string
          *     The account aliases of the owners of the OMIs.
          *   --Filters.AccountIds: array string
-         *     The account IDs of the owners of the OMIs. By default, all the 
-         * OMIs for 
-         *     which you have launch permissions are described.
+         *     The OUTSCALE account IDs of the owners of the OMIs. By default, 
+         * all the 
+         *     OMIs for which you have launch permissions are described.
          *   --Filters.Architectures: array string
          *     The architectures of the OMIs (`i386` \\| `x86_64`).
          *   --Filters.BlockDeviceMappingDeleteOnVmDeletion: bool
@@ -11792,7 +11889,8 @@ struct osc_read_images_arg  {
          *   --Filters.ImageNames: array string
          *     The names of the OMIs, provided when they were created.
          *   --Filters.PermissionsToLaunchAccountIds: array string
-         *     The account IDs which have launch permissions for the OMIs.
+         *     The OUTSCALE account IDs which have launch permissions for the 
+         * OMIs.
          *   --Filters.PermissionsToLaunchGlobalPermission: bool
          *     If true, lists all public OMIs. If false, lists all private OMIs.
          *   --Filters.ProductCodeNames: array string
@@ -12025,6 +12123,11 @@ struct osc_read_load_balancers_arg  {
          *   One or more filters.
          *   --Filters.LoadBalancerNames: array string
          *     The names of the load balancers.
+         *   --Filters.States: array string
+         *     The states of the load balancer (`provisioning` \\| `starting` 
+         * \\| 
+         *     `reloading` \\| `active` \\| `reconfiguring` \\| `deleting` \\| 
+         *     `deleted`).
          */
         char *filters_str;
         int is_set_filters;
@@ -12239,7 +12342,7 @@ struct osc_read_net_peerings_arg  {
          * One or more filters.
          *   One or more filters.
          *   --Filters.AccepterNetAccountIds: array string
-         *     The account IDs of the owners of the peer Nets.
+         *     The OUTSCALE account IDs of the owners of the peer Nets.
          *   --Filters.AccepterNetIpRanges: array string
          *     The IP ranges of the peer Nets, in CIDR notation (for example, 
          *     `10.0.0.0/24`).
@@ -12251,7 +12354,7 @@ struct osc_read_net_peerings_arg  {
          *   --Filters.NetPeeringIds: array string
          *     The IDs of the Net peerings.
          *   --Filters.SourceNetAccountIds: array string
-         *     The account IDs of the owners of the peer Nets.
+         *     The OUTSCALE account IDs of the owners of the peer Nets.
          *   --Filters.SourceNetIpRanges: array string
          *     The IP ranges of the peer Nets.
          *   --Filters.SourceNetNetIds: array string
@@ -12368,13 +12471,15 @@ struct osc_read_nics_arg  {
          *   --Filters.LinkNicStates: array string
          *     The states of the attachments.
          *   --Filters.LinkNicVmAccountIds: array string
-         *     The account IDs of the owners of the VMs the NICs are attached to.
+         *     The OUTSCALE account IDs of the owners of the VMs the NICs are 
+         * attached 
+         *     to.
          *   --Filters.LinkNicVmIds: array string
          *     The IDs of the VMs the NICs are attached to.
          *   --Filters.LinkPublicIpAccountIds: array string
-         *     The account IDs of the owners of the public IPs associated with 
-         * the 
-         *     NICs.
+         *     The OUTSCALE account IDs of the owners of the public IPs 
+         * associated with 
+         *     the NICs.
          *   --Filters.LinkPublicIpLinkPublicIpIds: array string
          *     The association IDs returned when the public IPs were associated 
          * with 
@@ -12396,9 +12501,9 @@ struct osc_read_nics_arg  {
          *   --Filters.PrivateDnsNames: array string
          *     The private DNS names associated with the primary private IPs.
          *   --Filters.PrivateIpsLinkPublicIpAccountIds: array string
-         *     The account IDs of the owner of the public IPs associated with 
-         * the 
-         *     private IPs.
+         *     The OUTSCALE account IDs of the owner of the public IPs 
+         * associated with 
+         *     the private IPs.
          *   --Filters.PrivateIpsLinkPublicIpPublicIps: array string
          *     The public IPs associated with the private IPs.
          *   --Filters.PrivateIpsPrimaryIp: bool
@@ -12614,7 +12719,7 @@ struct osc_read_public_ips_arg  {
          *     The IDs representing the associations of public IPs with VMs or 
          * NICs.
          *   --Filters.NicAccountIds: array string
-         *     The account IDs of the owners of the NICs.
+         *     The OUTSCALE account IDs of the owners of the NICs.
          *   --Filters.NicIds: array string
          *     The IDs of the NICs.
          *   --Filters.Placements: array string
@@ -12788,7 +12893,7 @@ struct osc_read_security_groups_arg  {
          *   --Filters.Descriptions: array string
          *     The descriptions of the security groups.
          *   --Filters.InboundRuleAccountIds: array string
-         *     The account IDs that have been granted permissions.
+         *     The OUTSCALE account IDs that have been granted permissions.
          *   --Filters.InboundRuleFromPortRanges: array integer
          *     The beginnings of the port ranges for the TCP and UDP protocols, 
          * or the 
@@ -12814,7 +12919,7 @@ struct osc_read_security_groups_arg  {
          *     The IDs of the Nets specified when the security groups were 
          * created.
          *   --Filters.OutboundRuleAccountIds: array string
-         *     The account IDs that have been granted permissions.
+         *     The OUTSCALE account IDs that have been granted permissions.
          *   --Filters.OutboundRuleFromPortRanges: array integer
          *     The beginnings of the port ranges for the TCP and UDP protocols, 
          * or the 
@@ -12899,12 +13004,14 @@ struct osc_read_snapshot_export_tasks_arg  {
         /*
          * One or more filters.
          *   One or more filters.
+         *   --Filters.SnapshotIds: array string
+         *     The IDs of the snapshots used with the snapshot export tasks
          *   --Filters.TaskIds: array string
-         *     The IDs of the export tasks.
+         *     The IDs of the snapshot export tasks.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_export_task filters;
+	struct filters_snapshot_export_task filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
@@ -12933,7 +13040,7 @@ struct osc_read_snapshots_arg  {
          *   --Filters.AccountAliases: array string
          *     The account aliases of the owners of the snapshots.
          *   --Filters.AccountIds: array string
-         *     The account IDs of the owners of the snapshots.
+         *     The OUTSCALE account IDs of the owners of the snapshots.
          *   --Filters.ClientTokens: array string
          *     The idempotency tokens provided when creating the snapshots.
          *   --Filters.Descriptions: array string
@@ -12943,7 +13050,7 @@ struct osc_read_snapshots_arg  {
          * (for 
          *     example, `2020-06-14T00:00:00.000Z`).
          *   --Filters.PermissionsToCreateVolumeAccountIds: array string
-         *     The account IDs which have permissions to create volumes.
+         *     The OUTSCALE account IDs which have permissions to create volumes.
          *   --Filters.PermissionsToCreateVolumeGlobalPermission: bool
          *     If true, lists all public volumes. If false, lists all private 
          * volumes.
@@ -13626,13 +13733,15 @@ struct osc_read_vms_arg  {
          *   --Filters.NicLinkNicStates: array string
          *     The states of the attachments.
          *   --Filters.NicLinkNicVmAccountIds: array string
-         *     The account IDs of the owners of the VMs the NICs are attached to.
+         *     The OUTSCALE account IDs of the owners of the VMs the NICs are 
+         * attached 
+         *     to.
          *   --Filters.NicLinkNicVmIds: array string
          *     The IDs of the VMs the NICs are attached to.
          *   --Filters.NicLinkPublicIpAccountIds: array string
-         *     The account IDs of the owners of the public IPs associated with 
-         * the 
-         *     NICs.
+         *     The OUTSCALE account IDs of the owners of the public IPs 
+         * associated with 
+         *     the NICs.
          *   --Filters.NicLinkPublicIpLinkPublicIpIds: array string
          *     The association IDs returned when the public IPs were associated 
          * with 
@@ -13650,9 +13759,9 @@ struct osc_read_vms_arg  {
          *   --Filters.NicNicIds: array string
          *     The IDs of the NICs.
          *   --Filters.NicPrivateIpsLinkPublicIpAccountIds: array string
-         *     The account IDs of the owner of the public IPs associated with 
-         * the 
-         *     private IPs.
+         *     The OUTSCALE account IDs of the owner of the public IPs 
+         * associated with 
+         *     the private IPs.
          *   --Filters.NicPrivateIpsLinkPublicIpIds: array string
          *     The public IPs associated with the private IPs.
          *   --Filters.NicPrivateIpsPrimaryIp: bool
@@ -13826,11 +13935,13 @@ struct osc_read_volume_update_tasks_arg  {
          * One or more filters.
          *   One or more filters.
          *   --Filters.TaskIds: array string
-         *     The IDs of the volume update tasks.
+         *     The IDs of the snapshot export tasks.
+         *   --Filters.VolumeIds: array string
+         *     The IDs of the volumes used for the snapshot export tasks.
          */
         char *filters_str;
         int is_set_filters;
-	struct filters_update_volume_task filters;
+	struct filters_read_volume_update_task filters;
         /*
          * The token to request the next page of results. Each token refers to a 
          * specific page.
@@ -14369,12 +14480,23 @@ struct osc_unlink_volume_arg  {
 };
 
 struct osc_update_access_key_arg  {
-        /* Required: AccessKeyId State
+        /* Required: AccessKeyId
  */
         /*
          * The ID of the access key.
          */
 	char *access_key_id;
+        /*
+         * If true, the current expiration date is deleted and the access key is 
+         * set to not expire.
+         */
+        int is_set_clear_expiration_date;
+	int clear_expiration_date;
+        /*
+         * If true, the current tag of the access key is deleted.
+         */
+        int is_set_clear_tag;
+	int clear_tag;
         /*
          * If true, checks whether you have the required permissions to perform 
          * the action.
@@ -14385,7 +14507,8 @@ struct osc_update_access_key_arg  {
          * The date and time, or the date, at which you want the access key to 
          * expire, in ISO 8601 format (for example, `2020-06-14T00:00:00.000Z` 
          * or `2020-06-14`). If not specified, the access key is set to not 
-         * expire.
+         * expire. If the `ClearExpirationDate` parameter is set to true, the 
+         * expiration date is ignored.
          */
 	char *expiration_date;
         /*
@@ -14395,10 +14518,16 @@ struct osc_update_access_key_arg  {
          */
 	char *state;
         /*
+         * A new tag to add to the access key. If the access key already had a 
+         * tag, this replaces it. If the `ClearTag` parameter is set to true, 
+         * the tag is ignored.
+         */
+	char *tag;
+        /*
          * The name of the EIM user that the access key you want to modify is 
          * associated with. If you do not specify a user name, this action 
          * modifies the access key of the user who sends the request (which can 
-         * be the root account).
+         * be the root user).
          */
 	char *user_name;
 };
@@ -14643,8 +14772,8 @@ struct osc_update_image_arg  {
          *     Permissions for the resource.
          *       Permissions for the resource.
          *       --PermissionsToLaunch.Additions.AccountIds: array string
-         *         One or more account IDs that the permission is associated 
-         * with.
+         *         One or more OUTSCALE account IDs that the permission is 
+         * associated with.
          *       --PermissionsToLaunch.Additions.GlobalPermission: bool
          *         A global permission for all accounts.<br />\n(Request) Set 
          * this 
@@ -14659,8 +14788,8 @@ struct osc_update_image_arg  {
          *     Permissions for the resource.
          *       Permissions for the resource.
          *       --PermissionsToLaunch.Removals.AccountIds: array string
-         *         One or more account IDs that the permission is associated 
-         * with.
+         *         One or more OUTSCALE account IDs that the permission is 
+         * associated with.
          *       --PermissionsToLaunch.Removals.GlobalPermission: bool
          *         A global permission for all accounts.<br />\n(Request) Set 
          * this 
@@ -15039,8 +15168,8 @@ struct osc_update_snapshot_arg  {
          *     Permissions for the resource.
          *       Permissions for the resource.
          *       --PermissionsToCreateVolume.Additions.AccountIds: array string
-         *         One or more account IDs that the permission is associated 
-         * with.
+         *         One or more OUTSCALE account IDs that the permission is 
+         * associated with.
          *       --PermissionsToCreateVolume.Additions.GlobalPermission: bool
          *         A global permission for all accounts.<br />\n(Request) Set 
          * this 
@@ -15055,8 +15184,8 @@ struct osc_update_snapshot_arg  {
          *     Permissions for the resource.
          *       Permissions for the resource.
          *       --PermissionsToCreateVolume.Removals.AccountIds: array string
-         *         One or more account IDs that the permission is associated 
-         * with.
+         *         One or more OUTSCALE account IDs that the permission is 
+         * associated with.
          *       --PermissionsToCreateVolume.Removals.GlobalPermission: bool
          *         A global permission for all accounts.<br />\n(Request) Set 
          * this 

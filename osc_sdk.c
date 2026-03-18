@@ -735,7 +735,7 @@ static const char *calls_descriptions[] = {
 ,
 	"Usage: oapi-cli UnlinkVolume --VolumeId=volumeid [OPTIONS]\n" "null\n" "\nRequired Argument: VolumeId \n"
 ,
-	"Usage: oapi-cli UpdateAccessKey --AccessKeyId=accesskeyid --State=state [OPTIONS]\n" "null\n" "\nRequired Argument: AccessKeyId State \n"
+	"Usage: oapi-cli UpdateAccessKey --AccessKeyId=accesskeyid [OPTIONS]\n" "null\n" "\nRequired Argument: AccessKeyId \n"
 ,
 	"Usage: oapi-cli UpdateAccount [OPTIONS]\n" "null\n" "\nRequired Argument: null \n"
 ,
@@ -820,14 +820,14 @@ static const char *calls_args_descriptions[] = {
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--ExpirationDate: string\n"
 	"  The date and time, or the date, at which you want the access key to expire, in ISO 8601 \n"
-	"  format (for example, `2020-06-14T00:00:00.000Z`, or `2020-06-14`). To remove an existing \n"
-	"  expiration date, use the method without specifying this parameter.\n"
+	"  format (for example, `2020-06-14T00:00:00.000Z`, or `2020-06-14`). If not specified, the \n"
+	"  access key is set to not expire.\n"
 "--Tag: string\n"
 	"  A tag to add to the access key.\n"
 "--UserName: string\n"
 	"  The name of the EIM user that owns the key to be created. If you do not specify a user \n"
 	"  name, this action creates an access key for the user who sends the request (which can be \n"
-	"  the root account).\n"
+	"  the root user).\n"
 ,
 	"--AdditionalEmails: array string\n"
 	"  One or more additional email addresses for the account. These addresses are used for \n"
@@ -1000,10 +1000,10 @@ static const char *calls_args_descriptions[] = {
 	"      The prefix for the key of the OOS object.\n"
 ,
 	"--Architecture: string\n"
-	"  **When registering from a snapshot:** The architecture of the OMI (`i386` or `x86_64`). By \n"
+	"  **(when registering from a snapshot)** The architecture of the OMI (`i386` or `x86_64`). By \n"
 	"  default, set to `x86_64`.\n"
 "--BlockDeviceMappings: array ref BlockDeviceMappingImage\n"
-	"  **(required) When registering from a snapshot:** One or more block device mappings.\n"
+	"  **(required when registering from a snapshot)** One or more block device mappings.\n"
 	"    One or more parameters used to automatically set up volumes when the VM \n"
 	"    is created.\n"
 	"    --BlockDeviceMappings.INDEX.Bsu: ref BsuToCreate\n"
@@ -1044,30 +1044,29 @@ static const char *calls_args_descriptions[] = {
 "--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--FileLocation: string\n"
-	"  **(required) When registering from a bucket by using a manifest file:** The pre-signed URL \n"
+	"  **(required when registering from a bucket by using a manifest file)** The pre-signed URL \n"
 	"  of the manifest file for the OMI you want to register. For more information, see [Creating \n"
 	"  a Pre-signed URL](https://docs.outscale.com/en/userguide/Creating-a-Pre-Signed-URL.html).\n"
 "--ImageName: string\n"
 	"  A unique name for the new OMI.\nConstraints: 3-128 alphanumeric characters, underscores \n"
 	"  (`_`), spaces (` `), parentheses (`()`), slashes (`/`), periods (`.`), or dashes (`-`).\n"
 "--NoReboot: bool\n"
-	"  **When creating from a VM:** If false, the VM shuts down before creating the OMI and then \n"
+	"  **(when creating from a VM)** If false, the VM shuts down before creating the OMI and then \n"
 	"  reboots. If true, the VM does not.\n"
 "--ProductCodes: array string\n"
 	"  The product codes associated with the OMI.\n"
 "--RootDeviceName: string\n"
-	"  **(required) When registering from a snapshot:** The name of the root device for the new \n"
-	"  OMI.\n"
+	"  **(required when registering from a snapshot)** The name of the root device for the new OMI.\n"
 "--SourceImageId: string\n"
-	"  **(required) When copying an OMI:** The ID of the OMI you want to copy.\n"
+	"  **(required when copying an OMI)** The ID of the OMI you want to copy.\n"
 "--SourceRegionName: string\n"
-	"  **(required) When copying an OMI:** The name of the source Region (always the same as the \n"
+	"  **(required when copying an OMI)** The name of the source Region (always the same as the \n"
 	"  Region of your account).\n"
 "--TpmMandatory: bool\n"
 	"  By default or if set to false, a virtual Trusted Platform Module (vTPM) is not mandatory on \n"
 	"  VMs created from this OMI. If true, VMs created from this OMI must have a vTPM enabled.\n"
 "--VmId: string\n"
-	"  **(required) When creating from a VM:** The ID of the VM from which you want to create the \n"
+	"  **(required when creating from a VM)** The ID of the VM from which you want to create the \n"
 	"  OMI.\n"
 ,
 	"--DryRun: bool\n"
@@ -1240,12 +1239,12 @@ static const char *calls_args_descriptions[] = {
 ,
 	"--AccepterNetId: string\n"
 	"  The ID of the Net you want to connect with. <br/ > <br/ >\nIf the Net does not belong to \n"
-	"  you, you must also specify the `AccepterOwnerId` parameter with the account ID owning the \n"
-	"  Net you want to connect with.\n"
+	"  you, you must also specify the `AccepterOwnerId` parameter with the OUTSCALE account ID \n"
+	"  owning the Net you want to connect with.\n"
 "--AccepterOwnerId: string\n"
-	"  The account ID of the owner of the Net you want to connect with. By default, the account ID \n"
-	"  of the owner of the Net from which the peering request is sent. <br/ >\nThis parameter is \n"
-	"  required if the Net you want to connect with does not belong to you.\n"
+	"  The OUTSCALE account ID of the owner of the Net you want to connect with. By default, the \n"
+	"  account ID of the owner of the Net from which the peering request is sent. <br/ >\nThis \n"
+	"  parameter is required if the Net you want to connect with does not belong to you.\n"
 "--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--SourceNetId: string\n"
@@ -1266,14 +1265,18 @@ static const char *calls_args_descriptions[] = {
 "--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--PrivateIps: array ref PrivateIpLight\n"
-	"  The primary private IP for the NIC.\nThis IP must be within the IP range of the Subnet that \n"
-	"  you specify with the `SubnetId` attribute.\nIf you do not specify this attribute, a random \n"
-	"  private IP is selected within the IP range of the Subnet.\n"
+	"  Information about the private IP or IPs of the NIC. If you do not specify a primary private \n"
+	"  IP, one is still created, with an IP randomly selected within the IP range of the Subnet.\n"
 	"    Information about the private IP.\n"
 	"    --PrivateIps.INDEX.IsPrimary: bool\n"
 	"      If true, the IP is the primary private IP of the NIC.\n"
 	"    --PrivateIps.INDEX.PrivateIp: string\n"
-	"      The private IP of the NIC.\n"
+	"      A private IP for the NIC. This IP must be within the IP range of the \n"
+	"      Subnet that you specify with the `SubnetId` parameter. However, it cannot \n"
+	"      be one of the first four IPs (ending in `.0`, `.1`, `.2`, `.3`) or the \n"
+	"      last IP (ending in `.255`) of the Subnet, as these are reserved by 3DS \n"
+	"      OUTSCALE. For more information, see [About \n"
+	"      Nets](https://docs.outscale.com/en/userguide/About-Nets.html).\n"
 "--SecurityGroupIds: array string\n"
 	"  One or more IDs of security groups for the NIC.\n"
 "--SubnetId: string\n"
@@ -1391,7 +1394,8 @@ static const char *calls_args_descriptions[] = {
 	"      Information about one or more source or destination security groups.\n"
 	"        Information about a source or destination security group.\n"
 	"        --Rules.INDEX.SecurityGroupsMembers.INDEX.AccountId: string\n"
-	"          The account ID that owns the source or destination security group.\n"
+	"          The OUTSCALE account ID that owns the source or destination security \n"
+	"          group.\n"
 	"        --Rules.INDEX.SecurityGroupsMembers.INDEX.SecurityGroupId: string\n"
 	"          The ID of a source or destination security group that you want to link \n"
 	"          to the security group of the rule.\n"
@@ -1406,7 +1410,7 @@ static const char *calls_args_descriptions[] = {
 	"      The end of the port range for the TCP and UDP protocols, or an ICMP code \n"
 	"      number.\n"
 "--SecurityGroupAccountIdToLink: string\n"
-	"  The account ID that owns the source or destination security group specified in the \n"
+	"  The OUTSCALE account ID that owns the source or destination security group specified in the \n"
 	"  `SecurityGroupNameToLink` parameter.\n"
 "--SecurityGroupId: string\n"
 	"  The ID of the security group for which you want to create a rule.\n"
@@ -1663,9 +1667,8 @@ static const char *calls_args_descriptions[] = {
 	"  (dedicated tenancy only) If true, nested virtualization is enabled. If false, it is \n"
 	"  disabled.\n"
 "--Nics: array ref NicForVmCreation\n"
-	"  One or more NICs. If you specify this parameter, you must not specify the `SubnetId` and \n"
-	"  `SubregionName` parameters. You also must define one NIC as the primary network interface \n"
-	"  of the VM with `0` as its device number.\n"
+	"  One or more NICs. If you specify this parameter, you must define one NIC as the primary \n"
+	"  network interface of the VM with `0` as its device number.\n"
 	"    Information about the network interface card (NIC) when creating a \n"
 	"    virtual machine (VM).\n"
 	"    --Nics.INDEX.DeleteOnVmDeletion: bool\n"
@@ -1689,7 +1692,12 @@ static const char *calls_args_descriptions[] = {
 	"        --Nics.INDEX.PrivateIps.INDEX.IsPrimary: bool\n"
 	"          If true, the IP is the primary private IP of the NIC.\n"
 	"        --Nics.INDEX.PrivateIps.INDEX.PrivateIp: string\n"
-	"          The private IP of the NIC.\n"
+	"          A private IP for the NIC. This IP must be within the IP range of the \n"
+	"          Subnet that you specify with the `SubnetId` parameter. However, it cannot \n"
+	"          be one of the first four IPs (ending in `.0`, `.1`, `.2`, `.3`) or the \n"
+	"          last IP (ending in `.255`) of the Subnet, as these are reserved by 3DS \n"
+	"          OUTSCALE. For more information, see [About \n"
+	"          Nets](https://docs.outscale.com/en/userguide/About-Nets.html).\n"
 	"    --Nics.INDEX.SecondaryPrivateIpCount: long long int\n"
 	"      The number of secondary private IPs, if you create a NIC when creating a \n"
 	"      VM. This parameter cannot be specified if you specified more than one \n"
@@ -1707,21 +1715,28 @@ static const char *calls_args_descriptions[] = {
 	"  Information about the placement of the VM.\n"
 	"    Information about the placement of the VM.\n"
 	"    --Placement.SubregionName: string\n"
-	"      The name of the Subregion. If you specify this parameter, you must not \n"
-	"      specify the `Nics` parameter.\n"
+	"      The name of the Subregion.\n"
 	"    --Placement.Tenancy: string\n"
 	"      The tenancy of the VM (`default`, `dedicated`, or a dedicated group ID).\n"
 "--PrivateIps: array string\n"
-	"  One or more private IPs of the VM.\n"
+	"  One or more private IPs of the VM. These IPs must be within the IP range of the Subnet that \n"
+	"  you specify with the `SubnetId` parameter. However, they cannot be one of the first four \n"
+	"  IPs (ending in `.0`, `.1`, `.2`, `.3`) or the last IP (ending in `.255`) of the Subnet, as \n"
+	"  these are reserved by 3DS OUTSCALE. For more information, see [About \n"
+	"  Nets](https://docs.outscale.com/en/userguide/About-Nets.html).\n"
 "--SecurityGroupIds: array string\n"
 	"  One or more IDs of security group for the VMs.\n"
 "--SecurityGroups: array string\n"
 	"  One or more names of security groups for the VMs.\n"
 "--SubnetId: string\n"
-	"  The ID of the Subnet in which you want to create the VM. If you specify this parameter, you \n"
-	"  must not specify the `Nics` parameter.\n"
+	"  The ID of the Subnet in which you want to create the VM.\n"
 "--TpmEnabled: bool\n"
-	"  If true, a virtual Trusted Platform Module (vTPM) is enabled on the VM. If false, it is not.\n"
+	"  If true, a virtual Trusted Platform Module (vTPM) is enabled on the VM. If false, it is \n"
+	"  not.The default behavior for this parameter varies depending on the source OMI of the VM.If \n"
+	"  the `TpmMandatory` parameter of the source OMI is true, a vTPM has to be attached to the VM \n"
+	"  and it will be created by default. Setting `TpmEnabled` to false will cause the creation \n"
+	"  request to fail.If the `TpmMandatory` parameter of the source OMI is false, only setting \n"
+	"  `TpmEnabled` to true will create and attach a vTPM to the VM.\n"
 "--UserData: string\n"
 	"  Data or script used to add a specific configuration to the VM. It must be Base64-encoded \n"
 	"  and is limited to 500 kibibytes (KiB). For more information about user data, see \n"
@@ -1790,7 +1805,7 @@ static const char *calls_args_descriptions[] = {
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--UserName: string\n"
 	"  The name of the EIM user the access key you want to delete is associated with. By default, \n"
-	"  the user who sends the request (which can be the root account).\n"
+	"  the user who sends the request (which can be the root user).\n"
 ,
 	"--ApiAccessRuleId: string\n"
 	"  The ID of the API access rule you want to delete.\n"
@@ -1996,7 +2011,8 @@ static const char *calls_args_descriptions[] = {
 	"      Information about one or more source or destination security groups.\n"
 	"        Information about a source or destination security group.\n"
 	"        --Rules.INDEX.SecurityGroupsMembers.INDEX.AccountId: string\n"
-	"          The account ID that owns the source or destination security group.\n"
+	"          The OUTSCALE account ID that owns the source or destination security \n"
+	"          group.\n"
 	"        --Rules.INDEX.SecurityGroupsMembers.INDEX.SecurityGroupId: string\n"
 	"          The ID of a source or destination security group that you want to link \n"
 	"          to the security group of the rule.\n"
@@ -2011,7 +2027,7 @@ static const char *calls_args_descriptions[] = {
 	"      The end of the port range for the TCP and UDP protocols, or an ICMP code \n"
 	"      number.\n"
 "--SecurityGroupAccountIdToUnlink: string\n"
-	"  The account ID of the owner of the security group you want to delete a rule from.\n"
+	"  The OUTSCALE account ID of the owner of the security group you want to delete a rule from.\n"
 "--SecurityGroupId: string\n"
 	"  The ID of the security group you want to delete a rule from.\n"
 "--SecurityGroupNameToUnlink: string\n"
@@ -2201,7 +2217,9 @@ static const char *calls_args_descriptions[] = {
 	"  The ID of the NIC.\n"
 "--PrivateIps: array string\n"
 	"  The secondary private IP or IPs you want to assign to the NIC within the IP range of the \n"
-	"  Subnet.\n"
+	"  Subnet. They cannot be one of the first four IPs (ending in `.0`, `.1`, `.2`, `.3`) or the \n"
+	"  last IP (ending in `.255`) of the Subnet, as these are reserved by 3DS OUTSCALE. For more \n"
+	"  information, see [About Nets](https://docs.outscale.com/en/userguide/About-Nets.html).\n"
 "--SecondaryPrivateIpCount: long long int\n"
 	"  The number of secondary private IPs to assign to the NIC.\n"
 ,
@@ -2293,7 +2311,7 @@ static const char *calls_args_descriptions[] = {
 	"  The tag added to the access key.\n"
 "--UserName: string\n"
 	"  The name of the EIM user. By default, the user who sends the request (which can be the root \n"
-	"  account).\n"
+	"  user).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -2361,7 +2379,7 @@ static const char *calls_args_descriptions[] = {
 	"  The information to display in each returned log.\n"
 	"    The information to display in each returned log.\n"
 	"    --With.AccountId: bool\n"
-	"      If true, the account ID is displayed.\n"
+	"      If true, the OUTSCALE account ID is displayed.\n"
 	"    --With.CallDuration: bool\n"
 	"      If true, the duration of the call is displayed.\n"
 	"    --With.QueryAccessKey: bool\n"
@@ -2628,11 +2646,13 @@ static const char *calls_args_descriptions[] = {
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
-"--Filters: ref FiltersExportTask\n"
+"--Filters: ref FiltersReadImageExportTask\n"
 	"  One or more filters.\n"
 	"    One or more filters.\n"
+	"    --Filters.ImageIds: array string\n"
+	"      The IDs of the OMIs used for the snapshot export tasks.\n"
 	"    --Filters.TaskIds: array string\n"
-	"      The IDs of the export tasks.\n"
+	"      The IDs of the snapshot export tasks.\n"
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
@@ -2647,8 +2667,8 @@ static const char *calls_args_descriptions[] = {
 	"    --Filters.AccountAliases: array string\n"
 	"      The account aliases of the owners of the OMIs.\n"
 	"    --Filters.AccountIds: array string\n"
-	"      The account IDs of the owners of the OMIs. By default, all the OMIs for \n"
-	"      which you have launch permissions are described.\n"
+	"      The OUTSCALE account IDs of the owners of the OMIs. By default, all the \n"
+	"      OMIs for which you have launch permissions are described.\n"
 	"    --Filters.Architectures: array string\n"
 	"      The architectures of the OMIs (`i386` \\| `x86_64`).\n"
 	"    --Filters.BlockDeviceMappingDeleteOnVmDeletion: bool\n"
@@ -2674,7 +2694,7 @@ static const char *calls_args_descriptions[] = {
 	"    --Filters.ImageNames: array string\n"
 	"      The names of the OMIs, provided when they were created.\n"
 	"    --Filters.PermissionsToLaunchAccountIds: array string\n"
-	"      The account IDs which have launch permissions for the OMIs.\n"
+	"      The OUTSCALE account IDs which have launch permissions for the OMIs.\n"
 	"    --Filters.PermissionsToLaunchGlobalPermission: bool\n"
 	"      If true, lists all public OMIs. If false, lists all private OMIs.\n"
 	"    --Filters.ProductCodeNames: array string\n"
@@ -2798,6 +2818,10 @@ static const char *calls_args_descriptions[] = {
 	"    One or more filters.\n"
 	"    --Filters.LoadBalancerNames: array string\n"
 	"      The names of the load balancers.\n"
+	"    --Filters.States: array string\n"
+	"      The states of the load balancer (`provisioning` \\| `starting` \\| \n"
+	"      `reloading` \\| `active` \\| `reconfiguring` \\| `deleting` \\| \n"
+	"      `deleted`).\n"
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
@@ -2904,7 +2928,7 @@ static const char *calls_args_descriptions[] = {
 	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.AccepterNetAccountIds: array string\n"
-	"      The account IDs of the owners of the peer Nets.\n"
+	"      The OUTSCALE account IDs of the owners of the peer Nets.\n"
 	"    --Filters.AccepterNetIpRanges: array string\n"
 	"      The IP ranges of the peer Nets, in CIDR notation (for example, \n"
 	"      `10.0.0.0/24`).\n"
@@ -2916,7 +2940,7 @@ static const char *calls_args_descriptions[] = {
 	"    --Filters.NetPeeringIds: array string\n"
 	"      The IDs of the Net peerings.\n"
 	"    --Filters.SourceNetAccountIds: array string\n"
-	"      The account IDs of the owners of the peer Nets.\n"
+	"      The OUTSCALE account IDs of the owners of the peer Nets.\n"
 	"    --Filters.SourceNetIpRanges: array string\n"
 	"      The IP ranges of the peer Nets.\n"
 	"    --Filters.SourceNetNetIds: array string\n"
@@ -2990,12 +3014,13 @@ static const char *calls_args_descriptions[] = {
 	"    --Filters.LinkNicStates: array string\n"
 	"      The states of the attachments.\n"
 	"    --Filters.LinkNicVmAccountIds: array string\n"
-	"      The account IDs of the owners of the VMs the NICs are attached to.\n"
+	"      The OUTSCALE account IDs of the owners of the VMs the NICs are attached \n"
+	"      to.\n"
 	"    --Filters.LinkNicVmIds: array string\n"
 	"      The IDs of the VMs the NICs are attached to.\n"
 	"    --Filters.LinkPublicIpAccountIds: array string\n"
-	"      The account IDs of the owners of the public IPs associated with the \n"
-	"      NICs.\n"
+	"      The OUTSCALE account IDs of the owners of the public IPs associated with \n"
+	"      the NICs.\n"
 	"    --Filters.LinkPublicIpLinkPublicIpIds: array string\n"
 	"      The association IDs returned when the public IPs were associated with \n"
 	"      the NICs.\n"
@@ -3015,8 +3040,8 @@ static const char *calls_args_descriptions[] = {
 	"    --Filters.PrivateDnsNames: array string\n"
 	"      The private DNS names associated with the primary private IPs.\n"
 	"    --Filters.PrivateIpsLinkPublicIpAccountIds: array string\n"
-	"      The account IDs of the owner of the public IPs associated with the \n"
-	"      private IPs.\n"
+	"      The OUTSCALE account IDs of the owner of the public IPs associated with \n"
+	"      the private IPs.\n"
 	"    --Filters.PrivateIpsLinkPublicIpPublicIps: array string\n"
 	"      The public IPs associated with the private IPs.\n"
 	"    --Filters.PrivateIpsPrimaryIp: bool\n"
@@ -3116,7 +3141,7 @@ static const char *calls_args_descriptions[] = {
 	"    --Filters.LinkPublicIpIds: array string\n"
 	"      The IDs representing the associations of public IPs with VMs or NICs.\n"
 	"    --Filters.NicAccountIds: array string\n"
-	"      The account IDs of the owners of the NICs.\n"
+	"      The OUTSCALE account IDs of the owners of the NICs.\n"
 	"    --Filters.NicIds: array string\n"
 	"      The IDs of the NICs.\n"
 	"    --Filters.Placements: array string\n"
@@ -3221,7 +3246,7 @@ static const char *calls_args_descriptions[] = {
 	"    --Filters.Descriptions: array string\n"
 	"      The descriptions of the security groups.\n"
 	"    --Filters.InboundRuleAccountIds: array string\n"
-	"      The account IDs that have been granted permissions.\n"
+	"      The OUTSCALE account IDs that have been granted permissions.\n"
 	"    --Filters.InboundRuleFromPortRanges: array integer\n"
 	"      The beginnings of the port ranges for the TCP and UDP protocols, or the \n"
 	"      ICMP type numbers.\n"
@@ -3241,7 +3266,7 @@ static const char *calls_args_descriptions[] = {
 	"    --Filters.NetIds: array string\n"
 	"      The IDs of the Nets specified when the security groups were created.\n"
 	"    --Filters.OutboundRuleAccountIds: array string\n"
-	"      The account IDs that have been granted permissions.\n"
+	"      The OUTSCALE account IDs that have been granted permissions.\n"
 	"    --Filters.OutboundRuleFromPortRanges: array integer\n"
 	"      The beginnings of the port ranges for the TCP and UDP protocols, or the \n"
 	"      ICMP type numbers.\n"
@@ -3286,11 +3311,13 @@ static const char *calls_args_descriptions[] = {
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
-"--Filters: ref FiltersExportTask\n"
+"--Filters: ref FiltersSnapshotExportTask\n"
 	"  One or more filters.\n"
 	"    One or more filters.\n"
+	"    --Filters.SnapshotIds: array string\n"
+	"      The IDs of the snapshots used with the snapshot export tasks\n"
 	"    --Filters.TaskIds: array string\n"
-	"      The IDs of the export tasks.\n"
+	"      The IDs of the snapshot export tasks.\n"
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
@@ -3305,7 +3332,7 @@ static const char *calls_args_descriptions[] = {
 	"    --Filters.AccountAliases: array string\n"
 	"      The account aliases of the owners of the snapshots.\n"
 	"    --Filters.AccountIds: array string\n"
-	"      The account IDs of the owners of the snapshots.\n"
+	"      The OUTSCALE account IDs of the owners of the snapshots.\n"
 	"    --Filters.ClientTokens: array string\n"
 	"      The idempotency tokens provided when creating the snapshots.\n"
 	"    --Filters.Descriptions: array string\n"
@@ -3314,7 +3341,7 @@ static const char *calls_args_descriptions[] = {
 	"      The beginning of the time period, in ISO 8601 date-time format (for \n"
 	"      example, `2020-06-14T00:00:00.000Z`).\n"
 	"    --Filters.PermissionsToCreateVolumeAccountIds: array string\n"
-	"      The account IDs which have permissions to create volumes.\n"
+	"      The OUTSCALE account IDs which have permissions to create volumes.\n"
 	"    --Filters.PermissionsToCreateVolumeGlobalPermission: bool\n"
 	"      If true, lists all public volumes. If false, lists all private volumes.\n"
 	"    --Filters.Progresses: array integer\n"
@@ -3693,12 +3720,13 @@ static const char *calls_args_descriptions[] = {
 	"    --Filters.NicLinkNicStates: array string\n"
 	"      The states of the attachments.\n"
 	"    --Filters.NicLinkNicVmAccountIds: array string\n"
-	"      The account IDs of the owners of the VMs the NICs are attached to.\n"
+	"      The OUTSCALE account IDs of the owners of the VMs the NICs are attached \n"
+	"      to.\n"
 	"    --Filters.NicLinkNicVmIds: array string\n"
 	"      The IDs of the VMs the NICs are attached to.\n"
 	"    --Filters.NicLinkPublicIpAccountIds: array string\n"
-	"      The account IDs of the owners of the public IPs associated with the \n"
-	"      NICs.\n"
+	"      The OUTSCALE account IDs of the owners of the public IPs associated with \n"
+	"      the NICs.\n"
 	"    --Filters.NicLinkPublicIpLinkPublicIpIds: array string\n"
 	"      The association IDs returned when the public IPs were associated with \n"
 	"      the NICs.\n"
@@ -3714,8 +3742,8 @@ static const char *calls_args_descriptions[] = {
 	"    --Filters.NicNicIds: array string\n"
 	"      The IDs of the NICs.\n"
 	"    --Filters.NicPrivateIpsLinkPublicIpAccountIds: array string\n"
-	"      The account IDs of the owner of the public IPs associated with the \n"
-	"      private IPs.\n"
+	"      The OUTSCALE account IDs of the owner of the public IPs associated with \n"
+	"      the private IPs.\n"
 	"    --Filters.NicPrivateIpsLinkPublicIpIds: array string\n"
 	"      The public IPs associated with the private IPs.\n"
 	"    --Filters.NicPrivateIpsPrimaryIp: bool\n"
@@ -3830,11 +3858,13 @@ static const char *calls_args_descriptions[] = {
 ,
 	"--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
-"--Filters: ref FiltersUpdateVolumeTask\n"
+"--Filters: ref FiltersReadVolumeUpdateTask\n"
 	"  One or more filters.\n"
 	"    One or more filters.\n"
 	"    --Filters.TaskIds: array string\n"
-	"      The IDs of the volume update tasks.\n"
+	"      The IDs of the snapshot export tasks.\n"
+	"    --Filters.VolumeIds: array string\n"
+	"      The IDs of the volumes used for the snapshot export tasks.\n"
 "--NextPageToken: string\n"
 	"  The token to request the next page of results. Each token refers to a specific page.\n"
 "--ResultsPerPage: long long int\n"
@@ -4071,20 +4101,28 @@ static const char *calls_args_descriptions[] = {
 ,
 	"--AccessKeyId: string\n"
 	"  The ID of the access key.\n"
+"--ClearExpirationDate: bool\n"
+	"  If true, the current expiration date is deleted and the access key is set to not expire.\n"
+"--ClearTag: bool\n"
+	"  If true, the current tag of the access key is deleted.\n"
 "--DryRun: bool\n"
 	"  If true, checks whether you have the required permissions to perform the action.\n"
 "--ExpirationDate: string\n"
 	"  The date and time, or the date, at which you want the access key to expire, in ISO 8601 \n"
 	"  format (for example, `2020-06-14T00:00:00.000Z` or `2020-06-14`). If not specified, the \n"
-	"  access key is set to not expire.\n"
+	"  access key is set to not expire. If the `ClearExpirationDate` parameter is set to true, the \n"
+	"  expiration date is ignored.\n"
 "--State: string\n"
 	"  The new state for the access key (`ACTIVE` \\| `INACTIVE`). When set to `ACTIVE`, the \n"
 	"  access key is enabled and can be used to send requests. When set to `INACTIVE`, the access \n"
 	"  key is disabled.\n"
+"--Tag: string\n"
+	"  A new tag to add to the access key. If the access key already had a tag, this replaces it. \n"
+	"  If the `ClearTag` parameter is set to true, the tag is ignored.\n"
 "--UserName: string\n"
 	"  The name of the EIM user that the access key you want to modify is associated with. If you \n"
 	"  do not specify a user name, this action modifies the access key of the user who sends the \n"
-	"  request (which can be the root account).\n"
+	"  request (which can be the root user).\n"
 ,
 	"--AdditionalEmails: array string\n"
 	"  One or more additional email addresses for the account. These addresses are used for \n"
@@ -4191,7 +4229,7 @@ static const char *calls_args_descriptions[] = {
 	"      Permissions for the resource.\n"
 	"        Permissions for the resource.\n"
 	"        --PermissionsToLaunch.Additions.AccountIds: array string\n"
-	"          One or more account IDs that the permission is associated with.\n"
+	"          One or more OUTSCALE account IDs that the permission is associated with.\n"
 	"        --PermissionsToLaunch.Additions.GlobalPermission: bool\n"
 	"          A global permission for all accounts.\n(Request) Set this \n"
 	"          parameter to true to make the resource public (if the parent parameter is \n"
@@ -4202,7 +4240,7 @@ static const char *calls_args_descriptions[] = {
 	"      Permissions for the resource.\n"
 	"        Permissions for the resource.\n"
 	"        --PermissionsToLaunch.Removals.AccountIds: array string\n"
-	"          One or more account IDs that the permission is associated with.\n"
+	"          One or more OUTSCALE account IDs that the permission is associated with.\n"
 	"        --PermissionsToLaunch.Removals.GlobalPermission: bool\n"
 	"          A global permission for all accounts.\n(Request) Set this \n"
 	"          parameter to true to make the resource public (if the parent parameter is \n"
@@ -4383,7 +4421,7 @@ static const char *calls_args_descriptions[] = {
 	"      Permissions for the resource.\n"
 	"        Permissions for the resource.\n"
 	"        --PermissionsToCreateVolume.Additions.AccountIds: array string\n"
-	"          One or more account IDs that the permission is associated with.\n"
+	"          One or more OUTSCALE account IDs that the permission is associated with.\n"
 	"        --PermissionsToCreateVolume.Additions.GlobalPermission: bool\n"
 	"          A global permission for all accounts.\n(Request) Set this \n"
 	"          parameter to true to make the resource public (if the parent parameter is \n"
@@ -4394,7 +4432,7 @@ static const char *calls_args_descriptions[] = {
 	"      Permissions for the resource.\n"
 	"        Permissions for the resource.\n"
 	"        --PermissionsToCreateVolume.Removals.AccountIds: array string\n"
-	"          One or more account IDs that the permission is associated with.\n"
+	"          One or more OUTSCALE account IDs that the permission is associated with.\n"
 	"        --PermissionsToCreateVolume.Removals.GlobalPermission: bool\n"
 	"          A global permission for all accounts.\n(Request) Set this \n"
 	"          parameter to true to make the resource public (if the parent parameter is \n"
@@ -5087,7 +5125,6 @@ static int filters_dedicated_group_setter(struct filters_dedicated_group *args, 
 static int filters_dhcp_options_setter(struct filters_dhcp_options *args, struct osc_str *data);
 static int filters_direct_link_setter(struct filters_direct_link *args, struct osc_str *data);
 static int filters_direct_link_interface_setter(struct filters_direct_link_interface *args, struct osc_str *data);
-static int filters_export_task_setter(struct filters_export_task *args, struct osc_str *data);
 static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct osc_str *data);
 static int filters_image_setter(struct filters_image *args, struct osc_str *data);
 static int filters_internet_service_setter(struct filters_internet_service *args, struct osc_str *data);
@@ -5102,15 +5139,17 @@ static int filters_nic_setter(struct filters_nic *args, struct osc_str *data);
 static int filters_product_type_setter(struct filters_product_type *args, struct osc_str *data);
 static int filters_public_ip_setter(struct filters_public_ip *args, struct osc_str *data);
 static int filters_quota_setter(struct filters_quota *args, struct osc_str *data);
+static int filters_read_image_export_task_setter(struct filters_read_image_export_task *args, struct osc_str *data);
+static int filters_read_volume_update_task_setter(struct filters_read_volume_update_task *args, struct osc_str *data);
 static int filters_route_table_setter(struct filters_route_table *args, struct osc_str *data);
 static int filters_security_group_setter(struct filters_security_group *args, struct osc_str *data);
 static int filters_server_certificate_setter(struct filters_server_certificate *args, struct osc_str *data);
 static int filters_service_setter(struct filters_service *args, struct osc_str *data);
 static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str *data);
+static int filters_snapshot_export_task_setter(struct filters_snapshot_export_task *args, struct osc_str *data);
 static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *data);
 static int filters_subregion_setter(struct filters_subregion *args, struct osc_str *data);
 static int filters_tag_setter(struct filters_tag *args, struct osc_str *data);
-static int filters_update_volume_task_setter(struct filters_update_volume_task *args, struct osc_str *data);
 static int filters_user_group_setter(struct filters_user_group *args, struct osc_str *data);
 static int filters_users_setter(struct filters_users *args, struct osc_str *data);
 static int filters_virtual_gateway_setter(struct filters_virtual_gateway *args, struct osc_str *data);
@@ -7137,28 +7176,6 @@ static int filters_direct_link_interface_setter(struct filters_direct_link_inter
 
 	return !!ret;
 }
-static int filters_export_task_setter(struct filters_export_task *args, struct osc_str *data) {
-       int count_args = 0;
-       int ret = 0;
-	if (args->task_ids) {
-		char **as;
-
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TaskIds\":[" ));
-		for (as = args->task_ids; *as; ++as) {
-			if (as != args->task_ids)
-				STRY(osc_str_append_string(data, "," ));
-			ARG_TO_JSON_STR("", *as);
-		}
-		STRY(osc_str_append_string(data, "]" ));
-		ret += 1;
-	} else if (args->task_ids_str) {
-		ARG_TO_JSON(TaskIds, string, args->task_ids_str);
-		ret += 1;
-	}
-
-	return !!ret;
-}
 static int filters_flexible_gpu_setter(struct filters_flexible_gpu *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
@@ -7932,6 +7949,22 @@ static int filters_load_balancer_setter(struct filters_load_balancer *args, stru
 		ret += 1;
 	} else if (args->load_balancer_names_str) {
 		ARG_TO_JSON(LoadBalancerNames, string, args->load_balancer_names_str);
+		ret += 1;
+	}
+	if (args->states) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"States\":[" ));
+		for (as = args->states; *as; ++as) {
+			if (as != args->states)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->states_str) {
+		ARG_TO_JSON(States, string, args->states_str);
 		ret += 1;
 	}
 
@@ -9233,6 +9266,82 @@ static int filters_quota_setter(struct filters_quota *args, struct osc_str *data
 
 	return !!ret;
 }
+static int filters_read_image_export_task_setter(struct filters_read_image_export_task *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->image_ids) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"ImageIds\":[" ));
+		for (as = args->image_ids; *as; ++as) {
+			if (as != args->image_ids)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->image_ids_str) {
+		ARG_TO_JSON(ImageIds, string, args->image_ids_str);
+		ret += 1;
+	}
+	if (args->task_ids) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"TaskIds\":[" ));
+		for (as = args->task_ids; *as; ++as) {
+			if (as != args->task_ids)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->task_ids_str) {
+		ARG_TO_JSON(TaskIds, string, args->task_ids_str);
+		ret += 1;
+	}
+
+	return !!ret;
+}
+static int filters_read_volume_update_task_setter(struct filters_read_volume_update_task *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->task_ids) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"TaskIds\":[" ));
+		for (as = args->task_ids; *as; ++as) {
+			if (as != args->task_ids)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->task_ids_str) {
+		ARG_TO_JSON(TaskIds, string, args->task_ids_str);
+		ret += 1;
+	}
+	if (args->volume_ids) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"VolumeIds\":[" ));
+		for (as = args->volume_ids; *as; ++as) {
+			if (as != args->volume_ids)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->volume_ids_str) {
+		ARG_TO_JSON(VolumeIds, string, args->volume_ids_str);
+		ret += 1;
+	}
+
+	return !!ret;
+}
 static int filters_route_table_setter(struct filters_route_table *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
@@ -10129,6 +10238,44 @@ static int filters_snapshot_setter(struct filters_snapshot *args, struct osc_str
 
 	return !!ret;
 }
+static int filters_snapshot_export_task_setter(struct filters_snapshot_export_task *args, struct osc_str *data) {
+       int count_args = 0;
+       int ret = 0;
+	if (args->snapshot_ids) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"SnapshotIds\":[" ));
+		for (as = args->snapshot_ids; *as; ++as) {
+			if (as != args->snapshot_ids)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->snapshot_ids_str) {
+		ARG_TO_JSON(SnapshotIds, string, args->snapshot_ids_str);
+		ret += 1;
+	}
+	if (args->task_ids) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"TaskIds\":[" ));
+		for (as = args->task_ids; *as; ++as) {
+			if (as != args->task_ids)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->task_ids_str) {
+		ARG_TO_JSON(TaskIds, string, args->task_ids_str);
+		ret += 1;
+	}
+
+	return !!ret;
+}
 static int filters_subnet_setter(struct filters_subnet *args, struct osc_str *data) {
        int count_args = 0;
        int ret = 0;
@@ -10398,28 +10545,6 @@ static int filters_tag_setter(struct filters_tag *args, struct osc_str *data) {
 		ret += 1;
 	} else if (args->values_str) {
 		ARG_TO_JSON(Values, string, args->values_str);
-		ret += 1;
-	}
-
-	return !!ret;
-}
-static int filters_update_volume_task_setter(struct filters_update_volume_task *args, struct osc_str *data) {
-       int count_args = 0;
-       int ret = 0;
-	if (args->task_ids) {
-		char **as;
-
-	   	TRY_APPEND_COL(count_args, data);
-		STRY(osc_str_append_string(data, "\"TaskIds\":[" ));
-		for (as = args->task_ids; *as; ++as) {
-			if (as != args->task_ids)
-				STRY(osc_str_append_string(data, "," ));
-			ARG_TO_JSON_STR("", *as);
-		}
-		STRY(osc_str_append_string(data, "]" ));
-		ret += 1;
-	} else if (args->task_ids_str) {
-		ARG_TO_JSON(TaskIds, string, args->task_ids_str);
 		ret += 1;
 	}
 
@@ -13676,6 +13801,11 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 	       STRY(source_security_group_setter(&args->source_security_group, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
+	}
+	if (args->state) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"State\":", args->state);
+	   	ret += 1;
 	}
 	if (args->subnets) {
 		char **as;
@@ -27286,7 +27416,7 @@ static  int read_image_export_tasks_data(struct osc_env *e, struct osc_read_imag
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
-	       STRY(filters_export_task_setter(&args->filters, data) < 0);
+	       STRY(filters_read_image_export_task_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
@@ -29368,7 +29498,7 @@ static  int read_snapshot_export_tasks_data(struct osc_env *e, struct osc_read_s
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
-	       STRY(filters_export_task_setter(&args->filters, data) < 0);
+	       STRY(filters_snapshot_export_task_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
@@ -30896,7 +31026,7 @@ static  int read_volume_update_tasks_data(struct osc_env *e, struct osc_read_vol
 	} else if (args->is_set_filters) {
 	       TRY_APPEND_COL(count_args, data);
 	       STRY(osc_str_append_string(data, "\"Filters\": { " ));
-	       STRY(filters_update_volume_task_setter(&args->filters, data) < 0);
+	       STRY(filters_read_volume_update_task_setter(&args->filters, data) < 0);
 	       STRY(osc_str_append_string(data, "}" ));
 	       ret += 1;
 	}
@@ -32513,6 +32643,14 @@ static  int update_access_key_data(struct osc_env *e, struct osc_update_access_k
 	        ARG_TO_JSON_STR("\"AccessKeyId\":", args->access_key_id);
 	   	ret += 1;
 	}
+	if (args->is_set_clear_expiration_date) {
+		ARG_TO_JSON(ClearExpirationDate, bool, args->clear_expiration_date);
+	   	ret += 1;
+	}
+	if (args->is_set_clear_tag) {
+		ARG_TO_JSON(ClearTag, bool, args->clear_tag);
+	   	ret += 1;
+	}
 	if (args->is_set_dry_run) {
 		ARG_TO_JSON(DryRun, bool, args->dry_run);
 	   	ret += 1;
@@ -32525,6 +32663,11 @@ static  int update_access_key_data(struct osc_env *e, struct osc_update_access_k
 	if (args->state) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"State\":", args->state);
+	   	ret += 1;
+	}
+	if (args->tag) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"Tag\":", args->tag);
 	   	ret += 1;
 	}
 	if (args->user_name) {
