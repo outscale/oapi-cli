@@ -47,7 +47,7 @@
 
 #define OAPI_RAW_OUTPUT 1
 
-#define OAPI_CLI_VERSION "0.13.0"
+#define OAPI_CLI_VERSION "0.14.0"
 
 #define OAPI_CLI_UAGENT "oapi-cli/"OAPI_CLI_VERSION"; osc-sdk-c/"
 
@@ -296,7 +296,6 @@ int filters_dedicated_group_parser(void *s, char *str, char *aa, struct ptr_arra
 int filters_dhcp_options_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_direct_link_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_direct_link_interface_parser(void *s, char *str, char *aa, struct ptr_array *pa);
-int filters_export_task_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_flexible_gpu_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_image_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_internet_service_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -311,15 +310,17 @@ int filters_nic_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_product_type_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_public_ip_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_quota_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int filters_read_image_export_task_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int filters_read_volume_update_task_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_route_table_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_security_group_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_server_certificate_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_service_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_snapshot_parser(void *s, char *str, char *aa, struct ptr_array *pa);
+int filters_snapshot_export_task_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_subnet_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_subregion_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_tag_parser(void *s, char *str, char *aa, struct ptr_array *pa);
-int filters_update_volume_task_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_user_group_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_users_parser(void *s, char *str, char *aa, struct ptr_array *pa);
 int filters_virtual_gateway_parser(void *s, char *str, char *aa, struct ptr_array *pa);
@@ -3245,44 +3246,6 @@ int filters_direct_link_interface_parser(void *v_s, char *str, char *aa, struct 
 	return 0;
 }
 
-int filters_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
-	    struct filters_export_task *s = v_s;
-	    int aret = 0;
-	if ((aret = argcmp(str, "TaskIds")) == 0 || aret == '=' || aret == '.') {
-                 if (aret == '.') {
-                      int pos;
-                      char *endptr;
-                      int last = 0;
-                      char *dot_pos = strchr(str, '.');
-
-                      TRY(!(dot_pos++), "TaskIds argument missing\n");
-                      pos = strtoul(dot_pos, &endptr, 0);
-                      TRY(endptr == dot_pos, "TaskIds require an index\n");
-                      if (s->task_ids) {
-                              for (; s->task_ids[last]; ++last);
-                      }
-                      if (pos < last) {
-                              s->task_ids[pos] = (aa);
-                      } else {
-                              for (int i = last; i < pos; ++i)
-                                      SET_NEXT(s->task_ids, "", pa);
-                              SET_NEXT(s->task_ids, (aa), pa);
-                      }
-                 } else {
-            	       TRY(!aa, "TaskIds argument missing\n");
-                     s->task_ids_str = aa;
-                 }
-         } else if (!(aret = argcmp(str, "TaskIds[]")) || aret == '=') {
-               TRY(!aa, "TaskIds[] argument missing\n");
-               SET_NEXT(s->task_ids, (aa), pa);
-         } else
-	{
-		fprintf(stderr, "'%s' is not an argumemt of 'FiltersExportTask'\n", str);
-		return -1;
-	}
-	return 0;
-}
-
 int filters_flexible_gpu_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_flexible_gpu *s = v_s;
 	    int aret = 0;
@@ -4642,6 +4605,34 @@ int filters_load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_arra
          } else if (!(aret = argcmp(str, "LoadBalancerNames[]")) || aret == '=') {
                TRY(!aa, "LoadBalancerNames[] argument missing\n");
                SET_NEXT(s->load_balancer_names, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "States")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "States argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "States require an index\n");
+                      if (s->states) {
+                              for (; s->states[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->states[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->states, "", pa);
+                              SET_NEXT(s->states, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "States argument missing\n");
+                     s->states_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "States[]")) || aret == '=') {
+               TRY(!aa, "States[] argument missing\n");
+               SET_NEXT(s->states, (aa), pa);
          } else
 	{
 		fprintf(stderr, "'%s' is not an argumemt of 'FiltersLoadBalancer'\n", str);
@@ -6926,6 +6917,138 @@ int filters_quota_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	return 0;
 }
 
+int filters_read_image_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct filters_read_image_export_task *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "ImageIds")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "ImageIds argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "ImageIds require an index\n");
+                      if (s->image_ids) {
+                              for (; s->image_ids[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->image_ids[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->image_ids, "", pa);
+                              SET_NEXT(s->image_ids, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "ImageIds argument missing\n");
+                     s->image_ids_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "ImageIds[]")) || aret == '=') {
+               TRY(!aa, "ImageIds[] argument missing\n");
+               SET_NEXT(s->image_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "TaskIds")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "TaskIds argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "TaskIds require an index\n");
+                      if (s->task_ids) {
+                              for (; s->task_ids[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->task_ids[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->task_ids, "", pa);
+                              SET_NEXT(s->task_ids, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "TaskIds argument missing\n");
+                     s->task_ids_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "TaskIds[]")) || aret == '=') {
+               TRY(!aa, "TaskIds[] argument missing\n");
+               SET_NEXT(s->task_ids, (aa), pa);
+         } else
+	{
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersReadImageExportTask'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
+int filters_read_volume_update_task_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct filters_read_volume_update_task *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "TaskIds")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "TaskIds argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "TaskIds require an index\n");
+                      if (s->task_ids) {
+                              for (; s->task_ids[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->task_ids[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->task_ids, "", pa);
+                              SET_NEXT(s->task_ids, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "TaskIds argument missing\n");
+                     s->task_ids_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "TaskIds[]")) || aret == '=') {
+               TRY(!aa, "TaskIds[] argument missing\n");
+               SET_NEXT(s->task_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "VolumeIds")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "VolumeIds argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "VolumeIds require an index\n");
+                      if (s->volume_ids) {
+                              for (; s->volume_ids[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->volume_ids[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->volume_ids, "", pa);
+                              SET_NEXT(s->volume_ids, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "VolumeIds argument missing\n");
+                     s->volume_ids_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "VolumeIds[]")) || aret == '=') {
+               TRY(!aa, "VolumeIds[] argument missing\n");
+               SET_NEXT(s->volume_ids, (aa), pa);
+         } else
+	{
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersReadVolumeUpdateTask'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
 int filters_route_table_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_route_table *s = v_s;
 	    int aret = 0;
@@ -8490,6 +8613,72 @@ int filters_snapshot_parser(void *v_s, char *str, char *aa, struct ptr_array *pa
 	return 0;
 }
 
+int filters_snapshot_export_task_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
+	    struct filters_snapshot_export_task *s = v_s;
+	    int aret = 0;
+	if ((aret = argcmp(str, "SnapshotIds")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "SnapshotIds argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "SnapshotIds require an index\n");
+                      if (s->snapshot_ids) {
+                              for (; s->snapshot_ids[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->snapshot_ids[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->snapshot_ids, "", pa);
+                              SET_NEXT(s->snapshot_ids, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "SnapshotIds argument missing\n");
+                     s->snapshot_ids_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "SnapshotIds[]")) || aret == '=') {
+               TRY(!aa, "SnapshotIds[] argument missing\n");
+               SET_NEXT(s->snapshot_ids, (aa), pa);
+         } else
+	if ((aret = argcmp(str, "TaskIds")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "TaskIds argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "TaskIds require an index\n");
+                      if (s->task_ids) {
+                              for (; s->task_ids[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->task_ids[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->task_ids, "", pa);
+                              SET_NEXT(s->task_ids, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "TaskIds argument missing\n");
+                     s->task_ids_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "TaskIds[]")) || aret == '=') {
+               TRY(!aa, "TaskIds[] argument missing\n");
+               SET_NEXT(s->task_ids, (aa), pa);
+         } else
+	{
+		fprintf(stderr, "'%s' is not an argumemt of 'FiltersSnapshotExportTask'\n", str);
+		return -1;
+	}
+	return 0;
+}
+
 int filters_subnet_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
 	    struct filters_subnet *s = v_s;
 	    int aret = 0;
@@ -8963,44 +9152,6 @@ int filters_tag_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
          } else
 	{
 		fprintf(stderr, "'%s' is not an argumemt of 'FiltersTag'\n", str);
-		return -1;
-	}
-	return 0;
-}
-
-int filters_update_volume_task_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
-	    struct filters_update_volume_task *s = v_s;
-	    int aret = 0;
-	if ((aret = argcmp(str, "TaskIds")) == 0 || aret == '=' || aret == '.') {
-                 if (aret == '.') {
-                      int pos;
-                      char *endptr;
-                      int last = 0;
-                      char *dot_pos = strchr(str, '.');
-
-                      TRY(!(dot_pos++), "TaskIds argument missing\n");
-                      pos = strtoul(dot_pos, &endptr, 0);
-                      TRY(endptr == dot_pos, "TaskIds require an index\n");
-                      if (s->task_ids) {
-                              for (; s->task_ids[last]; ++last);
-                      }
-                      if (pos < last) {
-                              s->task_ids[pos] = (aa);
-                      } else {
-                              for (int i = last; i < pos; ++i)
-                                      SET_NEXT(s->task_ids, "", pa);
-                              SET_NEXT(s->task_ids, (aa), pa);
-                      }
-                 } else {
-            	       TRY(!aa, "TaskIds argument missing\n");
-                     s->task_ids_str = aa;
-                 }
-         } else if (!(aret = argcmp(str, "TaskIds[]")) || aret == '=') {
-               TRY(!aa, "TaskIds[] argument missing\n");
-               SET_NEXT(s->task_ids, (aa), pa);
-         } else
-	{
-		fprintf(stderr, "'%s' is not an argumemt of 'FiltersUpdateVolumeTask'\n", str);
 		return -1;
 	}
 	return 0;
@@ -14300,6 +14451,11 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
              } else {
                    s->source_security_group_str = aa;
              }
+         } else
+	if ((aret = argcmp(str, "State")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "State argument missing\n");
+            s->state = aa; // string string
+
          } else
 	if ((aret = argcmp(str, "Subnets")) == 0 || aret == '=' || aret == '.') {
                  if (aret == '.') {
@@ -37985,11 +38141,11 @@ int main(int ac, char **av)
 				          dot_pos = strchr(str, '.');
 				          if (dot_pos++) {
 				          	    cascade_struct = &s->filters;
-				          	    cascade_parser = filters_export_task_parser;
+				          	    cascade_parser = filters_read_image_export_task_parser;
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    STRY(filters_export_task_parser(&s->filters, dot_pos, aa, pa));
+				          	    STRY(filters_read_image_export_task_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -41853,11 +42009,11 @@ int main(int ac, char **av)
 				          dot_pos = strchr(str, '.');
 				          if (dot_pos++) {
 				          	    cascade_struct = &s->filters;
-				          	    cascade_parser = filters_export_task_parser;
+				          	    cascade_parser = filters_snapshot_export_task_parser;
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    STRY(filters_export_task_parser(&s->filters, dot_pos, aa, pa));
+				          	    STRY(filters_snapshot_export_task_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -44705,11 +44861,11 @@ int main(int ac, char **av)
 				          dot_pos = strchr(str, '.');
 				          if (dot_pos++) {
 				          	    cascade_struct = &s->filters;
-				          	    cascade_parser = filters_update_volume_task_parser;
+				          	    cascade_parser = filters_read_volume_update_task_parser;
 				          	    if (*dot_pos == '.') {
 				          		++dot_pos;
 				          	    }
-				          	    STRY(filters_update_volume_task_parser(&s->filters, dot_pos, aa, pa));
+				          	    STRY(filters_read_volume_update_task_parser(&s->filters, dot_pos, aa, pa));
 				          	    s->is_set_filters = 1;
 				           } else {
 				                 s->filters_str = aa;
@@ -47661,6 +47817,38 @@ int main(int ac, char **av)
 				          s->access_key_id = aa; // string string
 
 				       } else
+			      if ((aret = argcmp(next_a, "ClearExpirationDate")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ClearExpirationDate argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_clear_expiration_date = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->clear_expiration_date = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->clear_expiration_date = 0;
+				           } else {
+				          		BAD_RET("ClearExpirationDate require true/false\n");
+				           }
+				      } else
+			      if ((aret = argcmp(next_a, "ClearTag")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "ClearTag argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          s->is_set_clear_tag = 1;
+				          if (!aa || !strcasecmp(aa, "true")) {
+				          		s->clear_tag = 1;
+				           } else if (!strcasecmp(aa, "false")) {
+				          		s->clear_tag = 0;
+				           } else {
+				          		BAD_RET("ClearTag require true/false\n");
+				           }
+				      } else
 			      if ((aret = argcmp(next_a, "DryRun")) == 0 || aret == '='  || aret == '.') {
 			      	 char *eq_ptr = strchr(next_a, '=');
 			      	 if (eq_ptr) {
@@ -47697,6 +47885,17 @@ int main(int ac, char **av)
 				 }
 				          TRY(!aa, "State argument missing\n");
 				          s->state = aa; // string string
+
+				       } else
+			      if ((aret = argcmp(next_a, "Tag")) == 0 || aret == '='  || aret == '.') {
+			      	 char *eq_ptr = strchr(next_a, '=');
+			      	 if (eq_ptr) {
+				    TRY((!*eq_ptr), "Tag argument missing\n");
+				    aa = eq_ptr + 1;
+				    incr = 1;
+				 }
+				          TRY(!aa, "Tag argument missing\n");
+				          s->tag = aa; // string string
 
 				       } else
 			      if ((aret = argcmp(next_a, "UserName")) == 0 || aret == '='  || aret == '.') {
