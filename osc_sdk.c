@@ -13767,6 +13767,11 @@ static int load_balancer_setter(struct load_balancer *args, struct osc_str *data
 	        ARG_TO_JSON_STR("\"NetId\":", args->net_id);
 	   	ret += 1;
 	}
+	if (args->private_ip) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"PrivateIp\":", args->private_ip);
+	   	ret += 1;
+	}
 	if (args->public_ip) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"PublicIp\":", args->public_ip);
@@ -15209,6 +15214,27 @@ static int public_ip_setter(struct public_ip *args, struct osc_str *data) {
 		TRY_APPEND_COL(count_args, data);
 	        ARG_TO_JSON_STR("\"LinkPublicIpId\":", args->link_public_ip_id);
 	   	ret += 1;
+	}
+	if (args->nat_service_id) {
+		TRY_APPEND_COL(count_args, data);
+	        ARG_TO_JSON_STR("\"NatServiceId\":", args->nat_service_id);
+	   	ret += 1;
+	}
+	if (args->net_access_point_ids) {
+		char **as;
+
+	   	TRY_APPEND_COL(count_args, data);
+		STRY(osc_str_append_string(data, "\"NetAccessPointIds\":[" ));
+		for (as = args->net_access_point_ids; *as; ++as) {
+			if (as != args->net_access_point_ids)
+				STRY(osc_str_append_string(data, "," ));
+			ARG_TO_JSON_STR("", *as);
+		}
+		STRY(osc_str_append_string(data, "]" ));
+		ret += 1;
+	} else if (args->net_access_point_ids_str) {
+		ARG_TO_JSON(NetAccessPointIds, string, args->net_access_point_ids_str);
+		ret += 1;
 	}
 	if (args->nic_account_id) {
 		TRY_APPEND_COL(count_args, data);

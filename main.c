@@ -47,7 +47,7 @@
 
 #define OAPI_RAW_OUTPUT 1
 
-#define OAPI_CLI_VERSION "0.14.0"
+#define OAPI_CLI_VERSION "0.15.0"
 
 #define OAPI_CLI_UAGENT "oapi-cli/"OAPI_CLI_VERSION"; osc-sdk-c/"
 
@@ -14392,6 +14392,11 @@ int load_balancer_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             s->net_id = aa; // string string
 
          } else
+	if ((aret = argcmp(str, "PrivateIp")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "PrivateIp argument missing\n");
+            s->private_ip = aa; // string string
+
+         } else
 	if ((aret = argcmp(str, "PublicIp")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "PublicIp argument missing\n");
             s->public_ip = aa; // string string
@@ -16406,6 +16411,39 @@ int public_ip_parser(void *v_s, char *str, char *aa, struct ptr_array *pa) {
             TRY(!aa, "LinkPublicIpId argument missing\n");
             s->link_public_ip_id = aa; // string string
 
+         } else
+	if ((aret = argcmp(str, "NatServiceId")) == 0 || aret == '=' || aret == '.') {
+            TRY(!aa, "NatServiceId argument missing\n");
+            s->nat_service_id = aa; // string string
+
+         } else
+	if ((aret = argcmp(str, "NetAccessPointIds")) == 0 || aret == '=' || aret == '.') {
+                 if (aret == '.') {
+                      int pos;
+                      char *endptr;
+                      int last = 0;
+                      char *dot_pos = strchr(str, '.');
+
+                      TRY(!(dot_pos++), "NetAccessPointIds argument missing\n");
+                      pos = strtoul(dot_pos, &endptr, 0);
+                      TRY(endptr == dot_pos, "NetAccessPointIds require an index\n");
+                      if (s->net_access_point_ids) {
+                              for (; s->net_access_point_ids[last]; ++last);
+                      }
+                      if (pos < last) {
+                              s->net_access_point_ids[pos] = (aa);
+                      } else {
+                              for (int i = last; i < pos; ++i)
+                                      SET_NEXT(s->net_access_point_ids, "", pa);
+                              SET_NEXT(s->net_access_point_ids, (aa), pa);
+                      }
+                 } else {
+            	       TRY(!aa, "NetAccessPointIds argument missing\n");
+                     s->net_access_point_ids_str = aa;
+                 }
+         } else if (!(aret = argcmp(str, "NetAccessPointIds[]")) || aret == '=') {
+               TRY(!aa, "NetAccessPointIds[] argument missing\n");
+               SET_NEXT(s->net_access_point_ids, (aa), pa);
          } else
 	if ((aret = argcmp(str, "NicAccountId")) == 0 || aret == '=' || aret == '.') {
             TRY(!aa, "NicAccountId argument missing\n");
