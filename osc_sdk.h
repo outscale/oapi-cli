@@ -77,8 +77,8 @@ struct osc_str {
 
 #define OSC_ENV_FREE_AK_SK (OSC_ENV_FREE_AK | OSC_ENV_FREE_SK)
 
-#define OSC_API_VERSION "1.40.1"
-#define OSC_SDK_VERSION 0X002000
+#define OSC_API_VERSION "1.41.0"
+#define OSC_SDK_VERSION 0X002100
 
 enum osc_auth_method {
 	OSC_AKSK_METHOD,
@@ -4473,6 +4473,10 @@ struct load_balancer {
          */
 	char *net_id;
         /*
+         * The primary private IP of the load balancer.
+         */
+	char *private_ip;
+        /*
          * (internet-facing only) The public IP associated with the load 
          * balancer.
          */
@@ -5698,6 +5702,16 @@ struct public_ip {
          */
 	char *link_public_ip_id;
         /*
+         * The ID of the NAT service associated with the public IP (if any).
+         */
+	char *nat_service_id;
+        /*
+         * The IDs of the Net access points associated with the public IP (if 
+         * any).
+         */
+        char *net_access_point_ids_str;
+	char **net_access_point_ids;
+        /*
          * The OUTSCALE account ID of the owner of the NIC.
          */
 	char *nic_account_id;
@@ -5706,7 +5720,7 @@ struct public_ip {
          */
 	char *nic_id;
         /*
-         * The private IP associated with the public IP.
+         * The private IP associated with the NIC or load balancer.
          */
 	char *private_ip;
         /*
