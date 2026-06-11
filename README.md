@@ -1,6 +1,6 @@
 # oapi-cli
 
-[![Project Incubating](https://docs.outscale.com/fr/userguide/_images/Project-Incubating-blue.svg)](https://docs.outscale.com/en/userguide/Open-Source-Projects.html)
+[![Project Archived](https://docs.outscale.com/fr/userguide/_images/Project-Archived-red.svg)](https://docs.outscale.com/en/userguide/Open-Source-Projects.html)
 [![](https://dcbadge.limes.pink/api/server/HUVtY5gT6s?style=flat&theme=default-inverted)](https://discord.gg/HUVtY5gT6s)
 
 <p align="center">
@@ -8,6 +8,12 @@
 </p>
 
 ---
+
+> [!WARNING]
+> 
+> `oapi-cli` is deprecated and is no longer actively maintained.
+>
+> We recommend using [`octl`](https://github.com/outscale/octl) instead. `octl` is our latest CLI project and is actively maintained.
 
 ## 🌐 Links
 
